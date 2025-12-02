@@ -408,11 +408,18 @@ export default function ProfileView() {
                   <>
                     <button
                       onClick={sendInterest}
-                      disabled={interest?.status === "pending" || interest?.status === "accepted"}
+                      disabled={
+                        interest?.status === "pending" ||
+                        interest?.status === "accepted"
+                      }
                       className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 text-white text-sm font-bold flex-1"
                       style={{
                         backgroundColor: primary,
-                        opacity: interest?.status === "pending" || interest?.status === "accepted" ? 0.8 : 1,
+                        opacity:
+                          interest?.status === "pending" ||
+                          interest?.status === "accepted"
+                            ? 0.8
+                            : 1,
                       }}
                     >
                       {interest?.status === "accepted"
@@ -422,7 +429,9 @@ export default function ProfileView() {
                         : "Send Interest"}
                     </button>
                     <button
-                      onClick={() => navigate(`/chat/${user.MatriID || user.matid}`)}
+                      onClick={() =>
+                        navigate(`/chat/${user.MatriID || user.matid}`)
+                      }
                       className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 text-white text-sm font-bold flex-1 gap-2"
                       style={{ backgroundColor: "#22c55e" }}
                     >
@@ -589,7 +598,7 @@ export default function ProfileView() {
         </section>
 
         {/* Contact Details */}
-        <section className="mb-6 relative">
+        {/* <section className="mb-6 relative">
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Contact Details</h2>
@@ -654,7 +663,7 @@ export default function ProfileView() {
               />
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Education & Professional */}
         <section className="mb-6 relative">
