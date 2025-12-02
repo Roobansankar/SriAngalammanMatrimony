@@ -1,211 +1,3 @@
-
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-
-// export default function BasicEdit() {
-//   const [form, setForm] = useState({
-//     ConfirmEmail: "",
-//     Name: "",
-//     MatriID: "",
-//     Profilecreatedby: "",
-//     Gender: "",
-//     DOB: "",
-//     Maritalstatus: "",
-//     Religion: "",
-//     Caste: "",
-//     Subcaste: "",
-//     Mobile: "",
-//   });
-
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const data = JSON.parse(localStorage.getItem("userData"));
-//     if (!data) return;
-
-//     setForm({
-//       ConfirmEmail: data.ConfirmEmail || "",
-//       Name: data.Name || "",
-//       MatriID: data.MatriID || "",
-//       Profilecreatedby: data.Profilecreatedby || "",
-//       Gender: data.Gender || "",
-//       DOB: data.DOB ? data.DOB.split("T")[0] : "",
-//       Maritalstatus: data.Maritalstatus || "",
-//       Religion: data.Religion || "",
-//       Caste: data.Caste || "",
-//       Subcaste: data.Subcaste || data.sub_caste || "",
-//       Mobile: data.Mobile || "",
-//     });
-//   }, []);
-
-//   const updateField = (key, value) => {
-//     setForm({ ...form, [key]: value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       await axios.put("http://localhost:5000/api/auth/update/basic", form);
-//       alert("Basic details updated!");
-//       navigate("/profile");
-//     } catch (err) {
-//       console.error(err);
-//       alert("Update failed");
-//     }
-//   };
-
-// return (
-//   <div className="min-h-screen bg-[#FFF4E0] font-display flex items-center justify-center p-6">
-//     <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-10 border border-gray-200 mt-20">
-//       <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
-//         Edit Basic Details
-//       </h1>
-
-//       <form
-//         onSubmit={handleSubmit}
-//         className="grid grid-cols-1 md:grid-cols-2 gap-6"
-//       >
-//         {/* NAME */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Full Name
-//           </label>
-//           <input
-//             type="text"
-//             value={form.Name}
-//             onChange={(e) => updateField("Name", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* MATRI ID */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Matri ID
-//           </label>
-//           <input
-//             type="text"
-//             value={form.MatriID}
-//             onChange={(e) => updateField("MatriID", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* PROFILE CREATED BY */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Profile Created By
-//           </label>
-//           <input
-//             type="text"
-//             value={form.Profilecreatedby}
-//             onChange={(e) => updateField("Profilecreatedby", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* GENDER */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">Gender</label>
-//           <input
-//             type="text"
-//             value={form.Gender}
-//             onChange={(e) => updateField("Gender", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* DOB */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Date of Birth
-//           </label>
-//           <input
-//             type="date"
-//             value={form.DOB}
-//             onChange={(e) => updateField("DOB", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* MARITAL STATUS */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Marital Status
-//           </label>
-//           <input
-//             type="text"
-//             value={form.Maritalstatus}
-//             onChange={(e) => updateField("Maritalstatus", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* RELIGION */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Religion
-//           </label>
-//           <input
-//             type="text"
-//             value={form.Religion}
-//             onChange={(e) => updateField("Religion", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* CASTE */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">Caste</label>
-//           <input
-//             type="text"
-//             value={form.Caste}
-//             onChange={(e) => updateField("Caste", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* SUB CASTE */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Subcaste
-//           </label>
-//           <input
-//             type="text"
-//             value={form.Subcaste}
-//             onChange={(e) => updateField("Subcaste", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* MOBILE */}
-//         <div>
-//           <label className="text-sm font-semibold text-gray-700">
-//             Mobile Number
-//           </label>
-//           <input
-//             type="text"
-//             value={form.Mobile}
-//             onChange={(e) => updateField("Mobile", e.target.value)}
-//             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-//           />
-//         </div>
-
-//         {/* FULL WIDTH BUTTON */}
-//         <div className="md:col-span-2">
-//           <button className="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white text-lg rounded-lg font-semibold shadow-md transition-all">
-//             Save Changes
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   </div>
-// );
-
-// }
-
 // File: BasicEdit.jsx
 
 import React, { useEffect, useState } from "react";
@@ -218,14 +10,14 @@ export default function BasicEdit() {
   const [form, setForm] = useState({
     ConfirmEmail: "",
     Name: "",
-    MatriID: "",
+    // MatriID: "",
     Profilecreatedby: "",
     Gender: "",
     DOB: "",
     Maritalstatus: "",
     Religion: "",
-    Caste: "",     // caste name
-    CasteID: "",   // caste id
+    Caste: "", // caste name
+    CasteID: "", // caste id
     Subcaste: "",
     Mobile: "",
   });
@@ -252,14 +44,14 @@ export default function BasicEdit() {
     setForm({
       ConfirmEmail: data.ConfirmEmail || "",
       Name: data.Name || "",
-      MatriID: data.MatriID || "",
+      // MatriID: data.MatriID || "",
       Profilecreatedby: data.Profilecreatedby || "",
       Gender: data.Gender || "",
       DOB: data.DOB ? data.DOB.split("T")[0] : "",
       Maritalstatus: data.Maritalstatus || "",
       Religion: data.Religion || "",
-      Caste: cleanCaste,     // name
-      CasteID: "",           // set later from API
+      Caste: cleanCaste, // name
+      CasteID: "", // set later from API
       Subcaste: data.Subcaste || data.sub_caste || "",
       Mobile: data.Mobile || "",
     });
@@ -408,7 +200,7 @@ export default function BasicEdit() {
           </div>
 
           {/* Matri ID */}
-          <div>
+          {/* <div>
             <label className="text-sm font-semibold text-gray-700">
               Matri ID
             </label>
@@ -418,7 +210,7 @@ export default function BasicEdit() {
               onChange={(e) => updateField("MatriID", e.target.value)}
               className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
             />
-          </div>
+          </div> */}
 
           {/* Profile Created By */}
           <div>
@@ -427,9 +219,7 @@ export default function BasicEdit() {
             </label>
             <select
               value={form.Profilecreatedby}
-              onChange={(e) =>
-                updateField("Profilecreatedby", e.target.value)
-              }
+              onChange={(e) => updateField("Profilecreatedby", e.target.value)}
               className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
             >
               <option value="">Select</option>
@@ -477,9 +267,7 @@ export default function BasicEdit() {
             </label>
             <select
               value={form.Maritalstatus}
-              onChange={(e) =>
-                updateField("Maritalstatus", e.target.value)
-              }
+              onChange={(e) => updateField("Maritalstatus", e.target.value)}
               className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
             >
               <option value="">Select Marital Status</option>
@@ -512,9 +300,7 @@ export default function BasicEdit() {
 
           {/* CASTE */}
           <div>
-            <label className="text-sm font-semibold text-gray-700">
-              Caste
-            </label>
+            <label className="text-sm font-semibold text-gray-700">Caste</label>
             <select
               value={form.CasteID}
               onChange={(e) => {
@@ -576,7 +362,6 @@ export default function BasicEdit() {
               Save Changes
             </button>
           </div>
-
         </form>
       </div>
     </div>
