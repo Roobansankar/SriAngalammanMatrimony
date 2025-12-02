@@ -97,9 +97,12 @@ export default function ProfilePage({ setUser: setAppUser }) {
     .concat(tob.ap ? ` ${tob.ap}` : "");
 
   return (
-    <div className="min-h-screen bg-[#FFF4E0] dark:bg-[#221019] text-[#333333] dark:text-gray-200 p-6 font-display">
-      {/* Header / top card */}
-
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display"
+      style={{
+        backgroundImage: `url("https://static.vecteezy.com/system/resources/thumbnails/002/221/733/original/abstract-flowing-light-ombre-gradient-background-free-video.jpg")`,
+      }}
+    >
       <div className="max-w-[1140px] mx-auto mt-20">
         <div className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden">
           <div className="relative">
