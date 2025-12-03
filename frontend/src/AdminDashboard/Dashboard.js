@@ -49,38 +49,6 @@ const navLinks = [
     path: "/admin/male-members",
     icon: <LayoutDashboard size={18} />,
   },
-  { name: "Buyer Info Form", path: "/admin/buyer", icon: <Users size={18} /> },
-  {
-    name: "Voucher Entry",
-    path: "/admin/voucher-entry",
-    icon: <FileText size={18} />,
-  },
-  {
-    name: "Billing Details",
-    path: "/admin/billing-details",
-    icon: <CreditCard size={18} />,
-  },
-  {
-    name: "Company Details",
-    path: "/admin/company-details",
-    icon: <Building size={18} />,
-  },
-  {
-    name: "Buyer Details",
-    path: "/admin/buyer-details",
-    icon: <Users size={18} />,
-  },
-  { name: "Upload PDF", path: "/admin/upload-pdf", icon: <Upload size={18} /> },
-  {
-    name: "Cleared List",
-    path: "/admin/cleared",
-    icon: <ListChecks size={18} />,
-  },
-  {
-    name: "Credit Details",
-    path: "/admin/credit-details",
-    icon: <CreditCard size={18} />,
-  },
 ];
 
 export default function DashboardLayout() {
