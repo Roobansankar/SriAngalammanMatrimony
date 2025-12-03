@@ -1014,7 +1014,14 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
   if (!currentData) return <div>No user found</div>;
 
   return (
-    <div>
+    // <div>
+    <div
+      className="responsive-biodata-wrapper bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage:
+          "url('https://static.vecteezy.com/system/resources/previews/021/430/833/original/abstract-colorful-dark-blue-and-purple-gradient-blurred-background-night-sky-gradient-blue-gradation-wallpaper-for-background-themes-abstract-background-in-purple-and-blue-tones-web-design-banner-vector.jpg')",
+      }}
+    >
       {/* MOBILE IMAGE OUTPUT */}
       {isMobile && mobileImage && (
         <div className="mobile-image-view">
