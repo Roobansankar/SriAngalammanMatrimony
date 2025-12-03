@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-yellow-700">
-            Sri AngalammannMatrimony
+            Sri AngalammanMatrimony
           </h1>
           <p className="text-gray-600 mt-1">Admin Login Portal</p>
         </div>

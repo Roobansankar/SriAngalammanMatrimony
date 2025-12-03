@@ -45,8 +45,8 @@ const navLinks = [
     icon: <LayoutDashboard size={18} />,
   },
   {
-    name: "Company Info Form",
-    path: "/admin/company-info",
+    name: "Male Members",
+    path: "/admin/male-members",
     icon: <LayoutDashboard size={18} />,
   },
   { name: "Buyer Info Form", path: "/admin/buyer", icon: <Users size={18} /> },

@@ -79,9 +79,6 @@ router.post("/login", async (req, res) => {
   );
 });
 
-
-
-
 router.get("/dashboard-stats", async (req, res) => {
   try {
     const conn = db.promise();
@@ -113,5 +110,139 @@ router.get("/dashboard-stats", async (req, res) => {
   }
 });
 
+// router.get("/male-members", (req, res) => {
+//   const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+
+//   const sql = `
+//     SELECT
+//       MatriID,
+//       Name,
+//       ConfirmEmail AS Email,
+//       Mobile,
+//       DOB,
+//       TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+//       Regdate,
+//       Status,
+//       Lastlogin,
+//       Photo1,
+//       Photo1Approve
+//     FROM register
+//     WHERE Gender = 'Male'
+//       AND visibility NOT LIKE 'hidden'
+//       AND Status <> 'Banned'
+//     ORDER BY Regdate IS NULL, Regdate DESC
+//   `;
+
+//   db.query(sql, (err, rows) => {
+//     if (err) {
+//       console.log("ADMIN MALE MEMBERS SQL ERROR:", err);
+//       return res.status(500).json({ error: err });
+//     }
+
+//     const results = rows.map((u) => {
+//       const photo =
+//         u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
+//           ? `${BASE}/gallery/${u.Photo1}`
+//           : `${BASE}/gallery/nophoto.jpg`;
+
+//       return { ...u, PhotoURL: photo };
+//     });
+
+//     res.json({ success: true, results });
+//   });
+// });
+
+router.get("/male-members", (req, res) => {
+  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  const countSQL = `
+    SELECT COUNT(*) AS total
+    FROM register
+    WHERE Gender = 'Male'
+      AND visibility NOT LIKE 'hidden'
+      AND Status <> 'Banned'
+  `;
+
+  const dataSQL = `
+    SELECT 
+      MatriID,
+      Name,
+      ConfirmEmail AS Email,
+      Mobile,
+      DOB,
+      TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+      Regdate,
+      Status,
+      Lastlogin,
+      Photo1,
+      Photo1Approve
+    FROM register
+    WHERE Gender = 'Male'
+      AND visibility NOT LIKE 'hidden'
+      AND Status <> 'Banned'
+    ORDER BY Regdate IS NULL, Regdate DESC
+    LIMIT ?, ?
+  `;
+
+  db.query(countSQL, (err, countResult) => {
+    if (err) return res.status(500).json({ error: err });
+
+    const total = countResult[0].total;
+
+    db.query(dataSQL, [offset, limit], (err2, rows) => {
+      if (err2) return res.status(500).json({ error: err2 });
+
+      const results = rows.map((u) => {
+        const photo =
+          u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
+            ? `${BASE}/gallery/${u.Photo1}`
+            : `${BASE}/gallery/nophoto.jpg`;
+
+        return { ...u, PhotoURL: photo };
+      });
+
+      res.json({
+        success: true,
+        total,
+        page,
+        per_page: limit,
+        results,
+      });
+    });
+  });
+});
+
+router.get("/profile/:matriId", (req, res) => {
+  const { matriId } = req.params;
+
+  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+
+  const sql = `
+    SELECT *
+    FROM register
+    WHERE MatriID = ?
+    LIMIT 1
+  `;
+
+  db.query(sql, [matriId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err });
+    if (rows.length === 0)
+      return res.status(404).json({ error: "User not found" });
+
+    const user = rows[0];
+
+    // make photo URL safe
+    user.PhotoURL =
+      user.Photo1 && user.Photo1Approve === "Yes"
+        ? `${BASE}/gallery/${user.Photo1}`
+        : `${BASE}/gallery/nophoto.jpg`;
+
+    return res.json({ success: true, user });
+  });
+});
 
 export default router;

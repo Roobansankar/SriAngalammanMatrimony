@@ -328,6 +328,123 @@ router.put("/update/basic", async (req, res) => {
   }
 });
 
+// router.put(
+//   "/update/horoscope",
+//   upload.single("horoscope"),
+//   async (req, res) => {
+//     try {
+//       const {
+//         ConfirmEmail,
+//         Moonsign,
+//         Star,
+//         Gothram,
+//         Manglik,
+//         shani,
+//         shaniplace,
+//         Horosmatch,
+//         parigarasevai,
+//         Sevai,
+//         Raghu,
+//         Keethu,
+//         POB,
+//         POC,
+//         TOB,
+//       } = req.body;
+
+//       if (!ConfirmEmail) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Email missing",
+//         });
+//       }
+
+//       // Read image (if uploaded)
+//       let horoscopeBlob = null;
+
+//       if (req.file) {
+//         horoscopeBlob = fs.readFileSync(req.file.path);
+//         fs.unlinkSync(req.file.path); // delete temp file
+//       }
+
+//       const conn = db.promise();
+
+//       await conn.query(
+//         `
+//         UPDATE register SET 
+//           Moonsign = ?, 
+//           Star = ?, 
+//           Gothram = ?, 
+//           Manglik = ?, 
+//           shani = ?, 
+//           shaniplace = ?, 
+//           Horosmatch = ?, 
+//           parigarasevai = ?, 
+//           Sevai = ?, 
+//           Raghu = ?, 
+//           Keethu = ?, 
+//           POB = ?, 
+//           POC = ?, 
+//           TOB = ?, 
+//           HoroscopeMain = ?
+//         WHERE ConfirmEmail = ?
+//       `,
+//         [
+//           Moonsign,
+//           Star,
+//           Gothram,
+//           Manglik,
+//           shani,
+//           shaniplace,
+//           Horosmatch,
+//           parigarasevai,
+//           Sevai,
+//           Raghu,
+//           Keethu,
+//           POB,
+//           POC,
+//           TOB,
+//           horoscopeBlob, // BLOB IMAGE
+//           ConfirmEmail,
+//         ]
+//       );
+
+//       return res.json({
+//         success: true,
+//         message: "Horoscope updated successfully",
+//       });
+//     } catch (err) {
+//       console.error("update/horoscope error:", err);
+//       return res.status(500).json({
+//         success: false,
+//         message: "Server error",
+//       });
+//     }
+//   }
+// );
+
+
+
+function safeToJSONArray(input) {
+  if (!input || input === "" || input === "null") return "[]";
+
+  // If already JSON array → OK
+  try {
+    const parsed = JSON.parse(input);
+    if (Array.isArray(parsed)) return JSON.stringify(parsed);
+  } catch (err) {}
+
+  // Otherwise convert comma-separated → array
+  const arr = input
+    .split(",")
+    .map((x) => x.trim())
+    .filter((x) => x !== "");
+
+  return JSON.stringify(arr);
+}
+
+// --------------------------------------------------
+// UPDATE HOROSCOPE
+// --------------------------------------------------
 router.put(
   "/update/horoscope",
   upload.single("horoscope"),
@@ -358,19 +475,30 @@ router.put(
         });
       }
 
-      // Read image (if uploaded)
+      // IMAGE HANDLING
       let horoscopeBlob = null;
-
       if (req.file) {
         horoscopeBlob = fs.readFileSync(req.file.path);
-        fs.unlinkSync(req.file.path); // delete temp file
+        fs.unlinkSync(req.file.path); // remove tmp file
+      }
+
+      // ---------------------------------------
+      // RASI + NAVAMSA (g1–g12, a1–a12)
+      // Convert everything safely
+      // ---------------------------------------
+      const rasi = {};
+      const navamsa = {};
+
+      for (let i = 1; i <= 12; i++) {
+        rasi[`g${i}`] = safeToJSONArray(req.body[`g${i}`]);
+        navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
       }
 
       const conn = db.promise();
 
       await conn.query(
         `
-        UPDATE register SET 
+        UPDATE register SET
           Moonsign = ?, 
           Star = ?, 
           Gothram = ?, 
@@ -385,7 +513,14 @@ router.put(
           POB = ?, 
           POC = ?, 
           TOB = ?, 
-          HoroscopeMain = ?
+          HoroscopeMain = ?,
+
+          g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
+          g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
+
+          a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
+          a7=?, a8=?, a9=?, a10=?, a11=?, a12=? 
+
         WHERE ConfirmEmail = ?
       `,
         [
@@ -403,7 +538,36 @@ router.put(
           POB,
           POC,
           TOB,
-          horoscopeBlob, // BLOB IMAGE
+          horoscopeBlob,
+
+          // RASI
+          rasi.g1,
+          rasi.g2,
+          rasi.g3,
+          rasi.g4,
+          rasi.g5,
+          rasi.g6,
+          rasi.g7,
+          rasi.g8,
+          rasi.g9,
+          rasi.g10,
+          rasi.g11,
+          rasi.g12,
+
+          // NAVAMSA
+          navamsa.a1,
+          navamsa.a2,
+          navamsa.a3,
+          navamsa.a4,
+          navamsa.a5,
+          navamsa.a6,
+          navamsa.a7,
+          navamsa.a8,
+          navamsa.a9,
+          navamsa.a10,
+          navamsa.a11,
+          navamsa.a12,
+
           ConfirmEmail,
         ]
       );
@@ -421,6 +585,8 @@ router.put(
     }
   }
 );
+
+
 
 router.put("/update/contact", async (req, res) => {
   try {

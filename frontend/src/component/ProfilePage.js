@@ -44,6 +44,36 @@ export default function ProfilePage({ setUser: setAppUser }) {
 
   if (loading) return <div className="p-8">Loading...</div>;
   if (!user) return <div className="p-8">No user found</div>;
+  // Prepare Rasi & Navamsa Data
+  const rasi = [
+    user.g1,
+    user.g2,
+    user.g3,
+    user.g4,
+    user.g5,
+    user.g6,
+    user.g7,
+    user.g8,
+    user.g9,
+    user.g10,
+    user.g11,
+    user.g12,
+  ];
+
+  const navamsa = [
+    user.a1,
+    user.a2,
+    user.a3,
+    user.a4,
+    user.a5,
+    user.a6,
+    user.a7,
+    user.a8,
+    user.a9,
+    user.a10,
+    user.a11,
+    user.a12,
+  ];
 
   const primary = "#ec1380"; // inline primary color as requested
 
@@ -178,25 +208,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
                 </p>
               </div>
 
-              <div className="flex w-full md:w-auto gap-3">
-                {/* <button
-                  onClick={() => navigate(`/profile/preview/${user._id || ""}`)}
-                  className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary text-sm font-bold flex-1"
-                >
-                  <span className="truncate">Preview Profile</span>
-                </button>
-
-                <button
-                  onClick={() => navigate("/profile/edit")}
-                  className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold flex-1 gap-2"
-                  style={{ backgroundColor: primary }}
-                >
-                  <span className="material-symbols-outlined text-base">
-                    edit
-                  </span>
-                  <span className="truncate">Edit Profile</span>
-                </button> */}
-              </div>
+              <div className="flex w-full md:w-auto gap-3"></div>
             </div>
           </div>
         </div>
@@ -317,6 +329,12 @@ export default function ProfilePage({ setUser: setAppUser }) {
 
               {/* Combined Time of Birth */}
               <InfoRow label="Time of Birth" value={timeOfBirth || "-"} />
+
+              {/* RASI + NAVAMSA South Indian Charts */}
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-wrap justify-center gap-12 my-6">
+                <SouthChart title="இராசி" data={rasi} />
+                <SouthChart title="நவாம்சம்" data={navamsa} />
+              </div>
 
               {/* Horoscope Image */}
               <div className="col-span-1 sm:col-span-2 lg:col-span-3">
@@ -603,6 +621,82 @@ export default function ProfilePage({ setUser: setAppUser }) {
           </div>
         </section>
       </div>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------
+   SOUTH-INDIAN HOROSCOPE BOX (Rasi + Navamsa)
+----------------------------------------------------------- */
+
+function SouthChart({ title, data }) {
+  return (
+    <div className="inline-block my-6">
+      {/* <h3 className="text-center font-bold text-xl mb-3">{title}</h3> */}
+
+      <div className="grid grid-cols-4 grid-rows-4 w-[300px] h-[300px] border border-black">
+        {/* ROW 1 */}
+        <Cell value={data[0]} />
+        <Cell value={data[1]} />
+        <Cell value={data[2]} />
+        <Cell value={data[3]} />
+
+        {/* ROW 2 */}
+        <Cell value={data[11]} />
+        <div className="col-span-2 row-span-2 border border-black flex items-center justify-center font-bold text-lg">
+          {title}
+        </div>
+        <Cell value={data[4]} />
+
+        {/* ROW 3 */}
+        <Cell value={data[10]} />
+        <Cell value={data[5]} />
+
+        {/* ROW 4 */}
+        <Cell value={data[9]} />
+        <Cell value={data[8]} />
+        <Cell value={data[7]} />
+        <Cell value={data[6]} />
+      </div>
+    </div>
+  );
+}
+
+// function Cell({ value }) {
+//   if (!value) return <div className="border border-black p-1 text-[12px]" />;
+
+//   const items = value.split(",").map((v) => v.trim());
+
+//   return (
+//     <div className="border border-black p-1 text-[11px] leading-tight">
+//       {items.map((item, i) => (
+//         <div key={i}>{item}</div>
+//       ))}
+//     </div>
+//   );
+// }
+
+
+
+function Cell({ value }) {
+  if (!value) return <div className="border border-black p-1 text-[12px]" />;
+
+  let items = [];
+
+  try {
+    // Try JSON first
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) items = parsed;
+  } catch (e) {
+    // fallback → split by comma
+    items = value.split(",").map((v) => v.trim());
+  }
+
+  return (
+    <div className="border border-black p-1 text-[11px] leading-tight">
+      {items.map((item, i) => (
+        <div key={i}>{item}</div>
+      ))}
     </div>
   );
 }

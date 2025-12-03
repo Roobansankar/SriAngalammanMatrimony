@@ -314,7 +314,13 @@ export default function ProfileView() {
   const score = compatibility.filter((c) => c.pass).length;
 
   return (
-    <div className="min-h-screen bg-[#FFF4E0] dark:bg-[#221019] text-[#333333] dark:text-gray-200 p-6 font-display">
+    // <div className="min-h-screen bg-[#FFF4E0] dark:bg-[#221019] text-[#333333] dark:text-gray-200 p-6 font-display">
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display"
+      style={{
+        backgroundImage: `url("https://tse2.mm.bing.net/th/id/OIP.VwEQnyoegmMr4uepYrfG6AHaEK?pid=Api&P=0&h=180")`,
+      }}
+    >
       <div className="max-w-[1140px] mx-auto">
         {/* Top card (same as ProfilePage) */}
         <div className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden mt-20">
