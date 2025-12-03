@@ -3,11 +3,18 @@ import { useEffect, useState } from "react";
 
 const API_BASE = "http://localhost:5000/api/";
 
+// Format number input - only allow digits
+const formatNumber = (value) => {
+  if (!value) return "";
+  return value.replace(/\D/g, "");
+};
+
 export default function Step6({ nextStep, prevStep, formData = {} }) {
   const [educationList, setEducationList] = useState([]);
   const [occupationList, setOccupationList] = useState([]);
   const [employedList, setEmployedList] = useState([]);
   const [workingHoursList, setWorkingHoursList] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const [data, setData] = useState({
     education: formData.education || "",
@@ -23,10 +30,62 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     workingLocation: formData.workingLocation || "",
   });
 
-  const handleChange = (e) =>
-    setData({ ...data, [e.target.name]: e.target.value });
+  // Sync local state when formData prop changes (e.g., after localStorage load)
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      setData({
+        education: formData.education || "",
+        occupation: formData.occupation || "",
+        educationDetails: formData.educationDetails || "",
+        occupationDetails: formData.occupationDetails || "",
+        annualIncome: formData.annualIncome || "",
+        incomeType: formData.incomeType || "",
+        otherIncome: formData.otherIncome || "",
+        employedIn: formData.employedIn || "",
+        workingHours: formData.workingHours || "",
+        companyName: formData.companyName || "",
+        workingLocation: formData.workingLocation || "",
+      });
+    }
+  }, [formData]);
 
-  const handleNext = () => nextStep(data);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let formattedValue = value;
+    
+    // Format income fields to only allow numbers
+    if (name === "annualIncome" || name === "otherIncome") {
+      formattedValue = formatNumber(value);
+    }
+    
+    setData({ ...data, [name]: formattedValue });
+    
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (data.annualIncome && !/^\d+$/.test(data.annualIncome)) {
+      newErrors.annualIncome = "Income must be a number";
+    }
+    
+    if (data.otherIncome && !/^\d+$/.test(data.otherIncome)) {
+      newErrors.otherIncome = "Income must be a number";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateForm()) {
+      nextStep(data);
+    }
+  };
 
   // Load dropdowns
   useEffect(() => {
@@ -137,8 +196,11 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             name="annualIncome"
             value={data.annualIncome}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
+            inputMode="numeric"
+            placeholder="Enter amount"
+            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${errors.annualIncome ? "border-red-500" : "border-gray-300"}`}
           />
+          {errors.annualIncome && <p className="text-red-500 text-xs mt-1">{errors.annualIncome}</p>}
         </div>
 
         {/* Income Type */}
@@ -169,8 +231,11 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             name="otherIncome"
             value={data.otherIncome}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
+            inputMode="numeric"
+            placeholder="Enter amount"
+            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${errors.otherIncome ? "border-red-500" : "border-gray-300"}`}
           />
+          {errors.otherIncome && <p className="text-red-500 text-xs mt-1">{errors.otherIncome}</p>}
         </div>
 
         {/* Employed In Dropdown */}

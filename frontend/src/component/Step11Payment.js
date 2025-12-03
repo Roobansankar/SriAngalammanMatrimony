@@ -147,8 +147,8 @@
 //   );
 // }
 
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Step11Payment({
   nextStep,
@@ -204,22 +204,46 @@ export default function Step11Payment({
         name: "Sri Angalamman Matrimony",
         description: `${plan} plan payment`,
         order_id: orderId,
+        modal: {
+          ondismiss: function () {
+            console.log("Payment modal closed");
+          },
+          escape: false,
+          backdropclose: false,
+        },
+        retry: {
+          enabled: true,
+          max_count: 3,
+        },
         handler: async function (response) {
           try {
+            // Send user details for MatriID generation
             const verifyRes = await axios.post(
               "http://localhost:5000/api/payment/verify",
               {
                 ...response,
                 email: formData.email,
                 plan,
+                // Pass user details for MatriID generation
+                occupation: formData.occupation,
+                maritalStatus: formData.maritalStatus,
+                gender: formData.gender,
               }
             );
 
             if (verifyRes.data.success) {
               alert("✅ Payment Successful!");
 
-              // create a snapshot with the chosen plan
-              const updated = { ...formData, plan, paymentDone: true };
+              // Get MatriID from payment verification response
+              const matriId = verifyRes.data.matriId;
+
+              // create a snapshot with the chosen plan and generated MatriID
+              const updated = { 
+                ...formData, 
+                plan, 
+                paymentDone: true,
+                matriId: matriId,  // ✅ Store generated MatriID
+              };
 
               // update parent state immediately
               setFormData(updated);
@@ -243,6 +267,13 @@ export default function Step11Payment({
       };
 
       const rzp = new window.Razorpay(options);
+      
+      // Handle payment failure
+      rzp.on("payment.failed", function (response) {
+        console.error("Payment failed:", response.error);
+        alert(`Payment failed: ${response.error.description}`);
+      });
+      
       rzp.open();
     } catch (err) {
       console.error(err);
@@ -266,7 +297,7 @@ export default function Step11Payment({
           }`}
         >
           <h4 className="font-bold text-lg mb-2 text-rose-700">Basic Plan</h4>
-          <p className="text-gray-700">₹1 - View limited profiles</p>
+          <p className="text-gray-700">₹50 - View limited profiles</p>
         </div>
 
         <div
@@ -278,7 +309,7 @@ export default function Step11Payment({
           }`}
         >
           <h4 className="font-bold text-lg mb-2 text-rose-700">Premium Plan</h4>
-          <p className="text-gray-700">₹2 - View all profiles</p>
+          <p className="text-gray-700">₹100 - View all profiles</p>
         </div>
       </div>
 

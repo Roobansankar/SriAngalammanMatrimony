@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { formatMobile, formatPincode, isValidMobile, isValidPincode, isValidWhatsApp } from "./validation";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000/api/";
 
@@ -11,6 +12,11 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
     residencyStatuses: [],
     callTimes: [],
   });
+
+  const [errors, setErrors] = useState({});
+  
+  // Track if this is the initial load to prevent resetting saved values
+  const isInitialLoad = useRef(true);
 
   const [data, setData] = useState({
     country: formData.country || "",
@@ -25,6 +31,25 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
     whatsapp: formData.whatsapp || "",
     convenientTime: formData.convenientTime || "",
   });
+
+  // Sync local state when formData prop changes (e.g., after localStorage load)
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      setData({
+        country: formData.country || "",
+        state: formData.state || "",
+        district: formData.district || "",
+        city: formData.city || "",
+        pincode: formData.pincode || "",
+        residence: formData.residence || "",
+        address: formData.address || "",
+        altPhone: formData.altPhone || "",
+        mobile: formData.mobile || "",
+        whatsapp: formData.whatsapp || "",
+        convenientTime: formData.convenientTime || "",
+      });
+    }
+  }, [formData]);
 
   // Fetch countries, residency status, calling times
   useEffect(() => {
@@ -126,20 +151,24 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
         if (mounted) {
           setOptions((p) => ({
             ...p,
-            // states: Array.isArray(st) ? st : [],
             states: Array.isArray(st)
               ? st.filter((s) => s.state !== "Any")
               : [],
-
             districts: [],
           }));
-          setData((p) => ({ ...p, state: "", district: "" }));
+          
+          // Only reset state/district if this is a user-initiated country change (not initial load)
+          if (!isInitialLoad.current) {
+            setData((p) => ({ ...p, state: "", district: "" }));
+          }
         }
       } catch (err) {
         console.error("Error loading states:", err);
         if (mounted) {
           setOptions((p) => ({ ...p, states: [], districts: [] }));
-          setData((p) => ({ ...p, state: "", district: "" }));
+          if (!isInitialLoad.current) {
+            setData((p) => ({ ...p, state: "", district: "" }));
+          }
         }
       }
     }
@@ -158,7 +187,9 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
       if (!data.state) {
         if (mounted) {
           setOptions((p) => ({ ...p, districts: [] }));
-          setData((p) => ({ ...p, district: "" }));
+          if (!isInitialLoad.current) {
+            setData((p) => ({ ...p, district: "" }));
+          }
         }
         return;
       }
@@ -176,7 +207,9 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
           );
           if (mounted) {
             setOptions((p) => ({ ...p, districts: [] }));
-            setData((p) => ({ ...p, district: "" }));
+            if (!isInitialLoad.current) {
+              setData((p) => ({ ...p, district: "" }));
+            }
           }
           return;
         }
@@ -185,18 +218,24 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
         if (mounted) {
           setOptions((p) => ({
             ...p,
-            // districts: Array.isArray(dist) ? dist : [],
             districts: Array.isArray(dist)
               ? dist.filter((d) => d.dist !== "Any")
               : [],
           }));
-          setData((p) => ({ ...p, district: "" }));
+          // Only reset district if this is a user-initiated state change
+          if (!isInitialLoad.current) {
+            setData((p) => ({ ...p, district: "" }));
+          }
+          // Mark initial load as complete after districts are loaded
+          isInitialLoad.current = false;
         }
       } catch (err) {
         console.error("Error loading districts:", err);
         if (mounted) {
           setOptions((p) => ({ ...p, districts: [] }));
-          setData((p) => ({ ...p, district: "" }));
+          if (!isInitialLoad.current) {
+            setData((p) => ({ ...p, district: "" }));
+          }
         }
       }
     }
@@ -210,11 +249,53 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
   // Handle input change (works for inputs and selects)
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData((p) => ({ ...p, [name]: value }));
+    
+    // Format specific fields
+    let formattedValue = value;
+    if (name === "pincode") {
+      formattedValue = formatPincode(value);
+    } else if (name === "mobile" || name === "altPhone" || name === "whatsapp") {
+      formattedValue = formatMobile(value);
+    } else if (name === "city") {
+      // Only allow letters and spaces for city
+      formattedValue = value.replace(/[^a-zA-Z\s]/g, "");
+    }
+    
+    setData((p) => ({ ...p, [name]: formattedValue }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (data.pincode && !isValidPincode(data.pincode)) {
+      newErrors.pincode = "Pincode must be 6 digits";
+    }
+    
+    if (data.mobile && !isValidMobile(data.mobile)) {
+      newErrors.mobile = "Mobile must be 10 digits";
+    }
+    
+    if (data.altPhone && !isValidMobile(data.altPhone)) {
+      newErrors.altPhone = "Phone must be 10 digits";
+    }
+    
+    if (data.whatsapp && !isValidWhatsApp(data.whatsapp)) {
+      newErrors.whatsapp = "WhatsApp must be 10-15 digits";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
-    nextStep(data);
+    if (validateForm()) {
+      nextStep(data);
+    }
   };
 
   return (
@@ -298,6 +379,7 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
             name="city"
             value={data.city}
             onChange={handleChange}
+            placeholder="Enter city name"
             className="border p-2 rounded-lg w-full"
           />
         </div>
@@ -309,8 +391,12 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
             name="pincode"
             value={data.pincode}
             onChange={handleChange}
-            className="border p-2 rounded-lg w-full"
+            placeholder="6-digit pincode"
+            maxLength={6}
+            inputMode="numeric"
+            className={`border p-2 rounded-lg w-full ${errors.pincode ? "border-red-500" : ""}`}
           />
+          {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
         </div>
 
         {/* Residence Status */}
@@ -358,8 +444,12 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
               name={f}
               value={data[f]}
               onChange={handleChange}
-              className="border p-2 rounded-lg w-full"
+              maxLength={10}
+              inputMode="numeric"
+              placeholder="10-digit number"
+              className={`border p-2 rounded-lg w-full ${errors[f] ? "border-red-500" : ""}`}
             />
+            {errors[f] && <p className="text-red-500 text-xs mt-1">{errors[f]}</p>}
           </div>
         ))}
 

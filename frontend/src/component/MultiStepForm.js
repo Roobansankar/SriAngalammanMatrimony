@@ -388,7 +388,7 @@ import {
     Navigate,
     Route,
     Routes,
-    useNavigate,
+    useNavigate
 } from "react-router-dom";
 
 import Step1 from "./Step1";
@@ -406,7 +406,7 @@ import Step8 from "./Step8";
 import Step9 from "./Step9";
 
 const STORAGE_KEY = "multiStepRegistration_form_v1";
-const TOTAL_STEPS = 13;
+const TOTAL_STEPS = 13; // Restored payment step
 
 export default function MultiStepForm() {
   const navigate = useNavigate();
@@ -428,12 +428,31 @@ export default function MultiStepForm() {
     }
   });
 
-  // save formData (excluding sensitive)
+  // Helper to safely clone formData for localStorage (remove non-serializable values)
+  const getSerializableData = (data) => {
+    const clone = {};
+    for (const key of Object.keys(data)) {
+      const val = data[key];
+      // Skip sensitive fields
+      if (key === "password" || key === "otp") continue;
+      // Skip File objects, Blobs, or anything non-serializable
+      if (val instanceof File || val instanceof Blob) continue;
+      if (typeof val === "function") continue;
+      // Skip if it's an object with circular reference (like DOM nodes)
+      if (val && typeof val === "object" && val.nodeType) continue;
+      clone[key] = val;
+    }
+    return clone;
+  };
+
+  // save formData (excluding sensitive and non-serializable)
   useEffect(() => {
-    const clone = { ...formData };
-    delete clone.password;
-    delete clone.otp;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(clone));
+    try {
+      const safeData = getSerializableData(formData);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safeData));
+    } catch (err) {
+      console.warn("Could not save form data:", err.message);
+    }
   }, [formData]);
 
   const goTo = (stepNumber, extra = {}) => {
@@ -451,9 +470,15 @@ export default function MultiStepForm() {
       goTo(nextStep);
     };
 
+  // Prevent going back to step 1 or 2 if email is already verified
   const prevStepFactory =
     (prevStep) =>
     (data = {}) => {
+      // If email is verified and trying to go back to step 1 or 2, block it
+      if (formData.otpVerified && prevStep <= 2) {
+        console.log("Cannot go back - email already verified");
+        return;
+      }
       setFormData((prev) => ({ ...prev, ...data }));
       goTo(prevStep);
     };
@@ -605,6 +630,7 @@ export default function MultiStepForm() {
             }
           />
 
+          {/* Step 12: Payment */}
           <Route
             path="step/12"
             element={
@@ -617,6 +643,7 @@ export default function MultiStepForm() {
             }
           />
 
+          {/* Step 13: Final Submit */}
           <Route
             path="step/13"
             element={

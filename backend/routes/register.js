@@ -1,9 +1,9 @@
 // routes/register.js
 import express from "express";
-import db from "../config/db.js";
-import nodemailer from "nodemailer";
 import fs from "fs";
+import nodemailer from "nodemailer";
 import path from "path";
+import db from "../config/db.js";
 
 import multer from "multer";
 
@@ -36,8 +36,8 @@ const deleteOtp = (email) => otpStore.delete(email);
 
 const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com",
-  port: 587,
-  secure: false,
+  port: 465,
+  secure: true, // Use SSL for port 465
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -45,15 +45,19 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
-  pool: true, // ✅ reuse connection for faster sends
-  maxConnections: 1,
+  pool: true,
+  maxConnections: 5,
   maxMessages: 100,
+  connectionTimeout: 30000, // 30 seconds
+  greetingTimeout: 30000,
+  socketTimeout: 60000, // 60 seconds
 });
 
+// Verify SMTP connection once at startup (non-blocking)
 transporter
   .verify()
   .then(() => console.log("📬 SMTP ready"))
-  .catch((err) => console.error("📪 SMTP verify failed:", err));
+  .catch((err) => console.error("📪 SMTP verify failed:", err.message));
 
 // ---------- Send OTP ----------
 router.post("/send-otp", async (req, res) => {
@@ -62,35 +66,60 @@ router.post("/send-otp", async (req, res) => {
     if (!email)
       return res
         .status(400)
-        .json({ success: false, message: "Email required" });
+        .json({ success: false, error: "Email required" });
+    
     const otp = Math.floor(100000 + Math.random() * 900000);
     setOtp(email, otp);
 
+    console.log(`📧 Sending OTP to ${email}...`);
+    
+    // Send email and wait for confirmation
     const info = await transporter.sendMail({
       from: `"Sriangalamman Matrimony" <${process.env.SMTP_USER}>`,
       to: email,
-      subject: "Your OTP Code",
+      subject: "Your OTP Code - Sriangalamman Matrimony",
       text: `Your OTP is: ${otp}. It expires in 5 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: 0 auto;">
+          <h2 style="color: #e11d48;">Sriangalamman Matrimony</h2>
+          <p>Your verification code is:</p>
+          <div style="background: #fef2f2; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #e11d48;">${otp}</span>
+          </div>
+          <p style="color: #666; font-size: 14px;">This code expires in 5 minutes. Do not share it with anyone.</p>
+        </div>
+      `,
       replyTo: process.env.SMTP_USER,
     });
-
-    console.log("OTP mail info:", info?.messageId || info);
+    
+    console.log("✅ OTP mail sent:", info?.messageId);
     res.json({ success: true, message: "OTP sent successfully" });
   } catch (err) {
-    console.error("send-otp error:", err);
-    res.status(500).json({ success: false, message: "Failed to send OTP" });
+    console.error("❌ send-otp error:", err.message);
+    res.status(500).json({ success: false, error: "Failed to send OTP. Please try again." });
   }
 });
 
 // ---------- Verify OTP ----------
 router.post("/verify-otp", (req, res) => {
   const { email, otp } = req.body;
+  
+  if (!email || !otp) {
+    return res.status(400).json({ success: false, error: "Email and OTP are required" });
+  }
+  
   const stored = getOtp(email);
-  if (stored && stored === String(otp)) {
+  
+  if (!stored) {
+    return res.status(400).json({ success: false, error: "OTP expired or not found. Please request a new OTP." });
+  }
+  
+  if (stored === String(otp).trim()) {
     deleteOtp(email);
     return res.json({ success: true, message: "OTP verified" });
   }
-  res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+  
+  res.status(400).json({ success: false, error: "Invalid OTP. Please check and try again." });
 });
 
 // ---------- Generate MatriID ----------
@@ -183,6 +212,69 @@ router.post(
       const b = req.body;
       const conn = db.promise();
 
+      // ---------- GENERATE MATRI ID IF NOT PROVIDED ----------
+      let matriId = toTrimOrNull(b.matriId);
+      
+      if (!matriId || matriId === "-" || matriId === "undefined") {
+        // Generate MatriID based on occupation, maritalStatus, plan, gender
+        const occupation = (b.occupation || "").toLowerCase().trim();
+        const maritalStatus = (b.maritalStatus || "").toLowerCase().trim();
+        const plan = (b.plan || "basic").toLowerCase().trim();
+        const gender = (b.gender || "").toLowerCase().trim();
+        
+        let prefix = "SAM";
+        
+        // Priority 1: Doctor
+        if (occupation.includes("doctor") || occupation.includes("physician") || occupation.includes("mbbs") || occupation.includes("md")) {
+          prefix = "SAMD";
+        }
+        // Priority 2: Remarriage
+        else if (maritalStatus === "remarriage" || maritalStatus.includes("divorce") || maritalStatus.includes("widow")) {
+          prefix = "SAMR";
+        }
+        // Priority 3: Plan + Gender
+        else if (plan === "premium") {
+          prefix = gender === "male" ? "SAMPM" : "SAMPF";
+        }
+        // Priority 4: Basic plan + Gender
+        else {
+          prefix = gender === "male" ? "SAMM" : "SAMF";
+        }
+        
+        // Get next serial number for this prefix
+        await conn.beginTransaction();
+        
+        try {
+          const [rows] = await conn.query(
+            "SELECT last_number FROM matriid_counter WHERE prefix = ? FOR UPDATE",
+            [prefix]
+          );
+          
+          let nextNumber;
+          if (rows.length === 0) {
+            await conn.query(
+              "INSERT INTO matriid_counter (prefix, last_number) VALUES (?, 1)",
+              [prefix]
+            );
+            nextNumber = 1;
+          } else {
+            nextNumber = rows[0].last_number + 1;
+            await conn.query(
+              "UPDATE matriid_counter SET last_number = ? WHERE prefix = ?",
+              [nextNumber, prefix]
+            );
+          }
+          
+          matriId = prefix + nextNumber.toString().padStart(4, "0");
+          await conn.commit();
+          
+          console.log(`✅ Generated MatriID: ${matriId}`);
+        } catch (err) {
+          await conn.rollback();
+          throw err;
+        }
+      }
+
       // ---------- SAVE UPLOADED PHOTO TO /gallery ----------
       let savedPhotoFilename = null;
 
@@ -208,7 +300,7 @@ router.post(
 
       // ---- Map all fields ----
       const mapped = {
-        MatriID: toTrimOrNull(b.matriId) || "-",
+        MatriID: matriId,
         Prefix: "-",
         Name:
           toTrimOrNull([b.fname, b.mname, b.lname].filter(Boolean).join(" ")) ||
@@ -253,19 +345,19 @@ router.post(
         Caste: toTrimOrNull(b.caste),
         Subcaste: toTrimOrNull(b.subCaste),
 
-        Moonsign: toTrimOrNull(b.moonSign),
-        Star: toTrimOrNull(b.star),
-        Gothram: toTrimOrNull(b.gothra),
-        Horosmatch: toTrimOrNull(b.horoscopeMatch),
-        Manglik: toTrimOrNull(b.manglik),
-        shani: toTrimOrNull(b.shani),
+        Moonsign: toTrimOrNull(b.moonSign) || "",
+        Star: toTrimOrNull(b.star) || "",
+        Gothram: toTrimOrNull(b.gothra) || "",
+        Horosmatch: toTrimOrNull(b.horoscopeMatch) || "",
+        Manglik: toTrimOrNull(b.manglik) || "",
+        shani: toTrimOrNull(b.shani) || "",
         // shaniplace: toTrimOrNull(b.placeOfShani),
         shaniplace: b.shaniplace ? String(b.shaniplace).trim() : "",
 
-        parigarasevai: toTrimOrNull(b.parigarasevai),
-        Sevai: toTrimOrNull(b.sevai),
-        Raghu: toTrimOrNull(b.raghu),
-        Keethu: toTrimOrNull(b.keethu),
+        parigarasevai: toTrimOrNull(b.parigarasevai) || "",
+        Sevai: toTrimOrNull(b.sevai) || "",
+        Raghu: toTrimOrNull(b.raghu) || "",
+        Keethu: toTrimOrNull(b.keethu) || "",
 
         Address: toTrimOrNull(b.address),
         City: toTrimOrNull(b.city),
@@ -284,7 +376,7 @@ router.post(
         income_in: toTrimOrNull(b.incomeType),
         anyotherincome: toTrimOrNull(b.otherIncome),
         working_hours: toTrimOrNull(b.workingHours),
-        CompanyName: toTrimOrNull(b.companyName),
+        // CompanyName: toTrimOrNull(b.companyName), // Column doesn't exist in DB
 
         workinglocation: toTrimOrNull(b.workingLocation),
 
@@ -398,7 +490,7 @@ router.post(
       res.json({
         success: true,
         message: "Registration complete (photo + optional horoscope saved)",
-        matriId: mapped.MatriID,
+        matriId: matriId,
       });
     } catch (err) {
       console.error("❌ Registration complete error:", err);

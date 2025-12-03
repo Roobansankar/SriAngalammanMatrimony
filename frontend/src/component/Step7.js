@@ -35,6 +35,31 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
     passport: formData.passport || "No",
   });
 
+  // Sync local state when formData prop changes (e.g., after localStorage load)
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      setData((prev) => ({
+        ...prev,
+        height: formData.height || prev.height,
+        weight: formData.weight || prev.weight,
+        bloodGroup: formData.bloodGroup || prev.bloodGroup,
+        complexion: formData.complexion || prev.complexion,
+        bodyType: formData.bodyType || prev.bodyType,
+        diet: formData.diet || prev.diet,
+        smoke: formData.smoke || prev.smoke,
+        drink: formData.drink || prev.drink,
+        specialCases: formData.specialCases || prev.specialCases,
+        hobbies: formData.hobbies || prev.hobbies,
+        interests: formData.interests || prev.interests,
+        otherHobbies: formData.otherHobbies || prev.otherHobbies,
+        otherInterests: formData.otherInterests || prev.otherInterests,
+        achievement: formData.achievement || prev.achievement,
+        medicalHistory: formData.medicalHistory || prev.medicalHistory,
+        passport: formData.passport || prev.passport,
+      }));
+    }
+  }, [formData]);
+
   const handleChange = (e) =>
     setData({ ...data, [e.target.name]: e.target.value });
 
