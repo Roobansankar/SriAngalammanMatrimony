@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Step9({ nextStep, prevStep, initialPhoto }) {
   const [photo, setPhoto] = useState(null);
@@ -9,6 +9,7 @@ export default function Step9({ nextStep, prevStep, initialPhoto }) {
     if (initialPhoto && !preview) {
       setPreview(initialPhoto); // e.g., if coming back from saved data
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPhoto]);
 
   const handleChange = (e) => {

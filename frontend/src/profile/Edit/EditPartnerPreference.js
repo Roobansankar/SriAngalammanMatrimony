@@ -2,8 +2,8 @@
 
 // File: client/src/components/EditPartnerPreference.jsx
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5000/api/";
@@ -158,6 +158,7 @@ export default function EditPartnerPreference() {
           setForm((f) => ({ ...f, PE_Caste: "", PE_subcaste: "" }));
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.PE_Religion]);
 
   // CASTE → SUBCASTE (same logic as Step1.jsx)
@@ -180,6 +181,7 @@ export default function EditPartnerPreference() {
           setForm((f) => ({ ...f, PE_subcaste: "" }));
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.PE_Caste]);
 
   // COUNTRY → STATE

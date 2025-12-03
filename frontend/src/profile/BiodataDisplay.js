@@ -833,13 +833,12 @@
 //   );
 // }
 
-import React, { useState, useRef, useEffect } from "react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import "./BiodataDisplay.css";
-import headerpic from "./Assets/header.png";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import headerpic from "./Assets/header.png";
+import "./BiodataDisplay.css";
 
 function safeParseChart(value) {
   if (!value || value === "" || value === "[]" || value === null) return [];
@@ -858,10 +857,11 @@ function safeParseChart(value) {
 }
 
 export default function BiodataDisplay({ setUser: setAppUser }) {
+  // eslint-disable-next-line no-unused-vars
   const [biodataList, setBiodataList] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [selectedId, setSelectedId] = useState(null);
   const [currentData, setCurrentData] = useState(null);
-  const [downloading, setDownloading] = useState(false);
   const printRef = useRef();
 
   const [loading, setLoading] = useState(true);

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 const API_BASE = "http://localhost/matrimony2/api"; // Adjust your API path
 
@@ -319,11 +319,7 @@ export default function Signup() {
           >
             <option value="">Select</option>
             <option>Unmarried</option>
-            <option>Divorced</option>
-            <option>Widower</option>
-            <option>Widowed</option>
-            <option>Awaiting Divorce</option>
-            <option>Separated</option>
+            <option>Remarriage</option>
           </select>
           {errors.maritial_status && (
             <p className="text-red-600 text-sm">{errors.maritial_status}</p>

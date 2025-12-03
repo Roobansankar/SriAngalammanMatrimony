@@ -379,8 +379,8 @@
 
 // File: EditHoroscope.jsx
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5000/api/";
@@ -601,7 +601,7 @@ export default function EditHoroscope() {
                 setPreview(URL.createObjectURL(file));
               }}
             />
-            {preview && <img src={preview} className="w-40 mt-3 rounded shadow" />}
+            {preview && <img src={preview} alt="Horoscope preview" className="w-40 mt-3 rounded shadow" />}
           </div>
 
           {/* RASI */}

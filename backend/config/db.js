@@ -1,11 +1,11 @@
 import mysql from "mysql2";
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
   // refactor the password
-  password: "Secure@12345",
-  database: "sriang",
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   charset: "utf8mb4",
 });
 

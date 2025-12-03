@@ -78,8 +78,8 @@
 // }
 
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const API = "http://localhost:5000/api/admin";
@@ -109,6 +109,7 @@ export default function MaleMembers() {
 
   useEffect(() => {
     fetchMembers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   // SLIDING PAGINATION (show only 5 numbers)
@@ -160,7 +161,7 @@ export default function MaleMembers() {
                 <td className="p-3">
                   <img
                     src={m.PhotoURL}
-                    alt="photo"
+                    alt={m.Name || "Member"}
                     className="w-12 h-12 rounded object-cover border"
                   />
                 </td>

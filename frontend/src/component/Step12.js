@@ -1,12 +1,21 @@
 // Step12.jsx
 import axios from "axios";
+import { AlertCircle, BadgeCheck, CheckCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Step12({ prevStep, formData }) {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [matriId, setMatriId] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
     try {
+      setSubmitting(true);
+      setError("");
+      
       const f = formData || {};
       const fd = new FormData();
       const add = (key, val) => {
@@ -180,16 +189,87 @@ export default function Step12({ prevStep, formData }) {
       );
 
       localStorage.removeItem("multiStepRegistration_form_v1");
-      alert(`🎉 Registration Complete! Matri ID: ${res.data.matriId || "—"}`);
-      navigate("/login");
+      
+      // Get matriId from response or formData
+      const resultMatriId = res.data.matriId || f.matriId || "—";
+      setMatriId(resultMatriId);
+      setSubmitted(true);
+      
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
-      alert(
-        "❌ Error submitting form!\n" +
-          (err?.response?.data?.sql || err?.message || "")
-      );
+      setError(err?.response?.data?.error || err?.response?.data?.sql || err?.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  // Success state - show MatriID
+  if (submitted && matriId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-rose-50 to-rose-100">
+        <div className="max-w-lg w-full mx-auto bg-white shadow-lg rounded-2xl p-8 border border-green-200 text-center">
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-green-600 mb-3">
+            🎉 Registration Complete!
+          </h3>
+          
+          <div className="my-6 bg-gradient-to-r from-rose-100 to-pink-50 border border-rose-200 rounded-xl py-6 px-6">
+            <p className="text-sm text-gray-600 mb-2">Your Matri ID</p>
+            <div className="flex items-center justify-center gap-2">
+              <BadgeCheck className="w-6 h-6 text-rose-600" />
+              <p className="text-3xl font-bold text-rose-700 tracking-wider">
+                {matriId}
+              </p>
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              Keep this ID safe — you'll use it for login and support.
+            </p>
+          </div>
+
+          <p className="text-gray-600 mb-6">
+            Your profile has been created successfully. You can now login and start your journey!
+          </p>
+
+          <button
+            onClick={() => navigate("/login")}
+            className="px-8 py-3 bg-gradient-to-r from-rose-600 to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+          >
+            Go to Login →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-rose-50 to-rose-100">
+        <div className="max-w-lg w-full mx-auto bg-white shadow-lg rounded-2xl p-8 border border-red-200 text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-red-600 mb-3">
+            Submission Failed
+          </h3>
+          <p className="text-gray-600 mb-6">{error}</p>
+          
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => setError("")}
+              className="px-6 py-2 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700 transition"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => prevStep()}
+              className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            >
+              ← Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-rose-50 to-rose-100">
@@ -204,16 +284,25 @@ export default function Step12({ prevStep, formData }) {
         <div className="flex justify-center gap-6">
           <button
             onClick={() => prevStep()}
-            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
+            disabled={submitting}
+            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 disabled:opacity-50"
           >
             ← Back
           </button>
 
           <button
             onClick={handleSubmit}
-            className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+            disabled={submitting}
+            className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-60 flex items-center gap-2"
           >
-            ✅ Submit Form
+            {submitting ? (
+              <>
+                <Loader2 className="animate-spin w-4 h-4" />
+                Submitting...
+              </>
+            ) : (
+              "✅ Submit Form"
+            )}
           </button>
         </div>
 

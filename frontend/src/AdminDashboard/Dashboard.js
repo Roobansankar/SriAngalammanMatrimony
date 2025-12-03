@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
   CssBaseline,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -13,20 +12,12 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
   Tooltip,
+  Typography,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
-import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  Building,
-  Upload,
-  ListChecks,
-  CreditCard,
-} from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
+import { useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 // In index.js or App.js
 import "@fontsource/nunito";

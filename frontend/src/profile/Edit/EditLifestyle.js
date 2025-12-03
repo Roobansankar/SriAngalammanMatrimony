@@ -450,8 +450,8 @@
 
 
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5000/api/";
@@ -551,6 +551,7 @@ export default function EditLifestyle() {
       familymedicalhistory: data.familymedicalhistory || "",
       anyotherincome: data.anyotherincome || "",
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ================================
