@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 
 const API_BASE = "http://localhost:5000/api/";
 
+// Only allow letters and spaces for names
+const formatName = (value) => {
+  if (!value) return "";
+  return value.replace(/[^a-zA-Z\s'.,-]/g, "");
+};
+
 export default function Step8({ nextStep, prevStep, formData = {} }) {
   const [options, setOptions] = useState({
     familyValues: [],
@@ -15,6 +21,8 @@ export default function Step8({ nextStep, prevStep, formData = {} }) {
     sistersMarried: [],
     familyWealth: [],
   });
+
+  const [errors, setErrors] = useState({});
 
   const [data, setData] = useState({
     familyValues: formData.familyValues || "",
@@ -34,6 +42,31 @@ export default function Step8({ nextStep, prevStep, formData = {} }) {
     familyDescription: formData.familyDescription || "",
     familyMedicalHistory: formData.familyMedicalHistory || "",
   });
+
+  // Sync local state when formData prop changes (e.g., after localStorage load)
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      setData((prev) => ({
+        ...prev,
+        familyValues: formData.familyValues || prev.familyValues,
+        familyType: formData.familyType || prev.familyType,
+        familyStatus: formData.familyStatus || prev.familyStatus,
+        motherTongue: formData.motherTongue || prev.motherTongue,
+        noOfBrothers: formData.noOfBrothers || prev.noOfBrothers,
+        noOfBrothersMarried: formData.noOfBrothersMarried || prev.noOfBrothersMarried,
+        noOfSisters: formData.noOfSisters || prev.noOfSisters,
+        noOfSistersMarried: formData.noOfSistersMarried || prev.noOfSistersMarried,
+        fatherName: formData.fatherName || prev.fatherName,
+        fatherOccupation: formData.fatherOccupation || prev.fatherOccupation,
+        motherName: formData.motherName || prev.motherName,
+        motherOccupation: formData.motherOccupation || prev.motherOccupation,
+        parentsStay: formData.parentsStay || prev.parentsStay,
+        familyWealth: formData.familyWealth || prev.familyWealth,
+        familyDescription: formData.familyDescription || prev.familyDescription,
+        familyMedicalHistory: formData.familyMedicalHistory || prev.familyMedicalHistory,
+      }));
+    }
+  }, [formData]);
 
   useEffect(() => {
     async function loadDropdowns() {
@@ -79,8 +112,22 @@ export default function Step8({ nextStep, prevStep, formData = {} }) {
     loadDropdowns();
   }, []);
 
-  const handleChange = (e) =>
-    setData({ ...data, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let formattedValue = value;
+    
+    // Format name fields to only allow letters and spaces
+    if (name === "fatherName" || name === "motherName") {
+      formattedValue = formatName(value);
+    }
+    
+    setData({ ...data, [name]: formattedValue });
+    
+    // Clear error when typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
 
   const handleRadio = (e) => setData({ ...data, parentsStay: e.target.value });
 

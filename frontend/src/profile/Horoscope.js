@@ -1,6 +1,6 @@
 // src/profile/Horoscope.jsx
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Horoscope() {
@@ -101,7 +101,7 @@ export default function Horoscope() {
     ampm = "-";
   if (tobRaw) {
     const r = tobRaw.match(
-      /(\d{1,2}):(\d{2})(?::(\d{2}))?\s*[:\-]?\s*([AaPp][Mm])?/
+      /(\d{1,2}):(\d{2})(?::(\d{2}))?\s*[:-]?\s*([AaPp][Mm])?/
     );
     if (r) {
       hour = r[1].padStart(2, "0");

@@ -166,9 +166,8 @@
 //   );
 // }
 // src/component/Footer.js
-import React from "react";
+import { Heart, Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Heart, Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -298,15 +297,15 @@ export default function Footer() {
         {/* Divider and Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex gap-5">
-            <a href="#" className="text-sm text-white/90 hover:underline">
+            <span className="text-sm text-white/90 hover:underline cursor-pointer">
               Facebook
-            </a>
-            <a href="#" className="text-sm text-white/90 hover:underline">
+            </span>
+            <span className="text-sm text-white/90 hover:underline cursor-pointer">
               Instagram
-            </a>
-            <a href="#" className="text-sm text-white/90 hover:underline">
+            </span>
+            <span className="text-sm text-white/90 hover:underline cursor-pointer">
               Twitter
-            </a>
+            </span>
           </div>
           <p className="text-sm text-white/80 text-center">
             © {new Date().getFullYear()} Sri Angalamman Matrimony. All rights

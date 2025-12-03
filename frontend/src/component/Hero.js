@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import videoSrc from "./weeding4.mp4"; // <- correct import / quotes for local video
+import videoSrc from "./weeding4.mp4";
 const Hero = () => {
   const navigate = useNavigate();
 

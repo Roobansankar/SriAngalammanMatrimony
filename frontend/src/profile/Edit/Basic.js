@@ -1,7 +1,7 @@
 // File: BasicEdit.jsx
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5000/api/";
@@ -121,6 +121,7 @@ export default function BasicEdit() {
     }
 
     loadCastes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.Religion]);
 
   // -------------------------------------------------------
@@ -147,6 +148,7 @@ export default function BasicEdit() {
     }
 
     loadSubCastes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.CasteID]);
 
   // -------------------------------------------------------

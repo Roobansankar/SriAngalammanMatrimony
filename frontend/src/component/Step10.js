@@ -391,7 +391,7 @@ export default function Step10({ nextStep, prevStep, formData = {} }) {
   });
 
   const [data, setData] = useState({
-    maritalStatus: formData.maritalStatus || [],
+    maritalStatus: Array.isArray(formData.maritalStatus) ? formData.maritalStatus : [],
     ageFrom: formData.ageFrom || "",
     ageTo: formData.ageTo || "",
     heightFrom: formData.heightFrom || "",
@@ -407,6 +407,30 @@ export default function Step10({ nextStep, prevStep, formData = {} }) {
     occupation: formData.occupation || "",
     partnerExpectations: formData.partnerExpectations || "",
   });
+
+  // Sync local state when formData prop changes (e.g., after localStorage load)
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      setData((prev) => ({
+        ...prev,
+        maritalStatus: Array.isArray(formData.maritalStatus) ? formData.maritalStatus : prev.maritalStatus,
+        ageFrom: formData.ageFrom || prev.ageFrom,
+        ageTo: formData.ageTo || prev.ageTo,
+        heightFrom: formData.heightFrom || prev.heightFrom,
+        heightTo: formData.heightTo || prev.heightTo,
+        religion: formData.religion || prev.religion,
+        caste: formData.caste || prev.caste,
+        complexion: formData.complexion || prev.complexion,
+        residencyStatus: formData.residencyStatus || prev.residencyStatus,
+        country: formData.country || prev.country,
+        state: formData.state || prev.state,
+        city: formData.city || prev.city,
+        education: formData.education || prev.education,
+        occupation: formData.occupation || prev.occupation,
+        partnerExpectations: formData.partnerExpectations || prev.partnerExpectations,
+      }));
+    }
+  }, [formData]);
 
   // Generate age dropdown (18–65)
   const ageOptions = Array.from({ length: 48 }, (_, i) => 18 + i);

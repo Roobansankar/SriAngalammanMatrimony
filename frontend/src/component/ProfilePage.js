@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ProfilePage({ setUser: setAppUser }) {
   const [user, setUser] = useState(null);
@@ -75,6 +75,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
     user.a12,
   ];
 
+  // eslint-disable-next-line no-unused-vars
   const primary = "#ec1380"; // inline primary color as requested
 
   const formatDOB = (dob) => {

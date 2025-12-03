@@ -56,9 +56,9 @@
 //   );
 // }
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaMale, FaFemale, FaUsers } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaFemale, FaMale, FaUsers } from "react-icons/fa";
 
 export default function HomeDashboard() {
   const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
@@ -74,6 +74,7 @@ export default function HomeDashboard() {
 
   useEffect(() => {
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStats = async () => {

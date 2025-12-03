@@ -57,6 +57,38 @@ export default function Step4({ nextStep, prevStep, formData }) {
     ),
   });
 
+  // Sync local state when formData prop changes (e.g., after localStorage load)
+  useEffect(() => {
+    if (formData && Object.keys(formData).length > 0) {
+      setData((prev) => ({
+        ...prev,
+        moonSign: formData.moonSign || prev.moonSign,
+        star: formData.star || prev.star,
+        gothra: formData.gothra || prev.gothra,
+        manglik: formData.manglik || prev.manglik,
+        shani: formData.shani || prev.shani,
+        placeOfShani: formData.placeOfShani || prev.placeOfShani,
+        horoscopeMatch: formData.horoscopeMatch || prev.horoscopeMatch,
+        parigarasevai: formData.parigarasevai || prev.parigarasevai,
+        sevai: formData.sevai || prev.sevai,
+        raghu: formData.raghu || prev.raghu,
+        keethu: formData.keethu || prev.keethu,
+        birthHour: formData.birthHour || prev.birthHour,
+        birthMinute: formData.birthMinute || prev.birthMinute,
+        birthSecond: formData.birthSecond || prev.birthSecond,
+        ampm: formData.ampm || prev.ampm,
+        placeOfBirth: formData.placeOfBirth || prev.placeOfBirth,
+        countryOfBirth: formData.countryOfBirth || prev.countryOfBirth,
+        ...Object.fromEntries(
+          [...Array(12)].map((_, i) => [`g${i + 1}`, formData[`g${i + 1}`] || prev[`g${i + 1}`] || []])
+        ),
+        ...Object.fromEntries(
+          [...Array(12)].map((_, i) => [`a${i + 1}`, formData[`a${i + 1}`] || prev[`a${i + 1}`] || []])
+        ),
+      }));
+    }
+  }, [formData]);
+
   useEffect(() => {
     async function fetchOptions() {
       try {
@@ -101,10 +133,21 @@ export default function Step4({ nextStep, prevStep, formData }) {
     fetchOptions();
   }, []);
 
+  // Helper function to format place names (letters, spaces, commas, dots allowed)
+  const formatPlaceName = (value) => value.replace(/[^a-zA-Z\s,.\-']/g, "");
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (files) setData({ ...data, [name]: files[0] });
-    else setData({ ...data, [name]: value });
+    if (files) {
+      setData({ ...data, [name]: files[0] });
+    } else {
+      // Format place name fields
+      if (name === "placeOfShani" || name === "placeOfBirth" || name === "countryOfBirth") {
+        setData({ ...data, [name]: formatPlaceName(value) });
+      } else {
+        setData({ ...data, [name]: value });
+      }
+    }
   };
 
   const generateNumbers = (s, e) =>

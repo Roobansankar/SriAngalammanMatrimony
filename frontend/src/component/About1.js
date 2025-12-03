@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import GradientText from "./GradientText";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function About1() {
   useEffect(() => {

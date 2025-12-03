@@ -1,15 +1,10 @@
 // Home.js
-import React, { useEffect, useState } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { Link, useNavigate } from "react-router-dom";
-import videoSrc from "./weeding4.mp4"; // <- correct import / quotes for local video
 import About1 from "./About1";
-import { FeaturedProfiles } from "./FeaturedProfiles";
-import { Works } from "./Works";
-import { Success } from "./Success";
 import CTA from "./CTA";
+import { FeaturedProfiles } from "./FeaturedProfiles";
 import Hero from "./Hero";
+import { Success } from "./Success";
+import { Works } from "./Works";
 
 export default function Home() {
   return (
