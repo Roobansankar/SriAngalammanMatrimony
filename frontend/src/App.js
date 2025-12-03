@@ -453,6 +453,9 @@ import ProfileView from "./profile/ProfileView";
 import LoggedRegularSearch from "./profile/RegularSearch";
 import LogedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
+import MaleMembers from "./AdminDashboard/MaleMembers";
+import AdminProfile from "./AdminDashboard/AdminProfile";
+
 
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
@@ -483,7 +486,7 @@ function AppContent({ user, setUser }) {
           <Route path="/admin/login" element={<AdminLoginPage />} />
 
           {/* Admin Layout Wrapper (shows sidebar + topbar) */}
-          <Route
+           <Route
             path="/admin"
             element={
               <AdminPrivateRoute>
@@ -494,6 +497,8 @@ function AppContent({ user, setUser }) {
             {/* Admin Pages Inside DashboardLayout */}
             <Route path="homedashboard" element={<HomeDashboard />} />
             <Route path="dashboard" element={<HomeDashboard />} />
+            <Route path="male-members" element={<MaleMembers />} />
+            <Route path="profile/:matriId" element={<AdminProfile />} />
           </Route>
 
           {/* Public routes */}
