@@ -232,8 +232,8 @@
 //   );
 // }
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Matchs() {
@@ -245,6 +245,7 @@ export default function Matchs() {
   const [loading, setLoading] = useState(true); // 🔥 NEW
   const perPage = 9;
 
+  // eslint-disable-next-line no-unused-vars
   const [profiles, setProfiles] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
@@ -358,6 +359,7 @@ export default function Matchs() {
     };
 
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ---------- Pagination ---------- */

@@ -73,8 +73,10 @@ export default function Step1({ nextStep, formData = {} }) {
 
         setOptions((prev) => ({
           ...prev,
+          // Only show "Unmarried" and "Remarriage" options
           maritalStatus: Array.isArray(maritalData)
             ? [...new Set(maritalData.map((m) => m.status).filter(Boolean))]
+                .filter((s) => s === "Unmarried" || s === "Remarriage")
             : [],
 
           // ❌ Remove "Any"

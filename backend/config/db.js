@@ -4,7 +4,7 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   // refactor the password
-  password: "Secure@12345",
+  password: "8220",
   database: "sriang",
   charset: "utf8mb4",
 });

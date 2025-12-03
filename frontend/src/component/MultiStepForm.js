@@ -383,16 +383,19 @@
 
 
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-  useParams,
+    Navigate,
+    Route,
+    Routes,
+    useNavigate,
 } from "react-router-dom";
 
 import Step1 from "./Step1";
+import Step10 from "./Step10";
+import Step11 from "./Step11";
+import Step11Payment from "./Step11Payment";
+import Step12 from "./Step12";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
 import Step4 from "./Step4";
@@ -401,10 +404,6 @@ import Step6 from "./Step6";
 import Step7 from "./Step7";
 import Step8 from "./Step8";
 import Step9 from "./Step9";
-import Step10 from "./Step10";
-import Step11 from "./Step11";
-import Step11Payment from "./Step11Payment";
-import Step12 from "./Step12";
 
 const STORAGE_KEY = "multiStepRegistration_form_v1";
 const TOTAL_STEPS = 13;
