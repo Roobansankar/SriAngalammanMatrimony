@@ -406,6 +406,7 @@ import Footer from "./component/Footer";
 import Header from "./component/Header";
 import Home from "./component/Home";
 import LoginPage from "./component/LoginPage";
+import ForgotPassword from "./component/ForgotPassword";
 import Membership from "./component/Membership";
 import MultiStepForm from "./component/MultiStepForm";
 import Privacy from "./component/privacy";
@@ -486,7 +487,7 @@ function AppContent({ user, setUser }) {
           <Route path="/admin/login" element={<AdminLoginPage />} />
 
           {/* Admin Layout Wrapper (shows sidebar + topbar) */}
-           <Route
+          <Route
             path="/admin"
             element={
               <AdminPrivateRoute>
@@ -516,6 +517,8 @@ function AppContent({ user, setUser }) {
           <Route path="/results" element={<SearchResults />} />
           <Route path="/success-story" element={<SuccessStories />} />
           <Route path="/login" element={<LoginPage setUser={setUser} />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
           <Route path="/register/*" element={<MultiStepForm />} />
 
           {/* Protected routes */}

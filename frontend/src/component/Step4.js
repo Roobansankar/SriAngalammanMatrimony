@@ -44,6 +44,8 @@ export default function Step4({ nextStep, prevStep, formData }) {
     ampm: formData.ampm || "AM",
     placeOfBirth: formData.placeOfBirth || "",
     countryOfBirth: formData.countryOfBirth || "",
+    kuladeivam: formData.kuladeivam || "",
+    thesaiirupu: formData.thesaiirupu || "",
     horoscopeFile: null,
 
     // Rasi 12 cards
@@ -77,13 +79,21 @@ export default function Step4({ nextStep, prevStep, formData }) {
         birthMinute: formData.birthMinute || prev.birthMinute,
         birthSecond: formData.birthSecond || prev.birthSecond,
         ampm: formData.ampm || prev.ampm,
+        kuladeivam: formData.kuladeivam || prev.kuladeivam,
+        thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
         placeOfBirth: formData.placeOfBirth || prev.placeOfBirth,
         countryOfBirth: formData.countryOfBirth || prev.countryOfBirth,
         ...Object.fromEntries(
-          [...Array(12)].map((_, i) => [`g${i + 1}`, formData[`g${i + 1}`] || prev[`g${i + 1}`] || []])
+          [...Array(12)].map((_, i) => [
+            `g${i + 1}`,
+            formData[`g${i + 1}`] || prev[`g${i + 1}`] || [],
+          ])
         ),
         ...Object.fromEntries(
-          [...Array(12)].map((_, i) => [`a${i + 1}`, formData[`a${i + 1}`] || prev[`a${i + 1}`] || []])
+          [...Array(12)].map((_, i) => [
+            `a${i + 1}`,
+            formData[`a${i + 1}`] || prev[`a${i + 1}`] || [],
+          ])
         ),
       }));
     }
@@ -142,7 +152,11 @@ export default function Step4({ nextStep, prevStep, formData }) {
       setData({ ...data, [name]: files[0] });
     } else {
       // Format place name fields
-      if (name === "placeOfShani" || name === "placeOfBirth" || name === "countryOfBirth") {
+      if (
+        name === "placeOfShani" ||
+        name === "placeOfBirth" ||
+        name === "countryOfBirth"
+      ) {
         setData({ ...data, [name]: formatPlaceName(value) });
       } else {
         setData({ ...data, [name]: value });
@@ -156,6 +170,8 @@ export default function Step4({ nextStep, prevStep, formData }) {
   const handleNext = () => {
     nextStep({
       ...data,
+      kuladeivam: data.kuladeivam,
+      thesaiirupu: data.thesaiirupu,
       ...Object.fromEntries(
         [...Array(12)].map((_, i) => [`g${i + 1}`, data[`g${i + 1}`]])
       ),
@@ -321,7 +337,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         {/* Parigarasevai */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Parigarasevai (2 - 12)
+            Parigarasevai
           </label>
           <select
             name="parigarasevai"
@@ -341,7 +357,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         {/* Sevai */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Sevai (2 - 12)
+            Sevai
           </label>
           <select
             name="sevai"
@@ -361,7 +377,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         {/* Raghu */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Raghu (0 - 12)
+            Raghu
           </label>
           <select
             name="raghu"
@@ -381,7 +397,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         {/* Keethu */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Keethu (0 - 12)
+            Keethu
           </label>
           <select
             name="keethu"
@@ -396,6 +412,19 @@ export default function Step4({ nextStep, prevStep, formData }) {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Thesai Irupu */}
+        <div className="col-span-2 mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thesai Irupu (திசைஇருப்பு)
+          </label>
+          <input
+            name="thesaiirupu"
+            value={data.thesaiirupu}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          />
         </div>
 
         {/* Birth Time */}
@@ -425,9 +454,10 @@ export default function Step4({ nextStep, prevStep, formData }) {
               className="border p-2 rounded-lg w-1/3 text-center focus:ring-2 focus:ring-yellow-500 outline-none"
             >
               <option value="">Min</option>
+              <option value="00">00</option>
               {generateNumbers(1, 60).map((num) => (
-                <option key={num} value={num}>
-                  {num}
+                <option key={num} value={String(num).padStart(2, "0")}>
+                  {String(num).padStart(2, "0")}
                 </option>
               ))}
             </select>
@@ -439,9 +469,10 @@ export default function Step4({ nextStep, prevStep, formData }) {
               className="border p-2 rounded-lg w-1/3 text-center focus:ring-2 focus:ring-yellow-500 outline-none"
             >
               <option value="">Sec</option>
+              <option value="00">00</option>
               {generateNumbers(1, 60).map((num) => (
-                <option key={num} value={num}>
-                  {num}
+                <option key={num} value={String(num).padStart(2, "0")}>
+                  {String(num).padStart(2, "0")}
                 </option>
               ))}
             </select>
@@ -601,6 +632,19 @@ export default function Step4({ nextStep, prevStep, formData }) {
         <input
           name="countryOfBirth"
           value={data.countryOfBirth}
+          onChange={handleChange}
+          className="border p-2 rounded-lg w-full"
+        />
+      </div>
+
+      {/* Kuladeivam */}
+      <div className="col-span-2 mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Kuladeivam
+        </label>
+        <input
+          name="kuladeivam"
+          value={data.kuladeivam}
           onChange={handleChange}
           className="border p-2 rounded-lg w-full"
         />

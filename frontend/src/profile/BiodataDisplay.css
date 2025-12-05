@@ -99,6 +99,14 @@
   text-align: center;
 }
 
+/* .display-data {
+  padding-left: 5px;
+  text-align: left !important;
+  display: block;
+  margin-bottom: 10px; 
+} */
+
+
 .display-red-text {
   color: #c41e3a;
   font-size: 25px;

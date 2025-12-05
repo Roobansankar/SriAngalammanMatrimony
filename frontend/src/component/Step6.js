@@ -26,7 +26,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     otherIncome: formData.otherIncome || "",
     employedIn: formData.employedIn || "",
     workingHours: formData.workingHours || "",
-    companyName: formData.companyName || "",
+    company_name: formData.company_name || "",
     workingLocation: formData.workingLocation || "",
   });
 
@@ -43,7 +43,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
         otherIncome: formData.otherIncome || "",
         employedIn: formData.employedIn || "",
         workingHours: formData.workingHours || "",
-        companyName: formData.companyName || "",
+        company_name: formData.company_name || "",
         workingLocation: formData.workingLocation || "",
       });
     }
@@ -52,14 +52,14 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
-    
+
     // Format income fields to only allow numbers
     if (name === "annualIncome" || name === "otherIncome") {
       formattedValue = formatNumber(value);
     }
-    
+
     setData({ ...data, [name]: formattedValue });
-    
+
     // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -68,15 +68,15 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (data.annualIncome && !/^\d+$/.test(data.annualIncome)) {
       newErrors.annualIncome = "Income must be a number";
     }
-    
+
     if (data.otherIncome && !/^\d+$/.test(data.otherIncome)) {
       newErrors.otherIncome = "Income must be a number";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -130,8 +130,14 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
           >
             <option value="">Select Education</option>
+
             {educationList.map((item) => (
-              <option key={item.id} value={item.edu}>
+              <option
+                key={item.id}
+                value={item.edu}
+                disabled={item.status === "disabled"} // 🔥 Disable based on backend
+                className={item.status === "disabled" ? "text-gray-400" : ""}
+              >
                 {item.edu}
               </option>
             ))}
@@ -198,9 +204,13 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             onChange={handleChange}
             inputMode="numeric"
             placeholder="Enter amount"
-            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${errors.annualIncome ? "border-red-500" : "border-gray-300"}`}
+            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+              errors.annualIncome ? "border-red-500" : "border-gray-300"
+            }`}
           />
-          {errors.annualIncome && <p className="text-red-500 text-xs mt-1">{errors.annualIncome}</p>}
+          {errors.annualIncome && (
+            <p className="text-red-500 text-xs mt-1">{errors.annualIncome}</p>
+          )}
         </div>
 
         {/* Income Type */}
@@ -233,9 +243,13 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             onChange={handleChange}
             inputMode="numeric"
             placeholder="Enter amount"
-            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${errors.otherIncome ? "border-red-500" : "border-gray-300"}`}
+            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+              errors.otherIncome ? "border-red-500" : "border-gray-300"
+            }`}
           />
-          {errors.otherIncome && <p className="text-red-500 text-xs mt-1">{errors.otherIncome}</p>}
+          {errors.otherIncome && (
+            <p className="text-red-500 text-xs mt-1">{errors.otherIncome}</p>
+          )}
         </div>
 
         {/* Employed In Dropdown */}
@@ -286,10 +300,10 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           </label>
           <input
             type="text"
-            name="companyName"
-            value={data.companyName}
-            onChange={handleChange}
+            name="company_name"
+            value={data.company_name}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
+            onChange={handleChange}
           />
         </div>
 

@@ -7,6 +7,8 @@ export default function ProfilePage({ setUser: setAppUser }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [showHoroscope, setShowHoroscope] = useState(false);
+
 
   useEffect(() => {
     const email = localStorage.getItem("loggedInEmail");
@@ -338,30 +340,24 @@ export default function ProfilePage({ setUser: setAppUser }) {
               </div>
 
               {/* Horoscope Image */}
-              <div className="col-span-1 sm:col-span-2 lg:col-span-3">
+              {/* Horoscope (Image or PDF Viewer) */}
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-4">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Horoscope Image
+                  Horoscope (Image / PDF)
                 </span>
-                <div className="mt-2">
-                  {user.horoscope ? (
-                    <img
-                      src={
-                        user.horoscope.startsWith("http")
-                          ? user.horoscope
-                          : `${
-                              process.env.REACT_APP_API_BASE ||
-                              "http://localhost:5000"
-                            }/gallery/${user.horoscope}`
-                      }
-                      alt="horoscope"
-                      className="w-full max-w-[300px] object-contain rounded border border-gray-200 dark:border-gray-700"
-                    />
-                  ) : (
-                    <div className="text-gray-400 dark:text-gray-500">
-                      No horoscope uploaded
-                    </div>
-                  )}
-                </div>
+
+                {user.HoroscopeURL ? (
+                  <button
+                    onClick={() => setShowHoroscope(true)}
+                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
+                  >
+                    View Horoscope
+                  </button>
+                ) : (
+                  <div className="mt-2 text-gray-400 dark:text-gray-500">
+                    No horoscope uploaded
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -622,6 +618,40 @@ export default function ProfilePage({ setUser: setAppUser }) {
           </div>
         </section>
       </div>
+
+      {/* Horoscope Viewer Modal */}
+      {showHoroscope && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-3xl p-4 rounded shadow-lg relative">
+            {/* Close Button */}
+            <button
+              className="absolute top-2 right-2 text-gray-700"
+              onClick={() => setShowHoroscope(false)}
+            >
+              ✕
+            </button>
+
+            <h2 className="text-lg font-bold mb-4">Horoscope View</h2>
+
+            {/* Preview Image or PDF */}
+            {user.HoroscopeURL &&
+            (user.HoroscopeURL.endsWith(".pdf") ||
+              user.HoroscopeURL.includes("pdf")) ? (
+              <iframe
+                src={user.HoroscopeURL}
+                className="w-full h-[600px] border rounded"
+                title="Horoscope PDF"
+              ></iframe>
+            ) : (
+              <img
+                src={user.HoroscopeURL}
+                alt="Horoscope"
+                className="w-full max-h-[600px] object-contain border rounded"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -663,19 +693,7 @@ function SouthChart({ title, data }) {
   );
 }
 
-// function Cell({ value }) {
-//   if (!value) return <div className="border border-black p-1 text-[12px]" />;
 
-//   const items = value.split(",").map((v) => v.trim());
-
-//   return (
-//     <div className="border border-black p-1 text-[11px] leading-tight">
-//       {items.map((item, i) => (
-//         <div key={i}>{item}</div>
-//       ))}
-//     </div>
-//   );
-// }
 
 
 

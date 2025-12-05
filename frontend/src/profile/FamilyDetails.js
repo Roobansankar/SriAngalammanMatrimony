@@ -46,7 +46,7 @@
 //   if (error) return <div className="p-6 text-red-600">{error}</div>;
 //   if (!user) return <div className="p-6">No user found</div>;
 
-//   // Field mappings & fallbacks (based on your sample API)
+//   // Field mappings
 //   const familyValues = user.Familyvalues || user.FamilyValues || "-";
 //   const familyType = user.FamilyType || "-";
 //   const familyStatus = user.FamilyStatus || "-";
@@ -79,26 +79,22 @@
 //     user.familymedicalhistory || user.FamilyMedicalHistory || "-";
 
 //   return (
-//     <div className="min-h-screen bg-gray-50 p-6 font-display">
-//       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 mt-20">
-//         <h2 className="text-2xl font-bold mb-4">Family Details</h2>
+//     <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+//       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+//         <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+//           Family Details
+//         </h2>
 
-//         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
 //           <LabelValue label="Family Values" value={familyValues} />
 //           <LabelValue label="Family Type" value={familyType} />
 //           <LabelValue label="Family Status" value={familyStatus} />
 //           <LabelValue label="Mother Tongue" value={motherTongue} />
 
 //           <LabelValue label="No. of Brothers" value={noOfBrothers} />
-//           <LabelValue
-//             label="No. of Brothers Married"
-//             value={noOfBrothersMarried}
-//           />
+//           <LabelValue label="Brothers Married" value={noOfBrothersMarried} />
 //           <LabelValue label="No. of Sisters" value={noOfSisters} />
-//           <LabelValue
-//             label="No. of Sisters Married"
-//             value={noOfSistersMarried}
-//           />
+//           <LabelValue label="Sisters Married" value={noOfSistersMarried} />
 
 //           <LabelValue label="Father Name" value={fatherName} />
 //           <LabelValue label="Father Occupation" value={fatherOccupation} />
@@ -106,17 +102,12 @@
 //           <LabelValue label="Mother Occupation" value={motherOccupation} />
 
 //           <LabelValue label="Parents Stay" value={parentsStay} />
-//           <LabelValue label="Your Family Wealth" value={familyWealth} />
-//           <LabelValue label="About Your Family" value={aboutFamily} />
+//           <LabelValue label="Family Wealth" value={familyWealth} />
+//           <LabelValue label="About Family" value={aboutFamily} />
 //           <LabelValue
 //             label="Family Medical History"
 //             value={familyMedicalHistory}
 //           />
-//         </div>
-
-//         <div className="mt-6 text-sm text-gray-600">
-//           Tip: If any fields look empty, share the exact MySQL column names and
-//           I’ll remap exactly to your DB columns.
 //         </div>
 //       </div>
 //     </div>
@@ -125,14 +116,17 @@
 
 // function LabelValue({ label, value }) {
 //   return (
-//     <div className="border p-3 rounded">
-//       <div className="text-xs text-gray-500">{label}</div>
-//       <div className="text-sm font-medium break-words">
+//     <div className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm hover:shadow-md transition">
+//       <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+//         {label}
+//       </div>
+//       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
 //         {value === null || value === "" ? "-" : String(value)}
 //       </div>
 //     </div>
 //   );
 // }
+
 
 // src/profile/FamilyDetails.jsx
 import React, { useEffect, useState } from "react";
@@ -178,7 +172,7 @@ export default function FamilyDetails() {
     fetchUser();
   }, [navigate]);
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <FamilySkeleton />;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user found</div>;
 
@@ -250,6 +244,8 @@ export default function FamilyDetails() {
   );
 }
 
+/* ---------------------- LABEL COMPONENT ---------------------- */
+
 function LabelValue({ label, value }) {
   return (
     <div className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm hover:shadow-md transition">
@@ -258,6 +254,39 @@ function LabelValue({ label, value }) {
       </div>
       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
         {value === null || value === "" ? "-" : String(value)}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------- SKELETON COMPONENTS ---------------------- */
+
+function Skeleton({ className = "" }) {
+  return <div className={`animate-pulse bg-gray-300 rounded-md ${className}`} />;
+}
+
+function FamilySkeleton() {
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+
+        <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+          Family Details
+        </h2>
+
+        {/* Skeleton Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {Array.from({ length: 18 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm"
+            >
+              <Skeleton className="h-3 w-28 mb-2" />
+              <Skeleton className="h-5 w-40" />
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
