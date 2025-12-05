@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
           onClick={handleLogin}
           className="w-full py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl font-bold shadow-md transition duration-300"
         >
-          Login as Admin
+          Login
         </button>
       </div>
     </div>

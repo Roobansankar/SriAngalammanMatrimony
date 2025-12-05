@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-export default function MaleMembers() {
+export default function FemaleMembers() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -18,7 +18,7 @@ export default function MaleMembers() {
   const fetchMembers = () => {
     setLoading(true);
     axios
-      .get(`${API}/api/admin/male-members?page=${page}&search=${search}`)
+      .get(`${API}/api/admin/female-members?page=${page}&search=${search}`)
       .then((res) => {
         if (res.data.success) {
           setMembers(res.data.results);
@@ -61,9 +61,9 @@ export default function MaleMembers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Male Members</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Female Members</h1>
           <p className="text-gray-500 text-sm mt-1">
-            View and manage registered male members
+            Manage all female members on the platform
           </p>
         </div>
 
@@ -76,10 +76,10 @@ export default function MaleMembers() {
             />
             <input
               type="text"
-              placeholder="Search by name, ID, email..."
+              placeholder="Search members..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent w-64"
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
             />
           </div>
           <button
@@ -89,20 +89,6 @@ export default function MaleMembers() {
             Search
           </button>
         </form>
-      </div>
-
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <p className="text-sm text-gray-500">Total Male Members</p>
-          <p className="text-2xl font-bold text-gray-800">{total}</p>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <p className="text-sm text-gray-500">Current Page</p>
-          <p className="text-2xl font-bold text-gray-800">
-            {page} / {totalPages || 1}
-          </p>
-        </div>
       </div>
 
       {/* Table */}
@@ -134,7 +120,7 @@ export default function MaleMembers() {
                       Status
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Registered
+                      Last Login
                     </th>
                   </tr>
                 </thead>
@@ -166,9 +152,9 @@ export default function MaleMembers() {
                           />
                         ) : null}
                         <div 
-                          className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-200 to-blue-300 items-center justify-center ${m.PhotoURL && !m.PhotoURL.includes("nophoto") ? "hidden" : "flex"}`}
+                          className={`w-10 h-10 rounded-full bg-gradient-to-br from-pink-200 to-pink-300 items-center justify-center ${m.PhotoURL && !m.PhotoURL.includes("nophoto") ? "hidden" : "flex"}`}
                         >
-                          <UserCircle size={24} className="text-blue-600" />
+                          <UserCircle size={24} className="text-pink-600" />
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -191,9 +177,9 @@ export default function MaleMembers() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-sm">
-                        {m.Regdate
-                          ? new Date(m.Regdate).toLocaleDateString()
-                          : "N/A"}
+                        {m.Lastlogin
+                          ? new Date(m.Lastlogin).toLocaleDateString()
+                          : "Never"}
                       </td>
                     </tr>
                   ))}
