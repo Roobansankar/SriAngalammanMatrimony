@@ -197,7 +197,6 @@ export default function ContactUs() {
 
   return (
     <div className="min-h-screen bg-[#f7e3e6] text-gray-800 font-display overflow-hidden">
-      {/* 🌸 Hero Section with adjusted background image */}
       <section className="relative flex flex-col justify-center items-center text-center min-h-[60vh] overflow-hidden">
         {/* Background image */}
         <div

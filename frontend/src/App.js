@@ -426,9 +426,18 @@ import Horoscope from "./profile/Horoscope";
 import PartnerPreference from "./profile/PartnerPreference";
 
 import AdminPrivateRoute from "./AdminDashboard/AdminPrivateRoute";
+import AdminProfile from "./AdminDashboard/AdminProfile";
+import AllMembers from "./AdminDashboard/AllMembers";
 import DashboardLayout from "./AdminDashboard/Dashboard";
+import FemaleMembers from "./AdminDashboard/FemaleMembers";
 import HomeDashboard from "./AdminDashboard/HomeDashboard";
+import LocationData from "./AdminDashboard/LocationData";
 import AdminLoginPage from "./AdminDashboard/LoginPage";
+import MaleMembers from "./AdminDashboard/MaleMembers";
+import MasterData from "./AdminDashboard/MasterData";
+import MemberBioData from "./AdminDashboard/MemberBioData";
+import MemberManagement from "./AdminDashboard/MemberManagement";
+import Settings from "./AdminDashboard/Settings";
 import ChatPage from "./component/ChatPage";
 import PrivateRoute from "./component/PrivateRoute";
 import AdvancedSearchResults from "./profile/AdbvancedSearchResults";
@@ -454,8 +463,6 @@ import ProfileView from "./profile/ProfileView";
 import LoggedRegularSearch from "./profile/RegularSearch";
 import LogedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
-import MaleMembers from "./AdminDashboard/MaleMembers";
-import AdminProfile from "./AdminDashboard/AdminProfile";
 
 
 // 👇 Scroll to top on each route change
@@ -499,6 +506,13 @@ function AppContent({ user, setUser }) {
             <Route path="homedashboard" element={<HomeDashboard />} />
             <Route path="dashboard" element={<HomeDashboard />} />
             <Route path="male-members" element={<MaleMembers />} />
+            <Route path="female-members" element={<FemaleMembers />} />
+            <Route path="all-members" element={<AllMembers />} />
+            <Route path="member-biodata" element={<MemberBioData />} />
+            <Route path="manage-members" element={<MemberManagement />} />
+            <Route path="master-data" element={<MasterData />} />
+            <Route path="location-data" element={<LocationData />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />
           </Route>
 

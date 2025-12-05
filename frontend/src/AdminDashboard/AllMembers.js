@@ -5,12 +5,13 @@ import { Link } from "react-router-dom";
 
 const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-export default function MaleMembers() {
+export default function AllMembers() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [genderFilter, setGenderFilter] = useState("");
 
   const perPage = 10;
   const totalPages = Math.ceil(total / perPage);
@@ -18,7 +19,9 @@ export default function MaleMembers() {
   const fetchMembers = () => {
     setLoading(true);
     axios
-      .get(`${API}/api/admin/male-members?page=${page}&search=${search}`)
+      .get(
+        `${API}/api/admin/all-members?page=${page}&search=${search}&gender=${genderFilter}`
+      )
       .then((res) => {
         if (res.data.success) {
           setMembers(res.data.results);
@@ -31,7 +34,7 @@ export default function MaleMembers() {
   useEffect(() => {
     fetchMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, genderFilter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -61,9 +64,9 @@ export default function MaleMembers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Male Members</h1>
+          <h1 className="text-2xl font-bold text-gray-800">All Members</h1>
           <p className="text-gray-500 text-sm mt-1">
-            View and manage registered male members
+            View and manage all registered members
           </p>
         </div>
 
@@ -91,16 +94,74 @@ export default function MaleMembers() {
         </form>
       </div>
 
+      {/* Gender Filter Tabs */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            setGenderFilter("");
+            setPage(1);
+          }}
+          className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
+            genderFilter === ""
+              ? "bg-rose-500 text-white shadow-md"
+              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <UserCircle size={18} />
+            All Members
+          </span>
+        </button>
+        <button
+          onClick={() => {
+            setGenderFilter("Male");
+            setPage(1);
+          }}
+          className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
+            genderFilter === "Male"
+              ? "bg-blue-500 text-white shadow-md"
+              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <UserCircle size={18} />
+            Male Members
+          </span>
+        </button>
+        <button
+          onClick={() => {
+            setGenderFilter("Female");
+            setPage(1);
+          }}
+          className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
+            genderFilter === "Female"
+              ? "bg-pink-500 text-white shadow-md"
+              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <UserCircle size={18} />
+            Female Members
+          </span>
+        </button>
+      </div>
+
       {/* Stats Row */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <p className="text-sm text-gray-500">Total Male Members</p>
+          <p className="text-sm text-gray-500">Total Members</p>
           <p className="text-2xl font-bold text-gray-800">{total}</p>
         </div>
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <p className="text-sm text-gray-500">Current Page</p>
           <p className="text-2xl font-bold text-gray-800">
             {page} / {totalPages || 1}
+          </p>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+          <p className="text-sm text-gray-500">Filter</p>
+          <p className="text-2xl font-bold text-gray-800">
+            {genderFilter || "All"}
           </p>
         </div>
       </div>
@@ -123,6 +184,9 @@ export default function MaleMembers() {
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       Name / Email
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Gender
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       Age
@@ -166,9 +230,9 @@ export default function MaleMembers() {
                           />
                         ) : null}
                         <div 
-                          className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-200 to-blue-300 items-center justify-center ${m.PhotoURL && !m.PhotoURL.includes("nophoto") ? "hidden" : "flex"}`}
+                          className={`w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 items-center justify-center ${m.PhotoURL && !m.PhotoURL.includes("nophoto") ? "hidden" : "flex"}`}
                         >
-                          <UserCircle size={24} className="text-blue-600" />
+                          <UserCircle size={24} className="text-gray-500" />
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -176,6 +240,17 @@ export default function MaleMembers() {
                           {m.Name}
                         </div>
                         <div className="text-xs text-gray-500">{m.Email}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                            m.Gender === "Male"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-pink-100 text-pink-700"
+                          }`}
+                        >
+                          {m.Gender}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{m.Age}</td>
                       <td className="px-4 py-3 text-gray-600">{m.Mobile}</td>
