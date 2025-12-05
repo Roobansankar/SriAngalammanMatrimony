@@ -1,4 +1,3 @@
-// // src/profile/EducationProfessional.jsx
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import { useNavigate } from "react-router-dom";
@@ -65,11 +64,13 @@
 //     "-";
 
 //   return (
-//     <div className="min-h-screen bg-gray-50 p-6 font-display">
-//       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 mt-20">
-//         <h2 className="text-2xl font-bold mb-4">Education & Professional</h2>
+//     <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+//       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+//         <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+//           Education & Professional Details
+//         </h2>
 
-//         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
 //           <LabelValue label="Education" value={education} />
 //           <LabelValue label="Occupation" value={occupation} />
 //           <LabelValue label="Education Details" value={educationDetails} />
@@ -82,12 +83,7 @@
 //           <LabelValue label="Working Location / City" value={workingLocation} />
 //         </div>
 
-//         {/* optional quick info */}
-//         <div className="mt-6 text-sm text-gray-600">
-//           Tip: If any field looks missing, double-check your database column
-//           names — tell me the exact MySQL column names and I’ll map them
-//           explicitly.
-//         </div>
+//         {/* Optional note */}
 //       </div>
 //     </div>
 //   );
@@ -95,9 +91,13 @@
 
 // function LabelValue({ label, value }) {
 //   return (
-//     <div className="border p-3 rounded">
-//       <div className="text-xs text-gray-500">{label}</div>
-//       <div className="text-sm font-medium break-words">{value ?? "-"}</div>
+//     <div className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm hover:shadow-md transition">
+//       <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+//         {label}
+//       </div>
+//       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
+//         {value ?? "-"}
+//       </div>
 //     </div>
 //   );
 // }
@@ -145,7 +145,7 @@ export default function EducationProfessional() {
     fetchUser();
   }, [navigate]);
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <EducationSkeleton />;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user found</div>;
 
@@ -186,12 +186,12 @@ export default function EducationProfessional() {
           <LabelValue label="Working Hours" value={workingHours} />
           <LabelValue label="Working Location / City" value={workingLocation} />
         </div>
-
-        {/* Optional note */}
       </div>
     </div>
   );
 }
+
+/* ---------------------- LABEL COMPONENT ---------------------- */
 
 function LabelValue({ label, value }) {
   return (
@@ -201,6 +201,39 @@ function LabelValue({ label, value }) {
       </div>
       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
         {value ?? "-"}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------- SKELETON COMPONENTS ---------------------- */
+
+function Skeleton({ className = "" }) {
+  return (
+    <div className={`animate-pulse bg-gray-300 rounded-md ${className}`} />
+  );
+}
+
+function EducationSkeleton() {
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+        <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+          Education & Professional Details
+        </h2>
+
+        {/* Skeleton Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm"
+            >
+              <Skeleton className="h-3 w-28 mb-2" />
+              <Skeleton className="h-5 w-40" />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

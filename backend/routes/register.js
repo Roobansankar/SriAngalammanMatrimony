@@ -296,7 +296,30 @@ router.post(
         savedPhotoFilename = fileName; // save only filename in database
       }
 
-      const horoscopeBuffer = req.files?.horoscopeFile?.[0]?.buffer || null;
+      
+
+
+      // ---------- SAVE HOROSCOPE FILE TO /kundli ----------
+let savedHoroscopeFilename = null;
+
+if (req.files && req.files.horoscopeFile && req.files.horoscopeFile[0]) {
+  const uploaded = req.files.horoscopeFile[0];
+
+  // Extract extension
+  const ext = uploaded.originalname.split(".").pop().toLowerCase();
+
+  // Unique filename
+  const fileName = `${matriId}_horoscope_${Date.now()}.${ext}`;
+
+  // Full path
+  const filePath = path.join("kundli", fileName);
+
+  // Save to kundli folder
+  fs.writeFileSync(filePath, uploaded.buffer);
+
+  savedHoroscopeFilename = fileName;
+}
+
 
       // ---- Map all fields ----
       const mapped = {
@@ -311,11 +334,10 @@ router.post(
         Photo1: savedPhotoFilename || null,
         Photo1Approve: "Yes",
         // ✅ Store images as BLOBs
-        // PhotoMain: photoBuffer,
-        HoroscopeMain: horoscopeBuffer || null, // Optional horoscope
+    
 
         // ⚙️ Compatibility: set old field if DB still expects `horoscope`
-        horoscope: horoscopeBuffer || null,
+    
 
         ConfirmEmail: toTrimOrNull(b.email) || "-",
         ConfirmPassword: toTrimOrNull(b.password) || "-",
@@ -358,13 +380,20 @@ router.post(
         Sevai: toTrimOrNull(b.sevai) || "",
         Raghu: toTrimOrNull(b.raghu) || "",
         Keethu: toTrimOrNull(b.keethu) || "",
+        Kuladeivam: toTrimOrNull(b.kuladeivam) || "",
+        ThesaiIrupu: toTrimOrNull(b.thesaiirupu) || "",
+Horosother: savedHoroscopeFilename || null,
 
         Address: toTrimOrNull(b.address),
         City: toTrimOrNull(b.city),
         Dist: toTrimOrNull(b.Dist || b.district),
         State: toTrimOrNull(b.state),
         Country: toTrimOrNull(b.country),
-        Pincode: toInt(b.pincode),
+        // Phone: toTrimOrNull(b.altPhone),
+        Phone: (b.altPhone || "").substring(0, 30),
+
+
+        Pincode: b.pincode && b.pincode.length === 6 ? toInt(b.pincode) : null,
         Residencystatus: toTrimOrNull(b.residence),
         calling_time: toTrimOrNull(b.convenientTime),
 
@@ -376,7 +405,7 @@ router.post(
         income_in: toTrimOrNull(b.incomeType),
         anyotherincome: toTrimOrNull(b.otherIncome),
         working_hours: toTrimOrNull(b.workingHours),
-        // CompanyName: toTrimOrNull(b.companyName), // Column doesn't exist in DB
+        company_name: toTrimOrNull(b.companyName),
 
         workinglocation: toTrimOrNull(b.workingLocation),
 
@@ -431,6 +460,7 @@ router.post(
         FamilyType: toTrimOrNull(b.familyType),
         FamilyStatus: toTrimOrNull(b.familyStatus),
         mother_tounge: toTrimOrNull(b.motherTongue),
+
         noofbrothers: toTrimOrNull(b.noOfBrothers),
         nbm: toTrimOrNull(b.noOfBrothersMarried),
         noofsisters: toTrimOrNull(b.noOfSisters),
@@ -439,14 +469,25 @@ router.post(
         Fathersoccupation: toTrimOrNull(b.fatherOccupation),
         Mothersname: toTrimOrNull(b.motherName),
         Mothersoccupation: toTrimOrNull(b.motherOccupation),
-        parents_stay: toTrimOrNull(b.parentsStay),
+
+        nb_unmarried: toTrimOrNull(b.noOfBrothersUnmarried),
+        ns_unmarried: toTrimOrNull(b.noOfSistersUnmarried),
+
         family_wealth: toTrimOrNull(b.familyWealth),
+
         FamilyDetails: toTrimOrNull(b.familyDescription),
-        medicalhistory: toTrimOrNull(b.medicalHistory),
+
+        // medicalhistory: toTrimOrNull(b.medicalHistory),
+        medicalhistory:
+          toTrimOrNull(b.medicalHistory) ||
+          toTrimOrNull(b.familyMedicalHistory),
+
         familymedicalhistory: toTrimOrNull(b.familyMedicalHistory),
         passport: toTrimOrNull(b.passport),
 
-        PE_Maritalstatus: toTrimOrNull(b.partner_maritalStatus),
+        // PE_Maritalstatus: toTrimOrNull(b.partner_maritalStatus),
+        Looking: toTrimOrNull(b.partner_maritalStatus),
+
         PE_FromAge: toTrimOrNull(b.partner_ageFrom),
         PE_ToAge: toTrimOrNull(b.partner_ageTo),
         PE_from_Height: toTrimOrNull(b.partner_heightFrom),
@@ -455,11 +496,20 @@ router.post(
         PE_Caste: toTrimOrNull(b.partner_caste),
         PE_Complexion: toTrimOrNull(b.partner_complexion),
         PE_Residentstatus: toTrimOrNull(b.partner_residencyStatus),
-        PE_Country: toTrimOrNull(b.partner_country),
+
+        PE_Countrylivingin: toTrimOrNull(b.partner_countryLivingIn),
+
+        // State, city
         PE_State: toTrimOrNull(b.partner_state),
         PE_City: toTrimOrNull(b.partner_city),
+
+        // EDUCATION / OCCUPATION
         PE_Education: toTrimOrNull(b.partner_education),
         PE_Occupation: toTrimOrNull(b.partner_occupation),
+
+        // FIX – Mother tongue
+        PE_MotherTongue: toTrimOrNull(b.partner_motherTongue),
+
         PartnerExpectations: toTrimOrNull(b.partnerExpectations),
 
         Plan: toTrimOrNull(b.plan) || "basic",

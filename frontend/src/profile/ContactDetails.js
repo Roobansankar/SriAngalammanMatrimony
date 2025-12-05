@@ -46,7 +46,7 @@
 //   if (error) return <div className="p-6 text-red-600">{error}</div>;
 //   if (!user) return <div className="p-6">No user found</div>;
 
-//   // Field mappings & fallbacks (best-effort)
+//   // Field mappings
 //   const country = user.Country || user.POC || "-";
 //   const state = user.State || "-";
 //   const district = user.Dist || user.District || "-";
@@ -62,11 +62,13 @@
 //     user.calling_time || user.callingTime || user.working_hours || "-";
 
 //   return (
-//     <div className="min-h-screen bg-gray-50 p-6 font-display">
-//       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 mt-20">
-//         <h2 className="text-2xl font-bold mb-4">Contact Details</h2>
+//     <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+//       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+//         <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+//           Contact Details
+//         </h2>
 
-//         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
 //           <LabelValue label="Country" value={country} />
 //           <LabelValue label="State" value={state} />
 //           <LabelValue label="District" value={district} />
@@ -80,27 +82,7 @@
 //           <LabelValue label="Convenient Time to Call" value={convenientTime} />
 //         </div>
 
-//         {/* Optional: quick action buttons */}
-//         <div className="mt-6 flex gap-3">
-//           {mobile !== "-" && (
-//             <a
-//               className="px-4 py-2 rounded shadow bg-blue-600 text-white text-sm"
-//               href={`tel:${mobile}`}
-//             >
-//               Call Mobile
-//             </a>
-//           )}
-//           {whatsapp !== "-" && (
-//             <a
-//               className="px-4 py-2 rounded shadow bg-green-600 text-white text-sm"
-//               href={`https://wa.me/${String(whatsapp).replace(/\D/g, "")}`}
-//               target="_blank"
-//               rel="noreferrer"
-//             >
-//               Open WhatsApp
-//             </a>
-//           )}
-//         </div>
+//         {/* Action Buttons */}
 //       </div>
 //     </div>
 //   );
@@ -108,12 +90,17 @@
 
 // function LabelValue({ label, value }) {
 //   return (
-//     <div className="border p-3 rounded">
-//       <div className="text-xs text-gray-500">{label}</div>
-//       <div className="text-sm font-medium break-words">{value ?? "-"}</div>
+//     <div className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm hover:shadow-md transition">
+//       <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+//         {label}
+//       </div>
+//       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
+//         {value ?? "-"}
+//       </div>
 //     </div>
 //   );
 // }
+
 
 // src/profile/ContactDetails.jsx
 import React, { useEffect, useState } from "react";
@@ -159,7 +146,7 @@ export default function ContactDetails() {
     fetchUser();
   }, [navigate]);
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <ContactSkeleton />;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user found</div>;
 
@@ -198,12 +185,12 @@ export default function ContactDetails() {
           <LabelValue label="WhatsApp No." value={whatsapp} />
           <LabelValue label="Convenient Time to Call" value={convenientTime} />
         </div>
-
-        {/* Action Buttons */}
       </div>
     </div>
   );
 }
+
+/* ---------------------- LABEL COMPONENT ---------------------- */
 
 function LabelValue({ label, value }) {
   return (
@@ -213,6 +200,40 @@ function LabelValue({ label, value }) {
       </div>
       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
         {value ?? "-"}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------- SKELETON COMPONENTS ---------------------- */
+
+function Skeleton({ className = "" }) {
+  return (
+    <div className={`animate-pulse bg-gray-300 rounded-md ${className}`}></div>
+  );
+}
+
+function ContactSkeleton() {
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+
+        <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+          Contact Details
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {Array.from({ length: 11 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm"
+            >
+              <Skeleton className="h-3 w-24 mb-2" />
+              <Skeleton className="h-5 w-36" />
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

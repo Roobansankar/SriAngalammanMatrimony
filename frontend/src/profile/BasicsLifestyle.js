@@ -46,15 +46,15 @@
 //   if (error) return <div className="p-6 text-red-600">{error}</div>;
 //   if (!user) return <div className="p-6">No user found</div>;
 
-//   // Field mappings & sensible fallbacks
+//   // Field mappings
 //   const height = user.Height ?? user.Heightcm ?? "-";
 //   const weight = user.Weight ?? "-";
 //   const bloodGroup = user.BloodGroup || user.bloodgroup || "-";
 //   const complexion = user.Complexion || user.complexion || "-";
 //   const bodyType = user.Bodytype || user.bodytype || "-";
 //   const diet = user.Diet || "-";
-//   const smoke = user.Smoke;
-//   const drink = user.Drink;
+//   const smoke = user.Smoke ?? "-";
+//   const drink = user.Drink ?? "-";
 //   const specialCases =
 //     user.spe_cases || user.spe_reason || user.SpecialCases || "-";
 //   const hobbies = user.Hobbies || "-";
@@ -63,16 +63,17 @@
 //   const otherInterests = user.OtherInterests || user.other_interests || "-";
 //   const achievement = user.achievement || user.AnyAchievement || "-";
 //   const medicalHistory = user.medicalhistory || user.MedicalHistory || "-";
-//   const passport =
-//     typeof user.passport !== "undefined" ? String(user.passport) : "-";
+//   const passport = user.passport !== undefined ? String(user.passport) : "-";
 //   const cardType = user.cardtype || user.CardType || "-";
 
 //   return (
-//     <div className="min-h-screen bg-gray-50 p-6 font-display">
-//       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 mt-20">
-//         <h2 className="text-2xl font-bold mb-4">Basics & Lifestyle</h2>
+//     <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+//       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+//         <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+//           Basics & Lifestyle
+//         </h2>
 
-//         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
 //           <LabelValue label="Height" value={height} />
 //           <LabelValue label="Weight" value={weight} />
 //           <LabelValue label="Blood Group" value={bloodGroup} />
@@ -91,13 +92,6 @@
 //           <LabelValue label="Passport" value={passport} />
 //           <LabelValue label="Card Type" value={cardType} />
 //         </div>
-
-//         <div className="mt-6 text-sm text-gray-600">
-//           Tip: If some values appear missing, tell me the exact MySQL column
-//           names and I’ll map them explicitly (I used common fallbacks like{" "}
-//           <code>spe_cases</code>, <code>OtherHobbies</code>,{" "}
-//           <code>occu_details</code>, etc. where applicable).
-//         </div>
 //       </div>
 //     </div>
 //   );
@@ -105,12 +99,17 @@
 
 // function LabelValue({ label, value }) {
 //   return (
-//     <div className="border p-3 rounded">
-//       <div className="text-xs text-gray-500">{label}</div>
-//       <div className="text-sm font-medium break-words">{value ?? "-"}</div>
+//     <div className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm hover:shadow-md transition">
+//       <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+//         {label}
+//       </div>
+//       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
+//         {value ?? "-"}
+//       </div>
 //     </div>
 //   );
 // }
+
 
 // src/profile/BasicsLifestyle.jsx
 import React, { useEffect, useState } from "react";
@@ -156,7 +155,7 @@ export default function BasicsLifestyle() {
     fetchUser();
   }, [navigate]);
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <BasicsSkeleton />;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user found</div>;
 
@@ -211,6 +210,8 @@ export default function BasicsLifestyle() {
   );
 }
 
+/* ---------------------- LABEL COMPONENT ---------------------- */
+
 function LabelValue({ label, value }) {
   return (
     <div className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm hover:shadow-md transition">
@@ -219,6 +220,39 @@ function LabelValue({ label, value }) {
       </div>
       <div className="text-base font-semibold text-gray-800 mt-1 break-words">
         {value ?? "-"}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------- SKELETON COMPONENTS ---------------------- */
+
+function Skeleton({ className = "" }) {
+  return <div className={`animate-pulse bg-gray-300 rounded-md ${className}`} />;
+}
+
+function BasicsSkeleton() {
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
+
+        <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
+          Basics & Lifestyle
+        </h2>
+
+        {/* Skeleton Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {Array.from({ length: 17 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 shadow-sm"
+            >
+              <Skeleton className="h-3 w-24 mb-2" />
+              <Skeleton className="h-5 w-40" />
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

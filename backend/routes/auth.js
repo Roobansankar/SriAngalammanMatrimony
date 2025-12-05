@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-function makePhotoUrl(photoFilename, photoApprove) {
+function makePhotoUrl1(photoFilename, photoApprove) {
   const hasPhoto =
     photoFilename &&
     photoFilename !== "no-photo.gif" &&
@@ -72,18 +72,95 @@ function makePhotoUrl(photoFilename, photoApprove) {
   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
 }
 
+// // GET /api/auth/user?email=...
+// router.get("/user", async (req, res) => {
+//   try {
+//     const email = req.query.email;
+//     if (!email)
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Email required" });
+
+//     const conn = db.promise();
+
+//     // ⭐ Calculate correct age dynamically using DOB
+//     const [rows] = await conn.query(
+//       `
+//       SELECT *,
+//         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
+//       FROM register
+//       WHERE ConfirmEmail = ?
+//       LIMIT 1
+//       `,
+//       [email.trim()]
+//     );
+
+//     if (!rows.length) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found" });
+//     }
+
+//     const user = rows[0];
+
+//     // ⭐ Build Photo URL (your existing logic)
+//     const PhotoURL = makePhotoUrl(user.Photo1, user.Photo1Approve);
+
+//     // ⭐ Remove sensitive fields
+//     const { ConfirmPassword, ParentPassword, ...safeUser } = user;
+
+//     safeUser.PhotoURL = PhotoURL;
+
+//     return res.json({
+//       success: true,
+//       user: safeUser,
+//     });
+//   } catch (err) {
+//     console.error("auth/user error:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
+
+// ----------------------------------------------
+// Helper: Build Photo URL
+// ----------------------------------------------
+function makePhotoUrl(photoFilename, photoApprove) {
+  const FALLBACK = "no-photo.gif";
+  const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
+  const GALLERY_PATH = "/gallery/";
+
+  const hasPhoto =
+    photoFilename &&
+    photoFilename !== "no-photo.gif" &&
+    String(photoApprove).toLowerCase() === "yes";
+
+  const file = hasPhoto ? photoFilename : FALLBACK;
+
+  return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+}
+
+// ----------------------------------------------
+// ⭐ GET USER DETAILS
 // GET /api/auth/user?email=...
+// ----------------------------------------------
 router.get("/user", async (req, res) => {
   try {
     const email = req.query.email;
-    if (!email)
-      return res
-        .status(400)
-        .json({ success: false, message: "Email required" });
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email required",
+      });
+    }
 
     const conn = db.promise();
 
-    // ⭐ Calculate correct age dynamically using DOB
+    // ⭐ Fetch User + Calculate Age
     const [rows] = await conn.query(
       `
       SELECT *,
@@ -96,33 +173,86 @@ router.get("/user", async (req, res) => {
     );
 
     if (!rows.length) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
     const user = rows[0];
 
-    // ⭐ Build Photo URL (your existing logic)
+    // ------------------------------------------
+    // ⭐ Build Photo URL
+    // ------------------------------------------
     const PhotoURL = makePhotoUrl(user.Photo1, user.Photo1Approve);
 
-    // ⭐ Remove sensitive fields
-    const { ConfirmPassword, ParentPassword, ...safeUser } = user;
+    // ------------------------------------------
+    // ⭐ Build Horoscope URL (image/pdf)
+    // FILE NAME: user.horosother
+    // FOLDER: kundli/
+    // ------------------------------------------
+    const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
+    // let HoroscopeURL = null;
+    // if (user.horosother) {
+    //   HoroscopeURL = `${BASE_URL}/kundli/${encodeURIComponent(
+    //     user.horosother
+    //   )}`;
+    // }
+
+    let HoroscopeURL = null;
+
+    if (user.horosother) {
+      let fileName = user.horosother;
+
+      // Auto-detect extension if missing
+      if (!fileName.includes(".")) {
+        // TRY JPG first
+        if (fs.existsSync(`kundli/${fileName}.jpg`)) {
+          fileName = fileName + ".jpg";
+        }
+        // TRY PNG
+        else if (fs.existsSync(`kundli/${fileName}.png`)) {
+          fileName = fileName + ".png";
+        }
+        // TRY PDF
+        else if (fs.existsSync(`kundli/${fileName}.pdf`)) {
+          fileName = fileName + ".pdf";
+        }
+      }
+
+      HoroscopeURL = `${BASE_URL}/kundli/${encodeURIComponent(fileName)}`;
+    }
+
+
+    // ------------------------------------------
+    // ⭐ Remove Sensitive Fields
+    // ------------------------------------------
+    const {
+      ConfirmPassword,
+      ParentPassword,
+      Password,
+      ...safeUser
+    } = user;
+
+    // Add URLs
     safeUser.PhotoURL = PhotoURL;
+    safeUser.HoroscopeURL = HoroscopeURL;
 
+    // Send Response
     return res.json({
       success: true,
       user: safeUser,
     });
   } catch (err) {
     console.error("auth/user error:", err);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error",
     });
   }
 });
+
 
 // ⭐ GET ALL PROFILES for Matching Page
 router.get("/allProfiles", async (req, res) => {
@@ -140,7 +270,7 @@ router.get("/allProfiles", async (req, res) => {
 
     // PROCESS EACH USER → attach PhotoURL
     const users = rows.map((u) => {
-      const PhotoURL = makePhotoUrl(u.Photo1, u.Photo1Approve);
+      const PhotoURL = makePhotoUrl1(u.Photo1, u.Photo1Approve);
 
       return {
         ...u,
@@ -370,21 +500,21 @@ router.put("/update/basic", async (req, res) => {
 
 //       await conn.query(
 //         `
-//         UPDATE register SET 
-//           Moonsign = ?, 
-//           Star = ?, 
-//           Gothram = ?, 
-//           Manglik = ?, 
-//           shani = ?, 
-//           shaniplace = ?, 
-//           Horosmatch = ?, 
-//           parigarasevai = ?, 
-//           Sevai = ?, 
-//           Raghu = ?, 
-//           Keethu = ?, 
-//           POB = ?, 
-//           POC = ?, 
-//           TOB = ?, 
+//         UPDATE register SET
+//           Moonsign = ?,
+//           Star = ?,
+//           Gothram = ?,
+//           Manglik = ?,
+//           shani = ?,
+//           shaniplace = ?,
+//           Horosmatch = ?,
+//           parigarasevai = ?,
+//           Sevai = ?,
+//           Raghu = ?,
+//           Keethu = ?,
+//           POB = ?,
+//           POC = ?,
+//           TOB = ?,
 //           HoroscopeMain = ?
 //         WHERE ConfirmEmail = ?
 //       `,
@@ -421,8 +551,6 @@ router.put("/update/basic", async (req, res) => {
 //     }
 //   }
 // );
-
-
 
 function safeToJSONArray(input) {
   if (!input || input === "" || input === "null") return "[]";

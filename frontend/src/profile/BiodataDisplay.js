@@ -879,26 +879,60 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
   }, []);
 
   // Generate mobile screenshot
+  // useEffect(() => {
+  //   if (!isMobile) return;
+  //   if (!currentData) return;
+  //   if (!printRef.current || !cloneContainer.current) return;
+
+  //   cloneContainer.current.innerHTML = ""; // clean old clone
+
+  //   const cloned = printRef.current.cloneNode(true);
+  //   cloneContainer.current.appendChild(cloned);
+
+  //   setTimeout(async () => {
+  //     const canvas = await html2canvas(cloned, {
+  //       scale: 1,
+  //       useCORS: true,
+  //       backgroundColor: "#ffffff",
+  //       scrollY: -window.scrollY,
+  //     });
+
+  //     setMobileImage(canvas.toDataURL("image/png"));
+  //   }, 700);
+  // }, [isMobile, currentData]);
+
   useEffect(() => {
-    if (!isMobile) return;
-    if (!currentData) return;
-    if (!printRef.current || !cloneContainer.current) return;
+    if (
+      !isMobile ||
+      !currentData ||
+      !printRef.current ||
+      !cloneContainer.current
+    )
+      return;
 
-    cloneContainer.current.innerHTML = ""; // clean old clone
+    // Reset clone container
+    cloneContainer.current.innerHTML = "";
 
+    // Clone DOM safely
     const cloned = printRef.current.cloneNode(true);
     cloneContainer.current.appendChild(cloned);
 
-    setTimeout(async () => {
-      const canvas = await html2canvas(cloned, {
-        scale: 1,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        scrollY: -window.scrollY,
-      });
+    // IMPORTANT FIX: force browser to render clone before html2canvas
+    requestAnimationFrame(() => {
+      setTimeout(async () => {
+        try {
+          const canvas = await html2canvas(cloned, {
+            scale: 1,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+          });
 
-      setMobileImage(canvas.toDataURL("image/png"));
-    }, 700);
+          setMobileImage(canvas.toDataURL("image/png"));
+        } catch (err) {
+          console.error("Screenshot error:", err);
+        }
+      }, 200); // small delay, not 700ms
+    });
   }, [isMobile, currentData]);
 
   // Fetch user
@@ -930,14 +964,14 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             birth_place: user.POB || "",
             education: user.Education || "",
             occupation: user.Occupation || "",
-            company_details: `${user.occu_details || ""}, ${
+            company_details: `${user.company_name || ""}, ${
               user.workinglocation || ""
             }`,
             monthly_income: user.Annualincome || "",
             height: user.HeightText || "",
             weight: user.Weight || "",
             complexion: user.Complexion || "",
-            family_deity: `-, ${user.City || ""}`,
+            family_deity: `${user.Kuladeivam || ""}, ${user.City || ""}`,
             kulam: user.Caste || "",
             kootam: user.Subcaste || "",
             father_name: user.Fathername || "",
@@ -990,7 +1024,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
               user.g11,
               user.g12,
             ],
-            dasa_balance: "",
+            dasa_balance: user.ThesaiIrupu || "",
             other_notes: user.PartnerExpectations || "",
             mail_id: user.ConfirmEmail || "",
             blood_group: user.BloodGroup || "",
@@ -1025,7 +1059,12 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
       {/* MOBILE IMAGE OUTPUT */}
       {isMobile && mobileImage && (
         <div className="mobile-image-view">
-          <img src={mobileImage} style={{ width: "100%" }} alt="biodata" />
+          <img
+            src={mobileImage}
+            style={{ width: "100%" }}
+            alt="biodata"
+            className="mt-16"
+          />
         </div>
       )}
 

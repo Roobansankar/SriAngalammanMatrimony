@@ -16,23 +16,26 @@ export default function Step3({ nextStep, prevStep, formData }) {
             Email Verified Successfully!
           </h3>
           <p className="text-sm text-gray-600">
-            Great! Your email has been verified. Let's continue with your profile details.
+            Great! Your email has been verified. Let's continue with your
+            profile details.
           </p>
         </div>
 
         {/* Summary */}
         <div className="my-6 bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 rounded-xl py-4 px-6">
           <p className="text-sm text-gray-700">Registered Email</p>
-          <p className="text-lg font-semibold text-rose-700 mt-1">
+          <p className="text-lg font-semibold text-rose-700 mt-1 break-words break-all text-center">
             {formData.email || "—"}
           </p>
+
           <p className="text-xs text-green-600 mt-2 flex items-center justify-center gap-1">
             <CheckCircle className="w-3 h-3" /> Verified
           </p>
         </div>
 
         <p className="text-sm text-gray-600 mb-4">
-          Your unique Matri ID will be generated after completing the registration and payment.
+          Your unique Matri ID will be generated after completing the
+          registration and payment.
         </p>
 
         {/* Buttons */}
@@ -52,7 +55,9 @@ export default function Step3({ nextStep, prevStep, formData }) {
           <button
             onClick={handleNext}
             type="button"
-            className={`flex items-center justify-center gap-2 bg-rose-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-rose-700 transition ${emailVerified ? 'w-full' : 'w-full sm:w-auto'}`}
+            className={`flex items-center justify-center gap-2 bg-rose-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-rose-700 transition ${
+              emailVerified ? "w-full" : "w-full sm:w-auto"
+            }`}
           >
             Continue
             <ArrowRight className="w-4 h-4" />
