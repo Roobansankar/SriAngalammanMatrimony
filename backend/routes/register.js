@@ -214,7 +214,7 @@ router.post(
 
       // ---------- GENERATE MATRI ID IF NOT PROVIDED ----------
       let matriId = toTrimOrNull(b.matriId);
-      
+
       if (!matriId || matriId === "-" || matriId === "undefined") {
         // Generate MatriID based on occupation, maritalStatus, plan, gender
         const occupation = (b.occupation || "").toLowerCase().trim();
@@ -295,9 +295,6 @@ router.post(
 
         savedPhotoFilename = fileName; // save only filename in database
       }
-
-      
-
 
       // ---------- SAVE HOROSCOPE FILE TO /kundli ----------
 let savedHoroscopeFilename = null;
