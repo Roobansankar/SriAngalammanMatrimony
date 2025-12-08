@@ -240,7 +240,7 @@ export default function Basic() {
     user.Mobile || user.Mobile2 || user.Phone || user.MobileNumber || "-";
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover">
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover font-display">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20 border border-gray-100">
         <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center tracking-wide">
           Basic Profile Details

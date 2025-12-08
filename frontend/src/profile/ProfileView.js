@@ -25,6 +25,12 @@ export default function ProfileView() {
     }
   })();
 
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
   const loggedId =
     (logged?.MatriID || logged?.matid || "").toString().trim() || null;
   const viewedId =
@@ -158,7 +164,72 @@ export default function ProfileView() {
     </div>
   );
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  // if (loading) return <div className="p-8">Loading...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display">
+        <div className="max-w-[1140px] mx-auto mt-20 space-y-10 animate-pulse">
+          {/* ⭐ Banner skeleton */}
+          <div className="w-full h-[220px] bg-gray-200 rounded-xl"></div>
+
+          {/* ⭐ Avatar + Title skeleton */}
+          <div className="flex items-center gap-5 -mt-16 px-4">
+            <div className="w-32 h-32 bg-gray-200 rounded-full border-4 border-white"></div>
+
+            <div className="flex flex-col gap-3 mt-16">
+              <div className="h-6 w-48 bg-gray-200 rounded"></div>
+              <div className="h-4 w-64 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+
+          {/* ⭐ Section Card Skeleton Generator */}
+          {[
+            "About Me",
+            "Basic Details",
+            "Horoscope Details",
+            "Contact Details",
+            "Education & Professional",
+            "Basic & Lifestyle",
+            "Family Details",
+            "Partner Preference",
+          ].map((title, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+            >
+              {/* Title skeleton */}
+              <div className="h-6 w-40 bg-gray-200 rounded mb-4"></div>
+
+              {/* Section rows skeleton */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div className="h-4 w-28 bg-gray-200 rounded"></div>
+                    <div className="h-5 w-40 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+
+              {/* If Family / Partner has extra long text field */}
+              {(title === "Family Details" ||
+                title === "Partner Preference") && (
+                <div className="mt-6">
+                  <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-5 w-full bg-gray-200 rounded"></div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* ⭐ Special Horoscope Rasi & Navamsa boxes */}
+          <div className="flex justify-center gap-12 my-10">
+            <div className="w-[300px] h-[300px] bg-gray-200 rounded"></div>
+            <div className="w-[300px] h-[300px] bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+
   if (error)
     return (
       <div className="p-8">
@@ -316,10 +387,7 @@ export default function ProfileView() {
   return (
     // <div className="min-h-screen bg-[#FFF4E0] dark:bg-[#221019] text-[#333333] dark:text-gray-200 p-6 font-display">
     <div
-      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display"
-      style={{
-        backgroundImage: `url("https://tse2.mm.bing.net/th/id/OIP.VwEQnyoegmMr4uepYrfG6AHaEK?pid=Api&P=0&h=180")`,
-      }}
+      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b]"f
     >
       <div className="max-w-[1140px] mx-auto">
         {/* Top card (same as ProfilePage) */}
@@ -349,11 +417,21 @@ export default function ProfileView() {
                     backgroundImage: `url(${
                       photoSrc(user) && photoSrc(user) !== ""
                         ? photoSrc(user)
-                        : "https://sriangalammanmatrimony.com/photoprocess.php?image=images/nophoto.jpg&square=200"
+                        : "/nophoto.jpg"
                     })`,
                     backgroundPosition: "top center", // ⭐ FIX: Show the face
                   }}
                 />
+
+                {/* <div
+                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark"
+                  style={{
+                    width: 128,
+                    height: 128,
+                    backgroundImage: `url(${user?.PhotoURL || "/nophoto.jpg"})`,
+                    backgroundPosition: "top center",
+                  }}
+                /> */}
 
                 {isOwner ? (
                   <button
@@ -392,12 +470,12 @@ export default function ProfileView() {
               </div>
 
               <div className="flex w-full md:w-auto gap-3">
-                <button
+                {/* <button
                   onClick={() => navigate(`/profile/preview/${user._id || ""}`)}
                   className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary text-sm font-bold flex-1"
                 >
                   <span className="truncate">Preview Profile</span>
-                </button>
+                </button> */}
 
                 {isOwner ? (
                   <button
@@ -511,7 +589,7 @@ export default function ProfileView() {
                       <span className="blur-sm select-none pointer-events-none">
                         +91-xxxx-xxx-xxx
                       </span>
-                      <button
+                      {/* <button
                         onClick={sendInterest}
                         disabled={interest?.status === "pending"}
                         className="ml-2 px-3 py-1 rounded text-white text-sm"
@@ -520,7 +598,7 @@ export default function ProfileView() {
                         {interest?.status === "pending"
                           ? "Interest Sent"
                           : "Send Interest"}
-                      </button>
+                      </button> */}
                     </span>
                   )
                 }

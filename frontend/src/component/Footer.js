@@ -172,26 +172,7 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer className="w-full bg-[#800020] text-white font-display">
-      {/* CTA Section */}
-      {/* <div className="text-center px-6 py-16 border-b border-white/10">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Ready to Find Your Perfect Match?
-        </h2>
-        <p className="text-white/90 max-w-2xl mx-auto mb-8 text-base md:text-lg">
-          Join thousands of families who have found happiness through Sri
-          Angalamman Matrimony.
-        </p>
-
-        <div className="flex justify-center">
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 bg-white text-[#800020] font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5"
-          >
-            Register Now
-            <ArrowRight size={18} />
-          </Link>
-        </div>
-      </div> */}
+  
 
       {/* Footer Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-12">
@@ -200,7 +181,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart size={22} />
-              <h3 className="font-bold text-lg">Sri Angalamman</h3>
+              <h3 className="font-bold text-lg">Sri Angalamman Matrimony</h3>
             </div>
             <p className="text-sm text-white/90 max-w-xs leading-relaxed">
               Connecting hearts and building families with tradition and trust.
@@ -288,7 +269,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin size={16} className="mt-1" />
-                <span>Chennai, Tamil Nadu, India</span>
+                <span>Coimbatore, Tamil Nadu, India</span>
               </li>
             </ul>
           </div>

@@ -149,6 +149,37 @@ export default function Matchs() {
     ).padStart(2, "0")}-${date.getFullYear()}`;
   };
 
+
+
+  const getPagination = () => {
+    const pages = [];
+    const total = totalPages;
+    const current = page;
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+      return pages;
+    }
+
+    pages.push(1);
+
+    if (current > 3) pages.push("...");
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (current < total - 2) pages.push("...");
+
+    pages.push(total);
+
+    return pages;
+  };
+
+
   /* ---------- RENDER ---------- */
   return (
     <div className="p-4 max-w-[1200px] mx-auto font-display pt-24">
@@ -235,32 +266,42 @@ export default function Matchs() {
       )}
 
       {/* Pagination */}
-      {!loading && (
-        <div className="flex flex-wrap justify-center mt-8 gap-2">
+      {/* ---------- SMART PAGINATION ---------- */}
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-center mt-8 gap-2 mb-10">
+          {/* Prev */}
           <button
-            className="px-3 py-1 border rounded disabled:opacity-40"
-            onClick={() => goToPage(page - 1)}
+            className="px-4 py-1 border rounded disabled:opacity-40 bg-white"
             disabled={page === 1}
+            onClick={() => goToPage(page - 1)}
           >
             Prev
           </button>
 
-          {[...Array(totalPages)].map((_, i) => (
+          {/* Page Numbers */}
+          {getPagination().map((p, idx) => (
             <button
-              key={i}
-              onClick={() => goToPage(i + 1)}
-              className={`px-3 py-1 border rounded ${
-                page === i + 1 ? "bg-pink-600 text-white" : ""
-              }`}
+              key={idx}
+              disabled={p === "..."}
+              onClick={() => p !== "..." && goToPage(p)}
+              className={`px-3 py-1 border rounded
+          ${
+            p === page
+              ? "bg-pink-600 text-white"
+              : p === "..."
+              ? "cursor-default bg-gray-100"
+              : "bg-white text-slate-700"
+          }`}
             >
-              {i + 1}
+              {p}
             </button>
           ))}
 
+          {/* Next */}
           <button
-            className="px-3 py-1 border rounded disabled:opacity-40"
-            onClick={() => goToPage(page + 1)}
+            className="px-4 py-1 border rounded disabled:opacity-40 bg-white"
             disabled={page === totalPages}
+            onClick={() => goToPage(page + 1)}
           >
             Next
           </button>

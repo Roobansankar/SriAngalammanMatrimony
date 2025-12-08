@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, Link, useNavigate, useParams } from "react-router-dom";
 import {
   IdCard,
   UserRound,
@@ -11,49 +11,50 @@ import {
   Heart,
   MessageCircle,
   UserPlus,
-  Sparkles, // Religion
-  Layers, // Caste
-  GitBranch, // Subcaste (hierarchy icon)
-  UserCog, // Profile created by
+  Sparkles,
+  Layers,
+  GitBranch,
+  UserCog,
 } from "lucide-react";
 
 export default function HoroscopeSearchResults() {
-  const { state } = useLocation(); // { filters, apiBase }
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
   const [results, setResults] = useState({ total: 0, results: [] });
-  const [page, setPage] = useState(state?.filters?.page || 1);
+
+  const perPage = 10;
 
   useEffect(() => {
     if (!state?.filters) navigate("/", { replace: true });
   }, [state, navigate]);
+
+  const { page: pageParam } = useParams();
+  const page = Number(pageParam) || 1;
+
+  const totalPages = Math.ceil((results?.total || 0) / perPage);
+
+  const goToPage = (num) => {
+    if (num >= 1 && num <= totalPages) {
+      navigate(`/regularsearch-results/${num}`, {
+        state, // ⬅️ SEND BACK THE SAME FILTERS
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     if (!state?.filters) return;
 
     const fetchResults = async () => {
       setLoading(true);
-      const f = state.filters;
-      const payload = new FormData();
-
-      payload.append("gender", f.gender ?? "");
-      payload.append("txtSAge", f.txtSAge ?? "");
-      payload.append("txtEAge", f.txtEAge ?? "");
-      (f.looking || []).forEach((v) => payload.append("looking[]", v));
-      (f.religion || []).forEach((v) => payload.append("religion[]", v));
-      (f.caste || []).forEach((v) => payload.append("caste[]", v));
-      (f.edu || []).forEach((v) => payload.append("edu[]", v));
-      (f.occu || []).forEach((v) => payload.append("occu[]", v));
-      if (f.with_photo) payload.append("with_photo", "1");
-
-      payload.append("page", page);
 
       try {
-        const res = await fetch("http://localhost:5000/api/search", {
+        const res = await fetch("http://localhost:5000/api/horoscopesearch", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          // body: JSON.stringify(f),
-          body: JSON.stringify({ ...f, page }),
+          body: JSON.stringify({ ...state.filters, page }),
         });
 
         const data = await res.json();
@@ -69,18 +70,54 @@ export default function HoroscopeSearchResults() {
     fetchResults();
   }, [state, page]);
 
-  // ⭐ Smooth Scroll To Top When Page Changes
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, [page]);
+  // Pagination
+  const getPagination = () => {
+    const pages = [];
+    const total = totalPages;
+    const current = page;
+
+    if (total <= 7) {
+      // show all pages when small
+      for (let i = 1; i <= total; i++) pages.push(i);
+      return pages;
+    }
+
+    pages.push(1); // always show first
+
+    if (current > 3) pages.push("...");
+
+    // middle pages
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (current < total - 2) pages.push("...");
+
+    pages.push(total); // always show last
+
+    return pages;
+  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 font-display">
+    <div className="min-h-screen bg-gradient-to-b from-[#fee2e2] via-[#fca5a5] to-[#ef4444] dark:bg-slate-950 font-display">
+      {/* Skeleton CSS */}
+      <style>{`
+        .skeleton {
+          background: linear-gradient(90deg, #f0f0f0 0px, #e4e4e4 40px, #f0f0f0 80px);
+          background-size: 600px;
+          animation: shimmer 1.5s infinite linear;
+        }
+        @keyframes shimmer {
+          0% { background-position: -600px 0; }
+          100% { background-position: 600px 0; }
+        }
+      `}</style>
+
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-6 md:py-10">
-        <div className="mb-4 md:mb-6 flex items-center justify-between mt-20">
+        <div className="mb-4 md:mb-6 flex items-center justify-between mt-14">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
               Search Results
@@ -91,25 +128,51 @@ export default function HoroscopeSearchResults() {
                 : `We found ${results?.total || 0} results`}
             </p>
           </div>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
-          >
-            <Heart className="size-4" />
-            New Search
-          </Link>
         </div>
 
-        {loading ? (
+        {/* Skeleton Loader */}
+        {loading && (
           <div className="space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-40 rounded-md bg-slate-100 dark:bg-slate-800 animate-pulse"
-              />
+                className="rounded-md ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+              >
+                <div className="h-1 w-full bg-rose-600" />
+                <div className="grid grid-cols-1 md:grid-cols-[128px_1fr_72px] items-center gap-4 px-3 md:px-4 py-4">
+                  <div className="flex items-center justify-center">
+                    <div className="size-28 md:size-32 rounded-full skeleton"></div>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                      {[1, 2, 3].map((col) => (
+                        <div key={col} className="space-y-2">
+                          {[1, 2, 3, 4].map((row) => (
+                            <div
+                              key={row}
+                              className="h-6 rounded skeleton"
+                            ></div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="hidden md:flex flex-col items-center justify-center gap-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="size-9 rounded-full skeleton"
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-        ) : (
+        )}
+
+        {/* Real Data */}
+        {!loading && (
           <>
             {results?.results?.length ? (
               <div className="space-y-3">
@@ -124,73 +187,83 @@ export default function HoroscopeSearchResults() {
             )}
           </>
         )}
+
+        {/* Pagination - Matches Style */}
+        {!loading && results?.total > perPage && (
+          <div className="flex items-center justify-center mt-8 gap-2 mb-10">
+            {/* Prev Button */}
+            <button
+              className="px-4 py-1 border rounded disabled:opacity-40 bg-white dark:bg-slate-800"
+              disabled={page === 1}
+              onClick={() => goToPage(page - 1)}
+            >
+              Prev
+            </button>
+
+            {/* Page Numbers */}
+            {getPagination().map((p, idx) => (
+              <button
+                key={idx}
+                disabled={p === "..."}
+                onClick={() => p !== "..." && goToPage(p)}
+                className={`px-3 py-1 border rounded 
+          ${
+            p === page
+              ? "bg-pink-600 text-white"
+              : p === "..."
+              ? "cursor-default bg-gray-100 dark:bg-slate-700"
+              : "bg-white dark:bg-slate-800 text-slate-700"
+          }`}
+              >
+                {p}
+              </button>
+            ))}
+
+            {/* Next Button */}
+            <button
+              className="px-4 py-1 border rounded disabled:opacity-40 bg-white dark:bg-slate-800"
+              disabled={page === totalPages}
+              onClick={() => goToPage(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
-      {/* Pagination */}
-
-      {results?.total > 10 && (
-        <div className="flex justify-center mt-8 gap-4">
-          <button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
-            className={`px-4 py-2 rounded-md mb-10 border ${
-              page === 1
-                ? "bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed"
-                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 hover:bg-amber-100"
-            }`}
-          >
-            Previous
-          </button>
-
-          <span className="px-4 py-2 rounded-md border bg-white dark:bg-slate-800 mb-10 text-slate-700 dark:text-slate-300">
-            Page {page} of {Math.ceil(results.total / 10)}
-          </span>
-
-          <button
-            onClick={() =>
-              setPage((prev) =>
-                Math.min(prev + 1, Math.ceil(results.total / 10))
-              )
-            }
-            disabled={page === Math.ceil(results.total / 10)}
-            className={`px-4 py-2 mb-10 rounded-md border ${
-              page === Math.ceil(results.total / 10)
-                ? "bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed"
-                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 hover:bg-amber-100"
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
 function ProfileRow({ r }) {
+  const fallbackImg =
+    "https://sriangalammanmatrimony.com/photoprocess.php?image=images/nophoto.jpg&square=200";
+
+  // Format date: day-month-year
+  const formatDate = (d) => {
+    if (!d) return "—";
+    const date = new Date(d);
+    return `${String(date.getDate()).padStart(2, "0")}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${date.getFullYear()}`;
+  };
+
   return (
     <div className="rounded-md ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-900 overflow-hidden font-display">
       <div className="h-1 w-full bg-rose-600" />
 
-      {/* Mobile-first: stack; desktop: 3 columns */}
       <div className="grid grid-cols-1 md:grid-cols-[128px_1fr_72px] items-center gap-4 px-3 md:px-4 py-4">
         {/* Avatar */}
         <div className="flex items-center justify-center">
           <img
-            src={r.PhotoURL || "http://localhost:5000/gallery/nophoto.jpg"}
+            src={r.PhotoURL || fallbackImg}
             alt={r.Name || "Profile photo"}
             loading="lazy"
             width={128}
             height={128}
             className="size-28 md:size-32 aspect-square rounded-full object-cover object-top ring-2 ring-amber-400 bg-slate-100"
-            // onError={(e) => {
-            //   if (e.currentTarget.dataset.fbk === "1") return;
-            //   e.currentTarget.dataset.fbk = "1";
-            //   e.currentTarget.src = "http://localhost:5000/gallary/nophoto.jpg";
-            // }}
             onError={(e) => {
-              if (e.currentTarget.dataset.fbk === "1") return;
-              e.currentTarget.dataset.fbk = "1";
-              e.currentTarget.src = "http://localhost:5000/gallery/nophoto.jpg";
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = fallbackImg;
             }}
           />
         </div>
@@ -201,7 +274,7 @@ function ProfileRow({ r }) {
             <ul className="list-none m-0 p-0 space-y-2 text-[15px] md:text-[16px] leading-6 md:leading-7 text-slate-800 dark:text-slate-200">
               <Li icon={IdCard}>{r.MatriID || "—"}</Li>
               <Li icon={UserRound}>{r.Name || "—"}</Li>
-              <Li icon={CalendarRange}>{r.DOB || "—"}</Li>
+              <Li icon={CalendarRange}>{formatDate(r.DOB)}</Li>
               <Li icon={UserRound}>{r.Age ? `${r.Age} years` : "—"}</Li>
             </ul>
 
@@ -234,20 +307,31 @@ function ProfileRow({ r }) {
           </div>
         </div>
 
-        {/* Desktop actions (hidden on mobile) */}
-        <div className="hidden md:flex flex-col items-center justify-center gap-3">
-          <Action title="View Full Profile" href={r.fullProfileUrl || "#"}>
-            <UserRound className="size-5" />
-          </Action>
-          <Action title="Make Shortlist" onClick={() => {}}>
-            <Heart className="size-5" />
-          </Action>
-          <Action title="Send Message" onClick={() => {}}>
-            <MessageCircle className="size-5" />
-          </Action>
-          <Action title="Connect Members" onClick={() => {}}>
-            <UserPlus className="size-5" />
-          </Action>
+        {/* Action Icons - Visible on all screens */}
+        <div className="flex md:flex-col flex-row items-center justify-center gap-3">
+          <Link to={`/profile/view/${r.MatriID || r.matid}`}>
+            <Action title="View Full Profile">
+              <UserRound className="size-5" />
+            </Action>
+          </Link>
+
+          <Link to={`/profile/view/${r.MatriID || r.matid}`}>
+            <Action title="Make Shortlist">
+              <Heart className="size-5" />
+            </Action>
+          </Link>
+
+          <Link to={`/profile/view/${r.MatriID || r.matid}`}>
+            <Action title="Send Message">
+              <MessageCircle className="size-5" />
+            </Action>
+          </Link>
+
+          <Link to={`/profile/view/${r.MatriID || r.matid}`}>
+            <Action title="Connect Members">
+              <UserPlus className="size-5" />
+            </Action>
+          </Link>
         </div>
       </div>
     </div>
@@ -267,15 +351,14 @@ function Strong({ children }) {
   return <span className="font-semibold font-display">{children}</span>;
 }
 
-function Action({ title, href, onClick, children }) {
-  const Comp = href ? "a" : "button";
+function Action({ title, children }) {
   return (
-    <Comp
-      {...(href ? { href } : { type: "button", onClick })}
+    <button
+      type="button"
       title={title}
       className="inline-flex items-center font-display justify-center size-9 rounded-full ring-1 ring-rose-200/70 text-rose-500 hover:bg-rose-50 hover:ring-rose-300 transition"
     >
       {children}
-    </Comp>
+    </button>
   );
 }
