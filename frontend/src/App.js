@@ -393,10 +393,10 @@
 // src/App.js
 import { useEffect, useState } from "react";
 import {
-    Route,
-    BrowserRouter as Router,
-    Routes,
-    useLocation,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
 } from "react-router-dom";
 import About from "./component/About";
 import ContactUs from "./component/Contactus";
@@ -461,10 +461,9 @@ import Matchs from "./profile/Matchs";
 import NotificationsPage from "./profile/NotificationsPage";
 import ProfileView from "./profile/ProfileView";
 import LoggedRegularSearch from "./profile/RegularSearch";
-import LogedSearchResults from "./profile/RegularSearchResults";
+// import LogedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
-
-
+import LoggedSearchResults from "./profile/RegularSearchResults";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -716,14 +715,25 @@ function AppContent({ user, setUser }) {
             }
           />
 
-          <Route
+          {/* <Route
             path="/regularsearch-results"
             element={
               <PrivateRoute>
                 <LogedSearchResults />
               </PrivateRoute>
             }
+          /> */}
+
+          <Route
+            path="/regularsearch-results/:page?"
+            element={
+              <PrivateRoute>
+                <LoggedSearchResults />
+              </PrivateRoute>
+            }
           />
+
+          
 
           <Route
             path="/advanced-search"
@@ -735,7 +745,7 @@ function AppContent({ user, setUser }) {
           />
 
           <Route
-            path="/advancedsearch-results"
+            path="/advancedsearch-results/:page?"
             element={
               <PrivateRoute>
                 <AdvancedSearchResults />
@@ -753,7 +763,7 @@ function AppContent({ user, setUser }) {
           />
 
           <Route
-            path="/horoscopesearch-results"
+            path="/horoscopesearch-results/:page?"
             element={
               <PrivateRoute>
                 <HoroscopeSearchResults />

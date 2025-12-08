@@ -355,6 +355,8 @@ export default function Horoscope() {
   const keethu = user.Keethu || "-";
   const placeOfBirth = user.POB || user.PlaceOfBirth || "-";
   const placeOfCountry = user.POC || user.Country || "-";
+  const kuladeivam =  user.Kuladeivam || "-";
+  const ThesaiIrupu = user. ThesaiIrupu || "-"
 
   // Time of Birth Handling
   let tobRaw = user.TOB || user.TimeOfBirth || "";
@@ -377,7 +379,7 @@ export default function Horoscope() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-b from-[#fdfbfb] to-[#ebedee] font-display">
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] font-display">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-10 mt-20 border border-gray-200">
         {/* Title */}
         <h2 className="text-3xl font-bold text-gray-700 mb-8 text-center">
@@ -404,6 +406,8 @@ export default function Horoscope() {
           <LabelValue label="Minutes" value={minute} />
           <LabelValue label="Seconds" value={second} />
           <LabelValue label="AM / PM" value={ampm} />
+            <LabelValue label="kuladeivam" value={kuladeivam} />
+             <LabelValue label="Thesai Irupu" value={ThesaiIrupu} />
         </div>
 
         {/* Rasi & Navamsa Charts */}

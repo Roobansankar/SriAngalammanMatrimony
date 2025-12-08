@@ -10,15 +10,31 @@ const GALLERY_PATH = "/gallery/";
 const FALLBACK = "nophoto.jpg";
 
 // SAME FUNCTION USED IN auth.js
+// function makePhotoUrl(photoFilename, photoApprove) {
+//   const hasPhoto =
+//     photoFilename &&
+//     photoFilename !== "no-photo.gif" &&
+//     String(photoApprove).toLowerCase() === "yes";
+
+//   const file = hasPhoto ? photoFilename : FALLBACK;
+//   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+// }
+
 function makePhotoUrl(photoFilename, photoApprove) {
-  const hasPhoto =
+  const valid =
     photoFilename &&
     photoFilename !== "no-photo.gif" &&
     String(photoApprove).toLowerCase() === "yes";
 
-  const file = hasPhoto ? photoFilename : FALLBACK;
-  return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+  // ✔ If a valid photo exists → return it
+  if (valid) {
+    return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(photoFilename)}`;
+  }
+
+  // ✔ If NOT valid → return NULL instead of fallback image
+  return null;
 }
+
 
 // Helper for IN filters
 function addInCondition(where, col, vals) {
@@ -33,9 +49,11 @@ function addInCondition(where, col, vals) {
 // Dynamic Search Results
 // =========================
 
+
+
 router.post("/search", (req, res) => {
   try {
-    const {
+    let {
       gender,
       txtSAge,
       txtEAge,
@@ -49,17 +67,18 @@ router.post("/search", (req, res) => {
     } = req.body;
 
     const setLimit = 10;
-    const offset = (page - 1) * setLimit;
+    page = parseInt(page) || 1;
+    if (page < 1) page = 1;
+
     const where = ["1=1"];
 
-    // Filters
     if (gender) where.push(`Gender = ${db.escape(gender)}`);
 
-    // ⭐ FIXED AGE FILTER → Based on DOB
+    // ⭐ Correct age filter based on DOB
     const fromAge = parseInt(txtSAge);
     const toAge = parseInt(txtEAge);
 
-    if (fromAge && toAge && toAge >= fromAge) {
+    if (!isNaN(fromAge) && !isNaN(toAge) && toAge >= fromAge) {
       where.push(`
         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) BETWEEN ${fromAge} AND ${toAge}
       `);
@@ -71,7 +90,6 @@ router.post("/search", (req, res) => {
     addInCondition(where, "Occupation", occu);
     addInCondition(where, "Maritalstatus", looking);
 
-    // Photo filter
     if (with_photo == 1 || with_photo === true || with_photo === "1") {
       where.push("Photo1 IS NOT NULL");
       where.push("LOWER(Photo1Approve) = 'yes'");
@@ -83,7 +101,7 @@ router.post("/search", (req, res) => {
 
     const whereSQL = where.join(" AND ");
 
-    // Count total
+    // ⭐ FIRST COUNT TOTAL ROWS
     const countSQL = `SELECT COUNT(*) AS cnt FROM register WHERE ${whereSQL}`;
 
     db.query(countSQL, (err, countRes) => {
@@ -91,7 +109,13 @@ router.post("/search", (req, res) => {
 
       const total = countRes[0]?.cnt || 0;
 
-      // ⭐ UPDATED: Calculate Age dynamically
+      // ⭐ Clamp page automatically
+      const totalPages = total > 0 ? Math.ceil(total / setLimit) : 1;
+      if (page > totalPages) page = totalPages;
+
+      const offset = (page - 1) * setLimit;
+
+      // ⭐ Fetch actual rows
       const fetchSQL = `
         SELECT 
           MatriID,
@@ -119,16 +143,16 @@ router.post("/search", (req, res) => {
 
         const results = rows.map((u) => {
           const PhotoURL = makePhotoUrl(u.Photo1, u.Photo1Approve);
-
           const { Photo1, Photo1Approve, ...rest } = u;
-
-          return {
-            ...rest,
-            PhotoURL,
-          };
+          return { ...rest, PhotoURL };
         });
 
-        res.json({ total, page, per_page: setLimit, results });
+        res.json({
+          total,
+          page,
+          per_page: setLimit,
+          results,
+        });
       });
     });
   } catch (err) {
@@ -136,6 +160,330 @@ router.post("/search", (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+function makePhotoUrl1(photoFilename, photoApprove) {
+  const valid =
+    photoFilename &&
+    photoFilename !== "no-photo.gif" &&
+    String(photoApprove).toLowerCase() === "yes";
+
+  // ✔ If a valid photo exists → return it
+  if (valid) {
+    return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(photoFilename)}`;
+  }
+
+  // ✔ If NOT valid → return NULL instead of fallback image
+  return null;
+}
+
+
+function addInCondition1(where, col, vals) {
+  const filtered = (vals || []).filter((v) => v !== "" && v !== "Any");
+  if (filtered.length > 0) {
+    const escVals = filtered.map((v) => db.escape(v));
+    where.push(`${col} IN (${escVals.join(",")})`);
+  }
+}
+
+router.post("/advancesearch", (req, res) => {
+  try {
+    let {
+      gender,
+      txtSAge,
+      txtEAge,
+      with_photo,
+      page = 1,
+      looking = [],
+      religion = [],
+      caste = [],
+      edu = [],
+      occu = [],
+      country = [],
+      state = [],
+      district = [],
+    } = req.body;
+
+    const setLimit = 10;
+    page = parseInt(page) || 1;
+    if (page < 1) page = 1;
+
+    const where = ["1=1"];
+
+    if (gender) where.push(`Gender = ${db.escape(gender)}`);
+
+    const fromAge = parseInt(txtSAge);
+    const toAge = parseInt(txtEAge);
+
+    if (!isNaN(fromAge) && !isNaN(toAge) && toAge >= fromAge) {
+      where.push(`
+        TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) BETWEEN ${fromAge} AND ${toAge}
+      `);
+    }
+
+    addInCondition1(where, "Religion", religion);
+    addInCondition1(where, "Caste", caste);
+    addInCondition1(where, "Education", edu);
+    addInCondition1(where, "Occupation", occu);
+    addInCondition1(where, "Maritalstatus", looking);
+
+    addInCondition1(where, "Country", country);
+    addInCondition1(where, "State", state);
+    addInCondition1(where, "Dist", district);
+
+    if (with_photo == 1 || with_photo === true || with_photo === "1") {
+      where.push("Photo1 IS NOT NULL");
+      where.push("LOWER(Photo1Approve) = 'yes'");
+    }
+
+    where.push(
+      "visibility NOT LIKE 'hidden' AND Status <> 'Banned' AND Status NOT LIKE 'InActive'"
+    );
+
+    const whereSQL = where.join(" AND ");
+
+    // 1️⃣ COUNT
+    const countSQL = `SELECT COUNT(*) AS cnt FROM register WHERE ${whereSQL}`;
+
+    db.query(countSQL, (err, countRes) => {
+      if (err) {
+        console.error("COUNT SQL ERROR:", err);
+        console.error("BAD QUERY:", countSQL);
+        return res.status(500).json({ error: err.message });
+      }
+
+      const total = countRes[0]?.cnt || 0;
+      const totalPages = total > 0 ? Math.ceil(total / setLimit) : 1;
+      if (page > totalPages) page = totalPages;
+
+      const offset = (page - 1) * setLimit;
+
+      // 2️⃣ FETCH
+      const fetchSQL = `
+        SELECT 
+          MatriID,
+          Name,
+          DOB,
+          TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+          Religion,
+          Caste,
+          Subcaste,
+          Profilecreatedby,
+          Education,
+          Occupation,
+          Annualincome,
+          workinglocation,
+          Country,
+          State,
+          Dist,
+          Photo1,
+          Photo1Approve
+        FROM register
+        WHERE ${whereSQL}
+        ORDER BY Regdate DESC
+        LIMIT ?, ?
+      `;
+
+      db.query(fetchSQL, [offset, setLimit], (err2, rows) => {
+        if (err2) {
+          console.error("FETCH SQL ERROR:", err2);
+          console.error("BAD QUERY:", fetchSQL);
+          return res.status(500).json({ error: err2.message });
+        }
+
+        // 3️⃣ MAP
+        const results = rows.map((u) => {
+          const PhotoURL = makePhotoUrl1(u.Photo1, u.Photo1Approve);
+          const { Photo1, Photo1Approve, ...rest } = u;
+          return { ...rest, PhotoURL };
+        });
+
+        // 4️⃣ SEND RESPONSE
+        res.json({
+          total,
+          page,
+          per_page: setLimit,
+          results,
+        });
+      });
+    });
+  } catch (err) {
+    console.error("SEARCH ROUTE ERROR:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+function makePhotoUrl2(photoFilename, photoApprove) {
+  const valid =
+    photoFilename &&
+    photoFilename !== "no-photo.gif" &&
+    String(photoApprove).toLowerCase() === "yes";
+
+  // ✔ If a valid photo exists → return it
+  if (valid) {
+    return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(photoFilename)}`;
+  }
+
+  // ✔ If NOT valid → return NULL instead of fallback image
+  return null;
+}
+
+function addInCondition2(where, col, vals) {
+  const filtered = (vals || []).filter((v) => v !== "" && v !== "Any");
+  if (filtered.length > 0) {
+    const escVals = filtered.map((v) => db.escape(v));
+    where.push(`${col} IN (${escVals.join(",")})`);
+  }
+}
+
+
+router.post("/horoscopesearch", (req, res) => {
+  try {
+    let {
+      gender,
+      txtSAge,
+      txtEAge,
+      with_photo,
+      page = 1,
+      looking = [],
+      religion = [],
+      caste = [],
+      edu = [],
+      occu = [],
+      star = [],        // ⭐ ADD THIS
+      Sevai = "Any",    // ⭐ ADD THIS
+      Raghu = "Any",    // ⭐ ADD THIS
+      Keethu = "Any"    // ⭐ ADD THIS
+    } = req.body;
+
+    const setLimit = 10;
+    page = parseInt(page) || 1;
+    if (page < 1) page = 1;
+
+    const where = ["1=1"];
+
+    if (gender) where.push(`Gender = ${db.escape(gender)}`);
+
+    // AGE FILTER
+    const fromAge = parseInt(txtSAge);
+    const toAge = parseInt(txtEAge);
+
+    if (!isNaN(fromAge) && !isNaN(toAge) && toAge >= fromAge) {
+      where.push(`
+        TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) BETWEEN ${fromAge} AND ${toAge}
+      `);
+    }
+
+    // ========== MULTI SELECT ==========
+    addInCondition2(where, "Religion", religion);
+    addInCondition2(where, "Caste", caste);
+    addInCondition2(where, "Education", edu);
+    addInCondition2(where, "Occupation", occu);
+    addInCondition2(where, "Maritalstatus", looking);
+    // ⭐⭐ MULTI-SELECT STAR
+    addInCondition2(where, "Star", star);
+
+    // ========== SINGLE SELECT ==========
+    // ⭐⭐ SEVAI
+    if (Sevai && Sevai !== "" && Sevai !== "Any") {
+      where.push(`Sevai = ${db.escape(Sevai)}`);
+    }
+
+    // ⭐⭐ RAGHU
+    if (Raghu && Raghu !== "" && Raghu !== "Any") {
+      where.push(`Raghu = ${db.escape(Raghu)}`);
+    }
+
+    // ⭐⭐ KEETHU
+    if (Keethu && Keethu !== "" && Keethu !== "Any") {
+      where.push(`Keethu = ${db.escape(Keethu)}`);
+    }
+
+    // PHOTO FILTER
+    if (with_photo == 1 || with_photo === true || with_photo === "1") {
+      where.push("Photo1 IS NOT NULL");
+      where.push("LOWER(Photo1Approve) = 'yes'");
+    }
+
+    // VISIBILITY & STATUS
+    where.push(
+      "visibility NOT LIKE 'hidden' AND Status <> 'Banned' AND Status NOT LIKE 'InActive'"
+    );
+
+    const whereSQL = where.join(" AND ");
+
+    // COUNT SQL
+    const countSQL = `SELECT COUNT(*) AS cnt FROM register WHERE ${whereSQL}`;
+
+    db.query(countSQL, (err, countRes) => {
+      if (err) return res.status(500).json({ error: "Database error" });
+
+      const total = countRes[0]?.cnt || 0;
+
+      const totalPages = total > 0 ? Math.ceil(total / setLimit) : 1;
+      if (page > totalPages) page = totalPages;
+
+      const offset = (page - 1) * setLimit;
+
+      // MAIN RESULT
+      const fetchSQL = `
+        SELECT 
+          MatriID,
+          Name,
+          DOB,
+          TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+          Religion,
+          Caste,
+          Subcaste,
+          Profilecreatedby,
+          Education,
+          Occupation,
+          Annualincome,
+          workinglocation,
+          Photo1,
+          Photo1Approve,
+          Star, Sevai, Raghu, Keethu   -- ⭐ optional but useful
+        FROM register
+        WHERE ${whereSQL}
+        ORDER BY Regdate DESC
+        LIMIT ?, ?
+      `;
+
+      db.query(fetchSQL, [offset, setLimit], (err2, rows) => {
+        if (err2) return res.status(500).json({ error: "Database error" });
+
+        const results = rows.map((u) => {
+          const PhotoURL = makePhotoUrl2(u.Photo1, u.Photo1Approve);
+          const { Photo1, Photo1Approve, ...rest } = u;
+          return { ...rest, PhotoURL };
+        });
+
+        res.json({
+          total,
+          page,
+          per_page: setLimit,
+          results,
+        });
+      });
+    });
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 
 // =========================
 // Dynamic Options
@@ -275,6 +623,10 @@ ORDER BY s.Subcaste
     res.json(results);
   });
 });
+
+
+
+// /////////////////////////////////////////////////////////////////////
 
 // =========================
 // Horoscope Dynamic Options

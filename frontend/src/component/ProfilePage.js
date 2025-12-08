@@ -10,12 +10,20 @@ export default function ProfilePage({ setUser: setAppUser }) {
   const [showHoroscope, setShowHoroscope] = useState(false);
 
 
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const email = localStorage.getItem("loggedInEmail");
     if (!email) {
       navigate("/login");
       return;
     }
+
+
+    
 
     const fetchUser = async () => {
       try {
@@ -44,7 +52,72 @@ export default function ProfilePage({ setUser: setAppUser }) {
     fetchUser();
   }, [navigate, setAppUser]);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  // if (loading) return <div className="p-8">Loading...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display">
+        <div className="max-w-[1140px] mx-auto mt-20 space-y-10 animate-pulse">
+          {/* ⭐ Banner skeleton */}
+          <div className="w-full h-[220px] bg-gray-200 rounded-xl"></div>
+
+          {/* ⭐ Avatar + Title skeleton */}
+          <div className="flex items-center gap-5 -mt-16 px-4">
+            <div className="w-32 h-32 bg-gray-200 rounded-full border-4 border-white"></div>
+
+            <div className="flex flex-col gap-3 mt-16">
+              <div className="h-6 w-48 bg-gray-200 rounded"></div>
+              <div className="h-4 w-64 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+
+          {/* ⭐ Section Card Skeleton Generator */}
+          {[
+            "About Me",
+            "Basic Details",
+            "Horoscope Details",
+            "Contact Details",
+            "Education & Professional",
+            "Basic & Lifestyle",
+            "Family Details",
+            "Partner Preference",
+          ].map((title, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+            >
+              {/* Title skeleton */}
+              <div className="h-6 w-40 bg-gray-200 rounded mb-4"></div>
+
+              {/* Section rows skeleton */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div className="h-4 w-28 bg-gray-200 rounded"></div>
+                    <div className="h-5 w-40 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+
+              {/* If Family / Partner has extra long text field */}
+              {(title === "Family Details" ||
+                title === "Partner Preference") && (
+                <div className="mt-6">
+                  <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-5 w-full bg-gray-200 rounded"></div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* ⭐ Special Horoscope Rasi & Navamsa boxes */}
+          <div className="flex justify-center gap-12 my-10">
+            <div className="w-[300px] h-[300px] bg-gray-200 rounded"></div>
+            <div className="w-[300px] h-[300px] bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+
   if (!user) return <div className="p-8">No user found</div>;
   // Prepare Rasi & Navamsa Data
   const rasi = [
@@ -325,6 +398,9 @@ export default function ProfilePage({ setUser: setAppUser }) {
                 label="Place of Birth"
                 value={user.POB || user.PlaceOfBirth || user.place_of_birth}
               />
+
+              <InfoRow label="Kuladeivam" value={user.Kuladeivam || "-"} />
+              <InfoRow label="thesaiirupu" value={user.ThesaiIrupu || "-"} />
               <InfoRow
                 label="Country/Place"
                 value={user.POC || user.Country || user.country}
@@ -349,7 +425,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
                 {user.HoroscopeURL ? (
                   <button
                     onClick={() => setShowHoroscope(true)}
-                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
+                    className="mt-2 ml-4 px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
                   >
                     View Horoscope
                   </button>
@@ -692,9 +768,6 @@ function SouthChart({ title, data }) {
     </div>
   );
 }
-
-
-
 
 
 function Cell({ value }) {

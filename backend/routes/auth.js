@@ -7,6 +7,8 @@ import path from "path";
 
 const upload = multer({ dest: "uploads/" });
 
+// const path = require("path");
+
 // const router = express.Router();
 
 const router = express.Router();
@@ -72,57 +74,7 @@ function makePhotoUrl1(photoFilename, photoApprove) {
   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
 }
 
-// // GET /api/auth/user?email=...
-// router.get("/user", async (req, res) => {
-//   try {
-//     const email = req.query.email;
-//     if (!email)
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Email required" });
 
-//     const conn = db.promise();
-
-//     // ⭐ Calculate correct age dynamically using DOB
-//     const [rows] = await conn.query(
-//       `
-//       SELECT *,
-//         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
-//       FROM register
-//       WHERE ConfirmEmail = ?
-//       LIMIT 1
-//       `,
-//       [email.trim()]
-//     );
-
-//     if (!rows.length) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-
-//     const user = rows[0];
-
-//     // ⭐ Build Photo URL (your existing logic)
-//     const PhotoURL = makePhotoUrl(user.Photo1, user.Photo1Approve);
-
-//     // ⭐ Remove sensitive fields
-//     const { ConfirmPassword, ParentPassword, ...safeUser } = user;
-
-//     safeUser.PhotoURL = PhotoURL;
-
-//     return res.json({
-//       success: true,
-//       user: safeUser,
-//     });
-//   } catch (err) {
-//     console.error("auth/user error:", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error",
-//     });
-//   }
-// });
 
 
 // ----------------------------------------------
@@ -193,12 +145,6 @@ router.get("/user", async (req, res) => {
     // ------------------------------------------
     const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
-    // let HoroscopeURL = null;
-    // if (user.horosother) {
-    //   HoroscopeURL = `${BASE_URL}/kundli/${encodeURIComponent(
-    //     user.horosother
-    //   )}`;
-    // }
 
     let HoroscopeURL = null;
 
@@ -360,7 +306,8 @@ router.put("/update/photo1", upload1.single("photo1"), async (req, res) => {
     await conn.query(
       `
       UPDATE register SET 
-        Photo1 = ?
+        Photo1 = ?,
+        Photo1Approve = "Yes"
       WHERE ConfirmEmail = ?
       `,
       [fileName, ConfirmEmail]
@@ -458,99 +405,7 @@ router.put("/update/basic", async (req, res) => {
   }
 });
 
-// router.put(
-//   "/update/horoscope",
-//   upload.single("horoscope"),
-//   async (req, res) => {
-//     try {
-//       const {
-//         ConfirmEmail,
-//         Moonsign,
-//         Star,
-//         Gothram,
-//         Manglik,
-//         shani,
-//         shaniplace,
-//         Horosmatch,
-//         parigarasevai,
-//         Sevai,
-//         Raghu,
-//         Keethu,
-//         POB,
-//         POC,
-//         TOB,
-//       } = req.body;
 
-//       if (!ConfirmEmail) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Email missing",
-//         });
-//       }
-
-//       // Read image (if uploaded)
-//       let horoscopeBlob = null;
-
-//       if (req.file) {
-//         horoscopeBlob = fs.readFileSync(req.file.path);
-//         fs.unlinkSync(req.file.path); // delete temp file
-//       }
-
-//       const conn = db.promise();
-
-//       await conn.query(
-//         `
-//         UPDATE register SET
-//           Moonsign = ?,
-//           Star = ?,
-//           Gothram = ?,
-//           Manglik = ?,
-//           shani = ?,
-//           shaniplace = ?,
-//           Horosmatch = ?,
-//           parigarasevai = ?,
-//           Sevai = ?,
-//           Raghu = ?,
-//           Keethu = ?,
-//           POB = ?,
-//           POC = ?,
-//           TOB = ?,
-//           HoroscopeMain = ?
-//         WHERE ConfirmEmail = ?
-//       `,
-//         [
-//           Moonsign,
-//           Star,
-//           Gothram,
-//           Manglik,
-//           shani,
-//           shaniplace,
-//           Horosmatch,
-//           parigarasevai,
-//           Sevai,
-//           Raghu,
-//           Keethu,
-//           POB,
-//           POC,
-//           TOB,
-//           horoscopeBlob, // BLOB IMAGE
-//           ConfirmEmail,
-//         ]
-//       );
-
-//       return res.json({
-//         success: true,
-//         message: "Horoscope updated successfully",
-//       });
-//     } catch (err) {
-//       console.error("update/horoscope error:", err);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Server error",
-//       });
-//     }
-//   }
-// );
 
 function safeToJSONArray(input) {
   if (!input || input === "" || input === "null") return "[]";
@@ -573,9 +428,155 @@ function safeToJSONArray(input) {
 // --------------------------------------------------
 // UPDATE HOROSCOPE
 // --------------------------------------------------
+
+
+// router.put(
+//   "/update/horoscope",
+//   upload.single("horoscope"),
+//   async (req, res) => {
+//     try {
+//       const {
+//         ConfirmEmail,
+//         Moonsign,
+//         Star,
+//         Gothram,
+//         Manglik,
+//         shani,
+//         shaniplace,
+//         Horosmatch,
+//         parigarasevai,
+//         Sevai,
+//         Raghu,
+//         Keethu,
+//         POB,
+//         POC,
+//         TOB,
+//         Kuladeivam, // ⭐ NEW FIELD
+//         ThesaiIrupu, // ⭐ NEW FIELD
+//       } = req.body;
+
+//       if (!ConfirmEmail) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Email missing",
+//         });
+//       }
+
+//       let horoscopeBlob = null;
+//       if (req.file) {
+//         horoscopeBlob = fs.readFileSync(req.file.path);
+//         fs.unlinkSync(req.file.path);
+//       }
+
+//       const rasi = {};
+//       const navamsa = {};
+
+//       for (let i = 1; i <= 12; i++) {
+//         rasi[`g${i}`] = safeToJSONArray(req.body[`g${i}`]);
+//         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
+//       }
+
+//       const conn = db.promise();
+
+//       await conn.query(
+//         `
+//         UPDATE register SET
+//           Moonsign = ?, 
+//           Star = ?, 
+//           Gothram = ?, 
+//           Manglik = ?, 
+//           shani = ?, 
+//           shaniplace = ?, 
+//           Horosmatch = ?, 
+//           parigarasevai = ?, 
+//           Sevai = ?, 
+//           Raghu = ?, 
+//           Keethu = ?, 
+//           POB = ?, 
+//           POC = ?, 
+//           TOB = ?, 
+//           Kuladeivam = ?,        -- ⭐ NEW FIELD
+//           ThesaiIrupu = ?,       -- ⭐ NEW FIELD
+//           HoroscopeMain = ?,
+
+//           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
+//           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
+
+//           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
+//           a7=?, a8=?, a9=?, a10=?, a11=?, a12=? 
+
+//         WHERE ConfirmEmail = ?
+//       `,
+//         [
+//           Moonsign,
+//           Star,
+//           Gothram,
+//           Manglik,
+//           shani,
+//           shaniplace,
+//           Horosmatch,
+//           parigarasevai,
+//           Sevai,
+//           Raghu,
+//           Keethu,
+//           POB,
+//           POC,
+//           TOB,
+//           Kuladeivam, // ⭐ NEW FIELD
+//           ThesaiIrupu, // ⭐ NEW FIELD
+//           horoscopeBlob,
+
+//           rasi.g1,
+//           rasi.g2,
+//           rasi.g3,
+//           rasi.g4,
+//           rasi.g5,
+//           rasi.g6,
+//           rasi.g7,
+//           rasi.g8,
+//           rasi.g9,
+//           rasi.g10,
+//           rasi.g11,
+//           rasi.g12,
+
+//           navamsa.a1,
+//           navamsa.a2,
+//           navamsa.a3,
+//           navamsa.a4,
+//           navamsa.a5,
+//           navamsa.a6,
+//           navamsa.a7,
+//           navamsa.a8,
+//           navamsa.a9,
+//           navamsa.a10,
+//           navamsa.a11,
+//           navamsa.a12,
+
+//           ConfirmEmail,
+//         ]
+//       );
+
+//       return res.json({
+//         success: true,
+//         message: "Horoscope updated successfully",
+//       });
+//     } catch (err) {
+//       console.error("update/horoscope error:", err);
+//       return res.status(500).json({
+//         success: false,
+//         message: "Server error",
+//       });
+//     }
+//   }
+// );
+
+
+// --------------------------------------------
+// UPDATE HOROSCOPE (image or PDF)
+// --------------------------------------------
 router.put(
   "/update/horoscope",
-  upload.single("horoscope"),
+  upload.single("horoscope"), // multer upload
   async (req, res) => {
     try {
       const {
@@ -594,6 +595,8 @@ router.put(
         POB,
         POC,
         TOB,
+        Kuladeivam,
+        ThesaiIrupu,
       } = req.body;
 
       if (!ConfirmEmail) {
@@ -603,17 +606,23 @@ router.put(
         });
       }
 
-      // IMAGE HANDLING
-      let horoscopeBlob = null;
+      // -----------------------------------
+      // SAVE UPLOADED FILE → kundli folder
+      // -----------------------------------
+      let uploadedFileName = null;
+
       if (req.file) {
-        horoscopeBlob = fs.readFileSync(req.file.path);
-        fs.unlinkSync(req.file.path); // remove tmp file
+        const ext = req.file.originalname.split(".").pop().toLowerCase();
+        const newName = `horoscope_${Date.now()}.${ext}`;
+
+        fs.renameSync(req.file.path, `kundli/${newName}`);
+
+        uploadedFileName = newName;
       }
 
-      // ---------------------------------------
-      // RASI + NAVAMSA (g1–g12, a1–a12)
-      // Convert everything safely
-      // ---------------------------------------
+      // -----------------------------------
+      // PARSE 12 RASI + 12 NAVAMSA
+      // -----------------------------------
       const rasi = {};
       const navamsa = {};
 
@@ -624,32 +633,26 @@ router.put(
 
       const conn = db.promise();
 
+      // -----------------------------------
+      // UPDATE DB RECORD
+      // -----------------------------------
       await conn.query(
         `
         UPDATE register SET
-          Moonsign = ?, 
-          Star = ?, 
-          Gothram = ?, 
-          Manglik = ?, 
-          shani = ?, 
-          shaniplace = ?, 
-          Horosmatch = ?, 
-          parigarasevai = ?, 
-          Sevai = ?, 
-          Raghu = ?, 
-          Keethu = ?, 
-          POB = ?, 
-          POC = ?, 
-          TOB = ?, 
-          HoroscopeMain = ?,
+          Moonsign=?, Star=?, Gothram=?, Manglik=?, shani=?, shaniplace=?,
+          Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?, 
+          POB=?, POC=?, TOB=?, Kuladeivam=?, ThesaiIrupu=?,
+
+          -- ⭐ STORE FILENAME HERE
+          horosother=?,
 
           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
 
           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
-          a7=?, a8=?, a9=?, a10=?, a11=?, a12=? 
+          a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
 
-        WHERE ConfirmEmail = ?
+        WHERE ConfirmEmail=?
       `,
         [
           Moonsign,
@@ -666,35 +669,16 @@ router.put(
           POB,
           POC,
           TOB,
-          horoscopeBlob,
+          Kuladeivam,
+          ThesaiIrupu,
 
-          // RASI
-          rasi.g1,
-          rasi.g2,
-          rasi.g3,
-          rasi.g4,
-          rasi.g5,
-          rasi.g6,
-          rasi.g7,
-          rasi.g8,
-          rasi.g9,
-          rasi.g10,
-          rasi.g11,
-          rasi.g12,
+          uploadedFileName, // ⭐ IMPORTANT
 
-          // NAVAMSA
-          navamsa.a1,
-          navamsa.a2,
-          navamsa.a3,
-          navamsa.a4,
-          navamsa.a5,
-          navamsa.a6,
-          navamsa.a7,
-          navamsa.a8,
-          navamsa.a9,
-          navamsa.a10,
-          navamsa.a11,
-          navamsa.a12,
+          rasi.g1, rasi.g2, rasi.g3, rasi.g4, rasi.g5, rasi.g6,
+          rasi.g7, rasi.g8, rasi.g9, rasi.g10, rasi.g11, rasi.g12,
+
+          navamsa.a1, navamsa.a2, navamsa.a3, navamsa.a4, navamsa.a5, navamsa.a6,
+          navamsa.a7, navamsa.a8, navamsa.a9, navamsa.a10, navamsa.a11, navamsa.a12,
 
           ConfirmEmail,
         ]
@@ -713,6 +697,8 @@ router.put(
     }
   }
 );
+
+
 
 
 

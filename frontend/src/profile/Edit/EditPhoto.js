@@ -55,32 +55,6 @@ export default function EditPhoto() {
     }
   };
 
-  // return (
-  //   <div className="p-6 max-w-xl mx-auto">
-  //     <h1 className="text-2xl font-bold mt-20 mb-4">Edit Profile Photo</h1>
-
-  //     <form onSubmit={handleSubmit} className="space-y-4">
-  //       <input
-  //         type="file"
-  //         accept="image/*"
-  //         className="w-full border p-2 rounded"
-  //         onChange={handleChange}
-  //       />
-
-  //       {preview && (
-  //         <img
-  //           src={preview}
-  //           alt="preview"
-  //           className="w-40 mt-3 rounded border"
-  //         />
-  //       )}
-
-  //       <button className="w-full bg-pink-600 text-white p-2 rounded">
-  //         Save Photo
-  //       </button>
-  //     </form>
-  //   </div>
-  // );
 return (
   <div className="min-h-screen bg-[#FFF4E0] font-display flex items-center justify-center p-6">
     <div className="w-full max-w-xl bg-white shadow-xl rounded-2xl p-10 border border-gray-200 mt-20">
@@ -106,10 +80,16 @@ return (
         {/* Image preview */}
         {preview && (
           <div className="flex justify-center">
-            <img
+            {/* <img
               src={preview}
               alt="Preview"
               className="w-48 h-48 object-cover rounded-xl border shadow-md mt-3"
+            /> */}
+
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-56 h-56 object-cover object-top rounded-xl border shadow-md mt-3"
             />
           </div>
         )}
