@@ -462,7 +462,11 @@ router.put("/member/:matriId", async (req, res) => {
       'Mothersoccupation', 'Address', 'City', 'State', 'Mobile', 'ConfirmEmail',
       'Star', 'Moonsign', 'Raghu', 'Keethu', 'Sevai', 'noofbrothers', 'noofsisters',
       'family_wealth', 'Status', 'BloodGroup', 'workinglocation', 'occu_details',
-      'Lagnam', 'Suddham', 'DasaBalance', 'OtherNotes', 'PartnerExpectations'
+      'Lagnam', 'Suddham', 'DasaBalance', 'OtherNotes', 'PartnerExpectations',
+      // Rasi grid (g1-g12)
+      'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10', 'g11', 'g12',
+      // Navamsam grid (a1-a12)
+      'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12'
     ];
 
     const updates = [];
