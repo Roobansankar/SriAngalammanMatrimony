@@ -172,22 +172,43 @@ export default function MemberManagement() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Member Management</h1>
-          <p className="text-gray-500 text-sm">Manage all registered members - Edit, Delete, Ban/Unban</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={fetchMembers}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-          >
-            <RefreshCw size={18} />
-            Refresh
-          </button>
-        </div>
+    <>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        .horoscope-grid-cell {
+          aspect-ratio: 1;
+          min-height: 60px;
+        }
+      `}</style>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Member Management</h1>
+            <p className="text-gray-500 text-sm">Manage all registered members - Edit, Delete, Ban/Unban</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={fetchMembers}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+            >
+              <RefreshCw size={18} />
+              Refresh
+            </button>
+          </div>
       </div>
 
       {/* Filters & Search */}
@@ -446,7 +467,7 @@ export default function MemberManagement() {
             </div>
 
             {selectedMember ? (
-              <div className="p-4 max-h-[70vh] overflow-y-auto">
+              <div className="p-4 max-h-[calc(100vh-12rem)] overflow-y-auto custom-scrollbar">
                 {/* Photo & Basic Info */}
                 <div className="text-center mb-4">
                   {selectedMember.PhotoURL && !selectedMember.PhotoURL.includes("nophoto") ? (
@@ -645,6 +666,198 @@ export default function MemberManagement() {
                     isEditing={isEditing}
                     onChange={handleEditChange}
                   />
+
+                  {/* Family Details */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Family Details</h4>
+                  </div>
+                  <EditField
+                    label="No. of Brothers"
+                    field="noofbrothers"
+                    value={isEditing ? editData.noofbrothers : selectedMember.noofbrothers}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="No. of Sisters"
+                    field="noofsisters"
+                    value={isEditing ? editData.noofsisters : selectedMember.noofsisters}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Family Wealth"
+                    field="family_wealth"
+                    value={isEditing ? editData.family_wealth : selectedMember.family_wealth}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+
+                  {/* Professional Details */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Professional Details</h4>
+                  </div>
+                  <EditField
+                    label="Working Location"
+                    field="workinglocation"
+                    value={isEditing ? editData.workinglocation : selectedMember.workinglocation}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Occupation Details"
+                    field="occu_details"
+                    type="textarea"
+                    value={isEditing ? editData.occu_details : selectedMember.occu_details}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+
+                  {/* Birth Details */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Birth Details</h4>
+                  </div>
+                  <EditField
+                    label="Time of Birth (TOB)"
+                    field="TOB"
+                    value={isEditing ? editData.TOB : selectedMember.TOB}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Place of Birth (POB)"
+                    field="POB"
+                    value={isEditing ? editData.POB : selectedMember.POB}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+
+                  {/* Horoscope Details */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Horoscope Details</h4>
+                  </div>
+                  <EditField
+                    label="Lagnam"
+                    field="Lagnam"
+                    value={isEditing ? editData.Lagnam : selectedMember.Lagnam}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Raghu"
+                    field="Raghu"
+                    value={isEditing ? editData.Raghu : selectedMember.Raghu}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Keethu"
+                    field="Keethu"
+                    value={isEditing ? editData.Keethu : selectedMember.Keethu}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Sevai (Mars)"
+                    field="Sevai"
+                    value={isEditing ? editData.Sevai : selectedMember.Sevai}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Suddham"
+                    field="Suddham"
+                    value={isEditing ? editData.Suddham : selectedMember.Suddham}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Dasa Balance"
+                    field="DasaBalance"
+                    value={isEditing ? editData.DasaBalance : selectedMember.DasaBalance}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+
+                  {/* Rasi Grid (g1-g12) */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Rasi Chart (Birth Chart)</h4>
+                    <div className="grid grid-cols-4 gap-1 mb-2">
+                      {[12, 1, 2, 3, 11, '', '', 4, 10, 9, 8, 7].map((pos, idx) => {
+                        if (pos === '') return <div key={idx} className="horoscope-grid-cell"></div>;
+                        const field = `g${pos}`;
+                        return (
+                          <div key={field} className="horoscope-grid-cell border border-gray-300 rounded p-2 bg-gray-50">
+                            <div className="text-xs font-semibold text-gray-500 mb-1">{pos}</div>
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData[field] || ""}
+                                onChange={(e) => handleEditChange(field, e.target.value)}
+                                className="w-full text-xs border border-gray-200 rounded px-1 py-0.5"
+                                placeholder="Planets"
+                              />
+                            ) : (
+                              <div className="text-xs text-gray-800 font-medium">{selectedMember[field] || "-"}</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Navamsam Grid (a1-a12) */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Navamsam Chart</h4>
+                    <div className="grid grid-cols-4 gap-1 mb-2">
+                      {[12, 1, 2, 3, 11, '', '', 4, 10, 9, 8, 7].map((pos, idx) => {
+                        if (pos === '') return <div key={idx} className="horoscope-grid-cell"></div>;
+                        const field = `a${pos}`;
+                        return (
+                          <div key={field} className="horoscope-grid-cell border border-gray-300 rounded p-2 bg-gray-50">
+                            <div className="text-xs font-semibold text-gray-500 mb-1">{pos}</div>
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData[field] || ""}
+                                onChange={(e) => handleEditChange(field, e.target.value)}
+                                className="w-full text-xs border border-gray-200 rounded px-1 py-0.5"
+                                placeholder="Planets"
+                              />
+                            ) : (
+                              <div className="text-xs text-gray-800 font-medium">{selectedMember[field] || "-"}</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Additional Notes */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Additional Information</h4>
+                  </div>
+                  <EditField
+                    label="Other Notes"
+                    field="OtherNotes"
+                    type="textarea"
+                    value={isEditing ? editData.OtherNotes : selectedMember.OtherNotes}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+                  <EditField
+                    label="Partner Expectations"
+                    field="PartnerExpectations"
+                    type="textarea"
+                    value={isEditing ? editData.PartnerExpectations : selectedMember.PartnerExpectations}
+                    isEditing={isEditing}
+                    onChange={handleEditChange}
+                  />
+
+                  {/* Status */}
+                  <div className="pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Account Status</h4>
+                  </div>
                   <EditField
                     label="Status"
                     field="Status"
@@ -762,7 +975,8 @@ export default function MemberManagement() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
