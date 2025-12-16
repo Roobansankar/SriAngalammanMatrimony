@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import headerpic from "../profile/Assets/header.png";
-import "../profile/BiodataDisplay.css";
+import "./AdminBioDisplay.css";
 
 const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
@@ -130,12 +130,14 @@ export default function MemberBioData() {
           birth_place: user.POB || "",
           education: user.Education || "",
           occupation: user.Occupation || "",
-          company_details: user.company_name || "",
+          company_details: `${user.company_name || ""}, ${
+            user.workinglocation || ""
+          }`,
           monthly_income: user.Annualincome || "",
           height: user.HeightText || "",
           weight: user.Weight || "",
           complexion: user.Complexion || "",
-          family_deity: `-, ${user.City || ""}`,
+          family_deity: `${user.Kuladeivam || ""}, ${user.City || ""}`,
           kulam: user.Caste || "",
           kootam: user.Subcaste || "",
           father_name: user.Fathername || "",
@@ -147,8 +149,12 @@ export default function MemberBioData() {
           mother_occupation: user.Mothersoccupation || "",
           mother_native_place: user.POB || "",
           address: user.Address || "",
-          family_income: `${user.Annualincome || ""}, ${user.family_wealth || ""}`,
-          siblings_details: `${user.noofbrothers || 0} Brothers, ${user.noofsisters || 0} Sisters`,
+          family_income: `${user.Annualincome || ""}, ${
+            user.family_wealth || ""
+          }`,
+          siblings_details: `${user.noofbrothers || 0} Brothers, ${
+            user.noofsisters || 0
+          } Sisters`,
           star: user.Star || "",
           rasi: user.Moonsign || "",
           lagnam: user.Star || "",
@@ -157,14 +163,34 @@ export default function MemberBioData() {
           ketu: user.Keethu || "",
           sevvai: user.Sevai || "",
           navamsam: [
-            user.a1, user.a2, user.a3, user.a4, user.a5, user.a6,
-            user.a7, user.a8, user.a9, user.a10, user.a11, user.a12,
+            user.a1,
+            user.a2,
+            user.a3,
+            user.a4,
+            user.a5,
+            user.a6,
+            user.a7,
+            user.a8,
+            user.a9,
+            user.a10,
+            user.a11,
+            user.a12,
           ],
           rasi_grid: [
-            user.g1, user.g2, user.g3, user.g4, user.g5, user.g6,
-            user.g7, user.g8, user.g9, user.g10, user.g11, user.g12,
+            user.g1,
+            user.g2,
+            user.g3,
+            user.g4,
+            user.g5,
+            user.g6,
+            user.g7,
+            user.g8,
+            user.g9,
+            user.g10,
+            user.g11,
+            user.g12,
           ],
-          dasa_balance: "",
+          dasa_balance: user.ThesaiIrupu || "",
           other_notes: user.PartnerExpectations || "",
           mail_id: user.ConfirmEmail || "",
           blood_group: user.BloodGroup || "",

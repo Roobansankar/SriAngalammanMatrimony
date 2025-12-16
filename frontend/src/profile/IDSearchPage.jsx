@@ -314,9 +314,17 @@ export default function IDSearchPage() {
 
     setLoading(true);
     try {
+      // const res = await axios.get(SEARCH_API, {
+      //   params: { matriid: query.trim() },
+      // });
+
       const res = await axios.get(SEARCH_API, {
-        params: { matriid: query.trim() },
+        params: {
+          matriid: query.trim(),
+          loggedPlan: logged.plan?.toLowerCase(),
+        },
       });
+
 
       if (!res.data?.success || !res.data.user)
         return setError("No results found");
@@ -328,8 +336,23 @@ export default function IDSearchPage() {
 
       if (loggedMatri === targetMatri) return setError("No results found");
 
+      // if (!isOppositeGender(logged.Gender, found.Gender))
+      //   return setError("No results found");
+
+
       if (!isOppositeGender(logged.Gender, found.Gender))
         return setError("No results found");
+
+      /* ⭐ PLAN BASED VISIBILITY ⭐ */
+      const loggedPlan = (logged.plan || "").toLowerCase();
+      const targetPlan = (found.plan || "").toLowerCase();
+
+      if (loggedPlan === "basic" && targetPlan === "premium") {
+        return setError("No results found");
+      }
+
+      setResult(found);
+
 
       setResult(found);
     } catch {
