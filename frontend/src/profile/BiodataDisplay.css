@@ -99,12 +99,7 @@
   text-align: center;
 }
 
-/* .display-data {
-  padding-left: 5px;
-  text-align: left !important;
-  display: block;
-  margin-bottom: 10px; 
-} */
+
 
 
 .display-red-text {
@@ -524,5 +519,21 @@
     display: block !important;
     padding: 10px;
     background: white;
+  }
+}
+
+
+/* Mobile and Tablet - text above line fix */
+@media screen and (max-width: 1024px) {
+  .display-placeholder {
+    vertical-align: bottom;
+    position: relative;
+  }
+
+  .display-data {
+    text-align: left;
+    display: inline-block;
+    position: relative;
+    bottom: 15px;
   }
 }

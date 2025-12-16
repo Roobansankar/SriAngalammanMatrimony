@@ -306,7 +306,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 lg:p-6 bg-gray-50">
+        <main className="flex-1 p-4 lg:p-6 bg-gray-50 ">
           <Outlet />
         </main>
       </div>

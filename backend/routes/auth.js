@@ -371,7 +371,7 @@ router.put("/update/basic", async (req, res) => {
     // WHITELIST: ONLY update allowed basic fields
     const allowed = {
       Name: data.Name,
-      MatriID: data.MatriID,
+      // MatriID: data.MatriID,
       Profilecreatedby: data.Profilecreatedby,
       Gender: data.Gender,
       DOB: data.DOB,

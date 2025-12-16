@@ -90,30 +90,69 @@ export default function Matchs() {
         const oppositeGender =
           logged.Gender?.toLowerCase() === "male" ? "female" : "male";
 
+        // const filteredList = list
+        //   .filter((p) => p.MatriID !== logged.MatriID)
+        //   .filter((p) => p.Gender?.toLowerCase() === oppositeGender)
+        //   .filter((p) => {
+        //     const minAge = logged.PE_FromAge;
+        //     const maxAge = logged.PE_ToAge;
+
+        //     if (!minAge && !maxAge) return true;
+        //     if (minAge && !maxAge) return p.Age >= minAge;
+        //     if (!minAge && maxAge) return p.Age <= maxAge;
+
+        //     return p.Age >= minAge && p.Age <= maxAge;
+        //   })
+        //   .map((p) => ({ ...p, score: calculateScore(logged, p) }))
+        //   .filter((p) => p.score >= 9)
+        //   .sort((a, b) => {
+        //     const isAReal =
+        //       a.PhotoURL && !a.PhotoURL.toLowerCase().includes("nophoto");
+        //     const isBReal =
+        //       b.PhotoURL && !b.PhotoURL.toLowerCase().includes("nophoto");
+
+        //     if (isAReal === isBReal) return 0;
+        //     return isAReal ? -1 : 1;
+        //   });
+
+
         const filteredList = list
-          .filter((p) => p.MatriID !== logged.MatriID)
-          .filter((p) => p.Gender?.toLowerCase() === oppositeGender)
-          .filter((p) => {
-            const minAge = logged.PE_FromAge;
-            const maxAge = logged.PE_ToAge;
+  .filter((p) => p.MatriID !== logged.MatriID)
+  .filter((p) => p.Gender?.toLowerCase() === oppositeGender)
 
-            if (!minAge && !maxAge) return true;
-            if (minAge && !maxAge) return p.Age >= minAge;
-            if (!minAge && maxAge) return p.Age <= maxAge;
+  // ⭐ PLAN BASED VISIBILITY ⭐
+  .filter((p) => {
+    if (logged.plan === "basic") {
+      return p.plan === "basic"; // ❌ hide premium
+    }
+    if (logged.plan === "premium") {
+      return p.plan === "basic" || p.plan === "premium"; // ✅ show all
+    }
+    return true;
+  })
 
-            return p.Age >= minAge && p.Age <= maxAge;
-          })
-          .map((p) => ({ ...p, score: calculateScore(logged, p) }))
-          .filter((p) => p.score >= 9)
-          .sort((a, b) => {
-            const isAReal =
-              a.PhotoURL && !a.PhotoURL.toLowerCase().includes("nophoto");
-            const isBReal =
-              b.PhotoURL && !b.PhotoURL.toLowerCase().includes("nophoto");
+  .filter((p) => {
+    const minAge = logged.PE_FromAge;
+    const maxAge = logged.PE_ToAge;
 
-            if (isAReal === isBReal) return 0;
-            return isAReal ? -1 : 1;
-          });
+    if (!minAge && !maxAge) return true;
+    if (minAge && !maxAge) return p.Age >= minAge;
+    if (!minAge && maxAge) return p.Age <= maxAge;
+
+    return p.Age >= minAge && p.Age <= maxAge;
+  })
+  .map((p) => ({ ...p, score: calculateScore(logged, p) }))
+  .filter((p) => p.score >= 9)
+  .sort((a, b) => {
+    const isAReal =
+      a.PhotoURL && !a.PhotoURL.toLowerCase().includes("nophoto");
+    const isBReal =
+      b.PhotoURL && !b.PhotoURL.toLowerCase().includes("nophoto");
+
+    if (isAReal === isBReal) return 0;
+    return isAReal ? -1 : 1;
+  });
+
 
         setProfiles(filteredList);
         setFiltered(filteredList);

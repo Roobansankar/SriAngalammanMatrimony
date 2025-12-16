@@ -112,48 +112,96 @@ function makePhotoUrl(photoFilename, photoApprove) {
 //   }
 // });
 
+// router.get("/searchByMatriID", async (req, res) => {
+//   try {
+//     const { matriid } = req.query;
+//     if (!matriid || String(matriid).trim() === "") {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "matriid required" });
+//     }
+
+//     const conn = db.promise();
+
+//     // ⭐ Added TIMESTAMPDIFF(YEAR...) AS Age (same as /user API)
+//     const [rows] = await conn.query(
+//       `
+//         SELECT *,
+//           TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
+//         FROM register
+//         WHERE MatriID = ? OR matid = ?
+//         LIMIT 1
+//       `,
+//       [matriid.trim(), matriid.trim()]
+//     );
+
+//     if (!rows.length) {
+//       return res.json({ success: false, message: "No profile found" });
+//     }
+
+//     const user = rows[0];
+
+//     // ⭐ Remove sensitive fields
+//     const { ConfirmPassword, ParentPassword, PhotoMain, ...safeUser } = user;
+
+//     // ⭐ Build Photo URL exactly like /user route
+//     safeUser.PhotoURL = makePhotoUrl(user.Photo1, user.Photo1Approve);
+
+//     return res.json({ success: true, user: safeUser });
+//   } catch (err) {
+//     console.error("searchByMatriID error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//     });
+//   }
+// });
+
+
 router.get("/searchByMatriID", async (req, res) => {
   try {
-    const { matriid } = req.query;
+    const { matriid, loggedPlan } = req.query;
+
     if (!matriid || String(matriid).trim() === "") {
-      return res
-        .status(400)
-        .json({ success: false, message: "matriid required" });
+      return res.status(400).json({ success: false });
     }
 
     const conn = db.promise();
 
-    // ⭐ Added TIMESTAMPDIFF(YEAR...) AS Age (same as /user API)
-    const [rows] = await conn.query(
-      `
-        SELECT *,
-          TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
-        FROM register
-        WHERE MatriID = ? OR matid = ?
-        LIMIT 1
-      `,
-      [matriid.trim(), matriid.trim()]
-    );
+    let sql = `
+      SELECT *,
+        TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
+      FROM register
+      WHERE (MatriID = ? OR matid = ?)
+    `;
+
+    const params = [matriid.trim(), matriid.trim()];
+
+    // 🔒 HARD BLOCK PREMIUM FOR BASIC USERS
+    if ((loggedPlan || "").toLowerCase() === "basic") {
+      sql += ` AND TRIM(LOWER(plan)) = 'basic' `;
+    }
+
+    sql += ` LIMIT 1`;
+
+    const [rows] = await conn.query(sql, params);
 
     if (!rows.length) {
-      return res.json({ success: false, message: "No profile found" });
+      return res.json({ success: false });
     }
 
     const user = rows[0];
 
-    // ⭐ Remove sensitive fields
     const { ConfirmPassword, ParentPassword, PhotoMain, ...safeUser } = user;
-
-    // ⭐ Build Photo URL exactly like /user route
-    safeUser.PhotoURL = makePhotoUrl(user.Photo1, user.Photo1Approve);
+    safeUser.PhotoURL = makePhotoUrl(
+      user.Photo1,
+      user.Photo1Approve
+    );
 
     return res.json({ success: true, user: safeUser });
   } catch (err) {
     console.error("searchByMatriID error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false });
   }
 });
 

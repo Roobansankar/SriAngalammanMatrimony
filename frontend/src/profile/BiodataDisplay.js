@@ -878,29 +878,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
     setIsMobile(window.innerWidth <= 768);
   }, []);
 
-  // Generate mobile screenshot
-  // useEffect(() => {
-  //   if (!isMobile) return;
-  //   if (!currentData) return;
-  //   if (!printRef.current || !cloneContainer.current) return;
-
-  //   cloneContainer.current.innerHTML = ""; // clean old clone
-
-  //   const cloned = printRef.current.cloneNode(true);
-  //   cloneContainer.current.appendChild(cloned);
-
-  //   setTimeout(async () => {
-  //     const canvas = await html2canvas(cloned, {
-  //       scale: 1,
-  //       useCORS: true,
-  //       backgroundColor: "#ffffff",
-  //       scrollY: -window.scrollY,
-  //     });
-
-  //     setMobileImage(canvas.toDataURL("image/png"));
-  //   }, 700);
-  // }, [isMobile, currentData]);
-
+ 
   useEffect(() => {
     if (
       !isMobile ||
@@ -1577,13 +1555,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
                           textAlign: "center",
                         }}
                       >
-                        {/* {val &&
-                          val
-                            .split(",")
-                            .map((planet, idx) => (
-                              <div key={idx}>{planet.trim()}</div>
-                            ))
-                            } */}
+                       
 
                         {safeParseChart(val).map((planet, idx) => (
                           <div key={idx}>{planet}</div>
