@@ -5,6 +5,9 @@ const API_BASE = "http://localhost:5000/api/";
 
 export default function HoroscopeSearch() {
   const navigate = useNavigate();
+     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+     const viewerPlan = userData.Plan || "basic";
+
 
   const [form, setForm] = useState({
     gender: "",
@@ -165,7 +168,7 @@ export default function HoroscopeSearch() {
   function submitSearch(e) {
     e.preventDefault();
     navigate("/horoscopesearch-results/1", {
-      state: { filters: form, apiBase: API_BASE },
+      state: { filters: form, viewerPlan, apiBase: API_BASE },
     });
   }
 
@@ -181,10 +184,10 @@ export default function HoroscopeSearch() {
 
         <form
           onSubmit={submitSearch}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6"
         >
           {/* Gender */}
-          <div className="col-span-2">
+          <div className="col-span-1 md:col-span-2">
             <label className="block text-sm mb-1">Gender</label>
             <select
               name="gender"
@@ -246,7 +249,7 @@ export default function HoroscopeSearch() {
               value={form.looking}
               multiple
               onChange={handleChange}
-              className="w-full h-28 bg-gray-50 dark:bg-slate-800 border px-3 py-2"
+              className="w-full min-h-[7rem] appearance-none bg-gray-50 dark:bg-slate-800 border px-3 py-2"
             >
               {options.maritalstatus.map((m) => (
                 <option key={m} value={m}>
@@ -264,7 +267,7 @@ export default function HoroscopeSearch() {
               value={form.star}
               multiple
               onChange={handleChange}
-              className="w-full h-28 bg-gray-50 dark:bg-slate-800 border px-3 py-2"
+              className="w-full min-h-[7rem] appearance-none bg-gray-50 dark:bg-slate-800 border px-3 py-2"
             >
               <option value="Any">Any</option>
               {options.star.map((m) => (
@@ -337,7 +340,7 @@ export default function HoroscopeSearch() {
               value={form.religion}
               multiple
               onChange={handleChange}
-              className="w-full h-28 bg-gray-50 dark:bg-slate-800 border px-3 py-2"
+              className="w-full min-h-[7rem] appearance-none bg-gray-50 dark:bg-slate-800 border px-3 py-2"
             >
               <option value="Any">Any</option>
               {options.religions.map((r) => (
@@ -356,7 +359,7 @@ export default function HoroscopeSearch() {
               value={form.caste}
               multiple
               onChange={handleChange}
-              className="w-full h-28 bg-gray-50 dark:bg-slate-800 border px-3 py-2"
+              className="w-full min-h-[7rem] appearance-none bg-gray-50 dark:bg-slate-800 border px-3 py-2"
             >
               <option value="Any">Any</option>
               {!form.religion.includes("Any") &&
@@ -376,7 +379,7 @@ export default function HoroscopeSearch() {
               value={form.edu}
               multiple
               onChange={handleChange}
-              className="w-full h-28 bg-gray-50 dark:bg-slate-800 border px-3 py-2"
+              className="w-full min-h-[7rem] appearance-none bg-gray-50 dark:bg-slate-800 border px-3 py-2"
             >
               <option value="Any">Any</option>
               {options.educations.map((e) => (
@@ -395,7 +398,7 @@ export default function HoroscopeSearch() {
               value={form.occu}
               multiple
               onChange={handleChange}
-              className="w-full h-28 bg-gray-50 dark:bg-slate-800 border px-3 py-2"
+              className="w-full min-h-[7rem] appearance-none bg-gray-50 dark:bg-slate-800 border px-3 py-2"
             >
               <option value="Any">Any</option>
               {options.occupations.map((o) => (
@@ -407,7 +410,7 @@ export default function HoroscopeSearch() {
           </div>
 
           {/* With Photo */}
-          <div className="flex items-center gap-2 col-span-2">
+          <div className="flex items-center gap-2 col-span-1 md:col-span-2">
             <input
               id="with_photo"
               type="checkbox"
@@ -420,7 +423,7 @@ export default function HoroscopeSearch() {
           </div>
 
           {/* Submit */}
-          <div className="col-span-2 text-center mt-4">
+          <div className="col-span-1 md:col-span-2 text-center mt-4">
             <button
               type="submit"
               className="px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold uppercase"

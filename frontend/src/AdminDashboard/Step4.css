@@ -1,0 +1,475 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Meera+Inimai&display=swap");
+
+.display-biodata-container {
+  font-variant-ligatures: none;
+  transform: translateZ(0); /* improves subpixel rendering */
+}
+
+/* TITLE BELOW HEADER IMAGE */
+.display-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+  bottom: 38px;
+}
+
+.display-div h2 {
+  padding: 4px 10px;
+  display: inline;
+  background-color: white;
+  border-radius: 5px;
+  color: red;
+}
+
+/* MAIN BIODATA PAGE CONTAINER */
+.display-biodata-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 1275px;
+  max-width: 100%;
+  margin: 20px auto;
+  padding: 0;
+  background: white;
+  font-family: "Noto Sans Tamil", Arial, sans-serif;
+  border: 2px solid #333;
+  overflow-x: auto;
+}
+
+/* HEADER BANNER */
+.display-header {
+  background: #b3f0ab;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.display-header img {
+  width: 1275px;
+  height: 340px;
+}
+
+/* INNER CONTENT */
+.display-form-content {
+  width: 1200px;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-left: 26px;
+  margin-right: 2px;
+  color: #183c5e;
+  padding: 20px;
+  background: white;
+}
+
+.display-short {
+  font-size: 16px;
+}
+
+.display-form-row {
+  min-width: 1275px;
+  margin-bottom: 12px;
+  font-size: 32px;
+  font-family: "Catamaran", sans-serif;
+  line-height: 1.6;
+  letter-spacing: -1px;
+}
+
+.display-placeholder {
+  display: inline-block;
+  border-bottom: #183c5e dotted 4px;
+  padding-left: 3px;
+  line-height: 26px;
+}
+
+.display-data {
+  padding-left: 10px;
+  text-align: center;
+}
+
+.display-red-text {
+  color: #c41e3a;
+  font-size: 25px;
+  font-weight: bold;
+  margin-left: 50px;
+}
+
+.display-red-text1 {
+  color: #c41e3a;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.display-maroon-text {
+  color: #c41e3a;
+  font-size: 18px;
+  font-weight: bolder;
+}
+
+.display-short {
+  font-size: 26.5px;
+}
+
+.display-purple-text {
+  color: #8b008b;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.display-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.display-container {
+  width: 400px;
+  height: 400px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  gap: 0;
+  background: white;
+}
+
+.display-cell {
+  border: 4px solid #1a4d8f;
+  background: white;
+}
+
+.display-cell-center {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #2d8a2d;
+}
+
+/* Remove overlapping borders */
+.display-cell:nth-child(1) {
+  border-right: none;
+  border-bottom: none;
+}
+
+.display-cell:nth-child(2) {
+  border-right: none;
+  border-bottom: none;
+}
+
+.display-cell:nth-child(3) {
+  border-right: none;
+  border-bottom: none;
+}
+
+.display-cell:nth-child(4) {
+  border-bottom: none;
+}
+
+.display-cell:nth-child(5) {
+  border-right: none;
+  border-bottom: none;
+}
+
+.display-cell-center {
+  border-bottom: none;
+}
+
+.display-cell:nth-child(6) {
+  border-right: none;
+  border-bottom: none;
+}
+
+.display-cell:nth-child(7) {
+  border-bottom: none;
+}
+
+.display-cell:nth-child(8) {
+  border-right: none;
+  border-bottom: none;
+}
+
+.display-cell:nth-child(9) {
+  border-bottom: none;
+}
+
+.display-cell:nth-child(10) {
+  border-right: none;
+}
+
+.display-cell:nth-child(11) {
+  border-right: none;
+}
+
+.display-cell:nth-child(12) {
+  border-right: none;
+}
+
+.display-cell:nth-child(16) {
+  border-right: none;
+}
+
+/* FOOTER ROW */
+.display-footer-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between !important;
+  margin-top: 20px;
+  padding-top: 10px;
+  font-size: 14px;
+}
+
+.display-footer-row p {
+  display: inline-block;
+  width: 325px;
+}
+
+/* WRAPPER AROUND BIODATA + BUTTON BLOCK */
+.responsive-biodata-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  height: auto;
+  min-height: auto;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* TOP BLOCK WITH BUTTON (AND HIDDEN DROPDOWN) */
+.display-controls-bar {
+  width: 100%;
+  max-width: 1275px;
+  margin: 90px auto 30px auto; 
+  padding: 0 10px 5px 10px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: transparent;
+}
+
+/* DROPDOWN WRAPPER (kept for future, hidden now) */
+.display-select-wrapper {
+  display: none !important;
+  margin-right: 10px;
+}
+
+.display-controls-bar label {
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.display-controls-bar select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* DOWNLOAD BUTTON - COMMON STYLE */
+.display-download-btn {
+  padding: 6px 20px; /* slimmer height */
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: 0.25s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* AUTO THEME COLORS */
+.display-download-btn.groom-theme {
+  background: linear-gradient(135deg, #22a152, #71db54);
+  box-shadow: 0px 4px 10px rgba(34, 161, 82, 0.35);
+}
+
+.display-download-btn.bride-theme {
+  background: linear-gradient(135deg, #ff8ecf, #ffbddb);
+  box-shadow: 0px 4px 10px rgba(255, 105, 180, 0.35);
+}
+
+.display-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.display-download-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.display-download-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* MAKE BIODATA CONTAINER RESPONSIVE */
+.display-biodata-container:not(.pdf-generation) {
+  width: 100%;
+  max-width: 1275px;
+  margin: 20px auto;
+  transform: none;
+}
+
+/* Tablet and larger screens - use scaling */
+@media screen and (min-width: 1025px) and (max-width: 1300px) {
+  .display-biodata-container {
+    transform: scale(0.85);
+    transform-origin: top center;
+    margin: 20px auto;
+  }
+}
+
+/* Large desktop - full size */
+@media screen and (min-width: 1301px) {
+  .display-biodata-container {
+    transform: none;
+    margin: 20px auto;
+  }
+}
+
+/* Default: Mobile devices - use horizontal scroll */
+@media screen and (max-width: 1024px) {
+  .responsive-biodata-wrapper {
+    overflow-x: auto;
+    padding: 0;
+    background: #f8f9fa;
+  }
+
+  .display-biodata-container {
+    min-width: 1275px;
+    width: 1275px;
+    transform: none;
+    margin: 0;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .display-controls-bar {
+    max-width: 1275px;
+    margin: 10px auto 0 auto;
+    padding: 5px 10px;
+    justify-content: flex-end;
+  }
+
+  .display-download-btn {
+    font-size: 14px;
+    padding: 6px 18px;
+  }
+
+  /* Scroll hint for mobile */
+  .responsive-biodata-wrapper::before {
+    content: "👆 Swipe left and right to view full biodata";
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+  }
+}
+
+/* Print and PDF Generation Styles - Maintain Original Dimensions */
+@media print {
+  .display-biodata-container {
+    margin: 0;
+    border: none;
+    transform: none !important;
+    width: 1275px !important;
+    max-width: none !important;
+  }
+
+  .display-controls-bar {
+    display: none !important;
+  }
+
+  .display-form-content {
+    width: 1200px !important;
+  }
+
+  .display-header img {
+    width: 1275px !important;
+    height: 340px !important;
+  }
+}
+
+/* PDF Generation Class - Applied during PDF creation */
+.pdf-generation {
+  transform: none !important;
+  width: 1275px !important;
+  max-width: none !important;
+}
+
+.pdf-generation .display-form-content {
+  width: 1200px !important;
+}
+
+.pdf-generation .display-header img {
+  width: 1275px !important;
+  height: 340px !important;
+}
+
+/* Smooth transitions for responsive scaling */
+.display-biodata-container {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Apply dotted underline ONLY during PDF generation */
+.pdf-generation .display-placeholder {
+  background: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='10' height='4'>\
+<circle cx='1' cy='2' r='1' fill='%23183c5e'/>\
+</svg>") repeat-x bottom;
+  background-size: 10px 4px;
+  padding-bottom: 16px;
+  padding-top: 0;
+  line-height: 26px;
+  display: inline-block;
+}
+
+
+
+.pdf-generation .display-placeholder {
+    background: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='10' height='4'>\
+<circle cx='1' cy='2' r='1' fill='%23183c5e'/>\
+</svg>") repeat-x bottom;
+
+    background-size: 10px 4px;
+
+    padding-bottom: 16px;
+    padding-top: 0;
+
+    line-height: 26px;
+    display: inline-block;
+}
+
+.display-biodata-container:not(.pdf-generation) {
+    transform: scale(0.70);
+    transform-origin: top center;
+}

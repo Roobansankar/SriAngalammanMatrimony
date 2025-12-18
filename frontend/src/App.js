@@ -464,6 +464,8 @@ import LoggedRegularSearch from "./profile/RegularSearch";
 // import LogedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
 import LoggedSearchResults from "./profile/RegularSearchResults";
+import AddUsers from "./AdminDashboard/AddUsers";
+import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -511,6 +513,11 @@ function AppContent({ user, setUser }) {
             <Route path="manage-members" element={<MemberManagement />} />
             <Route path="master-data" element={<MasterData />} />
             <Route path="location-data" element={<LocationData />} />
+            <Route path="add-users/*" element={<AddUsers />} />
+            <Route
+              path="featured-profiles"
+              element={<AdminFeaturedProfiles />}
+            />
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />
           </Route>
@@ -527,7 +534,11 @@ function AppContent({ user, setUser }) {
           <Route path="/report-misuse" element={<Report />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/search" element={<RegularSearch />} />
-          <Route path="/results" element={<SearchResults />} />
+          <Route
+            path="/results/:page?"
+            // path="/regularsearch-results/:page?"
+            element={<SearchResults />}
+          />
           <Route path="/success-story" element={<SuccessStories />} />
           <Route path="/login" element={<LoginPage setUser={setUser} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -732,8 +743,6 @@ function AppContent({ user, setUser }) {
               </PrivateRoute>
             }
           />
-
-          
 
           <Route
             path="/advanced-search"

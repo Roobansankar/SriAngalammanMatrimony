@@ -51,6 +51,116 @@ function addInCondition(where, col, vals) {
 
 
 
+// router.post("/search", (req, res) => {
+//   try {
+//     let {
+//       gender,
+//       txtSAge,
+//       txtEAge,
+//       with_photo,
+//       page = 1,
+//       looking = [],
+//       religion = [],
+//       caste = [],
+//       edu = [],
+//       occu = [],
+//     } = req.body;
+
+//     const setLimit = 10;
+//     page = parseInt(page) || 1;
+//     if (page < 1) page = 1;
+
+//     const where = ["1=1"];
+
+//     if (gender) where.push(`Gender = ${db.escape(gender)}`);
+
+//     // ⭐ Correct age filter based on DOB
+//     const fromAge = parseInt(txtSAge);
+//     const toAge = parseInt(txtEAge);
+
+//     if (!isNaN(fromAge) && !isNaN(toAge) && toAge >= fromAge) {
+//       where.push(`
+//         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) BETWEEN ${fromAge} AND ${toAge}
+//       `);
+//     }
+
+//     addInCondition(where, "Religion", religion);
+//     addInCondition(where, "Caste", caste);
+//     addInCondition(where, "Education", edu);
+//     addInCondition(where, "Occupation", occu);
+//     addInCondition(where, "Maritalstatus", looking);
+
+//     if (with_photo == 1 || with_photo === true || with_photo === "1") {
+//       where.push("Photo1 IS NOT NULL");
+//       where.push("LOWER(Photo1Approve) = 'yes'");
+//     }
+
+//     where.push(
+//       "visibility NOT LIKE 'hidden' AND Status <> 'Banned' AND Status NOT LIKE 'InActive'"
+//     );
+
+//     const whereSQL = where.join(" AND ");
+
+//     // ⭐ FIRST COUNT TOTAL ROWS
+//     const countSQL = `SELECT COUNT(*) AS cnt FROM register WHERE ${whereSQL}`;
+
+//     db.query(countSQL, (err, countRes) => {
+//       if (err) return res.status(500).json({ error: "Database error" });
+
+//       const total = countRes[0]?.cnt || 0;
+
+//       // ⭐ Clamp page automatically
+//       const totalPages = total > 0 ? Math.ceil(total / setLimit) : 1;
+//       if (page > totalPages) page = totalPages;
+
+//       const offset = (page - 1) * setLimit;
+
+//       // ⭐ Fetch actual rows
+//       const fetchSQL = `
+//         SELECT 
+//           MatriID,
+//           Name,
+//           DOB,
+//           TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+//           Religion,
+//           Caste,
+//           Subcaste,
+//           Profilecreatedby,
+//           Education,
+//           Occupation,
+//           Annualincome,
+//           workinglocation,
+//           Photo1,
+//           Photo1Approve
+//         FROM register
+//         WHERE ${whereSQL}
+//         ORDER BY Regdate DESC
+//         LIMIT ?, ?
+//       `;
+
+//       db.query(fetchSQL, [offset, setLimit], (err2, rows) => {
+//         if (err2) return res.status(500).json({ error: "Database error" });
+
+//         const results = rows.map((u) => {
+//           const PhotoURL = makePhotoUrl(u.Photo1, u.Photo1Approve);
+//           const { Photo1, Photo1Approve, ...rest } = u;
+//           return { ...rest, PhotoURL };
+//         });
+
+//         res.json({
+//           total,
+//           page,
+//           per_page: setLimit,
+//           results,
+//         });
+//       });
+//     });
+//   } catch (err) {
+//     console.error("Search error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 router.post("/search", (req, res) => {
   try {
     let {
@@ -64,6 +174,7 @@ router.post("/search", (req, res) => {
       caste = [],
       edu = [],
       occu = [],
+      viewerPlan = "basic", // ✅ received from frontend
     } = req.body;
 
     const setLimit = 10;
@@ -72,15 +183,23 @@ router.post("/search", (req, res) => {
 
     const where = ["1=1"];
 
+    // ================= PLAN FILTER (FINAL LOGIC) =================
+    if (viewerPlan === "basic") {
+      where.push("Plan = 'basic'");
+    } else if (viewerPlan === "premium") {
+      where.push("Plan IN ('basic','premium')");
+    }
+    // ============================================================
+
     if (gender) where.push(`Gender = ${db.escape(gender)}`);
 
-    // ⭐ Correct age filter based on DOB
     const fromAge = parseInt(txtSAge);
     const toAge = parseInt(txtEAge);
 
     if (!isNaN(fromAge) && !isNaN(toAge) && toAge >= fromAge) {
       where.push(`
-        TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) BETWEEN ${fromAge} AND ${toAge}
+        TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) 
+        BETWEEN ${fromAge} AND ${toAge}
       `);
     }
 
@@ -101,21 +220,23 @@ router.post("/search", (req, res) => {
 
     const whereSQL = where.join(" AND ");
 
-    // ⭐ FIRST COUNT TOTAL ROWS
-    const countSQL = `SELECT COUNT(*) AS cnt FROM register WHERE ${whereSQL}`;
+    // ================= COUNT =================
+    const countSQL = `
+      SELECT COUNT(*) AS cnt 
+      FROM register 
+      WHERE ${whereSQL}
+    `;
 
     db.query(countSQL, (err, countRes) => {
       if (err) return res.status(500).json({ error: "Database error" });
 
       const total = countRes[0]?.cnt || 0;
-
-      // ⭐ Clamp page automatically
       const totalPages = total > 0 ? Math.ceil(total / setLimit) : 1;
       if (page > totalPages) page = totalPages;
 
       const offset = (page - 1) * setLimit;
 
-      // ⭐ Fetch actual rows
+      // ================= FETCH DATA =================
       const fetchSQL = `
         SELECT 
           MatriID,
@@ -206,13 +327,21 @@ router.post("/advancesearch", (req, res) => {
       country = [],
       state = [],
       district = [],
+      viewerPlan = "basic",
     } = req.body;
 
     const setLimit = 10;
     page = parseInt(page) || 1;
     if (page < 1) page = 1;
 
-    const where = ["1=1"];
+   const where = ["1=1"];
+
+   // ✅ ADDED: PLAN-BASED VISIBILITY LOGIC
+   if (viewerPlan === "basic") {
+     where.push("Plan = 'basic'");
+   } else if (viewerPlan === "premium") {
+     where.push("Plan IN ('basic','premium')");
+   }
 
     if (gender) where.push(`Gender = ${db.escape(gender)}`);
 
@@ -364,14 +493,23 @@ router.post("/horoscopesearch", (req, res) => {
       star = [],        // ⭐ ADD THIS
       Sevai = "Any",    // ⭐ ADD THIS
       Raghu = "Any",    // ⭐ ADD THIS
-      Keethu = "Any"    // ⭐ ADD THIS
+      Keethu = "Any"  ,  // ⭐ ADD THIS
+      viewerPlan = "basic",
     } = req.body;
 
     const setLimit = 10;
     page = parseInt(page) || 1;
     if (page < 1) page = 1;
 
-    const where = ["1=1"];
+   const where = ["1=1"];
+
+   // ✅ ADDED: PLAN-BASED VISIBILITY LOGIC
+   if (viewerPlan === "basic") {
+     where.push("Plan = 'basic'");
+   } else if (viewerPlan === "premium") {
+     where.push("Plan IN ('basic','premium')");
+   }
+
 
     if (gender) where.push(`Gender = ${db.escape(gender)}`);
 
