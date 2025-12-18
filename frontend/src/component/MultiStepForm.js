@@ -483,11 +483,6 @@ export default function MultiStepForm() {
       goTo(prevStep);
     };
 
-  // const resetForm = () => {
-  //   localStorage.removeItem(STORAGE_KEY);
-  //   setFormData({});
-  //   navigate("/register/step/1");
-  // };
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-pink-50 to-rose-100 p-6 font-display">
@@ -655,14 +650,7 @@ export default function MultiStepForm() {
         </Routes>
       </div>
 
-      {/* <div className="w-full max-w-2xl mt-6 text-center">
-        <button
-          onClick={resetForm}
-          className="text-xs text-rose-600 hover:underline"
-        >
-          Start Over (clear saved data)
-        </button>
-      </div> */}
+     
     </div>
   );
 }

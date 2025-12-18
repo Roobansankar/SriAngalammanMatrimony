@@ -1128,4 +1128,145 @@ router.delete("/master/cities/:id", (req, res) => {
   });
 });
 
+
+
+// router.post("/featured-profile", (req, res) => {
+//   const { matriId } = req.body;
+
+//   if (!matriId) {
+//     return res.status(400).json({ error: "MatriID required" });
+//   }
+
+//   // 1️⃣ Check MatriID exists
+//   const checkSql = "SELECT MatriID FROM register WHERE MatriID = ? LIMIT 1";
+
+//   db.query(checkSql, [matriId], (err, rows) => {
+//     if (err) return res.status(500).json(err);
+
+//     if (rows.length === 0) {
+//       return res.status(404).json({
+//         error: "MatriID not found in register table",
+//       });
+//     }
+
+//     // 2️⃣ Insert into featured_profiles
+//     const insertSql =
+//       "INSERT IGNORE INTO featured_profiles (MatriID) VALUES (?)";
+
+//     db.query(insertSql, [matriId], (err2) => {
+//       if (err2) return res.status(500).json(err2);
+
+//       return res.json({
+//         success: true,
+//         message: "Featured profile added successfully",
+//       });
+//     });
+//   });
+// });
+
+
+// router.get("/featured-profiles", (req, res) => {
+//   const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+
+//   const sql = `
+//     SELECT r.MatriID, r.Name, r.Age, r.Occupation,
+//            CASE
+//              WHEN r.Photo1 IS NOT NULL AND r.Photo1Approve = 'Yes'
+//              THEN CONCAT(?, '/gallery/', r.Photo1)
+//              ELSE CONCAT(?, '/gallery/nophoto.jpg')
+//            END AS PhotoURL
+//     FROM featured_profiles f
+//     JOIN register r ON r.MatriID = f.MatriID
+//     ORDER BY f.created_at DESC
+//     LIMIT 4
+//   `;
+
+//   db.query(sql, [BASE, BASE], (err, rows) => {
+//     if (err) return res.status(500).json(err);
+//     return res.json({ success: true, profiles: rows });
+//   });
+// });
+
+
+/* GET */
+router.get("/featured-profiles", (req, res) => {
+  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+
+  const sql = `
+    SELECT f.id, r.MatriID, r.Name, r.Age, r.Occupation,
+      CASE
+        WHEN r.Photo1 IS NOT NULL AND r.Photo1Approve='Yes'
+        THEN CONCAT(?, '/gallery/', r.Photo1)
+        ELSE CONCAT(?, '/gallery/nophoto.jpg')
+      END AS PhotoURL
+    FROM featured_profiles f
+    JOIN register r ON r.MatriID = f.MatriID
+    ORDER BY f.created_at DESC
+  `;
+
+  db.query(sql, [BASE, BASE], (err, rows) => {
+    if (err) return res.status(500).json(err);
+    res.json({ profiles: rows });
+  });
+});
+
+/* POST */
+router.post("/featured-profiles", (req, res) => {
+  const { matriId } = req.body;
+
+  const checkSql = `SELECT MatriID FROM register WHERE MatriID=? LIMIT 1`;
+  db.query(checkSql, [matriId], (err, rows) => {
+    if (err) return res.status(500).json(err);
+    if (!rows.length)
+      return res.status(404).json({ error: "MatriID not found" });
+
+    db.query(
+      "INSERT INTO featured_profiles (MatriID) VALUES (?)",
+      [matriId],
+      (err2) => {
+        if (err2)
+          return res
+            .status(400)
+            .json({ error: "Already featured" });
+
+        res.json({ success: true });
+      }
+    );
+  });
+});
+
+/* PUT */
+router.put("/featured-profiles/:id", (req, res) => {
+  const { matriId } = req.body;
+
+  const checkSql = `SELECT MatriID FROM register WHERE MatriID=? LIMIT 1`;
+  db.query(checkSql, [matriId], (err, rows) => {
+    if (err) return res.status(500).json(err);
+    if (!rows.length)
+      return res.status(404).json({ error: "MatriID not found" });
+
+    db.query(
+      "UPDATE featured_profiles SET MatriID=? WHERE id=?",
+      [matriId, req.params.id],
+      (err2) => {
+        if (err2) return res.status(500).json(err2);
+        res.json({ success: true });
+      }
+    );
+  });
+});
+
+/* DELETE */
+router.delete("/featured-profiles/:id", (req, res) => {
+  db.query(
+    "DELETE FROM featured_profiles WHERE id=?",
+    [req.params.id],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ success: true });
+    }
+  );
+});
+
+
 export default router;

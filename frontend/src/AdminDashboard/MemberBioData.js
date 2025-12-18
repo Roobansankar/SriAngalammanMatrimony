@@ -39,7 +39,8 @@ function getHeaderColor(matriId, gender) {
   
   if (prefix === "SAMD") {
     // Doctor - Red shade
-    return "#f4a4a4"; // Light red/coral
+    return "#C1272D"; // Slightly lighter, clean red (BEST)
+    // Light red/coral
   } else if (prefix === "SAMR") {
     // Remarriage - Blue shade
     return "#a4c4f4"; // Light blue
@@ -443,7 +444,10 @@ export default function MemberBioData() {
         {/* Search */}
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
             <input
               type="text"
               placeholder="Search by name, ID..."
@@ -452,7 +456,10 @@ export default function MemberBioData() {
               className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent w-64"
             />
           </div>
-          <button type="submit" className="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition"
+          >
             Search
           </button>
         </form>
@@ -477,21 +484,40 @@ export default function MemberBioData() {
                       key={m.MatriID}
                       onClick={() => viewBiodata(m.MatriID)}
                       className={`flex items-center gap-3 p-3 cursor-pointer transition hover:bg-gray-50 ${
-                        selectedMember?.matriId === m.MatriID ? "bg-rose-50 border-l-4 border-rose-500" : ""
+                        selectedMember?.matriId === m.MatriID
+                          ? "bg-rose-50 border-l-4 border-rose-500"
+                          : ""
                       }`}
                     >
                       {m.PhotoURL && !m.PhotoURL.includes("nophoto") ? (
-                        <img src={m.PhotoURL} alt={m.Name} className="w-10 h-10 rounded-full object-cover" />
+                        <img
+                          src={m.PhotoURL}
+                          alt={m.Name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
                       ) : (
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          m.Gender === "Male" ? "bg-blue-100" : "bg-pink-100"
-                        }`}>
-                          <UserCircle size={20} className={m.Gender === "Male" ? "text-blue-500" : "text-pink-500"} />
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            m.Gender === "Male" ? "bg-blue-100" : "bg-pink-100"
+                          }`}
+                        >
+                          <UserCircle
+                            size={20}
+                            className={
+                              m.Gender === "Male"
+                                ? "text-blue-500"
+                                : "text-pink-500"
+                            }
+                          />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-800 truncate">{m.Name}</p>
-                        <p className="text-xs text-gray-500">{m.MatriID} • {m.Gender}</p>
+                        <p className="font-medium text-gray-800 truncate">
+                          {m.Name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {m.MatriID} • {m.Gender}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -511,7 +537,9 @@ export default function MemberBioData() {
                       key={num}
                       onClick={() => setPage(num)}
                       className={`w-7 h-7 rounded text-xs font-medium ${
-                        page === num ? "bg-rose-500 text-white" : "border border-gray-200 hover:bg-gray-50"
+                        page === num
+                          ? "bg-rose-500 text-white"
+                          : "border border-gray-200 hover:bg-gray-50"
                       }`}
                     >
                       {num}
@@ -537,7 +565,9 @@ export default function MemberBioData() {
               <div>
                 <h2 className="font-semibold text-gray-800">BioData Preview</h2>
                 <p className="text-xs text-gray-500">
-                  {currentData ? `${currentData.name} (${currentData.matriId})` : "Select a member to view"}
+                  {currentData
+                    ? `${currentData.name} (${currentData.matriId})`
+                    : "Select a member to view"}
                 </p>
               </div>
 
@@ -614,7 +644,7 @@ export default function MemberBioData() {
                   <div
                     ref={printRef}
                     className="display-biodata-container"
-                    style={{ 
+                    style={{
                       margin: "0",
                       background: "#ffffff",
                     }}
@@ -624,563 +654,1256 @@ export default function MemberBioData() {
                       className="display-header"
                       style={{ backgroundColor: headerColor, width: "100%" }}
                     >
-                      <img src={headerpic} alt="header" style={{ width: "1275px", height: "340px" }} />
+                      <img
+                        src={headerpic}
+                        alt="header"
+                        style={{ width: "1275px", height: "340px" }}
+                      />
                     </div>
 
                     <div className="display-div">
-                      <h2>{getHeaderLabel(currentData.matriId, currentData.gender)}</h2>
+                      <h2>
+                        {getHeaderLabel(
+                          currentData.matriId,
+                          currentData.gender
+                        )}
+                      </h2>
                     </div>
 
                     {/* CONTENT */}
                     <div className="display-form-content">
-                        {/* NAME + DATE */}
-                        <div className="display-form-row">
-                          <span>
-                            பெயர்:
-                            <div className="display-placeholder" style={{ minWidth: "720px" }}>
-                              {isEditing ? (
-                                <input type="text" value={editData.name || ""} onChange={(e) => handleEditChange("name", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                              ) : (
-                                <span className="display-data">{currentData.name}</span>
-                              )}
-                            </div>
-                          </span>
-                          <span>
-                            தேதி:
-                            <div className="display-placeholder" style={{ minWidth: "280px" }}>
-                              {isEditing ? (
-                                <input type="text" value={editData.date || ""} onChange={(e) => handleEditChange("date", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                              ) : (
-                                <span className="display-data">{currentData.date}</span>
-                              )}
-                            </div>
-                          </span>
-                        </div>
+                      {/* NAME + DATE */}
+                      <div className="display-form-row">
+                        <span>
+                          பெயர்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "720px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.name || ""}
+                                onChange={(e) =>
+                                  handleEditChange("name", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.name}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                        <span>
+                          தேதி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "280px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.date || ""}
+                                onChange={(e) =>
+                                  handleEditChange("date", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.date}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* BIRTH SECTION */}
-                    <div className="display-form-row">
-                      <span>
-                        பிறந்த தேதி:
-                        <div className="display-placeholder" style={{ minWidth: "188px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.birth_date || ""} onChange={(e) => handleEditChange("birth_date", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.birth_date}</span>
-                          )}
-                        </div>
-                        பிறந்த நேரம்:
-                        <div className="display-placeholder" style={{ minWidth: "188px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.birth_time || ""} onChange={(e) => handleEditChange("birth_time", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.birth_time}</span>
-                          )}
-                        </div>
-                        பிறந்த ஊர்:
-                        <div className="display-placeholder" style={{ minWidth: "200px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.birth_place || ""} onChange={(e) => handleEditChange("birth_place", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.birth_place}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* BIRTH SECTION */}
+                      <div className="display-form-row">
+                        <span>
+                          பிறந்த தேதி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "188px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.birth_date || ""}
+                                onChange={(e) =>
+                                  handleEditChange("birth_date", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.birth_date}
+                              </span>
+                            )}
+                          </div>
+                          பிறந்த நேரம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "188px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.birth_time || ""}
+                                onChange={(e) =>
+                                  handleEditChange("birth_time", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.birth_time}
+                              </span>
+                            )}
+                          </div>
+                          பிறந்த ஊர்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "200px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.birth_place || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "birth_place",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.birth_place}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* EDUCATION / JOB */}
-                    <div className="display-form-row">
-                      <span>
-                        வரனின்படிப்பு:
-                        <div className="display-placeholder" style={{ minWidth: "400px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.education || ""} onChange={(e) => handleEditChange("education", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.education}</span>
-                          )}
-                        </div>
-                        வேலை:
-                        <div className="display-placeholder" style={{ minWidth: "420px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.occupation || ""} onChange={(e) => handleEditChange("occupation", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.occupation}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* EDUCATION / JOB */}
+                      <div className="display-form-row">
+                        <span>
+                          வரனின்படிப்பு:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "400px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.education || ""}
+                                onChange={(e) =>
+                                  handleEditChange("education", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.education}
+                              </span>
+                            )}
+                          </div>
+                          வேலை:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "420px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.occupation || ""}
+                                onChange={(e) =>
+                                  handleEditChange("occupation", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.occupation}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* COMPANY DETAILS */}
-                    <div className="display-form-row">
-                      <span>
-                        நிறுவனம் பெயர் & ஊர்:
-                        <div className="display-placeholder" style={{ minWidth: "810px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.company_details || ""} onChange={(e) => handleEditChange("company_details", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.company_details}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* COMPANY DETAILS */}
+                      <div className="display-form-row">
+                        <span>
+                          நிறுவனம் பெயர் & ஊர்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "810px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.company_details || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "company_details",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.company_details}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* INCOME / HEIGHT / WEIGHT */}
-                    <div className="display-form-row">
-                      <span>
-                        மாதவருமானம்:
-                        <div className="display-placeholder" style={{ minWidth: "250px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.monthly_income || ""} onChange={(e) => handleEditChange("monthly_income", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.monthly_income}</span>
-                          )}
-                        </div>
-                        உயரம்:
-                        <div className="display-placeholder" style={{ minWidth: "80px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.height || ""} onChange={(e) => handleEditChange("height", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.height}</span>
-                          )}
-                        </div>
-                        எடை:
-                        <div className="display-placeholder" style={{ minWidth: "85px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.weight || ""} onChange={(e) => handleEditChange("weight", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.weight}</span>
-                          )}
-                        </div>
-                        நிறம்:
-                        <div className="display-placeholder" style={{ minWidth: "125px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.complexion || ""} onChange={(e) => handleEditChange("complexion", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.complexion}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* INCOME / HEIGHT / WEIGHT */}
+                      <div className="display-form-row">
+                        <span>
+                          மாதவருமானம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "250px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.monthly_income || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "monthly_income",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.monthly_income}
+                              </span>
+                            )}
+                          </div>
+                          உயரம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "80px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.height || ""}
+                                onChange={(e) =>
+                                  handleEditChange("height", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.height}
+                              </span>
+                            )}
+                          </div>
+                          எடை:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "85px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.weight || ""}
+                                onChange={(e) =>
+                                  handleEditChange("weight", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.weight}
+                              </span>
+                            )}
+                          </div>
+                          நிறம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "125px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.complexion || ""}
+                                onChange={(e) =>
+                                  handleEditChange("complexion", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.complexion}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* FAMILY DEITY */}
-                    <div className="display-form-row">
-                      <span>
-                        குலதெய்வம்,ஊர்:
-                        <div className="display-placeholder" style={{ minWidth: "912px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.family_deity || ""} onChange={(e) => handleEditChange("family_deity", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.family_deity}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* FAMILY DEITY */}
+                      <div className="display-form-row">
+                        <span>
+                          குலதெய்வம்,ஊர்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "912px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.family_deity || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "family_deity",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.family_deity}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* KULAM + KOOTAM */}
-                    <div className="display-form-row">
-                      <span>
-                        குலம்:
-                        <div className="display-placeholder" style={{ minWidth: "480px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.kulam || ""} onChange={(e) => handleEditChange("kulam", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.kulam}</span>
-                          )}
-                        </div>
-                        , கூட்டம்:
-                        <div className="display-placeholder" style={{ minWidth: "480px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.kootam || ""} onChange={(e) => handleEditChange("kootam", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.kootam}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* KULAM + KOOTAM */}
+                      <div className="display-form-row">
+                        <span>
+                          குலம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "480px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.kulam || ""}
+                                onChange={(e) =>
+                                  handleEditChange("kulam", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.kulam}
+                              </span>
+                            )}
+                          </div>
+                          , கூட்டம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "480px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.kootam || ""}
+                                onChange={(e) =>
+                                  handleEditChange("kootam", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.kootam}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* FATHER */}
-                    <div className="display-form-row">
-                      <span>
-                        தந்தைப்பெயர்:
-                        <div className="display-placeholder" style={{ minWidth: "425px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.father_name || ""} onChange={(e) => handleEditChange("father_name", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.father_name}</span>
-                          )}
-                        </div>
-                        அலைபேசி:
-                        <div className="display-placeholder" style={{ minWidth: "340px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.father_phone || ""} onChange={(e) => handleEditChange("father_phone", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.father_phone}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* FATHER */}
+                      <div className="display-form-row">
+                        <span>
+                          தந்தைப்பெயர்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "425px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.father_name || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "father_name",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.father_name}
+                              </span>
+                            )}
+                          </div>
+                          அலைபேசி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "340px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.father_phone || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "father_phone",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.father_phone}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* FATHER OCCUPATION */}
-                    <div className="display-form-row">
-                      <span>
-                        தந்தையின்பணி:
-                        <div className="display-placeholder" style={{ minWidth: "425px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.father_occupation || ""} onChange={(e) => handleEditChange("father_occupation", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.father_occupation}</span>
-                          )}
-                        </div>
-                        பூர்வீகம்:
-                        <div className="display-placeholder" style={{ minWidth: "345px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.father_native_place || ""} onChange={(e) => handleEditChange("father_native_place", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.father_native_place}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* FATHER OCCUPATION */}
+                      <div className="display-form-row">
+                        <span>
+                          தந்தையின்பணி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "425px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.father_occupation || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "father_occupation",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.father_occupation}
+                              </span>
+                            )}
+                          </div>
+                          பூர்வீகம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "345px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.father_native_place || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "father_native_place",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.father_native_place}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* MOTHER */}
-                    <div className="display-form-row">
-                      <span>
-                        தாய்பெயர்:
-                        <div className="display-placeholder" style={{ minWidth: "458px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.mother_name || ""} onChange={(e) => handleEditChange("mother_name", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.mother_name}</span>
-                          )}
-                        </div>
-                        அலைபேசி:
-                        <div className="display-placeholder" style={{ minWidth: "358px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.mother_phone || ""} onChange={(e) => handleEditChange("mother_phone", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.mother_phone}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* MOTHER */}
+                      <div className="display-form-row">
+                        <span>
+                          தாய்பெயர்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "458px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.mother_name || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "mother_name",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.mother_name}
+                              </span>
+                            )}
+                          </div>
+                          அலைபேசி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "358px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.mother_phone || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "mother_phone",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.mother_phone}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* MOTHER OCCUPATION */}
-                    <div className="display-form-row">
-                      <span>
-                        தாயின்பணி:
-                        <div className="display-placeholder" style={{ minWidth: "435px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.mother_occupation || ""} onChange={(e) => handleEditChange("mother_occupation", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.mother_occupation}</span>
-                          )}
-                        </div>
-                        பூர்வீகம்:
-                        <div className="display-placeholder" style={{ minWidth: "410px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.mother_native_place || ""} onChange={(e) => handleEditChange("mother_native_place", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.mother_native_place}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* MOTHER OCCUPATION */}
+                      <div className="display-form-row">
+                        <span>
+                          தாயின்பணி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "435px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.mother_occupation || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "mother_occupation",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.mother_occupation}
+                              </span>
+                            )}
+                          </div>
+                          பூர்வீகம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "410px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.mother_native_place || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "mother_native_place",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.mother_native_place}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* ADDRESS */}
-                    <div className="display-form-row">
-                      <span>
-                        முகவரி:
-                        <div className="display-placeholder" style={{ minWidth: "1075px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.address || ""} onChange={(e) => handleEditChange("address", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.address}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* ADDRESS */}
+                      <div className="display-form-row">
+                        <span>
+                          முகவரி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "1075px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.address || ""}
+                                onChange={(e) =>
+                                  handleEditChange("address", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.address}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* FAMILY INCOME */}
-                    <div className="display-form-row">
-                      <span>
-                        குடும்பவருமானம்/வசதிகள்:
-                        <div className="display-placeholder" style={{ minWidth: "745px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.family_income || ""} onChange={(e) => handleEditChange("family_income", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.family_income}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* FAMILY INCOME */}
+                      <div className="display-form-row">
+                        <span>
+                          குடும்பவருமானம்/வசதிகள்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "745px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.family_income || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "family_income",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.family_income}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* SIBLINGS */}
-                    <div className="display-form-row">
-                      <span>
-                        உடன்பிறந்தோர் விபரம்:
-                        <div className="display-placeholder" style={{ minWidth: "820px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.siblings_details || ""} onChange={(e) => handleEditChange("siblings_details", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.siblings_details}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* SIBLINGS */}
+                      <div className="display-form-row">
+                        <span>
+                          உடன்பிறந்தோர் விபரம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "820px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.siblings_details || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "siblings_details",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.siblings_details}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* STAR / RASI / LAKNAM */}
-                    <div className="display-form-row">
-                      <span>
-                        நட்சத்திரம்:
-                        <div className="display-placeholder" style={{ minWidth: "255px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.star || ""} onChange={(e) => handleEditChange("star", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.star}</span>
-                          )}
-                        </div>
-                        இராசி:
-                        <div className="display-placeholder" style={{ minWidth: "260px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.rasi || ""} onChange={(e) => handleEditChange("rasi", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.rasi}</span>
-                          )}
-                        </div>
-                        லக்னம்:
-                        <div className="display-placeholder" style={{ minWidth: "260px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.lagnam || ""} onChange={(e) => handleEditChange("lagnam", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.lagnam}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* STAR / RASI / LAKNAM */}
+                      <div className="display-form-row">
+                        <span>
+                          நட்சத்திரம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "255px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.star || ""}
+                                onChange={(e) =>
+                                  handleEditChange("star", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.star}
+                              </span>
+                            )}
+                          </div>
+                          இராசி:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "260px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.rasi || ""}
+                                onChange={(e) =>
+                                  handleEditChange("rasi", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.rasi}
+                              </span>
+                            )}
+                          </div>
+                          லக்னம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "260px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.lagnam || ""}
+                                onChange={(e) =>
+                                  handleEditChange("lagnam", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.lagnam}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* SUDDHAM / RAHU / KETU / SEVVAI */}
-                    <div className="display-form-row">
-                      <span>
-                        சுத்தம்:
-                        <div className="display-placeholder" style={{ minWidth: "70px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.suddham || ""} onChange={(e) => handleEditChange("suddham", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.suddham}</span>
-                          )}
-                        </div>
-                        ராகு:
-                        <div className="display-placeholder" style={{ minWidth: "65px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.rahu || ""} onChange={(e) => handleEditChange("rahu", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.rahu}</span>
-                          )}
-                        </div>
-                        கேது:
-                        <div className="display-placeholder" style={{ minWidth: "65px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.ketu || ""} onChange={(e) => handleEditChange("ketu", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.ketu}</span>
-                          )}
-                        </div>
-                        செவ்வாய்:
-                        <div className="display-placeholder" style={{ minWidth: "65px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.sevvai || ""} onChange={(e) => handleEditChange("sevvai", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.sevvai}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* SUDDHAM / RAHU / KETU / SEVVAI */}
+                      <div className="display-form-row">
+                        <span>
+                          சுத்தம்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "70px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.suddham || ""}
+                                onChange={(e) =>
+                                  handleEditChange("suddham", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.suddham}
+                              </span>
+                            )}
+                          </div>
+                          ராகு:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "65px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.rahu || ""}
+                                onChange={(e) =>
+                                  handleEditChange("rahu", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.rahu}
+                              </span>
+                            )}
+                          </div>
+                          கேது:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "65px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.ketu || ""}
+                                onChange={(e) =>
+                                  handleEditChange("ketu", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.ketu}
+                              </span>
+                            )}
+                          </div>
+                          செவ்வாய்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "65px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.sevvai || ""}
+                                onChange={(e) =>
+                                  handleEditChange("sevvai", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.sevvai}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* HOROSCOPE GRIDS */}
-                    <div className="display-grid">
-                      {/* RASI GRID */}
-                      <div
-                        className="display-container"
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(4, 1fr)",
-                          gridTemplateRows: "repeat(4, 1fr)",
-                          width: "400px",
-                          height: "400px",
-                          border: "2px solid #000",
-                          margin: "20px",
-                        }}
-                      >
-                        {(currentData.rasi_grid || Array(12).fill("-")).map((val, i) => {
-                          const gridMap = [
-                            { row: 1, col: 1 },
-                            { row: 1, col: 2 },
-                            { row: 1, col: 3 },
-                            { row: 1, col: 4 },
-                            { row: 2, col: 4 },
-                            { row: 3, col: 4 },
-                            { row: 4, col: 4 },
-                            { row: 4, col: 3 },
-                            { row: 4, col: 2 },
-                            { row: 4, col: 1 },
-                            { row: 3, col: 1 },
-                            { row: 2, col: 1 },
-                          ];
-                          const pos = gridMap[i];
-
-                          return (
-                            <div
-                              key={i}
-                              style={{
-                                gridRow: pos.row,
-                                gridColumn: pos.col,
-                                border: "1px solid #000",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                padding: "5px",
-                                textAlign: "center",
-                              }}
-                            >
-                              {safeParseChart(val).map((planet, idx) => (
-                                <div key={idx}>{planet}</div>
-                              ))}
-                            </div>
-                          );
-                        })}
-
+                      {/* HOROSCOPE GRIDS */}
+                      <div className="display-grid">
+                        {/* RASI GRID */}
                         <div
+                          className="display-container"
                           style={{
-                            gridRow: "2 / 4",
-                            gridColumn: "2 / 4",
-                            border: "1px solid #000",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontWeight: "bold",
+                            display: "grid",
+                            gridTemplateColumns: "repeat(4, 1fr)",
+                            gridTemplateRows: "repeat(4, 1fr)",
+                            width: "400px",
+                            height: "400px",
+                            border: "2px solid #000",
+                            margin: "20px",
                           }}
                         >
-                          இராசி
+                          {(currentData.rasi_grid || Array(12).fill("-")).map(
+                            (val, i) => {
+                              const gridMap = [
+                                { row: 1, col: 1 },
+                                { row: 1, col: 2 },
+                                { row: 1, col: 3 },
+                                { row: 1, col: 4 },
+                                { row: 2, col: 4 },
+                                { row: 3, col: 4 },
+                                { row: 4, col: 4 },
+                                { row: 4, col: 3 },
+                                { row: 4, col: 2 },
+                                { row: 4, col: 1 },
+                                { row: 3, col: 1 },
+                                { row: 2, col: 1 },
+                              ];
+                              const pos = gridMap[i];
+
+                              return (
+                                <div
+                                  key={i}
+                                  style={{
+                                    gridRow: pos.row,
+                                    gridColumn: pos.col,
+                                    border: "1px solid #000",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    padding: "5px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  {safeParseChart(val).map((planet, idx) => (
+                                    <div key={idx}>{planet}</div>
+                                  ))}
+                                </div>
+                              );
+                            }
+                          )}
+
+                          <div
+                            style={{
+                              gridRow: "2 / 4",
+                              gridColumn: "2 / 4",
+                              border: "1px solid #000",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            இராசி
+                          </div>
+                        </div>
+
+                        {/* NAVAMSAM GRID */}
+                        <div
+                          className="display-container"
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(4, 1fr)",
+                            gridTemplateRows: "repeat(4, 1fr)",
+                            width: "400px",
+                            height: "400px",
+                            border: "2px solid #000",
+                            margin: "20px",
+                          }}
+                        >
+                          {(currentData.navamsam || Array(12).fill("-")).map(
+                            (val, i) => {
+                              const gridMap = [
+                                { row: 1, col: 1 },
+                                { row: 1, col: 2 },
+                                { row: 1, col: 3 },
+                                { row: 1, col: 4 },
+                                { row: 2, col: 4 },
+                                { row: 3, col: 4 },
+                                { row: 4, col: 4 },
+                                { row: 4, col: 3 },
+                                { row: 4, col: 2 },
+                                { row: 4, col: 1 },
+                                { row: 3, col: 1 },
+                                { row: 2, col: 1 },
+                              ];
+                              const pos = gridMap[i];
+
+                              return (
+                                <div
+                                  key={i}
+                                  style={{
+                                    gridRow: pos.row,
+                                    gridColumn: pos.col,
+                                    border: "1px solid #000",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    padding: "5px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  {safeParseChart(val).map((planet, idx) => (
+                                    <div key={idx}>{planet}</div>
+                                  ))}
+                                </div>
+                              );
+                            }
+                          )}
+
+                          <div
+                            style={{
+                              gridRow: "2 / 4",
+                              gridColumn: "2 / 4",
+                              border: "1px solid #000",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            நவாம்சம்
+                          </div>
                         </div>
                       </div>
 
-                      {/* NAVAMSAM GRID */}
-                      <div
-                        className="display-container"
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(4, 1fr)",
-                          gridTemplateRows: "repeat(4, 1fr)",
-                          width: "400px",
-                          height: "400px",
-                          border: "2px solid #000",
-                          margin: "20px",
-                        }}
-                      >
-                        {(currentData.navamsam || Array(12).fill("-")).map((val, i) => {
-                          const gridMap = [
-                            { row: 1, col: 1 },
-                            { row: 1, col: 2 },
-                            { row: 1, col: 3 },
-                            { row: 1, col: 4 },
-                            { row: 2, col: 4 },
-                            { row: 3, col: 4 },
-                            { row: 4, col: 4 },
-                            { row: 4, col: 3 },
-                            { row: 4, col: 2 },
-                            { row: 4, col: 1 },
-                            { row: 3, col: 1 },
-                            { row: 2, col: 1 },
-                          ];
-                          const pos = gridMap[i];
-
-                          return (
-                            <div
-                              key={i}
-                              style={{
-                                gridRow: pos.row,
-                                gridColumn: pos.col,
-                                border: "1px solid #000",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                padding: "5px",
-                                textAlign: "center",
-                              }}
-                            >
-                              {safeParseChart(val).map((planet, idx) => (
-                                <div key={idx}>{planet}</div>
-                              ))}
-                            </div>
-                          );
-                        })}
-
-                        <div
-                          style={{
-                            gridRow: "2 / 4",
-                            gridColumn: "2 / 4",
-                            border: "1px solid #000",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          நவாம்சம்
-                        </div>
+                      {/* DASA BALANCE */}
+                      <div className="display-form-row">
+                        <span>
+                          திசைஇருப்பு:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "1025px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.dasa_balance || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "dasa_balance",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.dasa_balance}
+                              </span>
+                            )}
+                          </div>
+                        </span>
                       </div>
-                    </div>
 
-                    {/* DASA BALANCE */}
-                    <div className="display-form-row">
-                      <span>
-                        திசைஇருப்பு:
-                        <div className="display-placeholder" style={{ minWidth: "1025px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.dasa_balance || ""} onChange={(e) => handleEditChange("dasa_balance", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.dasa_balance}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* OTHER NOTES */}
+                      <div className="display-form-row">
+                        <span>
+                          இதர குறிப்புகள்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "770px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.other_notes || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "other_notes",
+                                    e.target.value
+                                  )
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.other_notes}
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
 
-                    {/* OTHER NOTES */}
-                    <div className="display-form-row">
-                      <span>
-                        இதர குறிப்புகள்:
-                        <div className="display-placeholder" style={{ minWidth: "770px" }}>
-                          {isEditing ? (
-                            <input type="text" value={editData.other_notes || ""} onChange={(e) => handleEditChange("other_notes", e.target.value)} className="display-data" style={{ border: "2px solid #3b82f6", background: "#eff6ff", padding: "2px 8px", width: "100%" }} />
-                          ) : (
-                            <span className="display-data">{currentData.other_notes}</span>
-                          )}
-                        </div>
-                      </span>
-                    </div>
+                      {/* CONFIRMATION LINE */}
+                      <div className="display-form-row">
+                        <span>
+                          மேலேகண்ட விவரங்கள் அனைத்தும் உண்மை என உறுதிகூறுகிறோம்
+                        </span>
+                      </div>
 
-                    {/* CONFIRMATION LINE */}
-                    <div className="display-form-row">
-                      <span>மேலேகண்ட விவரங்கள் அனைத்தும் உண்மை என உறுதிகூறுகிறோம்</span>
-                    </div>
-
-                    {/* FOOTER */}
-                    <div className="display-footer-row">
-                      <span className="display-purple-text">
-                        Mail ID: <p>{currentData.mail_id}</p>
-                      </span>
-                      <span className="display-red-text">
-                        Blood Group: <p>{currentData.blood_group}</p>
-                      </span>
-                      <span className="display-maroon-text">
-                        <b>பெற்றோர் / காப்பாளர்</b>
-                      </span>
+                      {/* FOOTER */}
+                      <div className="display-footer-row">
+                        <span className="display-purple-text">
+                          Mail ID: <p>{currentData.mail_id}</p>
+                        </span>
+                        <span className="display-red-text">
+                          Blood Group: <p>{currentData.blood_group}</p>
+                        </span>
+                        <span className="display-maroon-text">
+                          <b>பெற்றோர் / காப்பாளர்</b>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             ) : (
               <div className="text-center py-16 text-gray-400">
                 <Download size={48} className="mx-auto mb-3 opacity-50" />
@@ -1193,22 +1916,36 @@ export default function MemberBioData() {
 
       {/* Color Legend */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <h3 className="font-semibold text-gray-800 mb-3">Header Color Legend</h3>
+        <h3 className="font-semibold text-gray-800 mb-3">
+          Header Color Legend
+        </h3>
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: "#b3f0ab" }}></div>
+            <div
+              className="w-6 h-6 rounded"
+              style={{ backgroundColor: "#b3f0ab" }}
+            ></div>
             <span className="text-sm text-gray-600">Male (Green)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: "#eabdd2" }}></div>
+            <div
+              className="w-6 h-6 rounded"
+              style={{ backgroundColor: "#eabdd2" }}
+            ></div>
             <span className="text-sm text-gray-600">Female (Pink)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: "#f4a4a4" }}></div>
+            <div
+              className="w-6 h-6 rounded"
+              style={{ backgroundColor: "#C1272D" }}
+            ></div>
             <span className="text-sm text-gray-600">Doctor (Red)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded" style={{ backgroundColor: "#a4c4f4" }}></div>
+            <div
+              className="w-6 h-6 rounded"
+              style={{ backgroundColor: "#a4c4f4" }}
+            ></div>
             <span className="text-sm text-gray-600">Remarriage (Blue)</span>
           </div>
         </div>
@@ -1228,7 +1965,7 @@ export default function MemberBioData() {
           <div
             ref={hiddenPrintRef}
             className="display-biodata-container"
-            style={{ 
+            style={{
               margin: "0",
               background: "#ffffff",
               width: "1275px",
@@ -1239,7 +1976,11 @@ export default function MemberBioData() {
               className="display-header"
               style={{ backgroundColor: headerColor, width: "100%" }}
             >
-              <img src={headerpic} alt="header" style={{ width: "1275px", height: "340px" }} />
+              <img
+                src={headerpic}
+                alt="header"
+                style={{ width: "1275px", height: "340px" }}
+              />
             </div>
 
             <div className="display-div">
@@ -1252,13 +1993,19 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   பெயர்:
-                  <div className="display-placeholder" style={{ minWidth: "720px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "720px" }}
+                  >
                     <span className="display-data">{currentData.name}</span>
                   </div>
                 </span>
                 <span>
                   தேதி:
-                  <div className="display-placeholder" style={{ minWidth: "280px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "280px" }}
+                  >
                     <span className="display-data">{currentData.date}</span>
                   </div>
                 </span>
@@ -1268,16 +2015,31 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   பிறந்த தேதி:
-                  <div className="display-placeholder" style={{ minWidth: "188px" }}>
-                    <span className="display-data">{currentData.birth_date}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "188px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.birth_date}
+                    </span>
                   </div>
                   பிறந்த நேரம்:
-                  <div className="display-placeholder" style={{ minWidth: "188px" }}>
-                    <span className="display-data">{currentData.birth_time}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "188px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.birth_time}
+                    </span>
                   </div>
                   பிறந்த ஊர்:
-                  <div className="display-placeholder" style={{ minWidth: "200px" }}>
-                    <span className="display-data">{currentData.birth_place}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "200px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.birth_place}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1286,12 +2048,22 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   வரனின்படிப்பு:
-                  <div className="display-placeholder" style={{ minWidth: "400px" }}>
-                    <span className="display-data">{currentData.education}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "400px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.education}
+                    </span>
                   </div>
                   வேலை:
-                  <div className="display-placeholder" style={{ minWidth: "420px" }}>
-                    <span className="display-data">{currentData.occupation}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "420px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.occupation}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1300,8 +2072,13 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   நிறுவனம் பெயர் & ஊர்:
-                  <div className="display-placeholder" style={{ minWidth: "810px" }}>
-                    <span className="display-data">{currentData.company_details}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "810px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.company_details}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1310,20 +2087,36 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   மாதவருமானம்:
-                  <div className="display-placeholder" style={{ minWidth: "250px" }}>
-                    <span className="display-data">{currentData.monthly_income}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "250px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.monthly_income}
+                    </span>
                   </div>
                   உயரம்:
-                  <div className="display-placeholder" style={{ minWidth: "80px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "80px" }}
+                  >
                     <span className="display-data">{currentData.height}</span>
                   </div>
                   எடை:
-                  <div className="display-placeholder" style={{ minWidth: "85px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "85px" }}
+                  >
                     <span className="display-data">{currentData.weight}</span>
                   </div>
                   நிறம்:
-                  <div className="display-placeholder" style={{ minWidth: "125px" }}>
-                    <span className="display-data">{currentData.complexion}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "125px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.complexion}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1332,8 +2125,13 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   குலதெய்வம்,ஊர்:
-                  <div className="display-placeholder" style={{ minWidth: "912px" }}>
-                    <span className="display-data">{currentData.family_deity}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "912px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.family_deity}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1342,11 +2140,17 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   குலம்:
-                  <div className="display-placeholder" style={{ minWidth: "480px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "480px" }}
+                  >
                     <span className="display-data">{currentData.kulam}</span>
                   </div>
                   , கூட்டம்:
-                  <div className="display-placeholder" style={{ minWidth: "480px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "480px" }}
+                  >
                     <span className="display-data">{currentData.kootam}</span>
                   </div>
                 </span>
@@ -1356,12 +2160,22 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   தந்தைப்பெயர்:
-                  <div className="display-placeholder" style={{ minWidth: "425px" }}>
-                    <span className="display-data">{currentData.father_name}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "425px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.father_name}
+                    </span>
                   </div>
                   அலைபேசி:
-                  <div className="display-placeholder" style={{ minWidth: "340px" }}>
-                    <span className="display-data">{currentData.father_phone}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "340px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.father_phone}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1370,12 +2184,22 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   தந்தையின்பணி:
-                  <div className="display-placeholder" style={{ minWidth: "425px" }}>
-                    <span className="display-data">{currentData.father_occupation}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "425px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.father_occupation}
+                    </span>
                   </div>
                   பூர்வீகம்:
-                  <div className="display-placeholder" style={{ minWidth: "345px" }}>
-                    <span className="display-data">{currentData.father_native_place}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "345px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.father_native_place}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1384,12 +2208,22 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   தாய்பெயர்:
-                  <div className="display-placeholder" style={{ minWidth: "458px" }}>
-                    <span className="display-data">{currentData.mother_name}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "458px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.mother_name}
+                    </span>
                   </div>
                   அலைபேசி:
-                  <div className="display-placeholder" style={{ minWidth: "358px" }}>
-                    <span className="display-data">{currentData.mother_phone}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "358px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.mother_phone}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1398,12 +2232,22 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   தாயின்பணி:
-                  <div className="display-placeholder" style={{ minWidth: "435px" }}>
-                    <span className="display-data">{currentData.mother_occupation}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "435px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.mother_occupation}
+                    </span>
                   </div>
                   பூர்வீகம்:
-                  <div className="display-placeholder" style={{ minWidth: "410px" }}>
-                    <span className="display-data">{currentData.mother_native_place}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "410px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.mother_native_place}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1412,7 +2256,10 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   முகவரி:
-                  <div className="display-placeholder" style={{ minWidth: "1075px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "1075px" }}
+                  >
                     <span className="display-data">{currentData.address}</span>
                   </div>
                 </span>
@@ -1422,8 +2269,13 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   குடும்பவருமானம்/வசதிகள்:
-                  <div className="display-placeholder" style={{ minWidth: "745px" }}>
-                    <span className="display-data">{currentData.family_income}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "745px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.family_income}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1432,8 +2284,13 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   உடன்பிறந்தோர் விபரம்:
-                  <div className="display-placeholder" style={{ minWidth: "820px" }}>
-                    <span className="display-data">{currentData.siblings_details}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "820px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.siblings_details}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1442,15 +2299,24 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   நட்சத்திரம்:
-                  <div className="display-placeholder" style={{ minWidth: "255px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "255px" }}
+                  >
                     <span className="display-data">{currentData.star}</span>
                   </div>
                   இராசி:
-                  <div className="display-placeholder" style={{ minWidth: "260px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "260px" }}
+                  >
                     <span className="display-data">{currentData.rasi}</span>
                   </div>
                   லக்னம்:
-                  <div className="display-placeholder" style={{ minWidth: "260px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "260px" }}
+                  >
                     <span className="display-data">{currentData.lagnam}</span>
                   </div>
                 </span>
@@ -1460,19 +2326,31 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   சுத்தம்:
-                  <div className="display-placeholder" style={{ minWidth: "70px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "70px" }}
+                  >
                     <span className="display-data">{currentData.suddham}</span>
                   </div>
                   ராகு:
-                  <div className="display-placeholder" style={{ minWidth: "65px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "65px" }}
+                  >
                     <span className="display-data">{currentData.rahu}</span>
                   </div>
                   கேது:
-                  <div className="display-placeholder" style={{ minWidth: "65px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "65px" }}
+                  >
                     <span className="display-data">{currentData.ketu}</span>
                   </div>
                   செவ்வாய்:
-                  <div className="display-placeholder" style={{ minWidth: "65px" }}>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "65px" }}
+                  >
                     <span className="display-data">{currentData.sevvai}</span>
                   </div>
                 </span>
@@ -1493,20 +2371,58 @@ export default function MemberBioData() {
                     margin: "20px",
                   }}
                 >
-                  {(currentData.rasi_grid || Array(12).fill("-")).map((val, i) => {
-                    const gridMap = [
-                      { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
-                      { row: 2, col: 4 }, { row: 3, col: 4 }, { row: 4, col: 4 }, { row: 4, col: 3 },
-                      { row: 4, col: 2 }, { row: 4, col: 1 }, { row: 3, col: 1 }, { row: 2, col: 1 },
-                    ];
-                    const pos = gridMap[i];
-                    return (
-                      <div key={i} style={{ gridRow: pos.row, gridColumn: pos.col, border: "1px solid #000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "5px", textAlign: "center" }}>
-                        {safeParseChart(val).map((planet, idx) => (<div key={idx}>{planet}</div>))}
-                      </div>
-                    );
-                  })}
-                  <div style={{ gridRow: "2 / 4", gridColumn: "2 / 4", border: "1px solid #000", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>இராசி</div>
+                  {(currentData.rasi_grid || Array(12).fill("-")).map(
+                    (val, i) => {
+                      const gridMap = [
+                        { row: 1, col: 1 },
+                        { row: 1, col: 2 },
+                        { row: 1, col: 3 },
+                        { row: 1, col: 4 },
+                        { row: 2, col: 4 },
+                        { row: 3, col: 4 },
+                        { row: 4, col: 4 },
+                        { row: 4, col: 3 },
+                        { row: 4, col: 2 },
+                        { row: 4, col: 1 },
+                        { row: 3, col: 1 },
+                        { row: 2, col: 1 },
+                      ];
+                      const pos = gridMap[i];
+                      return (
+                        <div
+                          key={i}
+                          style={{
+                            gridRow: pos.row,
+                            gridColumn: pos.col,
+                            border: "1px solid #000",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "5px",
+                            textAlign: "center",
+                          }}
+                        >
+                          {safeParseChart(val).map((planet, idx) => (
+                            <div key={idx}>{planet}</div>
+                          ))}
+                        </div>
+                      );
+                    }
+                  )}
+                  <div
+                    style={{
+                      gridRow: "2 / 4",
+                      gridColumn: "2 / 4",
+                      border: "1px solid #000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    இராசி
+                  </div>
                 </div>
 
                 {/* NAVAMSAM GRID */}
@@ -1522,20 +2438,58 @@ export default function MemberBioData() {
                     margin: "20px",
                   }}
                 >
-                  {(currentData.navamsam || Array(12).fill("-")).map((val, i) => {
-                    const gridMap = [
-                      { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
-                      { row: 2, col: 4 }, { row: 3, col: 4 }, { row: 4, col: 4 }, { row: 4, col: 3 },
-                      { row: 4, col: 2 }, { row: 4, col: 1 }, { row: 3, col: 1 }, { row: 2, col: 1 },
-                    ];
-                    const pos = gridMap[i];
-                    return (
-                      <div key={i} style={{ gridRow: pos.row, gridColumn: pos.col, border: "1px solid #000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "5px", textAlign: "center" }}>
-                        {safeParseChart(val).map((planet, idx) => (<div key={idx}>{planet}</div>))}
-                      </div>
-                    );
-                  })}
-                  <div style={{ gridRow: "2 / 4", gridColumn: "2 / 4", border: "1px solid #000", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>நவாம்சம்</div>
+                  {(currentData.navamsam || Array(12).fill("-")).map(
+                    (val, i) => {
+                      const gridMap = [
+                        { row: 1, col: 1 },
+                        { row: 1, col: 2 },
+                        { row: 1, col: 3 },
+                        { row: 1, col: 4 },
+                        { row: 2, col: 4 },
+                        { row: 3, col: 4 },
+                        { row: 4, col: 4 },
+                        { row: 4, col: 3 },
+                        { row: 4, col: 2 },
+                        { row: 4, col: 1 },
+                        { row: 3, col: 1 },
+                        { row: 2, col: 1 },
+                      ];
+                      const pos = gridMap[i];
+                      return (
+                        <div
+                          key={i}
+                          style={{
+                            gridRow: pos.row,
+                            gridColumn: pos.col,
+                            border: "1px solid #000",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "5px",
+                            textAlign: "center",
+                          }}
+                        >
+                          {safeParseChart(val).map((planet, idx) => (
+                            <div key={idx}>{planet}</div>
+                          ))}
+                        </div>
+                      );
+                    }
+                  )}
+                  <div
+                    style={{
+                      gridRow: "2 / 4",
+                      gridColumn: "2 / 4",
+                      border: "1px solid #000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    நவாம்சம்
+                  </div>
                 </div>
               </div>
 
@@ -1543,8 +2497,13 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   திசைஇருப்பு:
-                  <div className="display-placeholder" style={{ minWidth: "1025px" }}>
-                    <span className="display-data">{currentData.dasa_balance}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "1025px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.dasa_balance}
+                    </span>
                   </div>
                 </span>
               </div>
@@ -1553,15 +2512,22 @@ export default function MemberBioData() {
               <div className="display-form-row">
                 <span>
                   இதர குறிப்புகள்:
-                  <div className="display-placeholder" style={{ minWidth: "770px" }}>
-                    <span className="display-data">{currentData.other_notes}</span>
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "770px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.other_notes}
+                    </span>
                   </div>
                 </span>
               </div>
 
               {/* CONFIRMATION LINE */}
               <div className="display-form-row">
-                <span>மேலேகண்ட விவரங்கள் அனைத்தும் உண்மை என உறுதிகூறுகிறோம்</span>
+                <span>
+                  மேலேகண்ட விவரங்கள் அனைத்தும் உண்மை என உறுதிகூறுகிறோம்
+                </span>
               </div>
 
               {/* FOOTER */}

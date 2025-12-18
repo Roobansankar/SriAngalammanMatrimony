@@ -314,14 +314,11 @@ export default function IDSearchPage() {
 
     setLoading(true);
     try {
-      // const res = await axios.get(SEARCH_API, {
-      //   params: { matriid: query.trim() },
-      // });
-
       const res = await axios.get(SEARCH_API, {
         params: {
           matriid: query.trim(),
-          loggedPlan: logged.plan?.toLowerCase(),
+          // loggedPlan: logged.plan?.toLowerCase(),
+          loggedPlan: logged.Plan?.toLowerCase(),
         },
       });
 
@@ -345,7 +342,7 @@ export default function IDSearchPage() {
 
       /* ⭐ PLAN BASED VISIBILITY ⭐ */
       const loggedPlan = (logged.plan || "").toLowerCase();
-      const targetPlan = (found.plan || "").toLowerCase();
+      const targetPlan = (found.Plan || "").toLowerCase();
 
       if (loggedPlan === "basic" && targetPlan === "premium") {
         return setError("No results found");
