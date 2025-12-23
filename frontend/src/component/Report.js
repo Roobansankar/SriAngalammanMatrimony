@@ -1,28 +1,3 @@
-// import React from "react";
-
-// const Report = () => {
-//   return (
-//     <div className="bg-gradient-to-b from-[#fee2e2] via-[#fca5a5] to-[#ef4444] py-12 px-6 md:px-24 font-display">
-//       <div className="max-w-5xl mx-auto text-gray-800 leading-8 space-y-6 mt-20">
-//         <h1 className="text-3xl font-semibold text-center text-pink-600 mb-4">
-//           Report Misuse
-//         </h1>
-//         <div className="flex justify-center mb-10">
-//           <div className="w-20 border-b-4 border-pink-500"></div>
-//         </div>
-
-//         <p>
-//           If you have any questions about the services we provide simply use the
-//           form below. We try and respond to all queries and comments within 24
-//           hours.
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Report;
-
 import React from "react";
 
 const Report = () => {

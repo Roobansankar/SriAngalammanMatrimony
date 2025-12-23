@@ -201,18 +201,7 @@ export default function BasicEdit() {
             />
           </div>
 
-          {/* Matri ID */}
-          {/* <div>
-            <label className="text-sm font-semibold text-gray-700">
-              Matri ID
-            </label>
-            <input
-              type="text"
-              value={form.MatriID}
-              onChange={(e) => updateField("MatriID", e.target.value)}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-pink-500"
-            />
-          </div> */}
+        
 
           {/* Profile Created By */}
           <div>
