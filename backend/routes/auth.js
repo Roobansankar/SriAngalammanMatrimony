@@ -12,12 +12,13 @@ const upload = multer({ dest: "uploads/" });
 // const router = express.Router();
 
 const router = express.Router();
-const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
+const BASE_URL = process.env.API_BASE_URL || "http://10.105.121.118:5000";
 const GALLERY_PATH = "/gallery/";
 const FALLBACK = "nophoto.jpg";
 
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
+   console.log("🔥 LOGIN HIT:", req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password)
@@ -82,7 +83,7 @@ function makePhotoUrl1(photoFilename, photoApprove) {
 // ----------------------------------------------
 function makePhotoUrl(photoFilename, photoApprove) {
   const FALLBACK = "no-photo.gif";
-  const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
+  const BASE_URL = process.env.BASE_URL || "http://10.105.121.118:5000";
   const GALLERY_PATH = "/gallery/";
 
   const hasPhoto =

@@ -434,36 +434,7 @@ export default function Step10({ nextStep, prevStep, formData = {} }) {
         />
       </div>
 
-      {/* Education & Occupation */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <select
-          name="education"
-          value={data.education}
-          onChange={handleChange}
-          className="input-box"
-        >
-          <option value="">Select Education</option>
-          {options.educations.map((e) => (
-            <option key={e.id} value={e.edu}>
-              {e.edu}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="occupation"
-          value={data.occupation}
-          onChange={handleChange}
-          className="input-box"
-        >
-          <option value="">Select Occupation</option>
-          {options.occupations.map((o) => (
-            <option key={o.id} value={o.occu}>
-              {o.occu}
-            </option>
-          ))}
-        </select>
-      </div> */}
+    
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-gray-700">Education</label>

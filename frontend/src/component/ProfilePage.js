@@ -224,14 +224,14 @@ export default function ProfilePage({ setUser: setAppUser }) {
               }}
               data-alt="Profile banner"
             >
-              {/* <button
+              <button
                 className="absolute top-4 right-4 flex items-center justify-center size-8 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors p-2"
                 aria-label="Edit banner"
               >
                 <span className="material-symbols-outlined text-base">
                   edit
                 </span>
-              </button> */}
+              </button>
             </div>
 
             {/* Avatar (overlap) */}

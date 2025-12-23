@@ -69,52 +69,6 @@ function makePhotoUrl(photoFilename, photoApprove) {
   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
 }
 
-// router.get("/searchByMatriID", async (req, res) => {
-//   try {
-//     const { matriid, loggedPlan } = req.query;
-
-//     if (!matriid || String(matriid).trim() === "") {
-//       return res.status(400).json({ success: false });
-//     }
-
-//     const conn = db.promise();
-
-//     let sql = `
-//       SELECT *,
-//         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
-//       FROM register
-//       WHERE (MatriID = ? OR matid = ?)
-//     `;
-
-//     const params = [matriid.trim(), matriid.trim()];
-
-//     // 🔒 HARD BLOCK PREMIUM FOR BASIC USERS
-//     if ((loggedPlan || "").toLowerCase() === "basic") {
-//       sql += ` AND TRIM(LOWER(plan)) = 'basic' `;
-//     }
-
-//     sql += ` LIMIT 1`;
-
-//     const [rows] = await conn.query(sql, params);
-
-//     if (!rows.length) {
-//       return res.json({ success: false });
-//     }
-
-//     const user = rows[0];
-
-//     const { ConfirmPassword, ParentPassword, PhotoMain, ...safeUser } = user;
-//     safeUser.PhotoURL = makePhotoUrl(
-//       user.Photo1,
-//       user.Photo1Approve
-//     );
-
-//     return res.json({ success: true, user: safeUser });
-//   } catch (err) {
-//     console.error("searchByMatriID error:", err);
-//     return res.status(500).json({ success: false });
-//   }
-// });
 
 router.get("/searchByMatriID", async (req, res) => {
   try {

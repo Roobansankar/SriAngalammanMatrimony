@@ -385,7 +385,7 @@ export default function ProfileView() {
   const score = compatibility.filter((c) => c.pass).length;
 
   return (
-    // <div className="min-h-screen bg-[#FFF4E0] dark:bg-[#221019] text-[#333333] dark:text-gray-200 p-6 font-display">
+    
     <div
       className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b]"f
     >
@@ -422,16 +422,6 @@ export default function ProfileView() {
                     backgroundPosition: "top center", // ⭐ FIX: Show the face
                   }}
                 />
-
-                {/* <div
-                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark"
-                  style={{
-                    width: 128,
-                    height: 128,
-                    backgroundImage: `url(${user?.PhotoURL || "/nophoto.jpg"})`,
-                    backgroundPosition: "top center",
-                  }}
-                /> */}
 
                 {isOwner ? (
                   <button
@@ -470,12 +460,7 @@ export default function ProfileView() {
               </div>
 
               <div className="flex w-full md:w-auto gap-3">
-                {/* <button
-                  onClick={() => navigate(`/profile/preview/${user._id || ""}`)}
-                  className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary text-sm font-bold flex-1"
-                >
-                  <span className="truncate">Preview Profile</span>
-                </button> */}
+    
 
                 {isOwner ? (
                   <button
@@ -589,16 +574,6 @@ export default function ProfileView() {
                       <span className="blur-sm select-none pointer-events-none">
                         +91-xxxx-xxx-xxx
                       </span>
-                      {/* <button
-                        onClick={sendInterest}
-                        disabled={interest?.status === "pending"}
-                        className="ml-2 px-3 py-1 rounded text-white text-sm"
-                        style={{ backgroundColor: primary }}
-                      >
-                        {interest?.status === "pending"
-                          ? "Interest Sent"
-                          : "Send Interest"}
-                      </button> */}
                     </span>
                   )
                 }
@@ -681,73 +656,7 @@ export default function ProfileView() {
           </div>
         </section>
 
-        {/* Contact Details */}
-        {/* <section className="mb-6 relative">
-          <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-bold">Contact Details</h2>
-              {isOwner && (
-                <button
-                  onClick={() => navigate("/profile/edit#contact")}
-                  className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                >
-                  <PencilSquareIcon className="w-5 h-5" />
-                  Edit
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
-              <InfoRow label="Country" value={user.Country} />
-              <InfoRow label="State" value={user.State} />
-              <InfoRow label="District" value={user.Dist} />
-              <InfoRow label="City" value={user.City} />
-              <InfoRow label="Pincode" value={user.Pincode} />
-              <InfoRow label="Residency Status" value={user.Residencystatus} />
-              <InfoRow label="Address" value={user.Address} />
-              <InfoRow
-                label="Alternate Phone"
-                value={
-                  contactVisible ? (
-                    user.Phone
-                  ) : (
-                    <span className="blur-sm select-none pointer-events-none">
-                      +91-xxxx-xxx-xxx
-                    </span>
-                  )
-                }
-              />
-              <InfoRow
-                label="Mobile"
-                value={
-                  contactVisible ? (
-                    user.Mobile
-                  ) : (
-                    <span className="blur-sm select-none pointer-events-none">
-                      +91-xxxx-xxx-xxx
-                    </span>
-                  )
-                }
-              />
-              <InfoRow
-                label="WhatsApp"
-                value={
-                  contactVisible ? (
-                    user.Mobile2 || user.whatsapp
-                  ) : (
-                    <span className="blur-sm select-none pointer-events-none">
-                      +91-xxxx-xxx-xxx
-                    </span>
-                  )
-                }
-              />
-              <InfoRow
-                label="Convenient Time to Call"
-                value={user.calling_time}
-              />
-            </div>
-          </div>
-        </section> */}
+    
 
         {/* Education & Professional */}
         <section className="mb-6 relative">

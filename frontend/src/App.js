@@ -726,14 +726,7 @@ function AppContent({ user, setUser }) {
             }
           />
 
-          {/* <Route
-            path="/regularsearch-results"
-            element={
-              <PrivateRoute>
-                <LogedSearchResults />
-              </PrivateRoute>
-            }
-          /> */}
+         
 
           <Route
             path="/regularsearch-results/:page?"
