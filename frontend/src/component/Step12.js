@@ -638,21 +638,40 @@ export default function Step12({ prevStep, formData }) {
   /* ------------------------------------------------
      DEFAULT SCREEN
   ------------------------------------------------ */
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white shadow-lg rounded-xl p-10 text-center">
-        <h2 className="text-xl font-semibold mb-4">
-          Step 13: Submit Registration
-        </h2>
+  // return (
+  //   <div className="min-h-screen flex items-center justify-center">
+  //     <div className="bg-white shadow-lg rounded-xl p-10 text-center">
+  //       <h2 className="text-xl font-semibold mb-4">
+  //         Step 13: Submit Registration
+  //       </h2>
 
-        <button
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="px-8 py-3 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded-lg flex items-center gap-2 justify-center"
-        >
-          {submitting ? <Loader2 className="animate-spin" /> : "Submit Form"}
-        </button>
-      </div>
+  //       <button
+  //         onClick={handleSubmit}
+  //         disabled={submitting}
+  //         className="px-8 py-3 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded-lg flex items-center gap-2 justify-center"
+  //       >
+  //         {submitting ? <Loader2 className="animate-spin" /> : "Submit Form"}
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+
+  return (
+  <div className="flex justify-center pt-4 pb-10">
+    <div className="bg-white shadow-lg rounded-xl p-10 text-center max-w-md w-full">
+      <h2 className="text-xl font-semibold mb-4">
+        Step 13: Submit Registration
+      </h2>
+
+      <button
+        onClick={handleSubmit}
+        disabled={submitting}
+        className="px-8 py-3 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded-lg flex items-center gap-2 justify-center mx-auto"
+      >
+        {submitting ? <Loader2 className="animate-spin" /> : "Submit Form"}
+      </button>
     </div>
-  );
+  </div>
+);
+
 }
