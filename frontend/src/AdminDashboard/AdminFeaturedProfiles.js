@@ -56,6 +56,9 @@ const AdminFeaturedProfiles = () => {
   const [editId, setEditId] = useState(null);
   const [editMatri, setEditMatri] = useState("");
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const isAdmin = currentUser?.role === 'admin';
+
   const API = "http://localhost:5000/api/admin/featured-profiles";
 
 const loadProfiles = () => {
@@ -168,12 +171,14 @@ const loadProfiles = () => {
                   </button>
                 )}
 
-                <button
-                  onClick={() => deleteProfile(p.id)}
-                  className="text-red-600"
-                >
-                  Delete
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => deleteProfile(p.id)}
+                    className="text-red-600"
+                  >
+                    Delete
+                  </button>
+                )}
               </td>
             </tr>
           ))}
