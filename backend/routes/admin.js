@@ -1346,7 +1346,7 @@ router.get("/premium-members", verifyAdmin, (req, res) => {
   const offset = (page - 1) * limit;
   const search = req.query.search || "";
 
-  let whereClause = "WHERE Plan = 'premium' AND Status <> 'Banned'";
+  let whereClause = "WHERE Plan = 'premium' AND visibility NOT LIKE 'hidden' AND Status <> 'Banned'";
   const params = [];
 
   if (search) {
