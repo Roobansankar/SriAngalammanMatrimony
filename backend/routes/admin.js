@@ -1,7 +1,9 @@
+
 import bcrypt from "bcryptjs";
 import express from "express";
 import jwt from "jsonwebtoken";
 import db from "../config/db.js";
+import { verifyToken, verifyAdmin } from "../middleware/authJwt.js";
 
 const router = express.Router();
 
@@ -9,17 +11,18 @@ const router = express.Router();
 // ADMIN REGISTER
 // =========================
 router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body; // Add role
 
   if (!username || !password)
     return res.status(400).json({ message: "All fields are required" });
 
   try {
     const hashed = await bcrypt.hash(password, 10);
+    const userRole = role === 'staff' ? 'staff' : 'admin'; // Default to admin if not specified or invalid
 
     db.query(
-      "INSERT INTO admin (username, password) VALUES (?, ?)",
-      [username, hashed],
+      "INSERT INTO admin (username, password, role) VALUES (?, ?, ?)",
+      [username, hashed, userRole],
       (err, result) => {
         if (err) {
           console.error("Register error:", err);
@@ -28,7 +31,7 @@ router.post("/register", async (req, res) => {
             .json({ message: "User already exists or DB error" });
         }
 
-        res.json({ message: "Admin registered successfully" });
+        res.json({ message: "Admin/Staff registered successfully" });
       }
     );
   } catch (err) {
@@ -62,7 +65,7 @@ router.post("/login", async (req, res) => {
         return res.status(401).json({ message: "Invalid password" });
 
       const token = jwt.sign(
-        { id: admin.id, username: admin.username },
+        { id: admin.id, username: admin.username, role: admin.role },
         process.env.JWT_SECRET || "secret123",
         { expiresIn: "7d" }
       );
@@ -73,11 +76,15 @@ router.post("/login", async (req, res) => {
         admin: {
           id: admin.id,
           username: admin.username,
+          role: admin.role
         },
       });
     }
   );
 });
+
+// Apply verifyToken to all subsequent routes
+router.use(verifyToken);
 
 router.get("/dashboard-stats", async (req, res) => {
   try {
@@ -580,7 +587,7 @@ router.put("/biodata/:matriId", async (req, res) => {
 // =========================
 // DELETE MEMBER
 // =========================
-router.delete("/member/:matriId", (req, res) => {
+router.delete("/member/:matriId", verifyAdmin, (req, res) => {
   const { matriId } = req.params;
 
   const sql = `DELETE FROM register WHERE MatriID = ?`;
@@ -696,7 +703,7 @@ router.put("/master/religions/:id", (req, res) => {
 });
 
 // Delete religion
-router.delete("/master/religions/:id", (req, res) => {
+router.delete("/master/religions/:id", verifyAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM religion WHERE ID = ?", [id], (err, result) => {
@@ -781,7 +788,7 @@ router.put("/master/castes/:id", (req, res) => {
 });
 
 // Delete caste
-router.delete("/master/castes/:id", (req, res) => {
+router.delete("/master/castes/:id", verifyAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM caste WHERE ID = ?", [id], (err, result) => {
@@ -870,7 +877,7 @@ router.put("/master/subcastes/:id", (req, res) => {
 });
 
 // Delete subcaste
-router.delete("/master/subcastes/:id", (req, res) => {
+router.delete("/master/subcastes/:id", verifyAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM subcaste WHERE ID = ?", [id], (err, result) => {
@@ -933,7 +940,7 @@ router.put("/master/countries/:id", (req, res) => {
 });
 
 // Delete country
-router.delete("/master/countries/:id", (req, res) => {
+router.delete("/master/countries/:id", verifyAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM e_country WHERE id = ?", [id], (err, result) => {
@@ -1022,7 +1029,7 @@ router.put("/master/states/:id", (req, res) => {
 });
 
 // Delete state
-router.delete("/master/states/:id", (req, res) => {
+router.delete("/master/states/:id", verifyAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM e_state WHERE id = ?", [id], (err, result) => {
@@ -1116,7 +1123,7 @@ router.put("/master/cities/:id", (req, res) => {
 });
 
 // Delete city/district
-router.delete("/master/cities/:id", (req, res) => {
+router.delete("/master/cities/:id", verifyAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM e_dist WHERE id = ?", [id], (err, result) => {
@@ -1257,7 +1264,7 @@ router.put("/featured-profiles/:id", (req, res) => {
 });
 
 /* DELETE */
-router.delete("/featured-profiles/:id", (req, res) => {
+router.delete("/featured-profiles/:id", verifyAdmin, (req, res) => {
   db.query(
     "DELETE FROM featured_profiles WHERE id=?",
     [req.params.id],
@@ -1268,5 +1275,134 @@ router.delete("/featured-profiles/:id", (req, res) => {
   );
 });
 
+// =========================
+// STAFF/ADMIN MANAGEMENT
+// =========================
+
+// Get all admin/staff users
+router.get("/users", verifyAdmin, (req, res) => {
+  db.query("SELECT id, username, role, created_at FROM admin ORDER BY created_at DESC", (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, users: results });
+  });
+});
+
+// Create new admin/staff user
+router.post("/users", verifyAdmin, async (req, res) => {
+  const { username, password, role } = req.body;
+
+  if (!username || !password)
+    return res.status(400).json({ success: false, message: "Username and password are required" });
+
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+    const userRole = role === 'staff' ? 'staff' : 'admin';
+
+    db.query(
+      "INSERT INTO admin (username, password, role) VALUES (?, ?, ?)",
+      [username, hashed, userRole],
+      (err, result) => {
+        if (err) {
+          console.error("Create user error:", err);
+          if (err.code === 'ER_DUP_ENTRY') {
+             return res.status(400).json({ success: false, message: "Username already exists" });
+          }
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+        res.json({ success: true, message: "User created successfully" });
+      }
+    );
+  } catch (err) {
+    console.error("Create user server error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Delete admin/staff user
+router.delete("/users/:id", verifyAdmin, (req, res) => {
+  const { id } = req.params;
+  
+  // Prevent deleting yourself (req.userId comes from verifyToken)
+  if (parseInt(id) === req.userId) {
+      return res.status(400).json({ success: false, message: "Cannot delete yourself" });
+  }
+
+  db.query("DELETE FROM admin WHERE id = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "User not found" });
+    res.json({ success: true, message: "User deleted successfully" });
+  });
+});
+
+
+// =========================
+// PREMIUM MEMBERS
+// =========================
+router.get("/premium-members", verifyAdmin, (req, res) => {
+  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+  
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || "";
+
+  let whereClause = "WHERE Plan = 'premium' AND Status <> 'Banned'";
+  const params = [];
+
+  if (search) {
+    whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
+    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+  }
+
+  const countSQL = `SELECT COUNT(*) AS total FROM register ${whereClause}`;
+
+  const dataSQL = `
+    SELECT 
+      MatriID,
+      Name,
+      Gender,
+      ConfirmEmail AS Email,
+      Mobile,
+      DOB,
+      TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+      Regdate,
+      Status,
+      Lastlogin,
+      Photo1,
+      Photo1Approve,
+      Plan
+    FROM register
+    ${whereClause}
+    ORDER BY Regdate DESC
+    LIMIT ?, ?
+  `;
+
+  db.query(countSQL, params, (err, countResult) => {
+    if (err) return res.status(500).json({ error: err });
+
+    const total = countResult[0].total;
+
+    db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
+      if (err2) return res.status(500).json({ error: err2 });
+
+      const results = rows.map((u) => {
+        const photo =
+          u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
+            ? `${BASE}/gallery/${u.Photo1}`
+            : `${BASE}/gallery/nophoto.jpg`;
+
+        return { ...u, PhotoURL: photo };
+      });
+
+      res.json({
+        success: true,
+        total,
+        page,
+        per_page: limit,
+        results,
+      });
+    });
+  });
+});
 
 export default router;

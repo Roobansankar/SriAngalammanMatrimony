@@ -25,6 +25,7 @@ export default function AdminLoginPage() {
           type: "admin",
           username: data.admin.username,
           id: data.admin.id,
+          role: data.admin.role, // Store role
         })
       );
 

@@ -327,11 +327,13 @@ import {
   Bell,
   BookOpen,
   ChevronDown,
+  Crown,
   FileText,
   Globe,
   LayoutDashboard,
   LogOut,
   Menu,
+  Shield,
   UserCircle,
   UserCog,
   Users,
@@ -347,6 +349,8 @@ const navLinks = [
   { name: "Manage Members", path: "/admin/manage-members", icon: UserCog },
   { name: "Member BioData", path: "/admin/member-biodata", icon: FileText },
   { name: "Featured Profiles", path: "/admin/featured-profiles", icon: Users },
+  { name: "Premium Members", path: "/admin/premium-members", icon: Crown, adminOnly: true },
+  { name: "Manage Staff", path: "/admin/manage-staff", icon: Shield, adminOnly: true },
   { name: "Add Religion/Caste", path: "/admin/master-data", icon: BookOpen },
   {
     name: "Add City/State/Country",
@@ -363,6 +367,7 @@ export default function DashboardLayout() {
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const username = currentUser?.username || "Admin";
+  const isAdmin = currentUser?.role === "admin";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -419,7 +424,9 @@ export default function DashboardLayout() {
             Main Menu
           </p>
 
-          {navLinks.map((item) => (
+          {navLinks
+            .filter((item) => !item.adminOnly || isAdmin)
+            .map((item) => (
             <NavLink
               key={item.name}
               to={item.path}

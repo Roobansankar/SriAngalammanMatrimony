@@ -17,6 +17,7 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const isAdmin = currentUser?.role === 'admin';
 
   const [profileForm, setProfileForm] = useState({
     username: currentUser?.username || "",
@@ -48,7 +49,7 @@ export default function Settings() {
     { id: "profile", name: "Profile", icon: User },
     { id: "password", name: "Password", icon: Lock },
     { id: "notifications", name: "Notifications", icon: Bell },
-    { id: "site", name: "Site Settings", icon: Globe },
+    ...(isAdmin ? [{ id: "site", name: "Site Settings", icon: Globe }] : []),
   ];
 
   const handleSave = async () => {

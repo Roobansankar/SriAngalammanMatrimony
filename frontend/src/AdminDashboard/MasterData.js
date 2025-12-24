@@ -38,6 +38,9 @@ export default function MasterData() {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const isAdmin = currentUser?.role === 'admin';
+
   // Fetch data
   const fetchReligions = async () => {
     try {
@@ -417,13 +420,15 @@ export default function MasterData() {
                             >
                               <Edit3 size={16} />
                             </button>
-                            <button
-                              onClick={() => confirmDelete(item)}
-                              className="p-1.5 text-red-500 hover:bg-red-50 rounded"
-                              title="Delete"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                            {isAdmin && (
+                              <button
+                                onClick={() => confirmDelete(item)}
+                                className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -466,13 +471,15 @@ export default function MasterData() {
                             >
                               <Edit3 size={16} />
                             </button>
-                            <button
-                              onClick={() => confirmDelete(item)}
-                              className="p-1.5 text-red-500 hover:bg-red-50 rounded"
-                              title="Delete"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                            {isAdmin && (
+                              <button
+                                onClick={() => confirmDelete(item)}
+                                className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -517,13 +524,15 @@ export default function MasterData() {
                             >
                               <Edit3 size={16} />
                             </button>
-                            <button
-                              onClick={() => confirmDelete(item)}
-                              className="p-1.5 text-red-500 hover:bg-red-50 rounded"
-                              title="Delete"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                            {isAdmin && (
+                              <button
+                                onClick={() => confirmDelete(item)}
+                                className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

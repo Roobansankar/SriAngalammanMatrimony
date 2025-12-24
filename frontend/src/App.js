@@ -466,6 +466,8 @@ import { connectSocket } from "./socket";
 import LoggedSearchResults from "./profile/RegularSearchResults";
 import AddUsers from "./AdminDashboard/AddUsers";
 import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
+import ManageStaff from "./AdminDashboard/ManageStaff";
+import PremiumMembers from "./AdminDashboard/PremiumMembers";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -518,6 +520,8 @@ function AppContent({ user, setUser }) {
               path="featured-profiles"
               element={<AdminFeaturedProfiles />}
             />
+            <Route path="premium-members" element={<PremiumMembers />} />
+            <Route path="manage-staff" element={<ManageStaff />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />
           </Route>

@@ -35,6 +35,9 @@ export default function MemberManagement() {
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const isAdmin = currentUser?.role === 'admin';
+
   const perPage = 10;
   const totalPages = Math.ceil(total / perPage);
 
@@ -398,16 +401,18 @@ export default function MemberManagement() {
                                     <Ban size={16} />
                                   )}
                                 </button> */}
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    confirmDelete(m);
-                                  }}
-                                  className="p-1.5 text-red-500 hover:bg-red-50 rounded"
-                                  title="Delete"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
+                                {isAdmin && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      confirmDelete(m);
+                                    }}
+                                    className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -1109,12 +1114,14 @@ export default function MemberManagement() {
                             </>
                           )}
                         </button> */}
-                          <button
-                            onClick={() => confirmDelete(selectedMember)}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
-                          >
-                            <Trash2 size={14} /> Delete
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => confirmDelete(selectedMember)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
+                            >
+                              <Trash2 size={14} /> Delete
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
