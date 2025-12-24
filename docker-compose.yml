@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=8220
+      - DB_NAME=sriang
+    depends_on:
+      - db
+    networks:
+      - matrimony-network
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_BASE=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - matrimony-network
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=8220
+      - MYSQL_DATABASE=sriang
+    volumes:
+      - matrimony-db:/var/lib/mysql
+    networks:
+      - matrimony-network
+
+networks:
+  matrimony-network:
+    driver: bridge
+
+volumes:
+  matrimony-db:
