@@ -5,8 +5,6 @@ services:
     image: mysql:8.0
     container_name: matrimony-mysql
     restart: always
-    ports:
-      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 8220
       MYSQL_DATABASE: sriang
@@ -46,7 +44,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      REACT_APP_API_BASE: http://localhost:5000
+      REACT_APP_API_BASE: /api
     depends_on:
       - backend
     networks:
