@@ -153,9 +153,21 @@ export default function MemberBioData() {
           family_income: `${user.Annualincome || ""}, ${
             user.family_wealth || ""
           }`,
-          siblings_details: `${user.noofbrothers || 0} Brothers, ${
-            user.noofsisters || 0
-          } Sisters`,
+          // siblings_details: `${user.noofbrothers || 0} Brothers, ${
+          //   user.noofsisters || 0
+          // } Sisters`,
+
+          siblings_details: [
+            user.noofbrothers > 0
+              ? `${user.noofbrothers} Brothers (${user.nbm || 0} Married)`
+              : null,
+            user.noofsisters > 0
+              ? `${user.noofsisters} Sisters (${user.nsm || 0} Married)`
+              : null,
+          ]
+            .filter(Boolean)
+            .join(", "),
+
           star: user.Star || "",
           rasi: user.Moonsign || "",
           lagnam: user.Star || "",
@@ -650,7 +662,7 @@ export default function MemberBioData() {
                     }}
                   >
                     {/* HEADER */}
-                    <div
+                    {/* <div
                       className="display-header"
                       style={{ backgroundColor: headerColor, width: "100%" }}
                     >
@@ -659,6 +671,14 @@ export default function MemberBioData() {
                         alt="header"
                         style={{ width: "1275px", height: "340px" }}
                       />
+                    </div> */}
+
+                     <div className="relative" style={{ backgroundColor: headerColor }}>
+                      <img src={headerpic} alt="header" className="w-full" />
+                    
+                      <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
+                        MATRIID: {currentData.matriId}
+                      </div>
                     </div>
 
                     <div className="display-div">
@@ -1972,7 +1992,7 @@ export default function MemberBioData() {
             }}
           >
             {/* HEADER */}
-            <div
+            {/* <div
               className="display-header"
               style={{ backgroundColor: headerColor, width: "100%" }}
             >
@@ -1981,7 +2001,18 @@ export default function MemberBioData() {
                 alt="header"
                 style={{ width: "1275px", height: "340px" }}
               />
-            </div>
+            </div> */}
+
+                                
+                    
+<div className="relative" style={{ backgroundColor: headerColor }}>
+  <img src={headerpic} alt="header" className="w-full" />
+
+  <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
+    ID: {currentData.matriId}
+  </div>
+</div>
+
 
             <div className="display-div">
               <h2>{getHeaderLabel(currentData.matriId, currentData.gender)}</h2>

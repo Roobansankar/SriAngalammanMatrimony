@@ -12,7 +12,7 @@ const upload = multer({ dest: "uploads/" });
 // const router = express.Router();
 
 const router = express.Router();
-const BASE_URL = process.env.API_BASE_URL || "http://10.105.121.118:5000";
+const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
 const GALLERY_PATH = "/gallery/";
 const FALLBACK = "nophoto.jpg";
 

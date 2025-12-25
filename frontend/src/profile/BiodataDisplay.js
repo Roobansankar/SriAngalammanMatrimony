@@ -966,8 +966,8 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
 
           const mapped = {
             id: user.ID,
-            matriId: user.MatriID,  // ✅ ADDED: MatriID for color logic
-            gender: user.Gender,    // ✅ ADDED: Gender for color logic
+            matriId: user.MatriID, // ✅ ADDED: MatriID for color logic
+            gender: user.Gender, // ✅ ADDED: Gender for color logic
             type: user.Gender === "Male" ? "groom" : "bride",
             name: user.Name || "",
             date: user.Regdate?.slice(0, 10) || "",
@@ -995,12 +995,20 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             mother_occupation: user.Mothersoccupation || "",
             mother_native_place: user.POB || "",
             address: user.Address || "",
-            family_income: `${user.Annualincome || ""}, ${
+            family_income: `${user.anyotherincome || ""}, ${
               user.family_wealth || ""
             }`,
-            siblings_details: `${user.noofbrothers || 0} Brothers, ${
-              user.noofsisters || 0
-            } Sisters`,
+            siblings_details: [
+              user.noofbrothers > 0
+                ? `${user.noofbrothers} Brothers (${user.nbm || 0} Married)`
+                : null,
+              user.noofsisters > 0
+                ? `${user.noofsisters} Sisters (${user.nsm || 0} Married)`
+                : null,
+            ]
+              .filter(Boolean)
+              .join(", "),
+
             star: user.Star || "",
             rasi: user.Moonsign || "",
             lagnam: user.Star || "",
@@ -1092,14 +1100,16 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             style={{ marginTop: "132px" }}
           >
             {/* ✅ HEADER - Now uses dynamic color based on MatriID */}
-            <div
-              className="display-header"
-              style={{
-                backgroundColor: headerColor,  // ✅ UPDATED: Dynamic color
-              }}
-            >
-              <img src={headerpic} alt="header" />
-            </div>
+            
+
+            <div className="relative" style={{ backgroundColor: headerColor }}>
+  <img src={headerpic} alt="header" className="w-full" />
+
+  <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
+    MATRIID: {currentData.matriId}
+  </div>
+</div>
+
 
             {/* ✅ TITLE - Now uses dynamic label based on MatriID */}
             <div className="display-div">
@@ -1524,7 +1534,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
                         }}
                       >
                         {safeParseChart(val).map((planet, idx) => (
-                          <div key={idx}>{planet}</div>
+                          <div key={idx}  className="planet-text">{planet}</div>
                         ))}
                       </div>
                     );
@@ -1545,7 +1555,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
                   </div>
                 </div>
 
-                {/* NAVAMSAM GRID */}
+              
                 <div
                   className="display-container"
                   style={{
@@ -1591,7 +1601,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
                         }}
                       >
                         {safeParseChart(val).map((planet, idx) => (
-                          <div key={idx}>{planet}</div>
+                          <div key={idx} className="planet-text">{planet}</div>
                         ))}
                       </div>
                     );

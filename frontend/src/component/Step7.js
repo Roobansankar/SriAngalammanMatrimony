@@ -154,7 +154,7 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
           >
             <option value="">Select Height</option>
             {heightOptions.map((h) => (
-              <option key={h.value} value={h.value}>
+              <option key={h.value} value={h.label}>
                 {h.label}
               </option>
             ))}

@@ -537,3 +537,64 @@
     bottom: 15px;
   }
 }
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+
+/* ANSWER TEXT STYLE – match biodata image */
+.display-data {
+  color: #1f4fd8;        /* deep biodata blue */
+  font-weight: 550;      /* bold */
+  font-size: 27px;       /* slightly larger for clarity */
+  /* font-family: "Meera Inimai", "Noto Sans Tamil", sans-serif; */
+  font-family: "Poppins", sans-serif;
+}
+
+
+.display-placeholder {
+  vertical-align: bottom;
+}
+
+.display-data {
+  position: relative;
+  top: -6px; /* lifts text slightly above dots */
+}
+
+
+.pdf-generation .display-data {
+  color: #1f4fd8 !important;
+  font-weight: 700 !important;
+}
+
+
+.display-data {
+  color: #183c8f; /* classic marriage biodata blue */
+}
+
+
+/* Rasi & Navamsam planet text style */
+/* Rasi & Navamsam planet text - PERFECT FIT */
+.planet-text {
+  color: #183c8f;
+  font-weight: 800;
+  font-size: 23px;              /* IMPORTANT: smaller to fit */
+  font-family: "Poppins", sans-serif;
+
+  line-height: 1.1;
+  text-align: center;
+
+  white-space: normal;          /* allow wrapping */
+  word-break: break-word;
+
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+
+
+.pdf-generation .planet-text {
+  color: #1f4fd8 !important;
+  font-weight: 800 !important;
+}
+

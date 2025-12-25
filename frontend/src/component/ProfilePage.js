@@ -8,6 +8,8 @@ export default function ProfilePage({ setUser: setAppUser }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [showHoroscope, setShowHoroscope] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
 
 
 
@@ -23,7 +25,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
     }
 
 
-    
+
 
     const fetchUser = async () => {
       try {
@@ -51,6 +53,27 @@ export default function ProfilePage({ setUser: setAppUser }) {
 
     fetchUser();
   }, [navigate, setAppUser]);
+
+  const refreshUser = async () => {
+  try {
+    const email = localStorage.getItem("loggedInEmail");
+    if (!email) return;
+
+    const res = await axios.get("http://localhost:5000/api/auth/user", {
+      params: { email },
+    });
+
+    if (res.data?.success) {
+      setUser(res.data.user);
+      if (typeof setAppUser === "function") {
+        setAppUser(res.data.user);
+      }
+    }
+  } catch (err) {
+    console.error("refreshUser error", err);
+  }
+};
+
 
   // if (loading) return <div className="p-8">Loading...</div>;
   if (loading)
@@ -238,7 +261,8 @@ export default function ProfilePage({ setUser: setAppUser }) {
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
                 <div
-                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark"
+                  onClick={() => setPreviewOpen(true)}
+                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark cursor-pointer hover:scale-105 transition-transform"
                   style={{
                     width: 128,
                     height: 128,
@@ -261,6 +285,22 @@ export default function ProfilePage({ setUser: setAppUser }) {
               </div>
             </div>
           </div>
+
+          <section className="bg-white rounded-xl p-6 mt-12">
+            <h2 className="text-xl font-bold mb-4">My Photos</h2>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {["image1", "image2", "image3", "image4"].map((slot) => (
+                <GalleryBox
+                  key={slot}
+                  slot={slot}
+                  image={user?.[slot]}
+                  matriId={user.MatriID}
+                  refreshUser={refreshUser}
+                />
+              ))}
+            </div>
+          </section>
 
           {/* Header content: name, id, actions */}
           <div className="pt-20 px-8 pb-6">
@@ -695,6 +735,61 @@ export default function ProfilePage({ setUser: setAppUser }) {
         </section>
       </div>
 
+      {previewOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+          onClick={() => setPreviewOpen(false)}
+        >
+          <div
+            className="relative max-w-3xl w-full px-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setPreviewOpen(false)}
+              className="absolute -top-10 right-2 text-white text-3xl hover:opacity-80"
+            >
+              ×
+            </button>
+
+            {/* Image Container */}
+            <div className="relative rounded-xl overflow-hidden shadow-2xl">
+              {/* Image */}
+              <img
+                src={user?.PhotoURL || "/nophoto.jpg"}
+                alt="Profile Preview"
+                className="w-full max-h-[80vh] object-contain bg-black"
+              />
+
+              {/* 🔒 Watermark Overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage: `
+                repeating-linear-gradient(
+                  -45deg,
+                  rgba(255,255,255,0.25),
+                  rgba(255,255,255,0.25) 1px,
+                  transparent 1px,
+                  transparent 120px
+                )
+              `,
+                  }}
+                />
+
+                {/* Watermark Text */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-white text-3xl md:text-4xl font-bold tracking-widest rotate-[-25deg] opacity-30 select-none">
+                    Sri Angalamman Matrimony
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Horoscope Viewer Modal */}
       {showHoroscope && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -789,6 +884,89 @@ function Cell({ value }) {
       {items.map((item, i) => (
         <div key={i}>{item}</div>
       ))}
+    </div>
+  );
+}
+
+
+function GalleryBox({ slot, image, matriId, refreshUser }) {
+  const uploadPhoto = async (file) => {
+    try {
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("matriId", matriId);
+      formData.append(slot, file);
+
+      // ❌ DO NOT set multipart headers manually
+      await axios.post("http://localhost:5000/api/gallery/upload", formData);
+
+      refreshUser();
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Image upload failed");
+    }
+  };
+
+  const deletePhoto = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/gallery/delete", {
+        matriId,
+        slot,
+      });
+
+      refreshUser();
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Image delete failed");
+    }
+  };
+
+  return (
+    <div className="relative border rounded-lg overflow-hidden group bg-white">
+      {/* IMAGE / PLACEHOLDER */}
+      {image ? (
+        <img
+          src={`http://localhost:5000/gallery/${image}`}
+          alt={slot}
+          className="w-full h-40 object-cover"
+        />
+      ) : (
+        <label className="flex flex-col items-center justify-center h-40 bg-gray-100 cursor-pointer text-gray-600 hover:bg-gray-200">
+          <span className="text-xl">➕</span>
+          <span className="text-sm">Add Photo</span>
+          <input
+            type="file"
+            hidden
+            accept="image/*"
+            onChange={(e) => uploadPhoto(e.target.files[0])}
+          />
+        </label>
+      )}
+
+      {/* ACTION BUTTONS */}
+      {image && (
+        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+          {/* UPDATE */}
+          <label className="bg-black/60 text-white px-2 py-1 rounded cursor-pointer">
+            ✏️
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={(e) => uploadPhoto(e.target.files[0])}
+            />
+          </label>
+
+          {/* DELETE */}
+          <button
+            onClick={deletePhoto}
+            className="bg-red-600 text-white px-2 py-1 rounded"
+          >
+            🗑️
+          </button>
+        </div>
+      )}
     </div>
   );
 }

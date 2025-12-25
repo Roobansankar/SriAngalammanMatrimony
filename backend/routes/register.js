@@ -402,11 +402,12 @@ Horosother: savedHoroscopeFilename || null,
         income_in: toTrimOrNull(b.incomeType),
         anyotherincome: toTrimOrNull(b.otherIncome),
         working_hours: toTrimOrNull(b.workingHours),
-        company_name: toTrimOrNull(b.companyName),
+        company_name: toTrimOrNull(b.company_name),
+
 
         workinglocation: toTrimOrNull(b.workingLocation),
 
-        // HeightText: toTrimOrNull(b.heightText),
+      
         HeightText: toTrimOrNull(b.heightText) || toTrimOrNull(b.HeightText),
 
         Weight: toTrimOrNull(b.weight),
@@ -461,14 +462,15 @@ Horosother: savedHoroscopeFilename || null,
         noofbrothers: toTrimOrNull(b.noOfBrothers),
         nbm: toTrimOrNull(b.noOfBrothersMarried),
         noofsisters: toTrimOrNull(b.noOfSisters),
-        nsm: toTrimOrNull(b.noOfSistersMarried),
+        nsm: toTrimOrNull(b.noOfSistersMarried),   
+        nb_unmarried: toTrimOrNull(b.noOfBrothersUnmarried),
+        ns_unmarried: toTrimOrNull(b.noOfSistersUnmarried),
+        
         Fathername: toTrimOrNull(b.fatherName),
         Fathersoccupation: toTrimOrNull(b.fatherOccupation),
         Mothersname: toTrimOrNull(b.motherName),
         Mothersoccupation: toTrimOrNull(b.motherOccupation),
 
-        nb_unmarried: toTrimOrNull(b.noOfBrothersUnmarried),
-        ns_unmarried: toTrimOrNull(b.noOfSistersUnmarried),
 
         family_wealth: toTrimOrNull(b.familyWealth),
 
