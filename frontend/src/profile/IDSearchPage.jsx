@@ -276,8 +276,7 @@ export default function IDSearchPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-
-  const SEARCH_API = "http://localhost:5000/api/auth/searchByMatriID";
+  const SEARCH_API = `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/searchByMatriID`;
   const fallbackImg =
     "https://sriangalammanmatrimony.com/photoprocess.php?image=images/nophoto.jpg&square=200";
 

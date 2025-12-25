@@ -9,7 +9,7 @@
 
 //   const sendOtp = async () => {
 //     const res = await axios.post(
-//       "http://localhost:5000/api/auth/forgot-password/send-otp",
+//       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/send-otp`,
 //       { email }
 //     );
 //     if (res.data.success) setStep(2);
@@ -18,7 +18,7 @@
 
 //   const verifyOtp = async () => {
 //     const res = await axios.post(
-//       "http://localhost:5000/api/auth/forgot-password/verify-otp",
+//       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/verify-otp`,
 //       { email, otp }
 //     );
 //     if (res.data.success) setStep(3);
@@ -27,7 +27,7 @@
 
 //   const resetPassword = async () => {
 //     const res = await axios.post(
-//       "http://localhost:5000/api/auth/forgot-password/reset-password",
+//       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/reset-password`,
 //       {
 //         email,
 //         newPassword: newPass,
@@ -123,7 +123,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password/send-otp",
+        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/send-otp`,
         { email }
       );
 
@@ -148,7 +148,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password/verify-otp",
+        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/verify-otp`,
         { email, otp }
       );
 
@@ -172,7 +172,7 @@ export default function ForgotPassword() {
 
   //   try {
   //     const res = await axios.post(
-  //       "http://localhost:5000/api/auth/forgot-password/verify-otp",
+  //       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/verify-otp`,
   //       { email, otp }
   //     );
 
@@ -202,7 +202,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password/reset-password",
+        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/reset-password`,
         { email, newPassword: newPass }
       );
 

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000/api/";
+const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/";
 
 export default function BasicEdit() {
   const [form, setForm] = useState({
@@ -165,7 +165,7 @@ export default function BasicEdit() {
     e.preventDefault();
 
     try {
-      await axios.put("http://localhost:5000/api/auth/update/basic", form);
+      await axios.put(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/update/basic`, form);
       alert("Basic details updated!");
       navigate("/profile");
     } catch (err) {

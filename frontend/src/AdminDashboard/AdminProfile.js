@@ -8,7 +8,7 @@ export default function AdminProfile() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/admin/profile/${matriId}`)
+      .get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/admin/profile/${matriId}`)
       .then((res) => setUser(res.data.user))
       .catch((err) => console.error("Profile Load Error:", err));
   }, [matriId]);

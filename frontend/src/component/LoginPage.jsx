@@ -27,7 +27,7 @@ export default function LoginPage({ setUser }) {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/login`,
         payload
       );
 

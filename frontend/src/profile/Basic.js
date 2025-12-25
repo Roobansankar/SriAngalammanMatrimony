@@ -150,6 +150,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+
 export default function Basic() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -165,7 +167,7 @@ export default function Basic() {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/user", {
+        const res = await axios.get(`${API}/api/auth/user`, {
           params: { email },
         });
 
@@ -270,7 +272,7 @@ export default function Basic() {
               alt="profile"
               className="w-40 h-40 object-cover rounded-xl shadow-md mx-auto border"
               onError={(e) => {
-                e.currentTarget.src = `http://localhost:5000/gallery/nophoto.jpg`;
+                e.currentTarget.src = `${API}/gallery/nophoto.jpg`;
               }}
             />
           </div>
