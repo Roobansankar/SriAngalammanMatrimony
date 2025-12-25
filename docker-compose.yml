@@ -56,5 +56,4 @@ networks:
 
 volumes:
   matrimony-db:
-    name: matrimony-db
 
