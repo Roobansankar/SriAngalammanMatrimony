@@ -14,8 +14,7 @@ import {
 import { useEffect, useState } from "react";
 
 export default function HomeDashboard() {
-  // Use relative path to avoid hardcoded localhost issues
-  const API_BASE = ""; 
+  const API = process.env.REACT_APP_API_BASE || "";
 
   const [stats, setStats] = useState({
     totalCount: 0,
