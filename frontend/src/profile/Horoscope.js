@@ -18,7 +18,7 @@
 
 //     const fetchUser = async () => {
 //       try {
-//         const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
+//         const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
 //           params: { email },
 //         });
 
@@ -256,7 +256,7 @@ export default function Horoscope() {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
           params: { email },
         });
 

@@ -2,7 +2,7 @@
 // import axios from "axios";
 // import { useNavigate } from "react-router-dom";
 
-// const API_BASE = "http://localhost:5000/api/";
+// const API_BASE = `${process.env.REACT_APP_API_BASE || ""}/api/`;
 
 // export default function EditFamily() {
 //   const [options, setOptions] = useState({
@@ -366,10 +366,10 @@
 
 
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/";
+const API_BASE = (process.env.REACT_APP_API_BASE || "") + "/api/";
 
 export default function EditFamily() {
   const [options, setOptions] = useState({

@@ -3,7 +3,7 @@
 // import { connectSocket, getSocket } from "../socket";
 // import axios from "axios";
 
-// const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+// const API = process.env.REACT_APP_API_BASE || "";
 // const STORAGE_KEY = "app_notifications_v1";
 
 // function humanTime(ts) {
@@ -196,7 +196,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { connectSocket, getSocket } from "../socket";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 const STORAGE_KEY = "app_notifications_v1";
 
 function humanTime(ts) {

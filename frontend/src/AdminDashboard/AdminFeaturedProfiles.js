@@ -8,7 +8,7 @@
 //   const addFeatured = async () => {
 //     try {
 //       const res = await axios.post(
-//         "http://localhost:5000/api/admin/featured-profile",
+//         `${process.env.REACT_APP_API_BASE || ""}/api/admin/featured-profile`, 
 //         { matriId }
 //       );
 

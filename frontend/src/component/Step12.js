@@ -191,7 +191,10 @@
 //       /* ------------------------------------------------
 //          SUBMIT TO BACKEND
 //       ------------------------------------------------ */
-//       const res = await axios.post("http://localhost:5000/api/register/complete", fd);
+//       const res = await axios.post(
+//         `${process.env.REACT_APP_API_BASE || ""}/api/register/complete`, 
+//         fd
+//       );
 
 //       localStorage.removeItem("multiStepRegistration_form_v1");
 

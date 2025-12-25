@@ -2,7 +2,7 @@
 // import { useEffect, useRef, useState } from "react";
 // import { formatMobile, formatPincode, isValidMobile, isValidPincode, isValidWhatsApp } from "./validation";
 
-// const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000/api/";
+// const API_BASE = process.env.REACT_APP_API_BASE || "" + "/api/";
 
 // export default function Step5({ nextStep, prevStep, formData = {} }) {
 //   const [options, setOptions] = useState({

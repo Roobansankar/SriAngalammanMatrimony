@@ -17,7 +17,7 @@
 
 //     const fetchUser = async () => {
 //       try {
-//         const res = await axios.get("http://localhost:5000/api/auth/user", {
+//         const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
 //           params: { email },
 //         });
 
@@ -123,7 +123,7 @@
 //               alt="profile"
 //               className="w-40 h-40 object-cover rounded-xl shadow-md mx-auto border"
 //               onError={(e) => {
-//                 e.currentTarget.src = `http://localhost:5000/gallery/nophoto.jpg`;
+//                 e.currentTarget.src = `${process.env.REACT_APP_API_BASE || ""}/gallery/nophoto.jpg`; 
 //               }}
 //             />
 //           </div>

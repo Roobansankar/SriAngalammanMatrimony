@@ -39,7 +39,7 @@
 
 //       // 1️⃣ Create Order on Backend
 //       const res = await axios.post(
-//         "http://localhost:5000/api/payment/create-order",
+//         `${process.env.REACT_APP_API_BASE || ""}/api/payment/create-order`,
 //         {
 //           plan,
 //           email: formData.email,
@@ -59,7 +59,7 @@
 
 //         handler: async function (response) {
 //           const verifyRes = await axios.post(
-//             "http://localhost:5000/api/payment/verify",
+//             `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`, 
 //             {
 //               ...response,
 //               email: formData.email,
