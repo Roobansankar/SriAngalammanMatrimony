@@ -335,6 +335,7 @@ import {
   Menu,
   Shield,
   UserCircle,
+  UserCheck,
   UserCog,
   Users,
   X,
@@ -344,6 +345,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 const navLinks = [
   { name: "Dashboard", path: "/admin/homedashboard", icon: LayoutDashboard },
+  { name: "New Users", path: "/admin/new-users", icon: UserCheck },
   { name: "Add Users", path: "/admin/add-users", icon: UserCircle },
   { name: "All Members", path: "/admin/all-members", icon: Users },
   { name: "Manage Members", path: "/admin/manage-members", icon: UserCog },

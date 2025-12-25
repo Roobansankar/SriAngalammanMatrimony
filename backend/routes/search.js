@@ -215,7 +215,7 @@ router.post("/search", (req, res) => {
     }
 
     where.push(
-      "visibility NOT LIKE 'hidden' AND Status <> 'Banned' AND Status NOT LIKE 'InActive'"
+      "visibility NOT LIKE 'hidden' AND Status = 'Active'"
     );
 
     const whereSQL = where.join(" AND ");
@@ -370,7 +370,7 @@ router.post("/advancesearch", (req, res) => {
     }
 
     where.push(
-      "visibility NOT LIKE 'hidden' AND Status <> 'Banned' AND Status NOT LIKE 'InActive'"
+      "visibility NOT LIKE 'hidden' AND Status = 'Active'"
     );
 
     const whereSQL = where.join(" AND ");
@@ -554,9 +554,8 @@ router.post("/horoscopesearch", (req, res) => {
       where.push("LOWER(Photo1Approve) = 'yes'");
     }
 
-    // VISIBILITY & STATUS
     where.push(
-      "visibility NOT LIKE 'hidden' AND Status <> 'Banned' AND Status NOT LIKE 'InActive'"
+      "visibility NOT LIKE 'hidden' AND Status = 'Active'"
     );
 
     const whereSQL = where.join(" AND ");
