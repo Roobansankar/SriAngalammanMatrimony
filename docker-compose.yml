@@ -57,6 +57,4 @@ networks:
 volumes:
   matrimony-db:
     name: matrimony-db
-  backend_gallery:
-  backend_kundli:
 
