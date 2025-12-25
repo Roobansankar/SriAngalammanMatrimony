@@ -150,6 +150,23 @@ router.post("/interest/send", async (req, res) => {
 
     const conn = db.promise();
 
+    // 1. Check if blocked (by either party)
+    const [blocks] = await conn.query(
+      `SELECT * FROM blocked_profiles 
+       WHERE (blocker_matriid = ? AND blocked_matriid = ?) 
+          OR (blocker_matriid = ? AND blocked_matriid = ?) 
+       LIMIT 1`,
+      [fromMatriID, toMatriID, toMatriID, fromMatriID]
+    );
+
+    if (blocks.length > 0) {
+      return res.json({
+        success: false,
+        message: "You cannot send interest to this profile.",
+        isBlocked: true
+      });
+    }
+
     // Check existing record (any status)
     const [existsRows] = await conn.query(
       "SELECT * FROM interests WHERE from_matriid=? AND to_matriid=? LIMIT 1",
@@ -285,6 +302,7 @@ router.post("/interest/respond", async (req, res) => {
  */
 router.get("/interest/status", async (req, res) => {
   try {
+    res.setHeader("Cache-Control", "no-store"); // Prevent caching
     const from = req.query?.from ? String(req.query.from).trim() : "";
     const to = req.query?.to ? String(req.query.to).trim() : "";
     if (!from || !to) {
@@ -294,11 +312,29 @@ router.get("/interest/status", async (req, res) => {
     }
 
     const conn = db.promise();
+
+    // Check for blocks first
+    const [blocks] = await conn.query(
+      `SELECT * FROM blocked_profiles 
+       WHERE (blocker_matriid = ? AND blocked_matriid = ?) 
+          OR (blocker_matriid = ? AND blocked_matriid = ?) 
+       LIMIT 1`,
+      [from, to, to, from]
+    );
+
+    const isBlocked = blocks.length > 0;
+    const blockedByMe = blocks.some(b => b.blocker_matriid === from);
+
     const [rows] = await conn.query(
       "SELECT * FROM interests WHERE from_matriid=? AND to_matriid=? LIMIT 1",
       [from, to]
     );
-    return res.json({ success: true, interest: rows[0] || null });
+    return res.json({ 
+      success: true, 
+      interest: rows[0] || null,
+      isBlocked,
+      blockedByMe
+    });
   } catch (err) {
     console.error("interest/status error", err);
     return res.status(500).json({ success: false, message: "Server error" });
@@ -332,6 +368,64 @@ router.get("/interest/incoming", async (req, res) => {
     return res.json({ success: true, incoming: rows || [] });
   } catch (err) {
     console.error("interest/incoming error", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});/**
+ * POST /api/auth/interest/block
+ * Body: { blockerMatriID, blockedMatriID }
+ */
+router.post("/interest/block", async (req, res) => {
+  try {
+    const { blockerMatriID, blockedMatriID } = req.body;
+    if (!blockerMatriID || !blockedMatriID) {
+      return res.status(400).json({ success: false, message: "Missing ids" });
+    }
+
+    const conn = db.promise();
+
+    // 1. Insert block record
+    await conn.query(
+      "INSERT IGNORE INTO blocked_profiles (blocker_matriid, blocked_matriid) VALUES (?, ?)",
+      [blockerMatriID, blockedMatriID]
+    );
+
+    // 2. Delete existing interests between these two users (any direction)
+    await conn.query(
+      `DELETE FROM interests 
+       WHERE (from_matriid = ? AND to_matriid = ?) 
+          OR (from_matriid = ? AND to_matriid = ?)`,
+      [blockerMatriID, blockedMatriID, blockedMatriID, blockerMatriID]
+    );
+    
+    return res.json({ success: true, message: "User blocked and interests removed" });
+  } catch (err) {
+    console.error("interest/block error", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+/**
+ * POST /api/auth/interest/unblock
+ * Body: { blockerMatriID, blockedMatriID }
+ */
+router.post("/interest/unblock", async (req, res) => {
+  try {
+    const { blockerMatriID, blockedMatriID } = req.body;
+    if (!blockerMatriID || !blockedMatriID) {
+      return res.status(400).json({ success: false, message: "Missing ids" });
+    }
+
+    const conn = db.promise();
+
+    // Delete block record
+    await conn.query(
+      "DELETE FROM blocked_profiles WHERE blocker_matriid = ? AND blocked_matriid = ?",
+      [blockerMatriID, blockedMatriID]
+    );
+
+    return res.json({ success: true, message: "User unblocked successfully" });
+  } catch (err) {
+    console.error("interest/unblock error", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });

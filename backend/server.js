@@ -107,22 +107,21 @@ import "dotenv/config";
 import express from "express";
 import http from "http";
 import morgan from "morgan";
-import { Server as IOServer } from "socket.io";
 import path from "path";
+import { Server as IOServer } from "socket.io";
 import { fileURLToPath } from "url";
-
-
 import db from "./config/db.js";
+
 import adminRoutes from "./routes/admin.js";
 import authRoutes from "./routes/auth.js";
 import chatRoutes from "./routes/chat.js";
+import forgotPasswordRoutes from "./routes/forgotPassword.js";
+import galleryRoutes from "./routes/gallery.js";
 import interestRoutes from "./routes/interest.js";
 import paymentRoutes from "./routes/payment.js";
 import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
-import forgotPasswordRoutes from "./routes/forgotPassword.js";
-import galleryRoutes from "./routes/gallery.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -131,14 +130,12 @@ const HOST = "0.0.0.0";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-console.log("🔥 SERVER.JS LOADED");
-
-
-/* DB */
-db.connect((err) => {
-  if (err) console.error("❌ Database connection failed:", err);
-  else console.log("✅ Connected to MySQL Database");
+/* DB quick health check */
+// `db` is a mysql2 connection pool created in `./config/db.js`.
+// Run a single lightweight query at startup and log the result.
+db.query("SELECT 1", (err) => {
+  if (err) console.error("❌ MySQL pool unreachable at startup:", err);
+  else console.log("✅ MySQL pool is reachable");
 });
 
 /* Middleware */
@@ -213,7 +210,7 @@ io.on("connection", (socket) => {
 app.set("io", io);
 app.set("onlineMap", onlineMap);
 
-/* Listen */
+/* Start server */
 server.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
   console.log("SMTP_USER present:", !!process.env.SMTP_USER);

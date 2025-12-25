@@ -163,7 +163,12 @@ export default function LoggedRegularSearch() {
   function submitSearch(e) {
     e.preventDefault();
     navigate("/regularsearch-results/1", {
-      state: { filters: form, viewerPlan, apiBase: API_BASE },
+      state: { 
+        filters: form, 
+        viewerPlan, 
+        viewerId: userData.MatriID || userData.matid, // ⬅️ Add viewerId
+        apiBase: API_BASE 
+      },
     });
   }
 

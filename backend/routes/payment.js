@@ -107,9 +107,11 @@ router.post("/create-order", async (req, res) => {
 
 // 2️⃣ Verify Payment, Generate MatriID & Save in DB
 router.post("/verify", async (req, res) => {
-  const conn = db.promise();
-  
+  let conn;
   try {
+    // Get a dedicated connection from the pool for the transaction
+    conn = await db.promise().getConnection();
+    
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -169,15 +171,19 @@ router.post("/verify", async (req, res) => {
       matriId: matriId,
     });
   } catch (err) {
-    try {
-      await conn.rollback();
-    } catch (rollbackErr) {
-      console.error("Rollback failed:", rollbackErr);
+    if (conn) {
+      try {
+        await conn.rollback();
+      } catch (rollbackErr) {
+        console.error("Rollback failed:", rollbackErr);
+      }
     }
     console.error("Payment verify error:", err);
     res
       .status(500)
       .json({ success: false, message: "Payment verification failed" });
+  } finally {
+    if (conn) conn.release();
   }
 });
 
