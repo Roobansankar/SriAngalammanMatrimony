@@ -29,7 +29,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/user", {
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
           params: { email },
         });
         console.log("Res", res.data);
@@ -59,7 +59,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
     const email = localStorage.getItem("loggedInEmail");
     if (!email) return;
 
-    const res = await axios.get("http://localhost:5000/api/auth/user", {
+    const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
       params: { email },
     });
 
@@ -899,7 +899,7 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
       formData.append(slot, file);
 
       // ❌ DO NOT set multipart headers manually
-      await axios.post("http://localhost:5000/api/gallery/upload", formData);
+      await axios.post(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/gallery/upload`, formData);
 
       refreshUser();
     } catch (err) {
@@ -910,7 +910,7 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
 
   const deletePhoto = async () => {
     try {
-      await axios.post("http://localhost:5000/api/gallery/delete", {
+      await axios.post(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/gallery/delete`, {
         matriId,
         slot,
       });
@@ -927,7 +927,7 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
       {/* IMAGE / PLACEHOLDER */}
       {image ? (
         <img
-          src={`http://localhost:5000/gallery/${image}`}
+          src={`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/gallery/${image}`}
           alt={slot}
           className="w-full h-40 object-cover"
         />

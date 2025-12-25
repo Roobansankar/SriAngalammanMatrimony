@@ -39,7 +39,7 @@
 
 //       // 1️⃣ Create Order on Backend
 //       const res = await axios.post(
-//         "http://localhost:5000/api/payment/create-order",
+//         `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/payment/create-order`,
 //         {
 //           plan,
 //           email: formData.email,
@@ -188,7 +188,7 @@ export default function Step11Payment({
 
       // Create order on backend
       const res = await axios.post(
-        "http://localhost:5000/api/payment/create-order",
+        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/payment/create-order`,
         {
           plan,
           email: formData.email,
@@ -219,7 +219,7 @@ export default function Step11Payment({
           try {
             // Send user details for MatriID generation
             const verifyRes = await axios.post(
-              "http://localhost:5000/api/payment/verify",
+              `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/payment/verify`,
               {
                 ...response,
                 email: formData.email,

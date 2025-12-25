@@ -19,7 +19,7 @@ export default function EditAbout() {
     e.preventDefault();
 
     try {
-      const res = await axios.put("http://localhost:5000/api/auth/update/about", {
+      const res = await axios.put(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/update/about`, {
         email,
         aboutus: about,
       });

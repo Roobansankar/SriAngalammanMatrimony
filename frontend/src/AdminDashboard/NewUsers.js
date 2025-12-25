@@ -1,21 +1,17 @@
 import axios from "axios";
 import {
     AlertTriangle,
-    Ban,
     Check,
     ChevronLeft,
     ChevronRight,
     Edit3,
-    Eye,
-    EyeOff,
-    Filter,
     RefreshCw,
     Save,
     Search,
     Trash2,
+    UserCheck,
     UserCircle,
-    X,
-    UserCheck
+    X
 } from "lucide-react";
 import { useEffect, useState } from "react";
 

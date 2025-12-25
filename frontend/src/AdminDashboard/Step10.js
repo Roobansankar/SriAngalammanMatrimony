@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const API_BASE = "http://localhost:5000/api/";
+const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/";
 
 // Helper → Move "Any" to the top
 function putAnyFirst(arr, key = null) {
@@ -226,7 +226,6 @@ export default function Step10({ nextStep, prevStep, formData = {} }) {
     });
   };
 
-  const handleNext = () => nextStep(data);
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-12 text-gray-800">

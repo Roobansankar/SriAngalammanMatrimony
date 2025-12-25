@@ -379,7 +379,7 @@
 
 
 import axios from "axios";
-import { AlertCircle, BadgeCheck, CheckCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -571,7 +571,7 @@ export default function Step12({ prevStep, formData }) {
       /* ------------------------------------------------
          SUBMIT TO BACKEND
       ------------------------------------------------ */
-      const res = await axios.post("http://localhost:5000/api/register/complete", fd);
+      const res = await axios.post(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/register/complete`, fd);
 
       localStorage.removeItem("multiStepRegistration_form_v1");
 

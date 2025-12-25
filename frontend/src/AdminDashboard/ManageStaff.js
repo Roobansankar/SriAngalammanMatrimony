@@ -4,7 +4,6 @@ import {
     Plus,
     RefreshCw,
     Save,
-    Shield,
     Trash2,
     User,
     UserCog,

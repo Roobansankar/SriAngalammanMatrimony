@@ -18,7 +18,7 @@
 
 //     const fetchUser = async () => {
 //       try {
-//         const res = await axios.get("http://localhost:5000/api/auth/user", {
+//         const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
 //           params: { email },
 //         });
 
@@ -256,7 +256,7 @@ export default function Horoscope() {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/user", {
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
           params: { email },
         });
 
@@ -356,7 +356,7 @@ export default function Horoscope() {
   const placeOfBirth = user.POB || user.PlaceOfBirth || "-";
   const placeOfCountry = user.POC || user.Country || "-";
   const kuladeivam =  user.Kuladeivam || "-";
-  const ThesaiIrupu = user. ThesaiIrupu || "-"
+  const ThesaiIrupu = user.ThesaiIrupu || "-"
 
   // Time of Birth Handling
   let tobRaw = user.TOB || user.TimeOfBirth || "";

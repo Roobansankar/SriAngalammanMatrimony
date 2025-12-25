@@ -33,8 +33,8 @@ services:
     networks:
       - matrimony-network
     volumes:
-      - backend_gallery:/app/gallery
-      - backend_kundli:/app/kundli
+      - ./backend/gallery:/app/gallery
+      - ./backend/kundli:/app/kundli
 
   frontend:
     build:
@@ -56,6 +56,7 @@ networks:
 
 volumes:
   matrimony-db:
+    name: matrimony-db
   backend_gallery:
   backend_kundli:
 

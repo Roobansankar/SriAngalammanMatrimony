@@ -397,11 +397,10 @@
 // }
 
 import axios from "axios";
-import { Loader2, CheckCircle, MailCheck, RefreshCcw } from "lucide-react";
+import { CheckCircle, Loader2, MailCheck, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-
-const API_BASE = "http://localhost:5000/api/";
+const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/";
 const REGISTER_API = `${API_BASE}register`;
 
 export default function Step1({ nextStep, formData = {} }) {
@@ -700,7 +699,7 @@ export default function Step1({ nextStep, formData = {} }) {
     }
   }, []);
 
-  const validateBasicInfo = () => {
+  const validateBasicInfo = useCallback(() => {
     if (!data.fname.trim()) return "Please enter your first name.";
     if (!data.lname.trim()) return "Please enter your surname.";
     if (!data.email.trim()) return "Please enter your email.";
@@ -708,7 +707,7 @@ export default function Step1({ nextStep, formData = {} }) {
     if (!data.password || data.password.length < 6)
       return "Password must be at least 6 characters.";
     return null;
-  };
+  }, [data, errors]);
 
   const validateFullForm = useCallback(() => {
     const basicError = validateBasicInfo();
@@ -724,7 +723,7 @@ export default function Step1({ nextStep, formData = {} }) {
     if (errors.mobile) return errors.mobile;
     if (!data.terms) return "Please accept the terms and conditions.";
     return null;
-  }, [data, errors, emailVerified]);
+  }, [data, errors, emailVerified, validateBasicInfo]);
 
   const handleSendOtp = async () => {
     const validationError = validateBasicInfo();
