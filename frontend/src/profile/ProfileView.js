@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { connectSocket, getSocket } from "../socket";
+import { AlertTriangle, Check } from "lucide-react"; // Import for Toast/Modal
 
 export default function ProfileView() {
   const { matriid } = useParams();
@@ -13,12 +14,24 @@ export default function ProfileView() {
   const [error, setError] = useState(null);
   const [showImagePreview, setShowImagePreview] = useState(false);
 
+  // Modal and Toast state
+  const [modal, setModal] = useState({ show: false, title: "", message: "", onConfirm: null, isDestructive: false });
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
+  const [processing, setProcessing] = useState(false);
+
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
+  };
 
   const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
   const FETCH_API = `${API}/api/auth/searchByMatriID`;
 
   // interest
   const [interest, setInterest] = useState(null);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockedByMe, setBlockedByMe] = useState(false);
+
   const logged = (() => {
     try {
       return JSON.parse(localStorage.getItem("userData"));
@@ -63,7 +76,11 @@ export default function ProfileView() {
         const res = await axios.get(`${API}/api/auth/interest/status`, {
           params: { from: loggedId, to: viewedId },
         });
-        if (res.data?.success) setInterest(res.data.interest);
+        if (res.data?.success) {
+          setInterest(res.data.interest);
+          setIsBlocked(res.data.isBlocked);
+          setBlockedByMe(res.data.blockedByMe);
+        }
       } catch (e) {
         console.error("fetch interest status error", e);
       }
@@ -77,8 +94,8 @@ export default function ProfileView() {
     isOwner || (interest && interest.status === "accepted");
 
   const sendInterest = async () => {
-    if (!loggedId) return alert("Log in to send interest");
-    if (!viewedId) return alert("Invalid profile");
+    if (!loggedId) return showToast("Log in to send interest", "error");
+    if (!viewedId) return showToast("Invalid profile", "error");
     try {
       const res = await axios.post(`${API}/api/auth/interest/send`, {
         fromMatriID: loggedId,
@@ -86,12 +103,80 @@ export default function ProfileView() {
       });
       if (res.data?.success) {
         setInterest(res.data.interest);
-        alert("Interest sent.");
+        showToast("Interest sent.", "success");
+      } else if (res.data?.isBlocked) {
+        showToast("You cannot connect with this profile.", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to send interest");
+      showToast("Failed to send interest", "error");
     }
+  };
+
+  const blockUser = () => {
+    setModal({
+      show: true,
+      title: "Block User",
+      message: "Are you sure you want to block this user? You will not be able to see them again.",
+      isDestructive: true,
+      onConfirm: async () => {
+        setProcessing(true);
+        try {
+          const res = await axios.post(`${API}/api/auth/interest/block`, {
+            blockerMatriID: loggedId,
+            blockedMatriID: viewedId,
+          });
+          if (res.data?.success) {
+            setIsBlocked(true);
+            setBlockedByMe(true);
+            setInterest(null); // Clear interest state immediately
+            showToast("User blocked and interest removed.", "success");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Failed to block user", "error");
+        } finally {
+          setProcessing(false);
+          setModal({ show: false, title: "", message: "", onConfirm: null });
+        }
+      }
+    });
+  };
+
+  const unblockUser = () => {
+    setModal({
+      show: true,
+      title: "Unblock User",
+      message: "Are you sure you want to unblock this user?",
+      isDestructive: false,
+      onConfirm: async () => {
+        setProcessing(true);
+        try {
+          const res = await axios.post(`${API}/api/auth/interest/unblock`, {
+            blockerMatriID: loggedId,
+            blockedMatriID: viewedId,
+          });
+          if (res.data?.success) {
+            setIsBlocked(false);
+            setBlockedByMe(false);
+            showToast("User unblocked.", "success");
+            // Refresh interest status to ensure UI is in sync
+            const statusRes = await axios.get(`${API}/api/auth/interest/status`, {
+              params: { from: loggedId, to: viewedId },
+            });
+            if (statusRes.data?.success) {
+              setInterest(statusRes.data.interest);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Failed to unblock user", "error");
+        } finally {
+          setProcessing(false);
+          setModal({ show: false, title: "", message: "", onConfirm: null });
+        }
+      }
+    });
   };
 
   useEffect(() => {
@@ -143,7 +228,8 @@ export default function ProfileView() {
       ) {
         ss = rest.replace(/[^0-9]/g, "") || "00";
         ap = rest.replace(/[^APMapm]/g, "").toUpperCase() || ap;
-      } else {
+      }
+      else {
         ss = rest;
       }
       return { hh, mm, ss, ap };
@@ -166,7 +252,7 @@ export default function ProfileView() {
     </div>
   );
 
-  
+  // if (loading) return <div className="p-8">Loading...</div>;
   if (loading)
     return (
       <div className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display">
@@ -457,6 +543,53 @@ const heightMatch = (minH, maxH, actual) => {
       className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b]"
       f
     >
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 ease-in-out ${
+          toast.type === "error" ? "bg-red-500" : "bg-green-500"
+        }`}>
+          <div className="flex items-center gap-2">
+            {toast.type === "error" ? <AlertTriangle size={20} /> : <Check size={20} />}
+            <span className="font-medium">{toast.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {modal.show && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all scale-100">
+            <div className="p-6">
+              <h3 className={`text-xl font-bold mb-2 ${modal.isDestructive ? 'text-red-600' : 'text-gray-800'}`}>
+                {modal.title}
+              </h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                {modal.message}
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setModal({ show: false, title: "", message: "", onConfirm: null })}
+                  className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={modal.onConfirm}
+                  disabled={processing}
+                  className={`px-5 py-2.5 rounded-lg text-white font-medium shadow-sm transition-colors flex items-center gap-2 ${
+                    modal.isDestructive 
+                      ? 'bg-red-500 hover:bg-red-600' 
+                      : 'bg-green-500 hover:bg-green-600'
+                  }`}
+                >
+                  {processing ? "Processing..." : "Confirm"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-[1140px] mx-auto">
         {/* Top card (same as ProfilePage) */}
         <div className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden mt-20">
@@ -586,6 +719,17 @@ const heightMatch = (minH, maxH, actual) => {
                         ? "Interest Sent"
                         : "Send Interest"}
                     </button>
+                    
+                    <button
+                      onClick={blockUser}
+                      className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-red-500 text-white text-sm font-bold flex-1 gap-2 hover:bg-red-600 transition"
+                    >
+                      <span className="material-symbols-outlined text-base">
+                        block
+                      </span>
+                      <span className="truncate">Block</span>
+                    </button>
+
                     <button
                       onClick={() =>
                         navigate(`/chat/${user.MatriID || user.matid}`)

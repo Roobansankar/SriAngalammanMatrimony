@@ -209,12 +209,11 @@ export default function AllMembers() {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-4 py-3">
-                        <Link
-                          to={`/admin/profile/${m.MatriID}`}
+                        <p
                           className="font-medium text-rose-600 hover:text-rose-700"
                         >
                           {m.MatriID}
-                        </Link>
+                        </p>
                       </td>
                       <td className="px-4 py-3">
                         {m.PhotoURL && !m.PhotoURL.includes("nophoto") ? (
