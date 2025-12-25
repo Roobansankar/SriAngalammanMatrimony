@@ -2,7 +2,7 @@
 // import { Loader2 } from "lucide-react";
 // import { useCallback, useEffect, useMemo, useState } from "react";
 
-// const API_BASE = "http://localhost:5000/api/";
+// const API_BASE = `${process.env.REACT_APP_API_BASE || ""}/api/`;
 // const REGISTER_API = `${API_BASE}register`;
 
 // export default function Step1({ nextStep, formData = {} }) {

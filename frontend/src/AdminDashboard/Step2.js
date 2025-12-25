@@ -2,7 +2,7 @@ import axios from "axios";
 import { ArrowLeft, CheckCircle, Loader2, MailCheck, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const API = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/register";
+const API = (process.env.REACT_APP_API_BASE || "") + "/api/register";
 
 export default function Step2({ nextStep, prevStep, formData }) {
   const [otp, setOtp] = useState("");

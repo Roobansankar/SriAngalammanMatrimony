@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Matchs() {
-  const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const API = process.env.REACT_APP_API_BASE || ""; 
   const navigate = useNavigate();
   const { page: urlPage } = useParams();
 

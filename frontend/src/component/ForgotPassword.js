@@ -9,7 +9,7 @@
 
 //   const sendOtp = async () => {
 //     const res = await axios.post(
-//       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/send-otp`,
+//       `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/send-otp`,
 //       { email }
 //     );
 //     if (res.data.success) setStep(2);
@@ -18,16 +18,14 @@
 
 //   const verifyOtp = async () => {
 //     const res = await axios.post(
-//       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/verify-otp`,
-//       { email, otp }
-//     );
+  //       `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/verify-otp`,
 //     if (res.data.success) setStep(3);
 //     else alert(res.data.message);
 //   };
 
 //   const resetPassword = async () => {
 //     const res = await axios.post(
-//       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/reset-password`,
+//       `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/reset-password`,
 //       {
 //         email,
 //         newPassword: newPass,
@@ -172,7 +170,7 @@ export default function ForgotPassword() {
 
   //   try {
   //     const res = await axios.post(
-  //       `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/verify-otp`,
+  //       `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/verify-otp`,
   //       { email, otp }
   //     );
 

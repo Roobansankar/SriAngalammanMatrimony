@@ -11,7 +11,7 @@
 //   const [error, setError] = useState(null);
 
 //   // Configure your API endpoint here
-//   const SEARCH_API = "http://localhost:5000/api/auth/searchByMatriID";
+//   const SEARCH_API = `${process.env.REACT_APP_API_BASE || ""}/api/auth/searchByMatriID`;
 
 //   // get logged user info from localStorage
 //   useEffect(() => {

@@ -18,7 +18,7 @@
 
 //     const fetchUser = async () => {
 //       try {
-//         const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
+//         const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
 //           params: { email },
 //         });
 
@@ -134,8 +134,8 @@
 
 
 // src/profile/PartnerPreference.jsx
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function PartnerPreference() {
@@ -153,7 +153,7 @@ export default function PartnerPreference() {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
           params: { email },
         });
 
