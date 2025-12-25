@@ -211,6 +211,7 @@ router.get("/allProfiles", async (req, res) => {
       SELECT *,
         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
       FROM register
+      WHERE Status = 'Active' AND visibility NOT LIKE 'hidden'
       ORDER BY id DESC
       `
     );

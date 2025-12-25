@@ -191,6 +191,11 @@ router.get("/all-members", (req, res) => {
   let whereClause = "WHERE visibility NOT LIKE 'hidden' AND Status <> 'Banned'";
   const params = [];
 
+  // Staff restriction: only show basic users
+  if (req.userRole === 'staff') {
+    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  }
+
   if (gender) {
     whereClause += " AND Gender = ?";
     params.push(gender);
@@ -262,6 +267,11 @@ router.get("/female-members", (req, res) => {
 
   let whereClause = "WHERE Gender = 'Female' AND visibility NOT LIKE 'hidden' AND Status <> 'Banned'";
   const params = [];
+
+  // Staff restriction
+  if (req.userRole === 'staff') {
+    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  }
 
   if (search) {
     whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
@@ -370,6 +380,11 @@ router.get("/male-members", (req, res) => {
   let whereClause = "WHERE Gender = 'Male' AND visibility NOT LIKE 'hidden' AND Status <> 'Banned'";
   const params = [];
 
+  // Staff restriction
+  if (req.userRole === 'staff') {
+    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  }
+
   if (search) {
     whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
@@ -393,6 +408,79 @@ router.get("/male-members", (req, res) => {
     FROM register
     ${whereClause}
     ORDER BY Regdate IS NULL, Regdate DESC
+    LIMIT ?, ?
+  `;
+
+  db.query(countSQL, params, (err, countResult) => {
+    if (err) return res.status(500).json({ error: err });
+
+    const total = countResult[0].total;
+
+    db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
+      if (err2) return res.status(500).json({ error: err2 });
+
+      const results = rows.map((u) => {
+        const photo =
+          u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
+            ? `${BASE}/gallery/${u.Photo1}`
+            : `${BASE}/gallery/nophoto.jpg`;
+
+        return { ...u, PhotoURL: photo };
+      });
+
+      res.json({
+        success: true,
+        total,
+        page,
+        per_page: limit,
+        results,
+      });
+    });
+  });
+});
+
+// New members (Pending status)
+router.get("/new-members", (req, res) => {
+  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || "";
+
+  let whereClause = "WHERE Status = 'Pending'";
+  const params = [];
+
+  // Staff restriction
+  if (req.userRole === 'staff') {
+    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  }
+
+  if (search) {
+    whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
+    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+  }
+
+  const countSQL = `SELECT COUNT(*) AS total FROM register ${whereClause}`;
+
+  const dataSQL = `
+    SELECT 
+      MatriID,
+      Name,
+      Gender,
+      ConfirmEmail AS Email,
+      Mobile,
+      DOB,
+      TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+      Regdate,
+      Status,
+      Lastlogin,
+      Photo1,
+      Photo1Approve,
+      Plan
+    FROM register
+    ${whereClause}
+    ORDER BY Regdate DESC
     LIMIT ?, ?
   `;
 

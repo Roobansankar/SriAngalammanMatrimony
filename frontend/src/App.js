@@ -468,6 +468,7 @@ import AddUsers from "./AdminDashboard/AddUsers";
 import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
 import ManageStaff from "./AdminDashboard/ManageStaff";
 import PremiumMembers from "./AdminDashboard/PremiumMembers";
+import NewUsers from "./AdminDashboard/NewUsers";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -508,6 +509,7 @@ function AppContent({ user, setUser }) {
             {/* Admin Pages Inside DashboardLayout */}
             <Route path="homedashboard" element={<HomeDashboard />} />
             <Route path="dashboard" element={<HomeDashboard />} />
+            <Route path="new-users" element={<NewUsers />} />
             <Route path="male-members" element={<MaleMembers />} />
             <Route path="female-members" element={<FemaleMembers />} />
             <Route path="all-members" element={<AllMembers />} />

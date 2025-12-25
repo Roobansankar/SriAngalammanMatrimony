@@ -525,7 +525,7 @@ Horosother: savedHoroscopeFilename || null,
 
         Regdate: new Date(),
         IP: req.headers["x-forwarded-for"] || req.socket.remoteAddress || "",
-        Status: "Active",
+        Status: "Pending",
       };
 
       // Remove undefined/null fields
