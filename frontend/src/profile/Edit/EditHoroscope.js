@@ -6,16 +6,17 @@ import { useNavigate } from "react-router-dom";
 const API_BASE = "http://localhost:5000/api/";
 
 const PLANETS = [
-  "லக்னம்",
-  "சூரியன்",
-  "சந்திரன்",
-  "செவ்வாய்",
-  "புதன்",
+  "லக்",
+  "சூரி",
+  "சந்",
+  "செவ்",
+  "புத",
   "குரு",
-  "சுக்கிரன்",
+  "சுக்",
   "சனி",
   "ராகு",
   "கேது",
+  "மாந்",
 ];
 
 // ---------------------------------------------
@@ -142,10 +143,10 @@ export default function EditHoroscope() {
         : { map: navamsa, set: setNavamsa };
     let arr = [...state.map[key]];
 
-    if (value === "லக்னம்") {
+    if (value === "லக்") {
       Object.keys(state.map).forEach((k) => {
         if (k !== key) {
-          state.map[k] = state.map[k].filter((x) => x !== "லக்னம்");
+          state.map[k] = state.map[k].filter((x) => x !== "லக்");
         }
       });
     }

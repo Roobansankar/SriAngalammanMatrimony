@@ -11,6 +11,8 @@ export default function ProfileView() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+
 
   const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
   const FETCH_API = `${API}/api/auth/searchByMatriID`;
@@ -385,9 +387,9 @@ export default function ProfileView() {
   const score = compatibility.filter((c) => c.pass).length;
 
   return (
-    
     <div
-      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b]"f
+      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b]"
+      f
     >
       <div className="max-w-[1140px] mx-auto">
         {/* Top card (same as ProfilePage) */}
@@ -410,7 +412,8 @@ export default function ProfileView() {
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
                 <div
-                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark"
+                  onClick={() => setShowImagePreview(true)}
+                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark cursor-pointer hover:scale-105 transition-transform"
                   style={{
                     width: 128,
                     height: 128,
@@ -419,11 +422,11 @@ export default function ProfileView() {
                         ? photoSrc(user)
                         : "/nophoto.jpg"
                     })`,
-                    backgroundPosition: "top center", // ⭐ FIX: Show the face
+                    backgroundPosition: "top center",
                   }}
                 />
 
-                {isOwner ? (
+                {/* {isOwner ? (
                   <button
                     onClick={() => navigate("/profile/edit#photo")}
                     className="absolute bottom-1 right-1 flex items-center justify-center size-8 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors p-2"
@@ -433,10 +436,32 @@ export default function ProfileView() {
                       photo_camera
                     </span>
                   </button>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
           </div>
+
+          {/* -------- PHOTO GALLERY -------- */}
+          {Array.isArray(user.gallery) && user.gallery.length > 0 && (
+            <section className="bg-white dark:bg-[#221019] rounded-xl p-6 mt-12">
+              <h2 className="text-xl font-bold mb-4">Photos</h2>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {user.gallery.map((img, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-lg overflow-hidden bg-gray-100"
+                  >
+                    <img
+                      src={img}
+                      alt={`Gallery ${index + 1}`}
+                      className="w-full h-40 object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Header content: name, id, actions */}
           <div className="pt-20 px-8 pb-6">
@@ -460,8 +485,6 @@ export default function ProfileView() {
               </div>
 
               <div className="flex w-full md:w-auto gap-3">
-    
-
                 {isOwner ? (
                   <button
                     onClick={() => navigate("/profile/edit")}
@@ -655,8 +678,6 @@ export default function ProfileView() {
             </div>
           </div>
         </section>
-
-    
 
         {/* Education & Professional */}
         <section className="mb-6 relative">
@@ -910,10 +931,73 @@ export default function ProfileView() {
                   </div>
                 ))}
               </div>
+              {showImagePreview && (
+                <div
+                  className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+                  onClick={() => setShowImagePreview(false)}
+                >
+                  <div
+                    className="relative max-w-3xl w-full px-4"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setShowImagePreview(false)}
+                      className="absolute -top-10 right-2 text-white text-3xl hover:opacity-80"
+                      aria-label="Close"
+                    >
+                      ×
+                    </button>
+
+                    {/* Image */}
+                    {/* Image with Watermark */}
+                    <div className="relative rounded-xl overflow-hidden shadow-2xl">
+                      <img
+                        src={
+                          photoSrc(user) && photoSrc(user) !== ""
+                            ? photoSrc(user)
+                            : "/nophoto.jpg"
+                        }
+                        alt="Profile"
+                        className="w-full max-h-[80vh] object-contain bg-black"
+                      />
+
+                      {/* 🔒 Watermark Overlay */}
+                      <div className="absolute inset-0 pointer-events-none">
+                        {/* Diagonal lines */}
+                        <div
+                          className="absolute inset-0 opacity-20"
+                          style={{
+                            backgroundImage: `
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255,255,255,0.25),
+            rgba(255,255,255,0.25) 1px,
+            transparent 1px,
+            transparent 120px
+          )
+        `,
+                          }}
+                        />
+
+                        {/* Watermark Text */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-white text-3xl md:text-4xl font-bold tracking-widest rotate-[-25deg] opacity-30 select-none">
+                            Sri Angalamman Matrimony
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
       </div>
     </div>
   );
+
+
+  
 }

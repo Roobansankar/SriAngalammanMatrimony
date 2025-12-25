@@ -111,6 +111,7 @@ import { Server as IOServer } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 
+
 import db from "./config/db.js";
 import adminRoutes from "./routes/admin.js";
 import authRoutes from "./routes/auth.js";
@@ -121,6 +122,7 @@ import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
 import forgotPasswordRoutes from "./routes/forgotPassword.js";
+import galleryRoutes from "./routes/gallery.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -128,6 +130,10 @@ const HOST = "0.0.0.0";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+console.log("🔥 SERVER.JS LOADED");
+
 
 /* DB */
 db.connect((err) => {
@@ -168,6 +174,11 @@ app.use("/api/auth/forgot-password", forgotPasswordRoutes);
 
 app.use("/api", searchRoutes);
 app.use("/api/admin", adminRoutes);
+
+// app.use("/api/gallery", galleryRoutes);
+
+app.use("/api/gallery", galleryRoutes);
+
 
 app.get("/", (req, res) => res.send("Matrimony API running..."));
 

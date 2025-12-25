@@ -14,16 +14,17 @@ export default function Step4({ nextStep, prevStep, formData }) {
   });
 
   const dropdownList = [
-    "லக்னம்",
-    "சூரியன்",
-    "சந்திரன்",
-    "செவ்வாய்",
-    "புதன்",
+    "லக்",
+    "சூரி",
+    "சந்",
+    "செவ்",
+    "புத",
     "குரு",
-    "சுக்கிரன்",
+    "சுக்",
     "சனி",
     "ராகு",
     "கேது",
+    "மாந்",
   ];
 
   const [data, setData] = useState({
@@ -185,13 +186,13 @@ export default function Step4({ nextStep, prevStep, formData }) {
   const selectedLaknamRasi =
     [...Array(12)]
       .map((_, i) => ({ key: `g${i + 1}`, box: data[`g${i + 1}`] }))
-      .find((b) => b.box.includes("லக்னம்"))?.key || null;
+      .find((b) => b.box.includes("லக்"))?.key || null;
 
   // Check Laknam in Navamsam boxes
   const selectedLaknamNavamsam =
     [...Array(12)]
       .map((_, i) => ({ key: `a${i + 1}`, box: data[`a${i + 1}`] }))
-      .find((b) => b.box.includes("லக்னம்"))?.key || null;
+      .find((b) => b.box.includes("லக்"))?.key || null;
 
   return (
     <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 mx-auto border border-yellow-200 mt-12">
@@ -510,7 +511,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                     className="mr-2"
                     checked={data[key].includes(p)}
                     disabled={
-                      p === "லக்னம்" &&
+                      p === "லக்" &&
                       selectedLaknamRasi !== null &&
                       selectedLaknamRasi !== key
                     }
@@ -519,11 +520,11 @@ export default function Step4({ nextStep, prevStep, formData }) {
 
                       if (e.target.checked) {
                         // If Laknam clicked, remove Laknam from all other boxes
-                        if (p === "லக்னம்") {
+                        if (p === "லக்") {
                           for (let j = 1; j <= 12; j++) {
                             if (`g${j}` !== key) {
                               data[`g${j}`] = data[`g${j}`].filter(
-                                (x) => x !== "லக்னம்"
+                                (x) => x !== "லக்"
                               );
                             }
                           }
@@ -570,7 +571,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                     className="mr-2"
                     checked={data[key].includes(p)}
                     disabled={
-                      p === "லக்னம்" &&
+                      p === "லக்" &&
                       selectedLaknamNavamsam !== null &&
                       selectedLaknamNavamsam !== key
                     }
@@ -579,11 +580,11 @@ export default function Step4({ nextStep, prevStep, formData }) {
 
                       if (e.target.checked) {
                         // If Laknam clicked, remove Laknam from all other navamsam boxes
-                        if (p === "லக்னம்") {
+                        if (p === "லக்") {
                           for (let j = 1; j <= 12; j++) {
                             if (`a${j}` !== key) {
                               data[`a${j}`] = data[`a${j}`].filter(
-                                (x) => x !== "லக்னம்"
+                                (x) => x !== "லக்"
                               );
                             }
                           }

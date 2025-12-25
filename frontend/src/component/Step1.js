@@ -365,7 +365,7 @@ export default function Step1({ nextStep, formData = {} }) {
         </select>
         <select name="caste" value={data.caste} onChange={handleChange} disabled={!data.religion} className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-rose-400 outline-none disabled:bg-gray-100">
           <option value="">{data.religion ? "Select Caste" : "Select Religion First"}</option>
-          {options.castes.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
+          {options.castes.map((c) => (<option key={c.id} value={c.name}>{c.name}</option>))}
         </select>
         <select name="subCaste" value={data.subCaste} onChange={handleChange} disabled={!data.caste} className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-rose-400 outline-none disabled:bg-gray-100">
           <option value="">{data.caste ? "Select Sub Caste" : "Select Caste First"}</option>
