@@ -128,9 +128,10 @@ router.get("/generate-matriid/:gender", async (req, res) => {
   if (!gender) return res.status(400).json({ message: "Gender is required" });
 
   const prefix = gender.toLowerCase() === "male" ? "SAM" : "SAF";
-  const conn = db.promise();
+  let conn;
 
   try {
+    conn = await db.promise().getConnection();
     await conn.beginTransaction();
 
     const [rows] = await conn.query(
@@ -158,15 +159,19 @@ router.get("/generate-matriid/:gender", async (req, res) => {
     const matriId = prefix + nextNumber.toString().padStart(3, "0");
     res.json({ matriId });
   } catch (err) {
-    try {
-      await conn.rollback();
-    } catch (rollbackErr) {
-      console.error("Rollback failed:", rollbackErr);
+    if (conn) {
+      try {
+        await conn.rollback();
+      } catch (rollbackErr) {
+        console.error("Rollback failed:", rollbackErr);
+      }
     }
     console.error("Error generating MatriID:", err);
     res
       .status(500)
       .json({ message: "Error generating MatriID", error: err.message });
+  } finally {
+    if (conn) conn.release();
   }
 });
 
@@ -208,9 +213,10 @@ router.post(
     { name: "horoscopeFile", maxCount: 1 },
   ]),
   async (req, res) => {
+    let conn;
     try {
       const b = req.body;
-      const conn = db.promise();
+      conn = await db.promise().getConnection();
 
       // ---------- GENERATE MATRI ID IF NOT PROVIDED ----------
       let matriId = toTrimOrNull(b.matriId);
@@ -542,12 +548,22 @@ Horosother: savedHoroscopeFilename || null,
         matriId: matriId,
       });
     } catch (err) {
+      if (conn) {
+        try {
+          // Check if transaction was active before rolling back
+          await conn.rollback(); 
+        } catch (rollbackErr) {
+          // ignore rollback error if no transaction was active
+        }
+      }
       console.error("❌ Registration complete error:", err);
       res.status(500).json({
         success: false,
         message: "Error completing registration",
         sql: err?.sqlMessage || err?.message,
       });
+    } finally {
+      if (conn) conn.release();
     }
   }
 );
