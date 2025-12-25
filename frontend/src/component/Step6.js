@@ -114,7 +114,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-gray-100 mt-12">
       {/* Title */}
       <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center border-b pb-3">
-        Step 6: Education & Occupation Details
+        Step 4: Education & Occupation Details
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

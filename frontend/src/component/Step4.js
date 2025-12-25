@@ -199,7 +199,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
       <div className="flex items-center justify-center gap-2 mb-6">
         <Stars className="w-8 h-8 text-yellow-600" />
         <h3 className="text-2xl font-bold text-yellow-700">
-          Step 4: Horoscope (ஜாதகம்) Details
+          Step 2: Horoscope (ஜாதகம்) Details
         </h3>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

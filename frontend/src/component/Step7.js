@@ -49,11 +49,25 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
     passport: formData.passport || "No",
   });
 
-  useEffect(() => {
-    if (Object.keys(formData).length > 0) {
-      setData((prev) => ({ ...prev, ...formData }));
-    }
-  }, [formData]);
+useEffect(() => {
+  if (Object.keys(formData).length > 0) {
+    setData((prev) => ({
+      ...prev,
+      ...formData,
+      hobbies: Array.isArray(formData.hobbies)
+        ? formData.hobbies
+        : formData.hobbies
+        ? formData.hobbies.split(",")
+        : [],
+      interests: Array.isArray(formData.interests)
+        ? formData.interests
+        : formData.interests
+        ? formData.interests.split(",")
+        : [],
+    }));
+  }
+}, [formData]);
+
 
   const handleChange = (e) =>
     setData({ ...data, [e.target.name]: e.target.value });
@@ -127,19 +141,29 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
 
   const weightOptions = Array.from({ length: 111 }, (_, i) => String(i + 40));
 
+  // const handleNext = () => {
+  //   nextStep({
+  //     ...data,
+  //     /** CONVERT ARRAYS TO CSV FOR STEP12 **/
+  //     hobbies: data.hobbies.join(","),
+  //     interests: data.interests.join(","),
+  //   });
+  // };
+
+
   const handleNext = () => {
     nextStep({
       ...data,
-      /** CONVERT ARRAYS TO CSV FOR STEP12 **/
-      hobbies: data.hobbies.join(","),
-      interests: data.interests.join(","),
+      hobbies: Array.isArray(data.hobbies) ? data.hobbies.join(",") : "",
+      interests: Array.isArray(data.interests) ? data.interests.join(",") : "",
     });
   };
+
 
   return (
     <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#fff8f0] to-[#fff0e6] shadow-xl rounded-2xl p-8 border border-[#f3cba5] mt-12">
       <h3 className="text-2xl font-bold text-[#7b1113] text-center mb-6 border-b-2 border-[#f3cba5] pb-3">
-        Step 7: Physical Details & Hobbies
+        Step 5: Physical Details & Hobbies
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

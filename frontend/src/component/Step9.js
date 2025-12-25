@@ -40,7 +40,7 @@ export default function Step9({ nextStep, prevStep, initialPhoto }) {
   return (
     <div className="max-w-lg mx-auto bg-white shadow-lg rounded-2xl p-8 mt-12 text-gray-800">
       <h3 className="text-2xl font-bold text-center text-blue-700 mb-6">
-        Step 9: Upload Your Photo
+        Step 7: Upload Your Photo
       </h3>
 
       <div className="flex flex-col items-center space-y-4">

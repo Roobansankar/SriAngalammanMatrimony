@@ -28,6 +28,17 @@ export default function Matchs() {
   })();
 
   /* ---------- helper functions ---------- */
+
+  const isEmpty = (v) =>
+  v === null ||
+  v === undefined ||
+  v === "" ||
+  v === "-" ||
+  (typeof v === "string" && v.trim() === "");
+
+
+
+
   const cmp = (pref, actual) => {
     if (!pref || pref === "Any") return true;
     return pref.toLowerCase() === (actual || "").toLowerCase();
@@ -46,39 +57,57 @@ export default function Matchs() {
     if (!m) return 0;
     return parseInt(m[1]) * 12 + parseInt(m[2] || 0);
   };
+const heightMatch = (minH, maxH, actual) => {
+  // ✅ No preference → pass
+  if (isEmpty(minH) && isEmpty(maxH)) return true;
 
-  const heightMatch = (minH, maxH, actual) => {
-    const act = heightToInches(actual);
-    const min = heightToInches(minH);
-    const max = heightToInches(maxH);
-    return act >= min && act <= max;
-  };
+  // ✅ Partner height missing → pass
+  if (isEmpty(actual)) return true;
 
-  const calculateScore = (viewer, profile) => {
-    const rules = [
-      { pass: multiMatch(viewer.Looking, profile.Maritalstatus) },
-      {
-        pass:
-          profile.Age >= viewer.PE_FromAge && profile.Age <= viewer.PE_ToAge,
-      },
-      {
-        pass: heightMatch(
-          viewer.PE_from_Height,
-          viewer.PE_to_Height,
-          profile.HeightText
-        ),
-      },
-      { pass: multiMatch(viewer.PE_Complexion, profile.Complexion) },
-      { pass: cmp(viewer.PE_Religion, profile.Religion) },
-      { pass: cmp(viewer.PE_Caste, profile.Caste) },
-      { pass: multiMatch(viewer.PE_Occupation, profile.Occupation) },
-      { pass: multiMatch(viewer.PE_Education, profile.Education) },
-      { pass: cmp(viewer.PE_Countrylivingin, profile.Country) },
-      { pass: cmp(viewer.PE_State, profile.State) },
-      { pass: cmp(viewer.PE_Residentstatus, profile.Residencystatus) },
-    ];
-    return rules.filter((x) => x.pass).length;
-  };
+  const act = heightToInches(actual);
+  const min = heightToInches(minH);
+  const max = heightToInches(maxH);
+
+  return act >= min && act <= max;
+};
+
+
+ const calculateScore = (viewer, profile) => {
+   const rules = [
+     { pass: multiMatch(viewer.Looking, profile.Maritalstatus) },
+
+     // ✅ AGE
+     {
+       pass:
+         isEmpty(viewer.PE_FromAge) ||
+         isEmpty(viewer.PE_ToAge) ||
+         isEmpty(profile.Age)
+           ? true
+           : profile.Age >= viewer.PE_FromAge && profile.Age <= viewer.PE_ToAge,
+     },
+
+     // ✅ HEIGHT
+     {
+       pass: heightMatch(
+         viewer.PE_from_Height,
+         viewer.PE_to_Height,
+         profile.HeightText
+       ),
+     },
+
+     { pass: multiMatch(viewer.PE_Complexion, profile.Complexion) },
+     { pass: cmp(viewer.PE_Religion, profile.Religion) },
+     { pass: cmp(viewer.PE_Caste, profile.Caste) },
+     { pass: multiMatch(viewer.PE_Occupation, profile.Occupation) },
+     { pass: multiMatch(viewer.PE_Education, profile.Education) },
+     { pass: cmp(viewer.PE_Countrylivingin, profile.Country) },
+     { pass: cmp(viewer.PE_State, profile.State) },
+     { pass: cmp(viewer.PE_Residentstatus, profile.Residencystatus) },
+   ];
+
+   return rules.filter((r) => r.pass).length;
+ };
+
 
   /* ---------- Load Profiles ---------- */
   useEffect(() => {
