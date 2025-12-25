@@ -2,7 +2,7 @@ import axios from "axios";
 import { ChevronLeft, ChevronRight, Search, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 export default function AllMembers() {
   const [members, setMembers] = useState([]);
