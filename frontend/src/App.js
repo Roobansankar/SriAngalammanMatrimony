@@ -469,6 +469,7 @@ import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
 import ManageStaff from "./AdminDashboard/ManageStaff";
 import PremiumMembers from "./AdminDashboard/PremiumMembers";
 import NewUsers from "./AdminDashboard/NewUsers";
+import PlanManagement from "./AdminDashboard/PlanManagement";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -518,6 +519,7 @@ function AppContent({ user, setUser }) {
             <Route path="master-data" element={<MasterData />} />
             <Route path="location-data" element={<LocationData />} />
             <Route path="add-users/*" element={<AddUsers />} />
+            <Route path="plan-management" element={<PlanManagement />} />
             <Route
               path="featured-profiles"
               element={<AdminFeaturedProfiles />}
