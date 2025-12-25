@@ -83,7 +83,7 @@ function makePhotoUrl1(photoFilename, photoApprove) {
 // ----------------------------------------------
 function makePhotoUrl(photoFilename, photoApprove) {
   const FALLBACK = "no-photo.gif";
-  const BASE_URL = process.env.BASE_URL || "http://10.105.121.118:5000";
+  const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
   const GALLERY_PATH = "/gallery/";
 
   const hasPhoto =

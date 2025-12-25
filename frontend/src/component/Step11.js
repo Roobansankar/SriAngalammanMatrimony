@@ -134,7 +134,7 @@ export default function Step11({ nextStep, prevStep, formData }) {
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-12 text-gray-800">
       <h3 className="text-2xl font-bold text-center text-blue-700 mb-6">
-        Step 11 : Review Your Details
+        Step 9 : Review Your Details
       </h3>
 
       <p className="text-center text-gray-600 mb-6">

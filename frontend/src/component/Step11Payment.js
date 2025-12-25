@@ -286,7 +286,7 @@ export default function Step11Payment({
   return (
     <div className="max-w-lg mx-auto mt-12 bg-white shadow-lg rounded-2xl p-8 border text-center">
       <h3 className="text-2xl font-semibold mb-6 text-gray-800">
-        Step 12: Choose Your Plan
+        Step 10: Choose Your Plan
       </h3>
 
       <div className="grid grid-cols-2 gap-6 mb-8">
@@ -297,7 +297,7 @@ export default function Step11Payment({
           }`}
         >
           <h4 className="font-bold text-lg mb-2 text-rose-700">Basic Plan</h4>
-          <p className="text-gray-700">₹50 - View limited profiles</p>
+          <p className="text-gray-700">₹1500 - View limited profiles</p>
         </div>
 
         <div
@@ -309,7 +309,7 @@ export default function Step11Payment({
           }`}
         >
           <h4 className="font-bold text-lg mb-2 text-rose-700">Premium Plan</h4>
-          <p className="text-gray-700">₹100 - View all profiles</p>
+          <p className="text-gray-700">₹4000 - View all profiles</p>
         </div>
       </div>
 

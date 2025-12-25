@@ -487,7 +487,8 @@ function AppContent({ user, setUser }) {
   const hideLayout = location.pathname.startsWith("/admin");
 
   return (
-    <>
+    
+     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
       {!hideLayout && <Header user={user} setUser={setUser} />}
 
@@ -843,7 +844,8 @@ function AppContent({ user, setUser }) {
       </main>
 
       {!hideLayout && <Footer />}
-    </>
+      </div>
+
   );
 }
 

@@ -166,7 +166,7 @@ export default function ProfileView() {
     </div>
   );
 
-  // if (loading) return <div className="p-8">Loading...</div>;
+  
   if (loading)
     return (
       <div className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display">
@@ -252,22 +252,42 @@ export default function ProfileView() {
 
   /* ------------------ COMPATIBILITY HELPERS ------------------ */
 
-  // Compare strings (case-insensitive)
-  const cmp = (pref, actual) => {
-    if (!pref || pref === "Any") return true;
+  const isEmptyValue = (v) => {
     return (
-      pref.toString().trim().toLowerCase() ===
-      (actual || "").toString().trim().toLowerCase()
+      v === null ||
+      v === undefined ||
+      v === "" ||
+      v === "-" ||
+      (typeof v === "string" && v.trim() === "")
     );
   };
 
+  // Compare strings (case-insensitive)
+ const cmp = (pref, actual) => {
+   // If preference is Any or empty → OK
+   if (isEmptyValue(pref) || pref === "Any") return true;
+
+   // If partner value missing → OK
+   if (isEmptyValue(actual)) return true;
+
+   return (
+     pref.toString().trim().toLowerCase() ===
+     actual.toString().trim().toLowerCase()
+   );
+ };
+
+
   // Multi-value comparison (Education, Occupation, Complexion)
-  const multiMatch = (pref, actual) => {
-    if (!pref || pref === "Any") return true;
-    const prefArr = pref.split(",").map((v) => v.trim().toLowerCase());
-    const actualStr = (actual || "").trim().toLowerCase();
-    return prefArr.some((p) => actualStr === p || actualStr.includes(p));
-  };
+const multiMatch = (pref, actual) => {
+  if (isEmptyValue(pref) || pref === "Any") return true;
+  if (isEmptyValue(actual)) return true;
+
+  const prefArr = pref.split(",").map((v) => v.trim().toLowerCase());
+  const actualStr = actual.trim().toLowerCase();
+
+  return prefArr.some((p) => actualStr === p || actualStr.includes(p));
+};
+
 
   // Convert "5Ft 7 Inch" → total inches
   const heightToInches = (h) => {
@@ -282,19 +302,38 @@ export default function ProfileView() {
   };
 
   // Height range match
-  const heightMatch = (minH, maxH, actual) => {
-    if (!actual) return false;
+const heightMatch = (minH, maxH, actual) => {
+  // If no preference → OK
+  if (isEmptyValue(minH) && isEmptyValue(maxH)) return true;
 
-    const actualIn = heightToInches(actual);
-    const minIn = heightToInches(minH);
-    const maxIn = heightToInches(maxH);
+  // If partner height missing → OK
+  if (isEmptyValue(actual)) return true;
 
-    if (!minH && !maxH) return true;
+  const actualIn = heightToInches(actual);
+  const minIn = heightToInches(minH);
+  const maxIn = heightToInches(maxH);
 
-    return actualIn >= minIn && actualIn <= maxIn;
-  };
+  return actualIn >= minIn && actualIn <= maxIn;
+};
+
+
+
 
   /* ------------------ COMPATIBILITY RULES ------------------ */
+
+  const displayValue = (value) => {
+    if (
+      value === null ||
+      value === undefined ||
+      value === "" ||
+      value === "-" ||
+      (typeof value === "string" && value.trim() === "")
+    ) {
+      return "-";
+    }
+    return value;
+  };
+
 
   const viewer = logged || {}; // logged-in user
   const profile = user || {}; // viewed user
@@ -307,31 +346,58 @@ export default function ProfileView() {
       partnerValue: profile.Maritalstatus,
       pass: multiMatch(viewer.Looking, profile.Maritalstatus),
     },
+
     {
       label: "Age",
       icon: "📅",
-      yourValue: `${viewer.PE_FromAge} To ${viewer.PE_ToAge}`,
-      partnerValue: profile.Age,
-      pass: profile.Age >= viewer.PE_FromAge && profile.Age <= viewer.PE_ToAge,
+      yourValue: displayValue(
+        viewer.PE_FromAge && viewer.PE_ToAge
+          ? `${viewer.PE_FromAge} To ${viewer.PE_ToAge}`
+          : "-"
+      ),
+      partnerValue: displayValue(profile.Age),
+
+      pass:
+        // ✅ IF YOUR AGE PREFERENCE EMPTY → ✔️
+        !viewer.PE_FromAge || !viewer.PE_ToAge || !profile.Age
+          ? true
+          : profile.Age >= viewer.PE_FromAge && profile.Age <= viewer.PE_ToAge,
     },
+
     {
       label: "Height",
       icon: "📏",
-      yourValue: `${viewer.PE_from_Height} To ${viewer.PE_to_Height}`,
-      partnerValue: profile.HeightText || profile.Height,
-      pass: heightMatch(
-        viewer.PE_from_Height,
-        viewer.PE_to_Height,
-        profile.HeightText || profile.Height
+      yourValue: displayValue(
+        viewer.PE_from_Height && viewer.PE_to_Height
+          ? `${viewer.PE_from_Height} To ${viewer.PE_to_Height}`
+          : "-"
       ),
+      partnerValue: displayValue(profile.HeightText || profile.Height),
+
+      pass:
+        // ✅ IF YOUR HEIGHT PREF EMPTY → ✔️
+        !viewer.PE_from_Height ||
+        !viewer.PE_to_Height ||
+        !(profile.HeightText || profile.Height)
+          ? true
+          : heightMatch(
+              viewer.PE_from_Height,
+              viewer.PE_to_Height,
+              profile.HeightText || profile.Height
+            ),
     },
+
     {
       label: "Complexion",
-      icon: "🧑‍🦰",
-      yourValue: viewer.PE_Complexion,
-      partnerValue: profile.Complexion,
-      pass: multiMatch(viewer.PE_Complexion, profile.Complexion),
+      icon: "🧑",
+      yourValue: displayValue(viewer.PE_Complexion),
+      partnerValue: displayValue(profile.Complexion),
+      pass:
+        viewer.PE_Complexion && profile.Complexion
+          ? multiMatch(viewer.PE_Complexion, profile.Complexion)
+          : false,
     },
+
     {
       label: "Religion",
       icon: "✴️",
