@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, Link, useNavigate, useParams } from "react-router-dom";
 import {
-  IdCard,
-  UserRound,
-  CalendarRange,
-  GraduationCap,
-  BriefcaseBusiness,
-  MapPin,
-  BadgeIndianRupee,
-  Heart,
-  MessageCircle,
-  UserPlus,
-  Sparkles,
-  Layers,
-  GitBranch,
-  UserCog,
+    BadgeIndianRupee,
+    BriefcaseBusiness,
+    CalendarRange,
+    GitBranch,
+    GraduationCap,
+    Heart,
+    IdCard,
+    Layers,
+    MapPin,
+    MessageCircle,
+    Sparkles,
+    UserCog,
+    UserPlus,
+    UserRound,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function AdvancedSearchResults() {
   const { state } = useLocation();
@@ -51,7 +51,7 @@ export default function AdvancedSearchResults() {
       setLoading(true);
 
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/advancesearch`, {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE || ""}/api/advancesearch`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...state.filters, page }),

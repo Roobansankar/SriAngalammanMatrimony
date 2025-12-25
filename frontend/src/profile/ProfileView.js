@@ -24,7 +24,7 @@ export default function ProfileView() {
     setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
   };
 
-  const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const API = process.env.REACT_APP_API_BASE || "";
   const FETCH_API = `${API}/api/auth/searchByMatriID`;
 
   // interest

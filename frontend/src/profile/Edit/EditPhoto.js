@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function EditPhoto() {
@@ -16,7 +16,7 @@ export default function EditPhoto() {
     setEmail(user.ConfirmEmail);
 
     if (user.Photo1 && user.Photo1 !== "nophoto.jpg") {
-      setPreview(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/gallery/${user.Photo1}`);
+      setPreview(`${process.env.REACT_APP_API_BASE || ""}/gallery/${user.Photo1}`);
     }
   }, []);
 
@@ -40,7 +40,7 @@ export default function EditPhoto() {
 
     try {
       const res = await axios.put(
-        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/update/photo1`,
+        `${process.env.REACT_APP_API_BASE || ""}/api/auth/update/photo1`,
         fd,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

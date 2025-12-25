@@ -59,7 +59,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
     const email = localStorage.getItem("loggedInEmail");
     if (!email) return;
 
-    const res = await axios.get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/user`, {
+    const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
       params: { email },
     });
 

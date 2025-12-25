@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Crown, Search, UserCircle } from "lucide-rea
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 export default function PremiumMembers() {
   const [members, setMembers] = useState([]);
