@@ -2,21 +2,27 @@
 
 import axios from "axios";
 import {
-    Activity,
-    ArrowDownRight,
-    ArrowUpRight,
-    Calendar,
-    Heart,
-    TrendingUp,
-    UserCheck,
-    UserCircle,
-    UserPlus,
-    Users,
+  Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  Calendar,
+  Heart,
+  TrendingUp,
+  UserCheck,
+  UserCircle,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function HomeDashboard() {
   const API = process.env.REACT_APP_API_BASE || "";
+  // Runtime-resolved API base (useful to detect deployed bundle still pointing to localhost)
+  const resolvedApiBase = API || window.location.origin;
+  // Use console.log because some browsers filter out console.debug by default
+  console.log("Resolved API base:", resolvedApiBase);
+  // Expose for quick inspection in console and runtime checks
+  window.__RESOLVED_API_BASE__ = resolvedApiBase;
 console.debug("Frontend resolved API base:", API || window.location.origin);
 
   const [stats, setStats] = useState({
@@ -138,6 +144,18 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
         <p className="mt-1 text-rose-100">
           Here's what's happening with your matrimony platform today.
         </p>
+        {/* DEBUG BANNER: visible on page so we can confirm which API base the running bundle uses */}
+        <div className="mt-3">
+          <span
+            className={`inline-block text-xs px-2 py-1 rounded-md font-medium ${
+              resolvedApiBase.includes("localhost")
+                ? "bg-red-100 text-red-700"
+                : "bg-green-50 text-green-700"
+            }`}
+          >
+            API base: {resolvedApiBase}
+          </span>
+        </div>
       </div>
 
       {/* Main Stats Cards */}
