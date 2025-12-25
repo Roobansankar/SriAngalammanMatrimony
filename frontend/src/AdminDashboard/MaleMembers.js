@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Search, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 export default function MaleMembers() {
   const [members, setMembers] = useState([]);

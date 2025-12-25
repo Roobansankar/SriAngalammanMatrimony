@@ -59,7 +59,7 @@ const AdminFeaturedProfiles = () => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const isAdmin = currentUser?.role === 'admin';
 
-  const API = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/admin/featured-profiles";
+  const API = (process.env.REACT_APP_API_BASE || "") + "/api/admin/featured-profiles";
 
 const loadProfiles = useCallback(() => {
   axios

@@ -691,7 +691,7 @@ export default function SearchResults() {
   const fetchResults = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/search`, {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE || ""}/api/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...state.filters, page }),

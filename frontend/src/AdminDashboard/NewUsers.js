@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 export default function NewMembers() {
   const [members, setMembers] = useState([]);

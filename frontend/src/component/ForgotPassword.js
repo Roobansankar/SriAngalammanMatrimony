@@ -102,8 +102,8 @@
 // }
 
 
-import React, { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -123,7 +123,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/send-otp`,
+        `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/send-otp`,
         { email }
       );
 
@@ -148,7 +148,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/verify-otp`,
+        `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/verify-otp`,
         { email, otp }
       );
 
@@ -202,7 +202,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/forgot-password/reset-password`,
+        `${process.env.REACT_APP_API_BASE || ""}/api/auth/forgot-password/reset-password`,
         { email, newPassword: newPass }
       );
 

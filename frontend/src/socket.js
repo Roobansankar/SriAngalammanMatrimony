@@ -2,10 +2,7 @@
 import { io } from "socket.io-client";
 
 let socket = null;
-let url =
-  process.env.REACT_APP_SOCKET_URL ||
-  process.env.REACT_APP_API_BASE ||
-  "http://localhost:5000";
+let url = process.env.REACT_APP_SOCKET_URL || undefined; // default: same origin (socket.io client connects to current host)
 
 const STORAGE_KEY = "app_notifications_v1";
 let handlersAttached = false;

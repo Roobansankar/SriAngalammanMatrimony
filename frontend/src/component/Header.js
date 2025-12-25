@@ -570,7 +570,7 @@ export default function Header({ user, setUser }) {
   const [incomingCount, setIncomingCount] = useState(0);
   const [chatRequestCount, setChatRequestCount] = useState(0);
 
-  const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const API = process.env.REACT_APP_API_BASE || "";
 
   const loggedId = user?.MatriID || user?.matid || null;
 

@@ -120,8 +120,8 @@
 // };
 
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export const FeaturedProfiles = () => {
@@ -129,7 +129,7 @@ export const FeaturedProfiles = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/admin/featured-profiles`)
+      .get(`${process.env.REACT_APP_API_BASE || ""}/api/admin/featured-profiles`) 
       .then((res) => setProfiles(res.data.profiles))
       .catch(console.error);
   }, []);

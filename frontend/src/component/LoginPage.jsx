@@ -1,7 +1,7 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // export default function LoginPage() {
 export default function LoginPage({ setUser }) {
@@ -27,7 +27,7 @@ export default function LoginPage({ setUser }) {
       };
 
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/login`,
+        `${process.env.REACT_APP_API_BASE || ""}/api/auth/login`,
         payload
       );
 

@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, Link, useNavigate, useParams } from "react-router-dom";
 import {
-  IdCard,
-  UserRound,
-  CalendarRange,
-  GraduationCap,
-  BriefcaseBusiness,
-  MapPin,
-  BadgeIndianRupee,
-  Heart,
-  MessageCircle,
-  UserPlus,
-  Sparkles,
-  Layers,
-  GitBranch,
-  UserCog,
+    BadgeIndianRupee,
+    BriefcaseBusiness,
+    CalendarRange,
+    GitBranch,
+    GraduationCap,
+    Heart,
+    IdCard,
+    Layers,
+    MapPin,
+    MessageCircle,
+    Sparkles,
+    UserCog,
+    UserPlus,
+    UserRound,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 export default function LoggedSearchResults() {
   const { state } = useLocation();
