@@ -175,6 +175,7 @@ router.post("/search", (req, res) => {
       edu = [],
       occu = [],
       viewerPlan = "basic", // ✅ received from frontend
+      viewerId, // ⬅️ Receive viewerId
     } = req.body;
 
     const setLimit = 10;
@@ -182,6 +183,20 @@ router.post("/search", (req, res) => {
     if (page < 1) page = 1;
 
     const where = ["1=1"];
+
+    // Filter blocked profiles
+    if (viewerId) {
+      where.push(`
+        MatriID NOT IN (
+          SELECT blocked_matriid FROM blocked_profiles WHERE blocker_matriid = ${db.escape(viewerId)}
+        )
+      `);
+      where.push(`
+        MatriID NOT IN (
+          SELECT blocker_matriid FROM blocked_profiles WHERE blocked_matriid = ${db.escape(viewerId)}
+        )
+      `);
+    }
 
     // ================= PLAN FILTER (FINAL LOGIC) =================
     if (viewerPlan === "basic") {
@@ -328,6 +343,7 @@ router.post("/advancesearch", (req, res) => {
       state = [],
       district = [],
       viewerPlan = "basic",
+      viewerId,
     } = req.body;
 
     const setLimit = 10;
@@ -335,6 +351,20 @@ router.post("/advancesearch", (req, res) => {
     if (page < 1) page = 1;
 
    const where = ["1=1"];
+
+   // Filter blocked profiles
+    if (viewerId) {
+      where.push(`
+        MatriID NOT IN (
+          SELECT blocked_matriid FROM blocked_profiles WHERE blocker_matriid = ${db.escape(viewerId)}
+        )
+      `);
+      where.push(`
+        MatriID NOT IN (
+          SELECT blocker_matriid FROM blocked_profiles WHERE blocked_matriid = ${db.escape(viewerId)}
+        )
+      `);
+    }
 
    // ✅ ADDED: PLAN-BASED VISIBILITY LOGIC
    if (viewerPlan === "basic") {
@@ -495,6 +525,7 @@ router.post("/horoscopesearch", (req, res) => {
       Raghu = "Any",    // ⭐ ADD THIS
       Keethu = "Any"  ,  // ⭐ ADD THIS
       viewerPlan = "basic",
+      viewerId,
     } = req.body;
 
     const setLimit = 10;
@@ -502,6 +533,20 @@ router.post("/horoscopesearch", (req, res) => {
     if (page < 1) page = 1;
 
    const where = ["1=1"];
+
+   // Filter blocked profiles
+    if (viewerId) {
+      where.push(`
+        MatriID NOT IN (
+          SELECT blocked_matriid FROM blocked_profiles WHERE blocker_matriid = ${db.escape(viewerId)}
+        )
+      `);
+      where.push(`
+        MatriID NOT IN (
+          SELECT blocker_matriid FROM blocked_profiles WHERE blocked_matriid = ${db.escape(viewerId)}
+        )
+      `);
+    }
 
    // ✅ ADDED: PLAN-BASED VISIBILITY LOGIC
    if (viewerPlan === "basic") {

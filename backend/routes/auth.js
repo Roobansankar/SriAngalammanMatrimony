@@ -18,7 +18,6 @@ const FALLBACK = "nophoto.jpg";
 
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
-   console.log("🔥 LOGIN HIT:", req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password)
