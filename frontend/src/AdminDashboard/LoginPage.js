@@ -29,6 +29,10 @@ export default function AdminLoginPage() {
         })
       );
 
+      // Immediately set axios default header so subsequent requests (dashboard load)
+      // include the token and avoid a 'No token provided' 403 on first request
+      axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
       navigate("/admin/homedashboard", { replace: true });
     } catch (error) {
       alert("Invalid credentials");

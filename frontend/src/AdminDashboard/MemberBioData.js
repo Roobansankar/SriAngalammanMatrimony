@@ -2,22 +2,22 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Edit3,
-  FileImage,
-  FileText,
-  Save,
-  Search,
-  UserCircle,
-  X,
+    ChevronLeft,
+    ChevronRight,
+    Download,
+    Edit3,
+    FileImage,
+    FileText,
+    Save,
+    Search,
+    UserCircle,
+    X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import headerpic from "../profile/Assets/header.png";
 import "./AdminBioDisplay.css";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 function safeParseChart(value) {
   if (!value || value === "" || value === "[]" || value === null) return [];

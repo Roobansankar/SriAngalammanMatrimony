@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getSocket, connectSocket } from "../socket";
+import { useEffect, useState } from "react";
+import { connectSocket, getSocket } from "../socket";
 
 export default function InterestsPanel() {
   const [incoming, setIncoming] = useState([]); // list of interest objects
@@ -23,7 +23,7 @@ export default function InterestsPanel() {
 
   const respond = async (id, action) => {
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/interest/respond`, { interestId: id, action });
+      const res = await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/auth/interest/respond`, { interestId: id, action });
       if (res.data?.success) {
         setIncoming(prev => prev.map(i => i.id === id ? res.data.interest : i));
       }

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export default function AdminProfile() {
@@ -8,7 +8,7 @@ export default function AdminProfile() {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/admin/profile/${matriId}`)
+      .get(`${process.env.REACT_APP_API_BASE || ""}/api/admin/profile/${matriId}`)
       .then((res) => setUser(res.data.user))
       .catch((err) => console.error("Profile Load Error:", err));
   }, [matriId]);

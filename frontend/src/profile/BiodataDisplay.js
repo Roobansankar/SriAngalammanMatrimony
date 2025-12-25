@@ -823,7 +823,7 @@ import { useNavigate } from "react-router-dom";
 import headerpic from "./Assets/header.png";
 import "./BiodataDisplay.css";
 
-const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API = process.env.REACT_APP_API_BASE || "";
 
 function safeParseChart(value) {
   if (!value || value === "" || value === "[]" || value === null) return [];
