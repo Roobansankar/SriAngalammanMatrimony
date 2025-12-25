@@ -15,6 +15,12 @@ import { useEffect, useState } from "react";
 
 export default function HomeDashboard() {
   const API = process.env.REACT_APP_API_BASE || "";
+  // Runtime-resolved API base (useful to detect deployed bundle still pointing to localhost)
+  const resolvedApiBase = API || window.location.origin;
+  // Use console.log because some browsers filter out console.debug by default
+  console.log("Resolved API base:", resolvedApiBase);
+  // Expose for quick inspection in console and runtime checks
+  window.__RESOLVED_API_BASE__ = resolvedApiBase;
 console.debug("Frontend resolved API base:", API || window.location.origin);
 
   const [stats, setStats] = useState({
@@ -144,12 +150,20 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
         <div className="mt-3">
           <span
             className={`inline-block text-xs px-2 py-1 rounded-md font-medium ${
+<<<<<<< HEAD
               API_BASE.includes("localhost")
+=======
+              resolvedApiBase.includes("localhost")
+>>>>>>> c0a4b8d (docker test 2)
                 ? "bg-red-100 text-red-700"
                 : "bg-green-50 text-green-700"
             }`}
           >
+<<<<<<< HEAD
             API base: {API_BASE}
+=======
+            API base: {resolvedApiBase}
+>>>>>>> c0a4b8d (docker test 2)
           </span>
         </div>
       </div>
