@@ -65,7 +65,12 @@ export default function LoggedSearchResults() {
       const res = await fetch("http://localhost:5000/api/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...state.filters, page }),
+        body: JSON.stringify({ 
+          ...state.filters, 
+          page, 
+          viewerPlan: state.viewerPlan, // Ensure plan is passed if not already in filters
+          viewerId: state.viewerId      // ⬅️ Pass viewerId for blocking check
+        }),
       });
 
       const data = await res.json();

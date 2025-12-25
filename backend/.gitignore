@@ -25,3 +25,8 @@ build/
 # Project Images
 gallery/
 kundli/
+
+# Temp sql files
+.sql
+*.sql
+../*.sql
