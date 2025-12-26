@@ -87,6 +87,7 @@ router.post("/login", async (req, res) => {
 router.use(verifyToken);
 
 router.get("/dashboard-stats", async (req, res) => {
+  console.log("Admin: Fetching dashboard-stats...");
   try {
     const conn = db.promise();
 
@@ -136,15 +137,17 @@ router.get("/dashboard-stats", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error("Dashboard Stats Error:", err); // Log the full error
+    res.status(500).json({ success: false, message: "Server Error", error: err.message });
   }
 });
 
 // Recent members for dashboard
 router.get("/recent-members", (req, res) => {
+  console.log("Admin: Fetching recent-members...");
   const BASE = process.env.API_BASE_URL || "http://localhost:5000";
 
+  // Removed visibility check temporarily to rule out schema mismatch if column missing
   const sql = `
     SELECT 
       MatriID,
@@ -156,14 +159,16 @@ router.get("/recent-members", (req, res) => {
       Photo1,
       Photo1Approve
     FROM register
-    WHERE visibility NOT LIKE 'hidden'
-      AND Status <> 'Banned'
+    WHERE Status <> 'Banned'
     ORDER BY Regdate DESC
     LIMIT 10
   `;
 
   db.query(sql, (err, rows) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) {
+      console.error("Recent Members SQL Error:", err);
+      return res.status(500).json({ error: err });
+    }
 
     const members = rows.map((u) => {
       const photo =
@@ -180,6 +185,7 @@ router.get("/recent-members", (req, res) => {
 
 // All members with pagination
 router.get("/all-members", (req, res) => {
+  console.log("Admin: Fetching all-members...");
   const BASE = process.env.API_BASE_URL || "http://localhost:5000";
 
   const page = parseInt(req.query.page) || 1;
@@ -188,7 +194,8 @@ router.get("/all-members", (req, res) => {
   const search = req.query.search || "";
   const gender = req.query.gender || "";
 
-  let whereClause = "WHERE visibility NOT LIKE 'hidden' AND Status <> 'Banned'";
+  // Removed visibility check temporarily
+  let whereClause = "WHERE Status <> 'Banned'";
   const params = [];
 
   // Staff restriction: only show basic users
@@ -230,12 +237,18 @@ router.get("/all-members", (req, res) => {
   `;
 
   db.query(countSQL, params, (err, countResult) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) {
+       console.error("All Members Count SQL Error:", err);
+       return res.status(500).json({ error: err });
+    }
 
     const total = countResult[0].total;
 
     db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
-      if (err2) return res.status(500).json({ error: err2 });
+      if (err2) {
+         console.error("All Members Data SQL Error:", err2);
+         return res.status(500).json({ error: err2 });
+      }
 
       const results = rows.map((u) => {
         const photo =
