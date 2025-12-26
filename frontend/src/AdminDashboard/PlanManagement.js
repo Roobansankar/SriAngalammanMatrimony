@@ -36,9 +36,10 @@ export default function PlanManagement() {
   const fetchMembers = () => {
     setLoading(true);
     // Reuse all-members endpoint but we can filter further client-side or assume admin sees all
-    console.log('PlanManagement: using API base', API || window.__RESOLVED_API_BASE__ || window.location.origin);
+    const requestUrl = `/api/admin/all-members?page=${page}&search=${search}`;
+    console.log('PlanManagement: request URL ->', requestUrl, 'axios.baseURL:', axios.defaults.baseURL);
     axios
-      .get(`${API}/api/admin/all-members?page=${page}&search=${search}`)
+      .get(requestUrl)
       .then((res) => {
         if (res.data.success) {
           // We need the 'Plan' field which might not be in the default 'all-members' select list?
