@@ -15,6 +15,10 @@ console.log('Runtime API base:', window.__RESOLVED_API_BASE__);
 const token = localStorage.getItem('token');
 if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+// Use the runtime-resolved API base as axios baseURL so relative requests resolve correctly
+axios.defaults.baseURL = window.__RESOLVED_API_BASE__ || window.location.origin;
+console.log('axios baseURL set to', axios.defaults.baseURL);
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
