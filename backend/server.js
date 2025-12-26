@@ -159,8 +159,6 @@ app.use(morgan("dev"));
 /* Static */
 const galleryDir = path.resolve("gallery");
 const kundliDir = path.resolve("kundli");
-console.log(`📁 Gallery directory: ${galleryDir}`);
-console.log(`📁 Kundli directory: ${kundliDir}`);
 
 // Serve static files on both base and /api prefix
 app.use("/gallery", express.static(galleryDir));
@@ -196,12 +194,24 @@ app.get("/api/db-debug", (req, res) => {
   });
 });
 
-// Serve static files also on /api/gallery and /api/kundli to fix 404s
-app.use("/api/gallery", express.static(path.join(__dirname, "gallery")));
-app.use("/api/kundli", express.static(path.join(__dirname, "kundli")));
+// Serve static files on both base and /api prefix
+app.use("/gallery", express.static(galleryDir));
+app.use("/kundli", express.static(kundliDir));
+app.use("/api/gallery", express.static(galleryDir));
+app.use("/api/kundli", express.static(kundliDir));
 
-app.get("/api/gallery-test", (req, res) => {
-  res.json({ message: "Gallery route is accessible", dir: path.join(__dirname, "gallery") });
+app.get("/api/gallery-test", async (req, res) => {
+  try {
+    const fs = await import("fs");
+    const files = fs.existsSync(galleryDir) ? fs.readdirSync(galleryDir).slice(0, 10) : "DIR MISSING";
+    res.json({ 
+      message: "Gallery route is accessible", 
+      dir: galleryDir,
+      files_sample: files 
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 
