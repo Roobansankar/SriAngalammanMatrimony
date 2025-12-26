@@ -9,7 +9,7 @@ export default function AdminLoginPage() {
 
   const navigate = useNavigate();
 
-  const Api = "http://localhost:5000";
+  const Api = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
   const handleLogin = async () => {
     try {

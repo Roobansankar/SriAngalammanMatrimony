@@ -1,10 +1,10 @@
 // src/profile/ProfileView.jsx
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
+import { AlertTriangle, Check } from "lucide-react"; // Import for Toast/Modal
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { connectSocket, getSocket } from "../socket";
-import { AlertTriangle, Check } from "lucide-react"; // Import for Toast/Modal
 
 export default function ProfileView() {
   const { matriid } = useParams();
@@ -29,7 +29,7 @@ export default function ProfileView() {
 
   // interest
   const [interest, setInterest] = useState(null);
-  const [isBlocked, setIsBlocked] = useState(false);
+  const [, setIsBlocked] = useState(false);
   const [blockedByMe, setBlockedByMe] = useState(false);
 
   const logged = (() => {
@@ -711,15 +711,25 @@ const heightMatch = (minH, maxH, actual) => {
                         : "Send Interest"}
                     </button>
                     
-                    <button
-                      onClick={blockUser}
-                      className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-red-500 text-white text-sm font-bold flex-1 gap-2 hover:bg-red-600 transition"
-                    >
-                      <span className="material-symbols-outlined text-base">
-                        block
-                      </span>
-                      <span className="truncate">Block</span>
-                    </button>
+                    {blockedByMe ? (
+                      <button
+                        onClick={unblockUser}
+                        className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-yellow-500 text-white text-sm font-bold flex-1 gap-2 hover:bg-yellow-600 transition"
+                      >
+                        <span className="material-symbols-outlined text-base">undo</span>
+                        <span className="truncate">Unblock</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={blockUser}
+                        className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-red-500 text-white text-sm font-bold flex-1 gap-2 hover:bg-red-600 transition"
+                      >
+                        <span className="material-symbols-outlined text-base">
+                          block
+                        </span>
+                        <span className="truncate">Block</span>
+                      </button>
+                    )}
 
                     <button
                       onClick={() =>

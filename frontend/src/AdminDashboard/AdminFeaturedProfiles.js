@@ -47,8 +47,8 @@
 
 
 
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 
 const AdminFeaturedProfiles = () => {
   const [profiles, setProfiles] = useState([]);
@@ -59,20 +59,20 @@ const AdminFeaturedProfiles = () => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const isAdmin = currentUser?.role === 'admin';
 
-  const API = "http://localhost:5000/api/admin/featured-profiles";
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/admin/featured-profiles";
 
-const loadProfiles = () => {
+const loadProfiles = useCallback(() => {
   axios
     .get(API)
     .then((res) => {
       setProfiles(res.data.profiles); // ✅ FIX
     })
     .catch(console.error);
-};
+}, [API]);
 
   useEffect(() => {
     loadProfiles();
-  }, []);
+  }, [loadProfiles]);
 
   const addProfile = async () => {
     await axios.post(API, { matriId: newId });

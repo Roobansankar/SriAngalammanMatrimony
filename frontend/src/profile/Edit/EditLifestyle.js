@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000/api/";
+const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/";
 
 export default function EditLifestyle() {
   const [options, setOptions] = useState({
@@ -153,7 +153,7 @@ export default function EditLifestyle() {
     e.preventDefault();
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/auth/update/lifestyle",
+        `${API_BASE}auth/update/lifestyle`,
         form
       );
 

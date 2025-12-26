@@ -370,7 +370,6 @@ export default function DashboardLayout() {
   const [notificationOpen, setNotificationOpen] = useState(false);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  const username = currentUser?.username || "Admin";
   const isAdmin = currentUser?.role === "admin";
 
   const handleLogout = () => {

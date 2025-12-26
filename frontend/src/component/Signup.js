@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const API_BASE = "http://localhost/matrimony2/api"; // Adjust your API path
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost/matrimony2/api"; // Adjust your API path
 
 export default function Signup() {
   const [form, setForm] = useState({

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000/api/";
+const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:5000") + "/api/";
 
 export default function EditContact() {
   const [form, setForm] = useState({
@@ -159,7 +159,7 @@ export default function EditContact() {
 
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/auth/update/contact",
+        `${API_BASE}auth/update/contact`,
         form
       );
 

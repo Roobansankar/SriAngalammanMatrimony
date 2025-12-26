@@ -17,6 +17,8 @@ import {
   UserCog,
 } from "lucide-react";
 
+const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+
 export default function LoggedSearchResults() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -62,7 +64,7 @@ export default function LoggedSearchResults() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/search", {
+      const res = await fetch(`${API}/api/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

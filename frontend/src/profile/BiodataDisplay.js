@@ -823,6 +823,8 @@ import { useNavigate } from "react-router-dom";
 import headerpic from "./Assets/header.png";
 import "./BiodataDisplay.css";
 
+const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+
 function safeParseChart(value) {
   if (!value || value === "" || value === "[]" || value === null) return [];
 
@@ -955,7 +957,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/user", {
+        const res = await axios.get(`${API}/api/auth/user`, {
           params: { email },
         });
 

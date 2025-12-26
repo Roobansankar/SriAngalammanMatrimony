@@ -39,6 +39,7 @@
     "dev": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "serve": "serve -s build",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --max-warnings 0",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

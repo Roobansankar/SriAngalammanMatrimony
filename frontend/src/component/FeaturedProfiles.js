@@ -129,7 +129,7 @@ export const FeaturedProfiles = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/admin/featured-profiles")
+      .get(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/admin/featured-profiles`)
       .then((res) => setProfiles(res.data.profiles))
       .catch(console.error);
   }, []);

@@ -1,13 +1,9 @@
 import axios from "axios";
 import {
     AlertTriangle,
-    Ban,
-    Check,
     ChevronLeft,
     ChevronRight,
     Edit3,
-    Eye,
-    EyeOff,
     Filter,
     RefreshCw,
     Save,
@@ -105,22 +101,9 @@ export default function MemberManagement() {
     }
   };
 
-  const handleStatusChange = async (matriId, newStatus) => {
-    try {
-      const res = await axios.put(`${API}/api/admin/member/${matriId}/status`, { status: newStatus });
-      if (res.data.success) {
-        fetchMembers();
-        if (selectedMember?.MatriID === matriId) {
-          setSelectedMember((prev) => ({ ...prev, Status: newStatus }));
-        }
-        alert(`Member status changed to ${newStatus}`);
-      }
-    } catch (err) {
-      console.error("Error changing status:", err);
-      alert("Error changing status");
-    }
-  };
 
+
+  // eslint-disable-next-line no-unused-vars
   const handleVisibilityChange = async (matriId, visibility) => {
     try {
       const res = await axios.put(`${API}/api/admin/member/${matriId}/visibility`, { visibility });
