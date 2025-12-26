@@ -14,11 +14,8 @@ import {
 import { useEffect, useState } from "react";
 
 export default function HomeDashboard() {
-  // Effective API base: prefer build-time env, then runtime global set in index, then current origin
-  const API_BASE = process.env.REACT_APP_API_BASE || window.__RESOLVED_API_BASE__ || window.location.origin;
-  console.log("Resolved API base (effective):", API_BASE);
-  // Expose for quick inspection in console
-  window.__RESOLVED_API_BASE__ = API_BASE;
+  // Use the standard environment variable or empty string for relative paths (standard pattern)
+  const API_BASE = process.env.REACT_APP_API_BASE || "";
 
   const [stats, setStats] = useState({
     totalCount: 0,
