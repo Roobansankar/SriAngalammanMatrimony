@@ -74,12 +74,15 @@ router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) 
     const perPage = 10;
     const offset = (page - 1) * perPage;
 
-    let whereClauses = ["Status = 'Active'", "Visibility = 'Yes'"];
+    // Start with a permissive base query
+    // We only exclude 'Banned' users by default. 
+    // We handle visibility as well but allow NULLs (which is the default for new users)
+    let whereClauses = ["(Status IS NULL OR Status <> 'Banned')", "(visibility IS NULL OR visibility <> 'hidden')"];
     let params = [];
 
-    // Gender
+    // Gender - Important to match exact case or use LOWER
     if (gender) {
-      whereClauses.push("Gender = ?");
+      whereClauses.push("LOWER(Gender) = LOWER(?)");
       params.push(gender);
     }
 
@@ -90,73 +93,52 @@ router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) 
     }
 
     // Marital Status (looking)
-    if (looking && Array.isArray(looking) && !looking.includes("Any")) {
-      const filtered = looking.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Maritalstatus IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (looking && Array.isArray(looking) && !looking.includes("Any") && looking.length > 0) {
+      const placeholders = looking.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Maritalstatus) IN (${placeholders})`);
+      params.push(...looking.map(v => v.toLowerCase()));
     }
 
     // Religion
-    if (religion && Array.isArray(religion) && !religion.includes("Any")) {
-      const filtered = religion.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Religion IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (religion && Array.isArray(religion) && !religion.includes("Any") && religion.length > 0) {
+      const placeholders = religion.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Religion) IN (${placeholders})`);
+      params.push(...religion.map(v => v.toLowerCase()));
     }
 
     // Caste
-    if (caste && Array.isArray(caste) && !caste.includes("Any")) {
-      const filtered = caste.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Caste IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (caste && Array.isArray(caste) && !caste.includes("Any") && caste.length > 0) {
+      const placeholders = caste.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Caste) IN (${placeholders})`);
+      params.push(...caste.map(v => v.toLowerCase()));
     }
 
     // Education
-    if (edu && Array.isArray(edu) && !edu.includes("Any")) {
-      const filtered = edu.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Education IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (edu && Array.isArray(edu) && !edu.includes("Any") && edu.length > 0) {
+      const placeholders = edu.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Education) IN (${placeholders})`);
+      params.push(...edu.map(v => v.toLowerCase()));
     }
 
     // Occupation
-    if (occu && Array.isArray(occu) && !occu.includes("Any")) {
-      const filtered = occu.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Occupation IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (occu && Array.isArray(occu) && !occu.includes("Any") && occu.length > 0) {
+      const placeholders = occu.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Occupation) IN (${placeholders})`);
+      params.push(...occu.map(v => v.toLowerCase()));
     }
 
     // Star (Horoscope)
-    if (star && Array.isArray(star) && !star.includes("Any")) {
-      const filtered = star.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Star IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (star && Array.isArray(star) && !star.includes("Any") && star.length > 0) {
+      const placeholders = star.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Star) IN (${placeholders})`);
+      params.push(...star.map(v => v.toLowerCase()));
     }
 
     // Moon Sign (Horoscope)
-    if (moonsign && Array.isArray(moonsign) && !moonsign.includes("Any")) {
-      const filtered = moonsign.filter(v => v !== "Any");
-      if (filtered.length > 0) {
-        const placeholders = filtered.map(() => "?").join(",");
-        whereClauses.push(`Moonsign IN (${placeholders})`);
-        params.push(...filtered);
-      }
+    if (moonsign && Array.isArray(moonsign) && !moonsign.includes("Any") && moonsign.length > 0) {
+      const placeholders = moonsign.map(() => "LOWER(?)").join(",");
+      whereClauses.push(`LOWER(Moonsign) IN (${placeholders})`);
+      params.push(...moonsign.map(v => v.toLowerCase()));
     }
 
     // With Photo
@@ -172,6 +154,9 @@ router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) 
     }
 
     const whereSql = whereClauses.length > 0 ? " WHERE " + whereClauses.join(" AND ") : "";
+
+    console.log(`🔍 Search Query: ${whereSql}`);
+    console.log(`📦 Params: ${JSON.stringify(params)}`);
 
     const conn = db.promise();
 
