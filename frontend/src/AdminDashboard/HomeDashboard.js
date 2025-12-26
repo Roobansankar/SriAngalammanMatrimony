@@ -1,5 +1,3 @@
-
-
 import axios from "axios";
 import {
   Activity,
@@ -45,8 +43,8 @@ export default function HomeDashboard() {
   const fetchStats = async () => {
     console.log("HomeDashboard: Fetching stats (v2-fix)...");
     try {
-      // Use relative path
-      const res = await axios.get(`/api/admin/dashboard-stats`);
+      // Urgent Production Fix: Hardcoded API URL
+      const res = await axios.get(`http://80.65.208.64/api/admin/dashboard-stats`);
       if (res.data.success) setStats(res.data.data);
     } catch (err) {
       console.error("Dashboard Error:", err);
@@ -56,8 +54,8 @@ export default function HomeDashboard() {
   const fetchRecentMembers = async () => {
     console.log("HomeDashboard: Fetching recent members (v2-fix)...");
     try {
-      // Use relative path
-      const res = await axios.get(`/api/admin/recent-members`);
+      // Urgent Production Fix: Hardcoded API URL
+      const res = await axios.get(`http://80.65.208.64/api/admin/recent-members`);
       if (res.data.success) setRecentMembers(res.data.members || []);
     } catch (err) {
       console.error("Recent members error:", err);
