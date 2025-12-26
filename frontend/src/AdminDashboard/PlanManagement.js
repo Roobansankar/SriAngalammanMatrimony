@@ -35,10 +35,10 @@ export default function PlanManagement() {
 
   const fetchMembers = () => {
     setLoading(true);
-    console.log("PlanManagement: Fetching members (v2-fix)...");
+    console.log("PlanManagement: Fetching members (v2-fix-port5000)...");
     
-    // Urgent Production Fix: Hardcoded API URL
-    const requestUrl = `http://80.65.208.64/api/admin/all-members?page=${page}&search=${search || ""}`;
+    // Urgent Production Fix: Hardcoded API URL with Port 5000
+    const requestUrl = `http://80.65.208.64:5000/api/admin/all-members?page=${page}&search=${search || ""}`;
     
     axios
       .get(requestUrl)
@@ -91,8 +91,8 @@ export default function PlanManagement() {
       onConfirm: async () => {
         setProcessing(true);
         try {
-          // Urgent Production Fix: Hardcoded API URL
-          const res = await axios.put(`http://80.65.208.64/api/admin/member/${member.MatriID}/plan`, { plan: newPlan });
+          // Urgent Production Fix: Hardcoded API URL with Port 5000
+          const res = await axios.put(`http://80.65.208.64:5000/api/admin/member/${member.MatriID}/plan`, { plan: newPlan });
           if (res.data.success) {
             showToast(`Plan updated to ${newPlan}`, "success");
             fetchMembers(); // Refresh list to see updated plan (if backend returns it)
