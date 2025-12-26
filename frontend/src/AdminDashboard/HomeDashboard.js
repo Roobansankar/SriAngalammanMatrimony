@@ -41,7 +41,6 @@ export default function HomeDashboard() {
   }, []);
 
   const fetchStats = async () => {
-    console.log("HomeDashboard: Fetching stats (v2-fix-port5000)...");
     try {
       // Urgent Production Fix: Hardcoded API URL with Port 5000
       const res = await axios.get(`http://80.65.208.64:5000/api/admin/dashboard-stats`);
