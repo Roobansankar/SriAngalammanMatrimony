@@ -41,7 +41,10 @@ export default function HomeDashboard() {
   }, []);
 
   const fetchStats = async () => {
+    console.log("HomeDashboard: Fetching stats (v2-fix-port5000)...");
     try {
+      // Urgent Production Fix: Hardcoded API URL with Port 5000
+      const res = await axios.get(`http://80.65.208.64:5000/api/admin/dashboard-stats`);
       // Urgent Production Fix: Hardcoded API URL with Port 5000
       const res = await axios.get(`http://80.65.208.64:5000/api/admin/dashboard-stats`);
       if (res.data.success) setStats(res.data.data);
@@ -52,7 +55,10 @@ export default function HomeDashboard() {
 
   const fetchRecentMembers = async () => {
     console.log("HomeDashboard: Fetching recent members (v2-fix-port5000)...");
+    console.log("HomeDashboard: Fetching recent members (v2-fix-port5000)...");
     try {
+      // Urgent Production Fix: Hardcoded API URL with Port 5000
+      const res = await axios.get(`http://80.65.208.64:5000/api/admin/recent-members`);
       // Urgent Production Fix: Hardcoded API URL with Port 5000
       const res = await axios.get(`http://80.65.208.64:5000/api/admin/recent-members`);
       if (res.data.success) setRecentMembers(res.data.members || []);
@@ -139,26 +145,7 @@ export default function HomeDashboard() {
         <p className="mt-1 text-rose-100">
           Here's what's happening with your matrimony platform today.
         </p>
-        {/* DEBUG BANNER: visible on page so we can confirm which API base the running bundle uses */}
-        <div className="mt-3">
-          <span
-            className={`inline-block text-xs px-2 py-1 rounded-md font-medium ${
-<<<<<<< HEAD
-              API_BASE.includes("localhost")
-=======
-              resolvedApiBase.includes("localhost")
->>>>>>> c0a4b8d (docker test 2)
-                ? "bg-red-100 text-red-700"
-                : "bg-green-50 text-green-700"
-            }`}
-          >
-<<<<<<< HEAD
-            API base: {API_BASE}
-=======
-            API base: {resolvedApiBase}
->>>>>>> c0a4b8d (docker test 2)
-          </span>
-        </div>
+       
       </div>
 
       {/* Main Stats Cards */}
