@@ -8,8 +8,8 @@ docker-compose down
 echo "🧹 Pruning build cache for frontend..."
 docker builder prune -f --filter until=24h
 
-echo "🏗️  Rebuilding frontend with no cache..."
-docker-compose build --no-cache frontend
+echo "🏗️  Rebuilding containers with no cache..."
+docker-compose build --no-cache frontend backend
 
 echo "🚀 Starting services..."
 docker-compose up -d --force-recreate
