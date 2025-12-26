@@ -168,6 +168,12 @@ app.use("/kundli", express.static(kundliDir));
 app.use("/api/gallery", express.static(galleryDir));
 app.use("/api/kundli", express.static(kundliDir));
 
+// Debug 404s for gallery
+app.use("/gallery", (req, res) => {
+  console.log(`❌ Gallery File Not Found: ${path.join(galleryDir, req.url)}`);
+  res.status(404).send("File not found in gallery");
+});
+
 app.get("/api/gallery-test", async (req, res) => {
   try {
     const fs = await import("fs");
