@@ -35,8 +35,6 @@ export default function PlanManagement() {
 
   const fetchMembers = () => {
     setLoading(true);
-    console.log("PlanManagement: Fetching members (v2-fix-port5000)...");
-    
     // Urgent Production Fix: Hardcoded API URL with Port 5000
     const requestUrl = `http://80.65.208.64:5000/api/admin/all-members?page=${page}&search=${search || ""}`;
     
