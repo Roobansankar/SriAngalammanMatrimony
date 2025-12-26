@@ -400,7 +400,10 @@ import axios from "axios";
 import { CheckCircle, Loader2, MailCheck, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-const API_BASE = (process.env.REACT_APP_API_BASE || "") + "/api/";
+import { API } from "../config/api";
+
+// API already includes /api prefix from centralized config
+const API_BASE = API + "/";
 const REGISTER_API = `${API_BASE}register`;
 
 export default function Step1({ nextStep, formData = {} }) {

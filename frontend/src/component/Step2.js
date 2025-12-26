@@ -168,7 +168,9 @@
 import axios from "axios";
 import { ArrowLeft, CheckCircle, MailCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-const API = (process.env.REACT_APP_API_BASE || "") + "/api/register";
+import { API } from "../config/api";
+
+const REGISTER_API = API + "/register";
 
 export default function Step2({ nextStep, prevStep, formData }) {
   const [otp, setOtp] = useState("");
@@ -189,7 +191,7 @@ export default function Step2({ nextStep, prevStep, formData }) {
 
     try {
       setLoading(true);
-      await axios.post(`${API}/verify-otp`, {
+      await axios.post(`${REGISTER_API}/verify-otp`, {
         email: formData.email,
         otp,
       });
@@ -206,7 +208,7 @@ export default function Step2({ nextStep, prevStep, formData }) {
   const resend = async () => {
     try {
       setResending(true);
-      await axios.post(`${API}/send-otp`, { email: formData.email });
+      await axios.post(`${REGISTER_API}/send-otp`, { email: formData.email });
       setCountdown(60);
       setOtp("");
     } catch {

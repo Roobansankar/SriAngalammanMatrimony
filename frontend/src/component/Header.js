@@ -570,7 +570,8 @@ export default function Header({ user, setUser }) {
   const [incomingCount, setIncomingCount] = useState(0);
   const [chatRequestCount, setChatRequestCount] = useState(0);
 
-  const API = process.env.REACT_APP_API_BASE || "";
+  // Use centralized API config (properly normalizes /api prefix)
+  const API = require('../config/api').API;
 
   const loggedId = user?.MatriID || user?.matid || null;
 
@@ -590,7 +591,7 @@ export default function Header({ user, setUser }) {
   const fetchIncomingCount = useCallback(async () => {
     if (!loggedId) return;
     try {
-      const res = await fetch(`${API}/api/auth/interest/incoming?to=${encodeURIComponent(loggedId)}`);
+      const res = await fetch(`${API}/auth/interest/incoming?to=${encodeURIComponent(loggedId)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.incoming)) {
         const pendingCount = data.incoming.filter(i => i.status === 'pending').length;
@@ -604,7 +605,7 @@ export default function Header({ user, setUser }) {
   const fetchChatRequestCount = useCallback(async () => {
     if (!loggedId) return;
     try {
-      const res = await fetch(`${API}/api/chat/requests?matriid=${encodeURIComponent(loggedId)}`);
+      const res = await fetch(`${API}/chat/requests?matriid=${encodeURIComponent(loggedId)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.requests)) {
         setChatRequestCount(data.requests.length);

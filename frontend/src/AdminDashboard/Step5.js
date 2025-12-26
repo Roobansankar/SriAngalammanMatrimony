@@ -419,6 +419,7 @@
 
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { API } from "../config/api";
 import {
     formatMobile,
     formatPincode,
@@ -427,7 +428,7 @@ import {
     isValidWhatsApp,
 } from "./validation";
 
-const API_BASE = (process.env.REACT_APP_API_BASE || "") + "/api/";
+const API_BASE = API + "/";
 
 export default function Step5({ nextStep, prevStep, formData = {} }) {
   const [options, setOptions] = useState({

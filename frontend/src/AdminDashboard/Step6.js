@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { API } from "../config/api";
 
-const API_BASE = (process.env.REACT_APP_API_BASE || "") + "/api/";
+const API_BASE = API + "/";
 
 // Format number input - only allow digits
 const formatNumber = (value) => {

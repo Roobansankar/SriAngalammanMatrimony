@@ -123,13 +123,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { API } from "../config/api";
 
 export const FeaturedProfiles = () => {
   const [profiles, setProfiles] = useState([]);
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE || ""}/api/admin/featured-profiles`) 
+      .get(`${API}/admin/featured-profiles`) 
       .then((res) => setProfiles(res.data.profiles))
       .catch(console.error);
   }, []);

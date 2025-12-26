@@ -2,9 +2,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API } from "../config/api";
 import { connectSocket, getSocket } from "../socket";
-
-const API = process.env.REACT_APP_API_BASE || "";
 
 export default function InterestsPage() {
   const navigate = useNavigate();
@@ -49,7 +48,7 @@ export default function InterestsPage() {
     if (!loggedId) return;
     setChatLoading(true);
     try {
-      const res = await axios.get(`${API}/api/chat/requests`, {
+      const res = await axios.get(`${API}/chat/requests`, {
         params: { matriid: loggedId },
       });
       if (res.data?.success) {
@@ -74,7 +73,7 @@ export default function InterestsPage() {
       }
 
       try {
-        const res = await axios.get(`${API}/api/auth/interest/incoming`, {
+        const res = await axios.get(`${API}/auth/interest/incoming`, {
           params: { to: loggedId },
         });
         if (!mounted) return;

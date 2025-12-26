@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API = process.env.REACT_APP_API_BASE || "";
+import { API } from "../config/api";
 
 // Cache keys
 export const LOCATION_CACHE_KEYS = {
@@ -106,7 +105,7 @@ export const fetchCountriesWithCache = async (forceRefresh = false) => {
     }
 
     // Fetch from API
-    const res = await axios.get(`${API}/api/admin/master/countries`);
+    const res = await axios.get(`${API}/admin/master/countries`);
     if (res.data.success) {
       setCachedData(LOCATION_CACHE_KEYS.COUNTRIES, res.data.data);
       return { data: res.data.data, fromCache: false };
@@ -140,7 +139,7 @@ export const fetchStatesWithCache = async (countryId = "", forceRefresh = false)
     }
 
     // Fetch all from API
-    const res = await axios.get(`${API}/api/admin/master/states`);
+    const res = await axios.get(`${API}/admin/master/states`);
     if (res.data.success) {
       setCachedData(LOCATION_CACHE_KEYS.STATES, res.data.data);
       const filtered = countryId
@@ -183,7 +182,7 @@ export const fetchCitiesWithCache = async (stateId = "", forceRefresh = false) =
     }
 
     // Fetch all from API
-    const res = await axios.get(`${API}/api/admin/master/cities`);
+    const res = await axios.get(`${API}/admin/master/cities`);
     if (res.data.success) {
       setCachedData(LOCATION_CACHE_KEYS.CITIES, res.data.data);
       const filtered = stateId

@@ -1,7 +1,8 @@
 import { FileUp, Stars } from "lucide-react";
 import { useEffect, useState } from "react";
+import { API } from "../config/api";
 
-const API_BASE = (process.env.REACT_APP_API_BASE || "") + "/api/";
+const API_BASE = API + "/";
 
 export default function Step4({ nextStep, prevStep, formData }) {
   const [options, setOptions] = useState({
