@@ -221,6 +221,13 @@ app.get("/api/gallery-test", async (req, res) => {
 });
 
 
+app.get("/api/db-debug", (req, res) => {
+  db.query("DESCRIBE register", (err, results) => {
+    if (err) return res.status(500).json(err);
+    res.json(results);
+  });
+});
+
 /* Routes */
 app.use("/api/register", registerRoutes);
 app.use("/api/payment", paymentRoutes);
