@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run server
+
+  # Local frontend development is best run with 'npm start' in the frontend folder,
+  # but if you want to run the Docker version locally:
+  frontend:
+    ports:
+      - "3000:80"
