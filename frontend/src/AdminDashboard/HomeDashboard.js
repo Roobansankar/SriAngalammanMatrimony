@@ -14,14 +14,11 @@ import {
 import { useEffect, useState } from "react";
 
 export default function HomeDashboard() {
-  const API = process.env.REACT_APP_API_BASE || "";
-  // Runtime-resolved API base (useful to detect deployed bundle still pointing to localhost)
-  const resolvedApiBase = API || window.location.origin;
-  // Use console.log because some browsers filter out console.debug by default
-  console.log("Resolved API base:", resolvedApiBase);
-  // Expose for quick inspection in console and runtime checks
-  window.__RESOLVED_API_BASE__ = resolvedApiBase;
-console.debug("Frontend resolved API base:", API || window.location.origin);
+  // Effective API base: prefer build-time env, then runtime global set in index, then current origin
+  const API_BASE = process.env.REACT_APP_API_BASE || window.__RESOLVED_API_BASE__ || window.location.origin;
+  console.log("Resolved API base (effective):", API_BASE);
+  // Expose for quick inspection in console
+  window.__RESOLVED_API_BASE__ = API_BASE;
 
   const [stats, setStats] = useState({
     totalCount: 0,
