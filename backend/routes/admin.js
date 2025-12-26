@@ -145,12 +145,9 @@ router.get("/dashboard-stats", async (req, res) => {
 // Recent members for dashboard
 router.get("/recent-members", (req, res) => {
   console.log("Admin: Fetching recent-members...");
-  // Use port 3000 (Nginx) for images so they go through the public URL
-  // The static files are served at /gallery, so we want http://IP:3000/gallery/file.jpg
-  // BUT the frontend might be using /api prefix.
-  // Let's rely on Nginx location /gallery -> backend/gallery
-  const BASE = "http://80.65.208.64:3000"; 
-
+  
+  // Use relative path for images to let the browser/Nginx handle the host/port
+  // Nginx proxies /gallery -> backend/gallery
   const sql = `
     SELECT 
       MatriID,
@@ -174,12 +171,11 @@ router.get("/recent-members", (req, res) => {
     }
 
     const members = rows.map((u) => {
-      // Construct URL pointing to /gallery (not /api/gallery)
-      // Nginx has location /gallery { proxy_pass ... }
+      // Relative path: /gallery/filename.jpg
       const photo =
         u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-          ? `${BASE}/gallery/${u.Photo1}`
-          : `${BASE}/gallery/nophoto.jpg`;
+          ? `/gallery/${u.Photo1}`
+          : `/gallery/nophoto.jpg`;
 
       return { ...u, PhotoURL: photo };
     });
@@ -191,15 +187,13 @@ router.get("/recent-members", (req, res) => {
 // All members with pagination
 router.get("/all-members", (req, res) => {
   console.log("Admin: Fetching all-members...");
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
+  
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const offset = (page - 1) * limit;
   const search = req.query.search || "";
   const gender = req.query.gender || "";
 
-  // Removed visibility check temporarily
   let whereClause = "WHERE Status <> 'Banned'";
   const params = [];
 
@@ -256,10 +250,11 @@ router.get("/all-members", (req, res) => {
       }
 
       const results = rows.map((u) => {
+        // Relative path
         const photo =
           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-            ? `${BASE}/gallery/${u.Photo1}`
-            : `${BASE}/gallery/nophoto.jpg`;
+            ? `/gallery/${u.Photo1}`
+            : `/gallery/nophoto.jpg`;
 
         return { ...u, PhotoURL: photo };
       });
@@ -277,8 +272,6 @@ router.get("/all-members", (req, res) => {
 
 // Female members with pagination
 router.get("/female-members", (req, res) => {
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const offset = (page - 1) * limit;
@@ -329,8 +322,8 @@ router.get("/female-members", (req, res) => {
       const results = rows.map((u) => {
         const photo =
           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-            ? `${BASE}/gallery/${u.Photo1}`
-            : `${BASE}/gallery/nophoto.jpg`;
+            ? `/gallery/${u.Photo1}`
+            : `/gallery/nophoto.jpg`;
 
         return { ...u, PhotoURL: photo };
       });
@@ -346,51 +339,7 @@ router.get("/female-members", (req, res) => {
   });
 });
 
-// router.get("/male-members", (req, res) => {
-//   const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
-//   const sql = `
-//     SELECT
-//       MatriID,
-//       Name,
-//       ConfirmEmail AS Email,
-//       Mobile,
-//       DOB,
-//       TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
-//       Regdate,
-//       Status,
-//       Lastlogin,
-//       Photo1,
-//       Photo1Approve
-//     FROM register
-//     WHERE Gender = 'Male'
-//       AND visibility NOT LIKE 'hidden'
-//       AND Status <> 'Banned'
-//     ORDER BY Regdate IS NULL, Regdate DESC
-//   `;
-
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       console.log("ADMIN MALE MEMBERS SQL ERROR:", err);
-//       return res.status(500).json({ error: err });
-//     }
-
-//     const results = rows.map((u) => {
-//       const photo =
-//         u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-//           ? `${BASE}/gallery/${u.Photo1}`
-//           : `${BASE}/gallery/nophoto.jpg`;
-
-//       return { ...u, PhotoURL: photo };
-//     });
-
-//     res.json({ success: true, results });
-//   });
-// });
-
 router.get("/male-members", (req, res) => {
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const offset = (page - 1) * limit;
@@ -441,8 +390,8 @@ router.get("/male-members", (req, res) => {
       const results = rows.map((u) => {
         const photo =
           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-            ? `${BASE}/gallery/${u.Photo1}`
-            : `${BASE}/gallery/nophoto.jpg`;
+            ? `/gallery/${u.Photo1}`
+            : `/gallery/nophoto.jpg`;
 
         return { ...u, PhotoURL: photo };
       });
@@ -460,8 +409,6 @@ router.get("/male-members", (req, res) => {
 
 // New members (Pending status)
 router.get("/new-members", (req, res) => {
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const offset = (page - 1) * limit;
@@ -514,8 +461,8 @@ router.get("/new-members", (req, res) => {
       const results = rows.map((u) => {
         const photo =
           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-            ? `${BASE}/gallery/${u.Photo1}`
-            : `${BASE}/gallery/nophoto.jpg`;
+            ? `/gallery/${u.Photo1}`
+            : `/gallery/nophoto.jpg`;
 
         return { ...u, PhotoURL: photo };
       });
@@ -534,8 +481,6 @@ router.get("/new-members", (req, res) => {
 router.get("/profile/:matriId", (req, res) => {
   const { matriId } = req.params;
 
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
   const sql = `
     SELECT *
     FROM register
@@ -550,11 +495,11 @@ router.get("/profile/:matriId", (req, res) => {
 
     const user = rows[0];
 
-    // make photo URL safe
+    // Relative path
     user.PhotoURL =
       user.Photo1 && user.Photo1Approve === "Yes"
-        ? `${BASE}/gallery/${user.Photo1}`
-        : `${BASE}/gallery/nophoto.jpg`;
+        ? `/gallery/${user.Photo1}`
+        : `/gallery/nophoto.jpg`;
 
     return res.json({ success: true, user });
   });
