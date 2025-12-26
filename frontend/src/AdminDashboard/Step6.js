@@ -234,7 +234,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
         {/* Other Income */}
         <div>
           <label className="block font-medium text-gray-700 mb-1">
-            Family Income
+            Other Income
           </label>
           <input
             type="text"

@@ -710,7 +710,7 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
       <div className="flex items-center justify-center gap-2 mb-6">
         <MapPin className="w-7 h-7 text-rose-600" />
         <h3 className="text-2xl font-bold text-rose-700">
-          Step 3: Contact Details
+          Step 2: Contact Details
         </h3>
       </div>
 

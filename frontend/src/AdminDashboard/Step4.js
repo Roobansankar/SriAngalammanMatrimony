@@ -14,16 +14,17 @@ export default function Step4({ nextStep, prevStep, formData }) {
   });
 
   const dropdownList = [
-    "லக்னம்",
-    "சூரியன்",
-    "சந்திரன்",
-    "செவ்வாய்",
-    "புதன்",
+     "லக்",
+    "சூரி",
+    "சந்",
+    "செவ்",
+    "புத",
     "குரு",
-    "சுக்கிரன்",
+    "சுக்",
     "சனி",
     "ராகு",
     "கேது",
+    "மாந்",
   ];
 
   const [data, setData] = useState({
@@ -47,6 +48,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
     kuladeivam: formData.kuladeivam || "",
     thesaiirupu: formData.thesaiirupu || "",
     horoscopeFile: null,
+    horoscopeFileName: formData.horoscopeFileName || "",
 
     // Rasi 12 cards
     ...Object.fromEntries(
@@ -149,7 +151,12 @@ export default function Step4({ nextStep, prevStep, formData }) {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (files) {
-      setData({ ...data, [name]: files[0] });
+      setData({
+        ...data,
+        horoscopeFile: files[0],
+        horoscopeFileName: files[0].name,
+        // [name]: files[0],
+      });
     } else {
       // Format place name fields
       if (
@@ -178,7 +185,9 @@ export default function Step4({ nextStep, prevStep, formData }) {
       ...Object.fromEntries(
         [...Array(12)].map((_, i) => [`a${i + 1}`, data[`a${i + 1}`]])
       ),
+      horoscopeFileName: data.horoscopeFileName,
     });
+    
   };
 
   // Check Laknam in Rasi boxes
@@ -653,9 +662,15 @@ export default function Step4({ nextStep, prevStep, formData }) {
       {/* File Upload */}
       <label className="flex items-center justify-center border-2 border-dashed border-yellow-400 rounded-lg py-3 cursor-pointer col-span-2 mt-6">
         <FileUp className="w-5 h-5 text-yellow-600 mr-2" />
+        
         <span className="text-gray-700">
-          {data.horoscopeFile ? data.horoscopeFile.name : "Upload Horoscope"}
+          {data.horoscopeFile
+            ? data.horoscopeFile.name
+            : data.horoscopeFileName
+            ? `Uploaded: ${data.horoscopeFileName}`
+            : "Upload Horoscope"}
         </span>
+
         <input
           type="file"
           name="horoscopeFile"

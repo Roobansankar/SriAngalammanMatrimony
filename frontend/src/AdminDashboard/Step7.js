@@ -17,7 +17,7 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
   });
 
   const [data, setData] = useState({
-    heightText: formData.heightText || formData.height || "", // ✅ Changed from 'height' to 'heightText'
+    heightText: formData.heightText || formData.height || "", 
     weight: formData.weight || "",
     bloodGroup: formData.bloodGroup || "",
     complexion: formData.complexion || "",
@@ -47,11 +47,63 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
     passport: formData.passport || "No",
   });
 
+  // useEffect(() => {
+  //   if (Object.keys(formData).length > 0) {
+  //     setData((prev) => ({ ...prev, ...formData }));
+  //   }
+  // }, [formData]);
+
   useEffect(() => {
-    if (Object.keys(formData).length > 0) {
-      setData((prev) => ({ ...prev, ...formData }));
-    }
-  }, [formData]);
+  if (Object.keys(formData).length > 0) {
+    setData((prev) => ({
+      ...prev,
+      ...formData,
+      hobbies: Array.isArray(formData.hobbies)
+        ? formData.hobbies
+        : formData.hobbies
+        ? formData.hobbies.split(",")
+        : [],
+      interests: Array.isArray(formData.interests)
+        ? formData.interests
+        : formData.interests
+        ? formData.interests.split(",")
+        : [],
+    }));
+  }
+}, [formData]);
+
+
+useEffect(() => {
+  if (formData.hobbies && options.hobbies.length > 0) {
+    const saved =
+      Array.isArray(formData.hobbies)
+        ? formData.hobbies
+        : formData.hobbies.split(",");
+
+    const valid = saved.filter((h) =>
+      options.hobbies.some((o) => o.hobbies === h)
+    );
+
+    setData((p) => ({ ...p, hobbies: valid }));
+  }
+}, [options.hobbies]);
+
+
+useEffect(() => {
+  if (formData.interests && options.interests.length > 0) {
+    const saved =
+      Array.isArray(formData.interests)
+        ? formData.interests
+        : formData.interests.split(",");
+
+    const valid = saved.filter((i) =>
+      options.interests.some((o) => o.interest === i)
+    );
+
+    setData((p) => ({ ...p, interests: valid }));
+  }
+}, [options.interests]);
+
 
   const handleChange = (e) =>
     setData({ ...data, [e.target.name]: e.target.value });
@@ -125,14 +177,16 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
 
   const weightOptions = Array.from({ length: 111 }, (_, i) => String(i + 40));
 
-  const handleNext = () => {
-    nextStep({
-      ...data,
-      /** CONVERT ARRAYS TO CSV FOR STEP12 **/
-      hobbies: data.hobbies.join(","),
-      interests: data.interests.join(","),
-    });
-  };
+ 
+ 
+   const handleNext = () => {
+     nextStep({
+       ...data,
+       hobbies: Array.isArray(data.hobbies) ? data.hobbies.join(",") : "",
+       interests: Array.isArray(data.interests) ? data.interests.join(",") : "",
+     });
+   };
+ 
 
   return (
     <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#fff8f0] to-[#fff0e6] shadow-xl rounded-2xl p-8 border border-[#f3cba5] mt-12">

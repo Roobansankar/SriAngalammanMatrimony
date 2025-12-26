@@ -19,6 +19,58 @@ import "./AdminBioDisplay.css";
 
 const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
+// function safeParseChart(value) {
+//   if (!value || value === "" || value === "[]" || value === null) return [];
+//   try {
+//     const parsed = JSON.parse(value);
+//     if (Array.isArray(parsed)) return parsed;
+//   } catch (e) {}
+//   return value
+//     .split(",")
+//     .map((x) => x.trim())
+//     .filter((x) => x !== "");
+// }
+
+// // Helper to get header color based on MatriID prefix and gender
+// function getHeaderColor(matriId, gender) {
+//   if (!matriId) return gender === "Male" ? "#b3f0ab" : "#eabdd2";
+  
+//   const prefix = matriId.substring(0, 4).toUpperCase();
+  
+//   if (prefix === "SAMD") {
+//     // Doctor - Red shade
+//     return "#C1272D"; // Slightly lighter, clean red (BEST)
+//     // Light red/coral
+//   } else if (prefix === "SAMR") {
+//     // Remarriage - Blue shade
+//     return "#a4c4f4"; // Light blue
+//   } else if (prefix === "SAMM" || gender === "Male") {
+//     // Male - Green
+//     return "#b3f0ab";
+//   } else if (prefix === "SAMF" || gender === "Female") {
+//     // Female - Pink
+//     return "#eabdd2";
+//   }
+  
+//   return "#eabdd2"; // Default pink
+// }
+
+// function getHeaderLabel(matriId, gender) {
+//   if (!matriId) return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
+  
+//   const prefix = matriId.substring(0, 4).toUpperCase();
+  
+//   if (prefix === "SAMD") {
+//     return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மருத்துவர்)" : "பெண் வரன் ஜாதகம் (மருத்துவர்)";
+//   } else if (prefix === "SAMR") {
+//     return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மறுமணம்)" : "பெண் வரன் ஜாதகம் (மறுமணம்)";
+//   }
+  
+//   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
+// }
+
+
+
 function safeParseChart(value) {
   if (!value || value === "" || value === "[]" || value === null) return [];
   try {
@@ -31,6 +83,135 @@ function safeParseChart(value) {
     .filter((x) => x !== "");
 }
 
+// ==================== CONVERSION MAPPINGS ====================
+// Complexion mapping
+const complexionMap = {
+  "Very Fair": "மிக வெள்ளை",
+  "Fair": "வெள்ளை",
+  "Wheatish": "முதலியார்",
+  "Wheatish Medium": "நடுத்தர",
+  "Wheatish Brown": "நடுத்தர பழுப்பு",
+  "Dark": "கருப்பு"
+};
+
+// Main Kulam/Caste mapping
+const kulamMap = {
+  "Brahmin": "பிராமணர்",
+  "Devar": "தேவர்",
+  "Gounder": "கவுண்டர்",
+  "Nadar": "நாடார்",
+  "Nayakar": "நாயக்கர்",
+  "Pillai": "பிள்ளை",
+  "Viswakarma": "விஸ்வகர்மா",
+  "Chettiyar": "செட்டியார்",
+  "Mudaliar": "முதலியார்",
+  "Mudhaliyar": "முதலியார்"
+};
+
+// Sub-caste/Kootam mapping
+const kootamMap = {
+  // Mudaliyar variants
+  "Thuluva Vellala Mudaliyar": "துளுவ வேளாளர் முதலியார்",
+  "Agamudaiyar Mudaliyar": "அகமுடையார் முதலியார்",
+  "Sengunthar Mudaliyar (Kaikolar)": "செங்குந்தர் முதலியார்",
+  "Kaikolar": "கைக்கோளர்",
+  "Saiva Vellala Mudaliyar": "சைவ வேளாளர் முதலியார்",
+  "Isai Vellalar Mudaliyar": "இசை வேளாளர் முதலியார்",
+  "Nattuvanar": "நட்டுவனர்",
+  "Pattinavar Mudaliyar": "பட்டினவர் முதலியார்",
+  "Arcot Mudaliyar": "ஆற்காடு முதலியார்",
+  "Arcot Vellalar": "ஆற்காடு வேளாளர்",
+  "Karkatha Mudhaliyar": "கார்கத்த முதலியார்",
+  "Senaithalivar Mudhaliyar": "சேனைத் தலைவர் முதலியார்",
+  
+  // Gounder variants
+  "Aadhi Saiva Gounder": "ஆதி சைவ கவுண்டர்",
+  "Vellala Gounder": "வேளாளர் கவுண்டர்",
+  "Poosar Gounder": "பூசார் கவுண்டர்",
+  "Kamma Gounder": "கம்மா கவுண்டர்",
+  "Thottiyan Gounder": "தொட்டியன் கவுண்டர்",
+  "Vettuva Gounder": "வேட்டுவ கவுண்டர்",
+  "Nattu Gounder": "நாட்டுக் கவுண்டர்",
+  "Pillai Gounder": "பிள்ளை கவுண்டர்",
+  
+  // Nadar variants
+  "Kalla Nadar": "கள்ள நாடார்",
+  "Shanivar Nadar": "சணிவார் நாடார்",
+  "Kumari Nadar": "குமரி நாடார்",
+  "Nadan": "நாடன்",
+  "Nadar Mudali": "நாடார் முதலியார்",
+  "Nadar Thalaiva": "நாடார் தலைவர்",
+  
+  // Mukkulathor
+  "Kallar": "கள்ளர்",
+  "Maravar": "மறவர்",
+  "Agamudayar": "அகமுடையார்",
+  
+  // Brahmin variants
+  "Iyer": "ஐயர்",
+  "Iyengar": "ஐயங்கார்",
+  "Smarta Brahmin": "ஸ்மார்த்த பிராமணர்",
+  "Vadama Iyer": "வடம ஐயர்",
+  "Brahacharanam Iyer": "பிரஹச்சரணம் ஐயர்",
+  "Ashtasahasram Iyer": "அஷ்டசஹஸ்ரம் ஐயர்",
+  "Vathima Iyer": "வாதிமா ஐயர்",
+  "Deshastha Brahmin": "தேசஸ்த பிராமணர்",
+  "Mandyam Iyer": "மாண்டியம் ஐயர்",
+  "Viswakarma Brahmin": "விஸ்வகர்மா பிராமணர்",
+  
+  // Chettiyar variants
+  "Nattukottai Chettiyar": "நாட்டுக்கோட்டை செட்டியார்",
+  "Nagarathar": "நகரத்தார்",
+  "Kottai Chettiyar": "கோட்டை செட்டியார்",
+  "Sattai Chettiyar": "சட்டை செட்டியார்",
+  "Devanga Chettiyar": "தேவாங்க செட்டியார்",
+  "Jain Chettiyar": "ஜைன செட்டியார்",
+  
+  // Nayakar variants
+  "Balija Nayakar": "பாலிஜா நாயக்கர்",
+  "Kapu Nayakar": "காப்பு நாயக்கர்",
+  "Telugu Nayakar": "தெலுங்கு நாயக்கர்",
+  "Vaduga Nayakar": "வடுக நாயக்கர்",
+  "Agamudayar Nayakar": "அகமுடையார் நாயக்கர்",
+  "Kamma Nayakar": "கம்மா நாயக்கர்",
+  "Reddiar Nayakar": "ரெட்டியார் நாயக்கர்",
+  "Thottiya Nayakar": "தொட்டிய நாயக்கர்",
+  "Periya Nayakar": "பெரிய நாயக்கர்",
+  
+  // Pillai variants
+  "Kondaikatti Pillai": "கொண்டைக்கட்டி பிள்ளை",
+  "Vellala Pillai": "வேளாளர் பிள்ளை",
+  "Agamudayar Pillai": "அகமுடையார் பிள்ளை",
+  "Saiva Pillai": "சைவ பிள்ளை",
+  "Vathima Pillai": "வாதிமா பிள்ளை",
+  "Mudali Pillai": "முதலியார் பிள்ளை",
+  
+  // Viswakarma variants
+  "Kammalar": "கம்மாளர்",
+  "Achari": "ஆச்சாரி",
+  "Kannar": "கண்ணார்",
+  "Kollan": "கொல்லன்",
+  "Thattar": "தட்டார்",
+  "Goldsmith": "தட்டான்",
+  "Thattan": "தட்டான்",
+  "Blacksmith": "இரும்புக் கொல்லர்",
+  "Carpenter": "தச்சன்",
+  "Thachan": "தச்சன்",
+  "Sculptor": "சிற்பி",
+  "Shilpi": "சிற்பி",
+  "Stone Worker": "கல் தச்சன்",
+  "Kal Thachan": "கல் தச்சன்",
+  "Bronzesmith": "வெண்கல தட்டார்"
+};
+
+// Helper function to convert to Tamil
+function convertToTamil(value, mapObject) {
+  if (!value) return value;
+  const trimmed = value.trim();
+  return mapObject[trimmed] || value;
+}
+// ============================================================
+
 // Helper to get header color based on MatriID prefix and gender
 function getHeaderColor(matriId, gender) {
   if (!matriId) return gender === "Male" ? "#b3f0ab" : "#eabdd2";
@@ -38,21 +219,16 @@ function getHeaderColor(matriId, gender) {
   const prefix = matriId.substring(0, 4).toUpperCase();
   
   if (prefix === "SAMD") {
-    // Doctor - Red shade
-    return "#C1272D"; // Slightly lighter, clean red (BEST)
-    // Light red/coral
+    return "#C1272D";
   } else if (prefix === "SAMR") {
-    // Remarriage - Blue shade
-    return "#a4c4f4"; // Light blue
+    return "#a4c4f4";
   } else if (prefix === "SAMM" || gender === "Male") {
-    // Male - Green
     return "#b3f0ab";
   } else if (prefix === "SAMF" || gender === "Female") {
-    // Female - Pink
     return "#eabdd2";
   }
   
-  return "#eabdd2"; // Default pink
+  return "#eabdd2";
 }
 
 function getHeaderLabel(matriId, gender) {
@@ -137,10 +313,13 @@ export default function MemberBioData() {
           monthly_income: user.Annualincome || "",
           height: user.HeightText || "",
           weight: user.Weight || "",
-          complexion: user.Complexion || "",
+          // complexion: user.Complexion || "",
+            complexion: convertToTamil(user.Complexion || "", complexionMap),
           family_deity: `${user.Kuladeivam || ""}, ${user.City || ""}`,
-          kulam: user.Caste || "",
-          kootam: user.Subcaste || "",
+          // kulam: user.Caste || "",
+          kulam: convertToTamil(user.Caste || "", kulamMap),
+          // kootam: user.Subcaste || "",
+          kootam: convertToTamil(user.Subcaste || "", kootamMap),
           father_name: user.Fathername || "",
           father_phone: user.Mobile || "",
           father_occupation: user.Fathersoccupation || "",
@@ -153,9 +332,7 @@ export default function MemberBioData() {
           family_income: `${user.Annualincome || ""}, ${
             user.family_wealth || ""
           }`,
-          // siblings_details: `${user.noofbrothers || 0} Brothers, ${
-          //   user.noofsisters || 0
-          // } Sisters`,
+          
 
           siblings_details: [
             user.noofbrothers > 0
@@ -311,41 +488,31 @@ export default function MemberBioData() {
   };
 
   const downloadAsPDF = async () => {
-    if (!hiddenPrintRef.current) return;
-    setDownloading(true);
+  if (!hiddenPrintRef.current) return;
+  setDownloading(true);
 
-    try {
-      const element = hiddenPrintRef.current;
-      
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-      });
+  try {
+   
+    const canvas = await html2canvas(hiddenPrintRef.current, {
+      scale: 4,              // ⬅️ IMPORTANT (increase clarity)
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
 
-      const imgData = canvas.toDataURL("image/png");
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      
-      // A4 dimensions
-      const pdfWidth = 210;
-      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
-      
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: [pdfWidth, pdfHeight],
-      });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`biodata_${currentData.matriId || currentData.name}.pdf`);
-    } catch (err) {
-      console.error("Error generating PDF:", err);
-    } finally {
-      setDownloading(false);
-    }
-  };
+    const pdfWidth = 210;
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`biodata_${currentData.matriId}.pdf`);
+  } finally {
+    hiddenPrintRef.current.classList.remove("pdf-generation");
+    setDownloading(false);
+  }
+};
+
 
   const downloadAsImage = async () => {
     if (!hiddenPrintRef.current) return;
@@ -355,7 +522,7 @@ export default function MemberBioData() {
       const element = hiddenPrintRef.current;
       
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 4,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
@@ -938,7 +1105,7 @@ export default function MemberBioData() {
                           மாதவருமானம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "250px" }}
+                            style={{ minWidth: "190px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1086,7 +1253,7 @@ export default function MemberBioData() {
                           குலம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "480px" }}
+                            style={{ minWidth: "420px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1112,7 +1279,7 @@ export default function MemberBioData() {
                           , கூட்டம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "480px" }}
+                            style={{ minWidth: "510px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1739,7 +1906,9 @@ export default function MemberBioData() {
                                   }}
                                 >
                                   {safeParseChart(val).map((planet, idx) => (
-                                    <div key={idx}>{planet}</div>
+                                    <div key={idx} className="planet-text">
+                                      {planet}
+                                    </div>
                                   ))}
                                 </div>
                               );
@@ -1808,7 +1977,7 @@ export default function MemberBioData() {
                                   }}
                                 >
                                   {safeParseChart(val).map((planet, idx) => (
-                                    <div key={idx}>{planet}</div>
+                                    <div key={idx}  className="planet-text">{planet}</div>
                                   ))}
                                 </div>
                               );
@@ -2435,7 +2604,7 @@ export default function MemberBioData() {
                           }}
                         >
                           {safeParseChart(val).map((planet, idx) => (
-                            <div key={idx}>{planet}</div>
+                            <div key={idx}  className="planet-text">{planet}</div>
                           ))}
                         </div>
                       );
@@ -2502,7 +2671,7 @@ export default function MemberBioData() {
                           }}
                         >
                           {safeParseChart(val).map((planet, idx) => (
-                            <div key={idx}>{planet}</div>
+                            <div key={idx}  className="planet-text">{planet}</div>
                           ))}
                         </div>
                       );

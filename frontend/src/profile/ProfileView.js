@@ -478,10 +478,11 @@ const heightMatch = (minH, maxH, actual) => {
       icon: "🧑",
       yourValue: displayValue(viewer.PE_Complexion),
       partnerValue: displayValue(profile.Complexion),
+
       pass:
-        viewer.PE_Complexion && profile.Complexion
-          ? multiMatch(viewer.PE_Complexion, profile.Complexion)
-          : false,
+        isEmptyValue(viewer.PE_Complexion) || // no preference → OK
+        isEmptyValue(profile.Complexion) || // partner missing → OK
+        multiMatch(viewer.PE_Complexion, profile.Complexion),
     },
 
     {
@@ -625,17 +626,7 @@ const heightMatch = (minH, maxH, actual) => {
                   }}
                 />
 
-                {/* {isOwner ? (
-                  <button
-                    onClick={() => navigate("/profile/edit#photo")}
-                    className="absolute bottom-1 right-1 flex items-center justify-center size-8 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors p-2"
-                    aria-label="Change photo"
-                  >
-                    <span className="material-symbols-outlined text-base">
-                      photo_camera
-                    </span>
-                  </button>
-                ) : null} */}
+               
               </div>
             </div>
           </div>
