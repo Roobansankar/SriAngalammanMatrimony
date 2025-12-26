@@ -50,7 +50,8 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get(`${API}/api/admin/dashboard-stats`);
+      // Use relative paths to avoid hardcoded build-time API hosts
+      const res = await axios.get(`/api/admin/dashboard-stats`);
       if (res.data.success) setStats(res.data.data);
     } catch (err) {
       console.error("Dashboard Error:", err);
@@ -59,7 +60,8 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
 
   const fetchRecentMembers = async () => {
     try {
-      const res = await axios.get(`${API}/api/admin/recent-members`);
+      // Use relative path so requests go to the current origin and rely on nginx proxy
+      const res = await axios.get(`/api/admin/recent-members`);
       if (res.data.success) setRecentMembers(res.data.members || []);
     } catch (err) {
       console.error("Recent members error:", err);
