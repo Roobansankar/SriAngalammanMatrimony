@@ -145,9 +145,12 @@ router.get("/dashboard-stats", async (req, res) => {
 // Recent members for dashboard
 router.get("/recent-members", (req, res) => {
   console.log("Admin: Fetching recent-members...");
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
+  // Use port 3000 (Nginx) for images so they go through the public URL
+  // The static files are served at /gallery, so we want http://IP:3000/gallery/file.jpg
+  // BUT the frontend might be using /api prefix.
+  // Let's rely on Nginx location /gallery -> backend/gallery
+  const BASE = "http://80.65.208.64:3000"; 
 
-  // Removed visibility check temporarily to rule out schema mismatch if column missing
   const sql = `
     SELECT 
       MatriID,
@@ -171,6 +174,8 @@ router.get("/recent-members", (req, res) => {
     }
 
     const members = rows.map((u) => {
+      // Construct URL pointing to /gallery (not /api/gallery)
+      // Nginx has location /gallery { proxy_pass ... }
       const photo =
         u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
           ? `${BASE}/gallery/${u.Photo1}`
