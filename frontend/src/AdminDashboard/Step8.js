@@ -520,11 +520,45 @@ export default function Step8({ nextStep, prevStep, formData = {} }) {
   });
 
   // Sync with localStorage-loaded data
+  // useEffect(() => {
+  //   if (Object.keys(formData).length > 0) {
+  //     setData((prev) => ({ ...prev, ...formData }));
+  //   }
+  // }, [formData]);
+
+
   useEffect(() => {
-    if (Object.keys(formData).length > 0) {
-      setData((prev) => ({ ...prev, ...formData }));
-    }
-  }, [formData]);
+  if (Object.keys(formData).length > 0) {
+    setData((prev) => ({
+      ...prev,
+      ...formData,
+      familyWealth: Array.isArray(formData.familyWealth)
+        ? formData.familyWealth
+        : formData.familyWealth
+        ? formData.familyWealth.split(",")
+        : [],
+    }));
+  }
+}, [formData]);
+
+
+
+useEffect(() => {
+  if (formData.familyWealth && options.familyWealth.length > 0) {
+    const saved =
+      Array.isArray(formData.familyWealth)
+        ? formData.familyWealth
+        : formData.familyWealth.split(",");
+
+    const valid = saved.filter((w) =>
+      options.familyWealth.some((o) => o.wealth === w)
+    );
+
+    setData((p) => ({ ...p, familyWealth: valid }));
+  }
+}, [options.familyWealth]);
+
+
 
   useEffect(() => {
     async function loadDropdowns() {

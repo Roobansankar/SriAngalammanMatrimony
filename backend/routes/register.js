@@ -216,7 +216,50 @@ router.post(
     let conn;
     try {
       const b = req.body;
+
+      // // ----------------- HARD VALIDATION -----------------
+      // if (!b.email) {
+      //   return res.status(400).json({ message: "Email is required" });
+      // }
+
+      // if (!b.gender || !b.maritalStatus) {
+      //   return res.status(400).json({ message: "Basic profile data missing" });
+      // }
+
+      // // Email must be verified
+      // // if (
+      // //   !b.otpVerified ||
+      // //   (b.otpVerified !== "true" && b.otpVerified !== true)
+      // // ) {
+      // //   return res.status(403).json({ message: "Email not verified" });
+      // // }
+
+      // // Payment must be completed
+      // if (b.paymentDone !== "1") {
+      //   return res.status(403).json({ message: "Payment not completed" });
+      // }
+
+      // if (!b.plan) {
+      //   return res.status(403).json({ message: "Plan not selected" });
+      // }
+
       conn = await db.promise().getConnection();
+
+      // ----------------- VERIFY PAYMENT FROM DB -----------------
+  //     const [paymentRows] = await conn.query(
+  //       `SELECT id FROM payments 
+  //  WHERE email = ? 
+  //  AND status = 'SUCCESS' 
+  //  ORDER BY created_at DESC 
+  //  LIMIT 1`,
+  //       [b.email]
+  //     );
+
+  //     if (!paymentRows.length) {
+  //       return res.status(403).json({
+  //         message: "No successful payment found for this email",
+  //       });
+  //     }
 
       // ---------- GENERATE MATRI ID IF NOT PROVIDED ----------
       let matriId = toTrimOrNull(b.matriId);
@@ -225,17 +268,35 @@ router.post(
         // Generate MatriID based on occupation, maritalStatus, plan, gender
         const occupation = (b.occupation || "").toLowerCase().trim();
         const maritalStatus = (b.maritalStatus || "").toLowerCase().trim();
-        const plan = (b.plan || "basic").toLowerCase().trim();
+        // const plan = (b.plan || "basic").toLowerCase().trim();
+        const plan =
+          b.paymentDone === "1" ? (b.plan || "").toLowerCase().trim() : null;
+
+        if (!plan) {
+          return res
+            .status(403)
+            .json({ message: "Cannot generate MatriID without payment" });
+        }
+
         const gender = (b.gender || "").toLowerCase().trim();
-        
+
         let prefix = "SAM";
-        
+
         // Priority 1: Doctor
-        if (occupation.includes("doctor") || occupation.includes("physician") || occupation.includes("mbbs") || occupation.includes("md")) {
+        if (
+          occupation.includes("doctor") ||
+          occupation.includes("physician") ||
+          occupation.includes("mbbs") ||
+          occupation.includes("md")
+        ) {
           prefix = "SAMD";
         }
         // Priority 2: Remarriage
-        else if (maritalStatus === "remarriage" || maritalStatus.includes("divorce") || maritalStatus.includes("widow")) {
+        else if (
+          maritalStatus === "remarriage" ||
+          maritalStatus.includes("divorce") ||
+          maritalStatus.includes("widow")
+        ) {
           prefix = "SAMR";
         }
         // Priority 3: Plan + Gender
@@ -246,16 +307,16 @@ router.post(
         else {
           prefix = gender === "male" ? "SAMM" : "SAMF";
         }
-        
+
         // Get next serial number for this prefix
         await conn.beginTransaction();
-        
+
         try {
           const [rows] = await conn.query(
             "SELECT last_number FROM matriid_counter WHERE prefix = ? FOR UPDATE",
             [prefix]
           );
-          
+
           let nextNumber;
           if (rows.length === 0) {
             await conn.query(
@@ -270,10 +331,10 @@ router.post(
               [nextNumber, prefix]
             );
           }
-          
+
           matriId = prefix + nextNumber.toString().padStart(4, "0");
           await conn.commit();
-          
+
           console.log(`✅ Generated MatriID: ${matriId}`);
         } catch (err) {
           await conn.rollback();
@@ -303,26 +364,25 @@ router.post(
       }
 
       // ---------- SAVE HOROSCOPE FILE TO /kundli ----------
-let savedHoroscopeFilename = null;
+      let savedHoroscopeFilename = null;
 
-if (req.files && req.files.horoscopeFile && req.files.horoscopeFile[0]) {
-  const uploaded = req.files.horoscopeFile[0];
+      if (req.files && req.files.horoscopeFile && req.files.horoscopeFile[0]) {
+        const uploaded = req.files.horoscopeFile[0];
 
-  // Extract extension
-  const ext = uploaded.originalname.split(".").pop().toLowerCase();
+        // Extract extension
+        const ext = uploaded.originalname.split(".").pop().toLowerCase();
 
-  // Unique filename
-  const fileName = `${matriId}_horoscope_${Date.now()}.${ext}`;
+        // Unique filename
+        const fileName = `${matriId}_horoscope_${Date.now()}.${ext}`;
 
-  // Full path
-  const filePath = path.join("kundli", fileName);
+        // Full path
+        const filePath = path.join("kundli", fileName);
 
-  // Save to kundli folder
-  fs.writeFileSync(filePath, uploaded.buffer);
+        // Save to kundli folder
+        fs.writeFileSync(filePath, uploaded.buffer);
 
-  savedHoroscopeFilename = fileName;
-}
-
+        savedHoroscopeFilename = fileName;
+      }
 
       // ---- Map all fields ----
       const mapped = {
@@ -337,10 +397,8 @@ if (req.files && req.files.horoscopeFile && req.files.horoscopeFile[0]) {
         Photo1: savedPhotoFilename || null,
         Photo1Approve: "Yes",
         // ✅ Store images as BLOBs
-    
 
         // ⚙️ Compatibility: set old field if DB still expects `horoscope`
-    
 
         ConfirmEmail: toTrimOrNull(b.email) || "-",
         ConfirmPassword: toTrimOrNull(b.password) || "-",
@@ -385,16 +443,14 @@ if (req.files && req.files.horoscopeFile && req.files.horoscopeFile[0]) {
         Keethu: toTrimOrNull(b.keethu) || "",
         Kuladeivam: toTrimOrNull(b.kuladeivam) || "",
         ThesaiIrupu: toTrimOrNull(b.thesaiirupu) || "",
-Horosother: savedHoroscopeFilename || null,
+        Horosother: savedHoroscopeFilename || null,
 
         Address: toTrimOrNull(b.address),
         City: toTrimOrNull(b.city),
         Dist: toTrimOrNull(b.Dist || b.district),
         State: toTrimOrNull(b.state),
         Country: toTrimOrNull(b.country),
-        // Phone: toTrimOrNull(b.altPhone),
         Phone: (b.altPhone || "").substring(0, 30),
-
 
         Pincode: b.pincode && b.pincode.length === 6 ? toInt(b.pincode) : null,
         Residencystatus: toTrimOrNull(b.residence),
@@ -410,10 +466,8 @@ Horosother: savedHoroscopeFilename || null,
         working_hours: toTrimOrNull(b.workingHours),
         company_name: toTrimOrNull(b.company_name),
 
-
         workinglocation: toTrimOrNull(b.workingLocation),
 
-      
         HeightText: toTrimOrNull(b.heightText) || toTrimOrNull(b.HeightText),
 
         Weight: toTrimOrNull(b.weight),
@@ -468,15 +522,14 @@ Horosother: savedHoroscopeFilename || null,
         noofbrothers: toTrimOrNull(b.noOfBrothers),
         nbm: toTrimOrNull(b.noOfBrothersMarried),
         noofsisters: toTrimOrNull(b.noOfSisters),
-        nsm: toTrimOrNull(b.noOfSistersMarried),   
+        nsm: toTrimOrNull(b.noOfSistersMarried),
         nb_unmarried: toTrimOrNull(b.noOfBrothersUnmarried),
         ns_unmarried: toTrimOrNull(b.noOfSistersUnmarried),
-        
+
         Fathername: toTrimOrNull(b.fatherName),
         Fathersoccupation: toTrimOrNull(b.fatherOccupation),
         Mothersname: toTrimOrNull(b.motherName),
         Mothersoccupation: toTrimOrNull(b.motherOccupation),
-
 
         family_wealth: toTrimOrNull(b.familyWealth),
 
@@ -517,8 +570,7 @@ Horosother: savedHoroscopeFilename || null,
 
         PartnerExpectations: toTrimOrNull(b.partnerExpectations),
 
-        Plan: toTrimOrNull(b.plan) || "basic",
-        paymentDone: b.paymentDone ? 1 : 0,
+        Plan: b.paymentDone === "1" ? toTrimOrNull(b.plan) : null,
 
         Termsofservice: toTrimOrNull(b.terms) || "Not Accepted",
         verifymobile: b.otpVerified ? 1 : 0,

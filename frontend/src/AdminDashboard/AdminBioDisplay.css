@@ -623,15 +623,5 @@
 .pdf-generation .planet-text {
   color: #1f4fd8 !important;
   font-weight: 800 !important;
-  font-size: 23px;              /* IMPORTANT: smaller to fit */
-  font-family: "Poppins", sans-serif;
-
-  line-height: 1.1;
-  text-align: center;
-
-  white-space: normal;          /* allow wrapping */
-  word-break: break-word;
-
-  width: 100%;
 }
 

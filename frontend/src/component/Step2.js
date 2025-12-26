@@ -194,7 +194,8 @@ export default function Step2({ nextStep, prevStep, formData }) {
         otp,
       });
       setVerified(true);
-      setTimeout(() => nextStep({ otpVerified: true }), 1500);
+      // setTimeout(() => nextStep({ otpVerified: true }), 1500);
+      
     } catch {
       alert("Invalid or expired OTP");
     } finally {

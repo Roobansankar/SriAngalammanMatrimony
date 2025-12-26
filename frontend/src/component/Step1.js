@@ -791,6 +791,7 @@ export default function Step1({ nextStep, formData = {} }) {
       return;
     }
     nextStep({ ...data, otpVerified: true });
+    
   };
 
   if (optionsLoading) {
