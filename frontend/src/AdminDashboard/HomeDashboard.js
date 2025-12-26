@@ -16,14 +16,11 @@ import {
 import { useEffect, useState } from "react";
 
 export default function HomeDashboard() {
-  const API = process.env.REACT_APP_API_BASE || "";
-  // Runtime-resolved API base (useful to detect deployed bundle still pointing to localhost)
-  const resolvedApiBase = API || window.location.origin;
-  // Use console.log because some browsers filter out console.debug by default
-  console.log("Resolved API base:", resolvedApiBase);
-  // Expose for quick inspection in console and runtime checks
-  window.__RESOLVED_API_BASE__ = resolvedApiBase;
-console.debug("Frontend resolved API base:", API || window.location.origin);
+  // Effective API base: prefer build-time env, then runtime global set in index, then current origin
+  const API_BASE = process.env.REACT_APP_API_BASE || window.__RESOLVED_API_BASE__ || window.location.origin;
+  console.log("Resolved API base (effective):", API_BASE);
+  // Expose for quick inspection in console
+  window.__RESOLVED_API_BASE__ = API_BASE;
 
   const [stats, setStats] = useState({
     totalCount: 0,
@@ -50,8 +47,8 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
 
   const fetchStats = async () => {
     try {
-      // Use relative paths to avoid hardcoded build-time API hosts
-      const res = await axios.get(`/api/admin/dashboard-stats`);
+      // Use effective API base (set at runtime) to avoid stale localhost fallbacks
+      const res = await axios.get(`${API_BASE}/api/admin/dashboard-stats`);
       if (res.data.success) setStats(res.data.data);
     } catch (err) {
       console.error("Dashboard Error:", err);
@@ -60,8 +57,8 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
 
   const fetchRecentMembers = async () => {
     try {
-      // Use relative path so requests go to the current origin and rely on nginx proxy
-      const res = await axios.get(`/api/admin/recent-members`);
+      // Use effective API base (set at runtime) to avoid stale localhost fallbacks
+      const res = await axios.get(`${API_BASE}/api/admin/recent-members`);
       if (res.data.success) setRecentMembers(res.data.members || []);
     } catch (err) {
       console.error("Recent members error:", err);
@@ -150,12 +147,12 @@ console.debug("Frontend resolved API base:", API || window.location.origin);
         <div className="mt-3">
           <span
             className={`inline-block text-xs px-2 py-1 rounded-md font-medium ${
-              resolvedApiBase.includes("localhost")
+              API_BASE.includes("localhost")
                 ? "bg-red-100 text-red-700"
                 : "bg-green-50 text-green-700"
             }`}
           >
-            API base: {resolvedApiBase}
+            API base: {API_BASE}
           </span>
         </div>
       </div>
