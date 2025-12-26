@@ -36,6 +36,7 @@ export default function PlanManagement() {
   const fetchMembers = () => {
     setLoading(true);
     // Reuse all-members endpoint but we can filter further client-side or assume admin sees all
+    console.log('PlanManagement: using API base', API || window.__RESOLVED_API_BASE__ || window.location.origin);
     axios
       .get(`${API}/api/admin/all-members?page=${page}&search=${search}`)
       .then((res) => {
