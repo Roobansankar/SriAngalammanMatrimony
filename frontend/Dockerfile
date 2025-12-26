@@ -3,8 +3,11 @@ FROM node:20-alpine as build
 
 WORKDIR /app
 
+ARG REACT_APP_API_BASE=/api
+ENV REACT_APP_API_BASE=${REACT_APP_API_BASE}
+
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 RUN npm run build

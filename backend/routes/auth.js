@@ -1,18 +1,14 @@
 // routes/auth.js
 import express from "express";
-import db from "../config/db.js";
-import multer from "multer";
 import fs from "fs";
-import path from "path";
+import multer from "multer";
+import db from "../config/db.js";
+import config from "../config/env.js";
 
 const upload = multer({ dest: "uploads/" });
 
-// const path = require("path");
-
-// const router = express.Router();
-
 const router = express.Router();
-const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
+const BASE_URL = config.baseUrl;
 const GALLERY_PATH = "/gallery/";
 const FALLBACK = "nophoto.jpg";
 
@@ -82,7 +78,6 @@ function makePhotoUrl1(photoFilename, photoApprove) {
 // ----------------------------------------------
 function makePhotoUrl(photoFilename, photoApprove) {
   const FALLBACK = "no-photo.gif";
-  const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
   const GALLERY_PATH = "/gallery/";
 
   const hasPhoto =
@@ -143,7 +138,6 @@ router.get("/user", async (req, res) => {
     // FILE NAME: user.horosother
     // FOLDER: kundli/
     // ------------------------------------------
-    const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
 
     let HoroscopeURL = null;

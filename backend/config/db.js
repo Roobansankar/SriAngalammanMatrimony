@@ -1,11 +1,11 @@
 import mysql from "mysql2";
+import { config } from "./env.js";
 
 const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  // refactor the password
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  host: config.db.host,
+  user: config.db.user,
+  password: config.db.password,
+  database: config.db.database,
   charset: "utf8mb4",
   waitForConnections: true,
   connectionLimit: 10,

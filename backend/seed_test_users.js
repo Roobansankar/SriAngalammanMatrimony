@@ -74,6 +74,7 @@ async function seed() {
     Horosmatch: "",
     Star: "",
     Moonsign: "",
+    crop: "0",
     Caste: "",
     Religion: "",
     Subcaste: "",

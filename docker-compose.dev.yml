@@ -5,6 +5,9 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - ./backend/gallery:/app/gallery
+      - ./backend/kundli:/app/kundli
+      - ./backend/uploads:/app/uploads
     command: npm run server
 
   # Local frontend development is best run with 'npm start' in the frontend folder,

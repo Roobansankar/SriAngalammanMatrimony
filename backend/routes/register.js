@@ -353,8 +353,8 @@ router.post(
         // extract extension (jpg/png/webp/jpeg/etc.)
         const ext = uploaded.originalname.split(".").pop().toLowerCase();
 
-        // unique filename: SAM001_photo_timestamp.jpg
-        const fileName = `${b.matriId}_photo_${Date.now()}.${ext}`;
+        // unique filename: SAM001_photo_timestamp.jpg (always use final MatriID)
+        const fileName = `${matriId}_photo_${Date.now()}.${ext}`;
 
         // full path
         const filePath = path.join(galleryPath, fileName);
@@ -398,6 +398,7 @@ router.post(
         aboutus: toTrimOrNull(b.aboutus) || "-",
         Photo1: savedPhotoFilename || null,
         Photo1Approve: "Yes",
+        crop: toTrimOrNull(b.crop) || "0",
         // ✅ Store images as BLOBs
 
         // ⚙️ Compatibility: set old field if DB still expects `horoscope`

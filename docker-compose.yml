@@ -1,15 +1,21 @@
 version: "3.9"
 
+x-default-env: &default-env
+  environment:
+    NODE_ENV: ${NODE_ENV:-production}
+
 services:
   db:
     image: mysql:8.0
     container_name: matrimony-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 8220
-      MYSQL_DATABASE: sriang
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-8220}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-sriang}
+      MYSQL_USER: ${MYSQL_USER:-matrimony}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-matrimony}
     volumes:
-      - matrimony-db:/var/lib/mysql
+      - ${MYSQL_DATA_DIR:-./.data/mysql}:/var/lib/mysql
     networks:
       - matrimony-network
     healthcheck:
@@ -26,7 +32,15 @@ services:
     ports:
       - "5000:5000"
     env_file:
-    - .env
+      - .env
+    <<: *default-env
+    environment:
+      DB_HOST: db
+      DB_USER: ${MYSQL_USER:-matrimony}
+      DB_PASS: ${MYSQL_PASSWORD:-${MYSQL_ROOT_PASSWORD:-8220}}
+      DB_NAME: ${MYSQL_DATABASE:-sriang}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:5000}
+      BASE_URL: ${BASE_URL:-http://localhost:5000}
     depends_on:
       db:
         condition: service_healthy
@@ -35,16 +49,18 @@ services:
     volumes:
       - ./backend/gallery:/app/gallery
       - ./backend/kundli:/app/kundli
+      - ./backend/uploads:/app/uploads
 
   frontend:
     build:
       context: ./frontend
+      args:
+        REACT_APP_API_BASE: ${REACT_APP_API_BASE:-/api}
     container_name: matrimony-frontend
     restart: always
     ports:
       - "3000:80"
     environment:
-      REACT_APP_API_BASE: ""
       BASE_URL: /api
       API_BASE_URL: /api
     depends_on:
@@ -55,7 +71,4 @@ services:
 networks:
   matrimony-network:
     driver: bridge
-
-volumes:
-  matrimony-db:
 

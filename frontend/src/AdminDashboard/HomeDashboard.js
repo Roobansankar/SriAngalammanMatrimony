@@ -13,10 +13,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function HomeDashboard() {
-  // Use relative path to avoid hardcoded localhost issues
-  const API_BASE = ""; 
+const API = process.env.REACT_APP_API_BASE || "";
 
+export default function HomeDashboard() {
   const [stats, setStats] = useState({
     totalCount: 0,
     maleCount: 0,
@@ -41,10 +40,8 @@ export default function HomeDashboard() {
   }, []);
 
   const fetchStats = async () => {
-    console.log("HomeDashboard: Fetching stats (v2-fix-port5000)...");
     try {
-      // Urgent Production Fix: Hardcoded API URL with Port 5000
-      const res = await axios.get(`http://80.65.208.64:5000/api/admin/dashboard-stats`);
+      const res = await axios.get(`${API}/api/admin/dashboard-stats`);
       if (res.data.success) setStats(res.data.data);
     } catch (err) {
       console.error("Dashboard Error:", err);
@@ -52,10 +49,8 @@ export default function HomeDashboard() {
   };
 
   const fetchRecentMembers = async () => {
-    console.log("HomeDashboard: Fetching recent members (v2-fix-port5000)...");
     try {
-      // Urgent Production Fix: Hardcoded API URL with Port 5000
-      const res = await axios.get(`http://80.65.208.64:5000/api/admin/recent-members`);
+      const res = await axios.get(`${API}/api/admin/recent-members`);
       if (res.data.success) setRecentMembers(res.data.members || []);
     } catch (err) {
       console.error("Recent members error:", err);

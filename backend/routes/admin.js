@@ -3,9 +3,11 @@ import bcrypt from "bcryptjs";
 import express from "express";
 import jwt from "jsonwebtoken";
 import db from "../config/db.js";
-import { verifyToken, verifyAdmin } from "../middleware/authJwt.js";
+import config from "../config/env.js";
+import { verifyAdmin, verifyToken } from "../middleware/authJwt.js";
 
 const router = express.Router();
+const BASE_URL = config.baseUrl;
 
 // =========================
 // ADMIN REGISTER
@@ -1276,8 +1278,6 @@ router.delete("/master/cities/:id", verifyAdmin, (req, res) => {
 
 /* GET */
 router.get("/featured-profiles", (req, res) => {
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-
   const sql = `
     SELECT f.id, r.MatriID, r.Name, r.Age, r.Occupation,
       CASE
@@ -1290,7 +1290,7 @@ router.get("/featured-profiles", (req, res) => {
     ORDER BY f.created_at DESC
   `;
 
-  db.query(sql, [BASE, BASE], (err, rows) => {
+  db.query(sql, [BASE_URL, BASE_URL], (err, rows) => {
     if (err) return res.status(500).json(err);
     res.json({ profiles: rows });
   });
@@ -1418,8 +1418,6 @@ router.delete("/users/:id", verifyAdmin, (req, res) => {
 // PREMIUM MEMBERS
 // =========================
 router.get("/premium-members", verifyAdmin, (req, res) => {
-  const BASE = process.env.API_BASE_URL || "http://localhost:5000";
-  
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const offset = (page - 1) * limit;
@@ -1467,8 +1465,8 @@ router.get("/premium-members", verifyAdmin, (req, res) => {
       const results = rows.map((u) => {
         const photo =
           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
-            ? `${BASE}/gallery/${u.Photo1}`
-            : `${BASE}/gallery/nophoto.jpg`;
+            ? `${BASE_URL}/gallery/${u.Photo1}`
+            : `${BASE_URL}/gallery/nophoto.jpg`;
 
         return { ...u, PhotoURL: photo };
       });

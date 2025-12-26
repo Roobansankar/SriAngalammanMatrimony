@@ -1,9 +1,10 @@
 import express from "express";
 import db from "../config/db.js";
+import config from "../config/env.js";
 
 const router = express.Router();
 
-const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
+const BASE_URL = config.baseUrl;
 const GALLERY_PATH = "/gallery/";
 const FALLBACK = "nophoto.jpg";
 
