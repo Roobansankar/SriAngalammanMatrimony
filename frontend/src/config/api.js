@@ -4,7 +4,14 @@
 // Base API URL - defaults to relative path for Docker/nginx proxy setup
 // In Docker: nginx proxies /api to backend:5000
 // For local dev without Docker: set REACT_APP_API_BASE=http://localhost:5000
-export const API_BASE = process.env.REACT_APP_API_BASE || "";
+const rawApiBase = (process.env.REACT_APP_API_BASE || "").trim();
+
+// Treat REACT_APP_API_BASE as an ORIGIN (e.g. http://host:5000) or empty for same-origin.
+// If someone sets it to "/api" or ends it with "/api", normalize it back to the origin/empty
+// so we don't generate "/api/api".
+export const API_BASE = rawApiBase
+  .replace(/\/+$/, "")
+  .replace(/\/api$/i, "");
 
 // Full API path helper
 export const API = `${API_BASE}/api`;
