@@ -1,9 +1,8 @@
 # Environment files (contain secrets)
 .env
-.env.local
-.env.production
+.env.*
 !.env.sample
-!.env.production.sample
+!.env.*.sample
 
 # Data persistence directories
 .data/
