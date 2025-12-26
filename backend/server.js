@@ -196,6 +196,10 @@ app.get("/api/db-debug", (req, res) => {
   });
 });
 
+// Serve static files also on /api/gallery and /api/kundli to fix 404s
+app.use("/api/gallery", express.static(path.join(__dirname, "gallery")));
+app.use("/api/kundli", express.static(path.join(__dirname, "kundli")));
+
 /* Routes */
 app.use("/api/register", registerRoutes);
 app.use("/api/payment", paymentRoutes);
