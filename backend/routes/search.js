@@ -49,6 +49,166 @@ function makePhotoUrl2(photoFilename, photoApprove) {
 
 
 
+// ============================
+// MAIN SEARCH ROUTE
+// ============================
+
+router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) => {
+  try {
+    const {
+      gender,
+      txtSAge,
+      txtEAge,
+      looking,
+      religion,
+      caste,
+      edu,
+      occu,
+      with_photo,
+      star,
+      moonsign,
+      page = 1,
+      viewerId
+    } = req.body;
+
+    const perPage = 10;
+    const offset = (page - 1) * perPage;
+
+    let whereClauses = ["Status = 'Active'", "Visibility = 'Yes'"];
+    let params = [];
+
+    // Gender
+    if (gender) {
+      whereClauses.push("Gender = ?");
+      params.push(gender);
+    }
+
+    // Age
+    if (txtSAge && txtEAge) {
+      whereClauses.push("TIMESTAMPDIFF(YEAR, DOB, CURDATE()) BETWEEN ? AND ?");
+      params.push(parseInt(txtSAge), parseInt(txtEAge));
+    }
+
+    // Marital Status (looking)
+    if (looking && Array.isArray(looking) && !looking.includes("Any")) {
+      const filtered = looking.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Maritalstatus IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // Religion
+    if (religion && Array.isArray(religion) && !religion.includes("Any")) {
+      const filtered = religion.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Religion IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // Caste
+    if (caste && Array.isArray(caste) && !caste.includes("Any")) {
+      const filtered = caste.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Caste IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // Education
+    if (edu && Array.isArray(edu) && !edu.includes("Any")) {
+      const filtered = edu.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Education IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // Occupation
+    if (occu && Array.isArray(occu) && !occu.includes("Any")) {
+      const filtered = occu.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Occupation IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // Star (Horoscope)
+    if (star && Array.isArray(star) && !star.includes("Any")) {
+      const filtered = star.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Star IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // Moon Sign (Horoscope)
+    if (moonsign && Array.isArray(moonsign) && !moonsign.includes("Any")) {
+      const filtered = moonsign.filter(v => v !== "Any");
+      if (filtered.length > 0) {
+        const placeholders = filtered.map(() => "?").join(",");
+        whereClauses.push(`Moonsign IN (${placeholders})`);
+        params.push(...filtered);
+      }
+    }
+
+    // With Photo
+    if (with_photo) {
+      whereClauses.push("Photo1 IS NOT NULL AND Photo1 <> '' AND Photo1 <> 'no-photo.gif' AND Photo1Approve = 'Yes'");
+    }
+
+    // Blocking check (if viewerId is provided)
+    if (viewerId) {
+      whereClauses.push(`MatriID NOT IN (SELECT blocked_matriid FROM blocked_profiles WHERE blocker_matriid = ?)`);
+      whereClauses.push(`MatriID NOT IN (SELECT blocker_matriid FROM blocked_profiles WHERE blocked_matriid = ?)`);
+      params.push(viewerId, viewerId);
+    }
+
+    const whereSql = whereClauses.length > 0 ? " WHERE " + whereClauses.join(" AND ") : "";
+
+    const conn = db.promise();
+
+    // Get total count
+    const [countResult] = await conn.query(`SELECT COUNT(*) as total FROM register ${whereSql}`, params);
+    const total = countResult[0].total;
+
+    // Get profiles
+    const selectSql = `
+      SELECT *, TIMESTAMPDIFF(YEAR, DOB, CURDATE()) AS Age 
+      FROM register 
+      ${whereSql} 
+      ORDER BY Regdate DESC 
+      LIMIT ? OFFSET ?
+    `;
+    const [rows] = await conn.query(selectSql, [...params, perPage, offset]);
+
+    // Process results to add PhotoURL
+    const processedRows = rows.map(r => {
+      const { ConfirmPassword, ParentPassword, ...safe } = r;
+      return {
+        ...safe,
+        PhotoURL: makePhotoUrl(r.Photo1, r.Photo1Approve)
+      };
+    });
+
+    res.json({
+      total,
+      results: processedRows
+    });
+
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // =========================
 // Dynamic Options
 // =========================
