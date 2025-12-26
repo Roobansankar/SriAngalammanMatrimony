@@ -160,10 +160,6 @@ app.use(morgan("dev"));
 app.use("/gallery", express.static(path.join(__dirname, "gallery")));
 app.use("/kundli", express.static(path.join(__dirname, "kundli")));
 
-// Allow access via /api/gallery and /api/kundli for consistency
-app.use("/api/gallery", express.static(path.join(__dirname, "gallery")));
-app.use("/api/kundli", express.static(path.join(__dirname, "kundli")));
-
 /* Routes */
 app.use("/api/register", registerRoutes);
 app.use("/api/payment", paymentRoutes);
@@ -177,10 +173,8 @@ app.use("/api/auth/forgot-password", forgotPasswordRoutes);
 app.use("/api", searchRoutes);
 app.use("/api/admin", adminRoutes);
 
-// app.use("/api/gallery", galleryRoutes);
-
+// Logic routes for gallery (upload/delete)
 app.use("/api/gallery", galleryRoutes);
-
 
 app.get("/", (req, res) => res.send("Matrimony API running..."));
 
