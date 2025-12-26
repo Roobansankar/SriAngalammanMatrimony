@@ -200,6 +200,11 @@ app.get("/api/db-debug", (req, res) => {
 app.use("/api/gallery", express.static(path.join(__dirname, "gallery")));
 app.use("/api/kundli", express.static(path.join(__dirname, "kundli")));
 
+app.get("/api/gallery-test", (req, res) => {
+  res.json({ message: "Gallery route is accessible", dir: path.join(__dirname, "gallery") });
+});
+
+
 /* Routes */
 app.use("/api/register", registerRoutes);
 app.use("/api/payment", paymentRoutes);
