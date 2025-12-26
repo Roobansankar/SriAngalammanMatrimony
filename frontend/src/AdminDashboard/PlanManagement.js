@@ -37,7 +37,9 @@ export default function PlanManagement() {
     setLoading(true);
     // Reuse all-members endpoint but we can filter further client-side or assume admin sees all
     const requestUrl = `/api/admin/all-members?page=${page}&search=${search}`;
-    console.log('PlanManagement: request URL ->', requestUrl, 'axios.baseURL:', axios.defaults.baseURL);
+    // Force axios to use runtime origin (defensive) to avoid stale/overridden baseURL
+    axios.defaults.baseURL = window.__RESOLVED_API_BASE__ || window.location.origin;
+    console.log('PlanManagement: request URL ->', requestUrl, 'axios.baseURL(forced):', axios.defaults.baseURL);
     axios
       .get(requestUrl)
       .then((res) => {
