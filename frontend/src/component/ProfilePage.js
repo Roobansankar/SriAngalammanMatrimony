@@ -32,7 +32,6 @@ export default function ProfilePage({ setUser: setAppUser }) {
         const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
           params: { email },
         });
-        console.log("Res", res.data);
 
         if (res.data?.success) {
           setUser(res.data.user);

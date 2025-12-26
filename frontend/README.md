@@ -552,7 +552,6 @@ return;
         const res = await axios.get("http://localhost:5000/api/auth/user", {
           params: { email },
         });
-        console.log("Res", res.data);
 
         if (res.data?.success) {
           setUser(res.data.user);
