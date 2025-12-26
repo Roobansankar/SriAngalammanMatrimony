@@ -268,14 +268,16 @@ router.post(
         // Generate MatriID based on occupation, maritalStatus, plan, gender
         const occupation = (b.occupation || "").toLowerCase().trim();
         const maritalStatus = (b.maritalStatus || "").toLowerCase().trim();
-        // const plan = (b.plan || "basic").toLowerCase().trim();
-        const plan =
-          b.paymentDone === "1" ? (b.plan || "").toLowerCase().trim() : null;
+        // Admin panel users: paymentDone=1 indicates plan was selected (payment bypassed)
+        // Allow plan to be set if paymentDone is "1" (admin bypass) or actual payment
+        const plan = b.paymentDone === "1" 
+          ? (b.plan || "basic").toLowerCase().trim() 
+          : null;
 
         if (!plan) {
           return res
             .status(403)
-            .json({ message: "Cannot generate MatriID without payment" });
+            .json({ message: "Plan not selected. Please select a plan." });
         }
 
         const gender = (b.gender || "").toLowerCase().trim();
@@ -570,7 +572,8 @@ router.post(
 
         PartnerExpectations: toTrimOrNull(b.partnerExpectations),
 
-        Plan: b.paymentDone === "1" ? toTrimOrNull(b.plan) : null,
+        // Plan: Store as varchar (basic/premium) - admin can set directly
+        Plan: b.paymentDone === "1" ? toTrimOrNull(b.plan) || "basic" : null,
 
         Termsofservice: toTrimOrNull(b.terms) || "Not Accepted",
         verifymobile: b.otpVerified ? 1 : 0,

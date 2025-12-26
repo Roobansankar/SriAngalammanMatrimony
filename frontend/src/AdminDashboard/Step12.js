@@ -469,12 +469,12 @@ export default function Step12({ prevStep, formData }) {
 
       
       /* ------------------------------------------------
-         STEP 11 — PAYMENT
+         STEP 11 — PLAN SELECTION (Admin Panel - No Payment Required)
       ------------------------------------------------ */
   
-
-      add("plan", f.paymentDone ? f.plan : null);
-      add("paymentDone", f.paymentDone ? "1" : "0");
+      // Always save the plan for admin-created users
+      add("plan", f.plan || "basic");
+      add("paymentDone", "1"); // Admin bypasses payment
 
       /* ------------------------------------------------
          FILE UPLOAD — HOROSCOPE FILE (correct Multer field)

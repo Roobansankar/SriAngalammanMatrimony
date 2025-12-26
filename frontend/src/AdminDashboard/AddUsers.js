@@ -284,16 +284,16 @@ import {
 
 import Step1 from "./Step1"; // Merged with OTP verification
 // Step2 and Step3 are now removed - merged into Step1
+import Step10 from "./Step10";
+import Step11 from "./Step11";
+import Step11PlanSelect from "./Step11PlanSelect"; // Plan selection without payment
+import Step12 from "./Step12";
 import Step4 from "./Step4";
 import Step5 from "./Step5";
 import Step6 from "./Step6";
 import Step7 from "./Step7";
 import Step8 from "./Step8";
 import Step9 from "./Step9";
-import Step10 from "./Step10";
-import Step11 from "./Step11";
-import Step11Payment from "./Step11Payment";
-import Step12 from "./Step12";
 
 const STORAGE_KEY = "multiStepRegistration_form_v1";
 const TOTAL_STEPS = 11; // Reduced from 13 to 11 (removed Step2 and Step3)
@@ -494,11 +494,11 @@ export default function AddUsers() {
             }
           />
 
-          {/* Step 10: Payment */}
+          {/* Step 10: Plan Selection (No Payment) */}
           <Route
             path="step/10"
             element={
-              <Step11Payment
+              <Step11PlanSelect
                 nextStep={nextStepFactory(11)}
                 prevStep={prevStepFactory(9)}
                 formData={formData}

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const API = "";
+const API = process.env.REACT_APP_API_BASE || "";
 
 export default function PlanManagement() {
   const [members, setMembers] = useState([]);
@@ -35,27 +35,11 @@ export default function PlanManagement() {
 
   const fetchMembers = () => {
     setLoading(true);
-    // Urgent Production Fix: Hardcoded API URL with Port 5000
-    const requestUrl = `http://80.65.208.64:5000/api/admin/all-members?page=${page}&search=${search || ""}`;
     
     axios
-      .get(requestUrl)
+      .get(`${API}/api/admin/all-members?page=${page}&search=${search || ""}`)
       .then((res) => {
         if (res.data.success) {
-          // We need the 'Plan' field which might not be in the default 'all-members' select list?
-          // Let's verify 'all-members' query in backend. 
-          // The 'all-members' query in admin.js DOES NOT fetch 'Plan' by default in the SELECT list.
-          // Wait, I should check that. 
-          // Checking previous read_file of admin.js...
-          // SELECT MatriID, Name, Gender, ConfirmEmail... Photo1Approve FROM register...
-          // 'Plan' is NOT selected. 
-          // I should update the backend 'all-members' query to include 'Plan' or make a new endpoint.
-          // Or I can use 'new-members' which has Plan? No, that's only pending.
-          // Let's stick to updating the backend query first, it's safer.
-          // Actually, I can just update the backend query for 'all-members' to include 'Plan'.
-          // But wait, the user asked to add a new sidebar option.
-          // I will use the data I get. If Plan is missing, I might need to fetch it or update backend.
-          // Let's assume I will update the backend `all-members` route to include `Plan` first.
           setMembers(res.data.results);
           setTotal(res.data.total);
         }
@@ -89,11 +73,10 @@ export default function PlanManagement() {
       onConfirm: async () => {
         setProcessing(true);
         try {
-          // Urgent Production Fix: Hardcoded API URL with Port 5000
-          const res = await axios.put(`http://80.65.208.64:5000/api/admin/member/${member.MatriID}/plan`, { plan: newPlan });
+          const res = await axios.put(`${API}/api/admin/member/${member.MatriID}/plan`, { plan: newPlan });
           if (res.data.success) {
             showToast(`Plan updated to ${newPlan}`, "success");
-            fetchMembers(); // Refresh list to see updated plan (if backend returns it)
+            fetchMembers(); // Refresh list to see updated plan
           }
         } catch (err) {
           console.error(err);
