@@ -735,7 +735,9 @@ router.get("/family-wealth", (req, res) => {
       console.error("Error fetching family wealth:", err);
       return res.status(500).json({ error: err.message });
     }
-    res.json(results); // [{wealth: "Own House"}, {wealth: "Multiple Properties"}]
+    // Add id since table doesn't have one
+    const withIds = results.map((r, idx) => ({ id: idx + 1, wealth: r.wealth }));
+    res.json(withIds);
   });
 });
 
