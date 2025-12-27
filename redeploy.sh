@@ -25,22 +25,22 @@ case "$MODE" in
         ;;
     --quick)
         echo "🔄 Quick restart (no rebuild)..."
-        docker compose down
-        docker compose up -d
+        docker compose stop frontend backend
+        docker compose up -d frontend backend
         echo "✅ Services restarted."
         ;;
     *)
-        echo "🛑 Stopping existing containers..."
-        docker compose down
+        echo "🛑 Stopping frontend and backend containers..."
+        docker compose stop frontend backend
 
         echo "🧹 Cleaning up old build cache..."
         docker builder prune -f --filter until=24h 2>/dev/null || true
 
-        echo "🏗️  Building containers (no cache)..."
-        docker compose build --no-cache
+        echo "🏗️  Building frontend and backend (no cache)..."
+        docker compose build --no-cache frontend backend
 
-        echo "🚀 Starting services..."
-        docker compose up -d --force-recreate
+        echo "🚀 Starting frontend and backend services..."
+        docker compose up -d frontend backend
 
         echo ""
         echo "✅ Deployment complete!"
@@ -48,7 +48,7 @@ case "$MODE" in
         echo "📊 Container status:"
         docker compose ps
         echo ""
-        echo "📝 Logs: docker compose logs -f"
+        echo "📝 Logs: docker compose logs -f frontend backend"
         echo "🔄 Restart: ./redeploy.sh --quick"
         ;;
 esac
