@@ -520,7 +520,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                     className="mr-2"
                     checked={data[key].includes(p)}
                     disabled={
-                      p === "லக்னம்" &&
+                      p === "லக்" &&
                       selectedLaknamRasi !== null &&
                       selectedLaknamRasi !== key
                     }
@@ -529,7 +529,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
 
                       if (e.target.checked) {
                         // If Laknam clicked, remove Laknam from all other boxes
-                        if (p === "லக்னம்") {
+                        if (p === "லக்") {
                           for (let j = 1; j <= 12; j++) {
                             if (`g${j}` !== key) {
                               data[`g${j}`] = data[`g${j}`].filter(
@@ -580,7 +580,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                     className="mr-2"
                     checked={data[key].includes(p)}
                     disabled={
-                      p === "லக்னம்" &&
+                      p === "லக்" &&
                       selectedLaknamNavamsam !== null &&
                       selectedLaknamNavamsam !== key
                     }
@@ -589,7 +589,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
 
                       if (e.target.checked) {
                         // If Laknam clicked, remove Laknam from all other navamsam boxes
-                        if (p === "லக்னம்") {
+                        if (p === "லக்") {
                           for (let j = 1; j <= 12; j++) {
                             if (`a${j}` !== key) {
                               data[`a${j}`] = data[`a${j}`].filter(
