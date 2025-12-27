@@ -582,6 +582,12 @@ router.post(
         Regdate: new Date(),
         IP: req.headers["x-forwarded-for"] || req.socket.remoteAddress || "",
         Status: "Pending",
+
+        // Required NOT NULL fields with defaults
+        horos_status: toTrimOrNull(b.horos_status) || "No",
+        online_status: "offline",
+        visibility: toTrimOrNull(b.visibility) || "visible",
+        follow: "",
       };
 
       // Remove undefined/null fields
