@@ -802,14 +802,14 @@ const downloadAsPDF = async () => {
                         <Edit3 size={16} />
                         Edit
                       </button>
-                      <button
+                      {/* <button
                         onClick={downloadAsPDF}
                         disabled={downloading}
                         className="flex items-center gap-2 px-3 py-1.5 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition text-sm disabled:opacity-50"
                       >
                         <FileText size={16} />
                         PDF
-                      </button>
+                      </button> */}
                       <button
                         onClick={downloadAsImage}
                         disabled={downloading}
