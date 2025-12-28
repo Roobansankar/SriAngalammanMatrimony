@@ -296,7 +296,27 @@ export default function Step12({ prevStep, formData }) {
   const [matriId, setMatriId] = useState("");
   const [error, setError] = useState("");
 
+
+  const validateAdminSubmit = () => {
+    if (!formData.fname || !formData.gender || !formData.mobile) {
+      return "Basic details missing";
+    }
+
+    if (!formData.plan) {
+      return "Plan not selected";
+    }
+
+    return null;
+  };
+
+
   const handleSubmit = async () => {
+
+    const err = validateAdminSubmit();
+    if (err) {
+      alert(err);
+      return;
+    }
     try {
       setSubmitting(true);
       setError("");
@@ -348,6 +368,7 @@ export default function Step12({ prevStep, formData }) {
       add("sevai", f.sevai);
       add("raghu", f.raghu);
       add("keethu", f.keethu);
+      add("lagnam", f.lagnam); 
       add("birthHour", f.birthHour);
       add("birthMinute", f.birthMinute);
       add("birthSecond", f.birthSecond);
@@ -355,7 +376,7 @@ export default function Step12({ prevStep, formData }) {
       add("placeOfBirth", f.placeOfBirth);
       add("kuladeivam", f.kuladeivam);
       add("thesaiirupu", f.thesaiirupu);
- 
+
       /* ------------------------------------------------
          STEP 5 — CONTACT DETAILS
       ------------------------------------------------ */
@@ -370,8 +391,7 @@ export default function Step12({ prevStep, formData }) {
       add("whatsapp", f.whatsapp);
       add("convenientTime", f.convenientTime);
 
-
-       /* ------------------------------------------------
+      /* ------------------------------------------------
          STEP 6 — EDUCATION & OCCUPATION
       ------------------------------------------------ */
       add("education", f.education);
@@ -399,15 +419,21 @@ export default function Step12({ prevStep, formData }) {
       add("drink", f.drink);
       add("specialCases", f.specialCases);
 
-      add("hobbies", Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies);
-      add("interests", Array.isArray(f.interests) ? f.interests.join(",") : f.interests);
+      add(
+        "hobbies",
+        Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies
+      );
+      add(
+        "interests",
+        Array.isArray(f.interests) ? f.interests.join(",") : f.interests
+      );
 
       add("otherHobbies", f.otherHobbies);
       add("otherInterests", f.otherInterests);
       add("achievement", f.achievement);
       add("medicalHistory", f.medicalHistory);
       add("passport", f.passport);
-   
+
       /* ------------------------------------------------
          STEP 8 — FAMILY DETAILS
       ------------------------------------------------ */
@@ -444,11 +470,15 @@ export default function Step12({ prevStep, formData }) {
         fd.append("photo", f.photo);
       }
 
-
-        /* ------------------------------------------------
+      /* ------------------------------------------------
          STEP 10 — PARTNER PREFERENCES
       ------------------------------------------------ */
-      add("partner_maritalStatus", Array.isArray(f.maritalStatus) ? f.maritalStatus.join(",") : f.maritalStatus);
+      add(
+        "partner_maritalStatus",
+        Array.isArray(f.maritalStatus)
+          ? f.maritalStatus.join(",")
+          : f.maritalStatus
+      );
       add("partner_ageFrom", f.ageFrom);
       add("partner_ageTo", f.ageTo);
       add("partner_heightFrom", f.heightFrom);
@@ -466,12 +496,10 @@ export default function Step12({ prevStep, formData }) {
       add("partner_motherTongue", f.motherTongue);
       add("partnerExpectations", f.partnerExpectations);
 
-
-      
       /* ------------------------------------------------
          STEP 11 — PLAN SELECTION (Admin Panel - No Payment Required)
       ------------------------------------------------ */
-  
+
       // Always save the plan for admin-created users
       add("plan", f.plan || "basic");
       add("paymentDone", "1"); // Admin bypasses payment
@@ -488,12 +516,24 @@ export default function Step12({ prevStep, formData }) {
       /* ------------------------------------------------
          SUBMIT TO BACKEND
       ------------------------------------------------ */
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/register/complete`, fd);
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE || ""}/api/register/complete`,
+        fd
+      );
 
       localStorage.removeItem("multiStepRegistration_form_v1");
 
       setMatriId(res.data.matriId);
       setSubmitted(true);
+     
+
+      setTimeout(() => {
+        navigate("/admin/new-users", {
+          state: { refreshOnce: true },
+        });
+      }, 2000);
+
+    
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
       setError(

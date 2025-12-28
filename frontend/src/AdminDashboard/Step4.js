@@ -40,6 +40,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
     sevai: formData.sevai || "",
     raghu: formData.raghu || "",
     keethu: formData.keethu || "",
+    lagnam: formData.lagnam || "",
     birthHour: formData.birthHour || "",
     birthMinute: formData.birthMinute || "",
     birthSecond: formData.birthSecond || "",
@@ -78,6 +79,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         sevai: formData.sevai || prev.sevai,
         raghu: formData.raghu || prev.raghu,
         keethu: formData.keethu || prev.keethu,
+        lagnam: formData.lagnam || prev.lagnam,
         birthHour: formData.birthHour || prev.birthHour,
         birthMinute: formData.birthMinute || prev.birthMinute,
         birthSecond: formData.birthSecond || prev.birthSecond,
@@ -195,20 +197,20 @@ export default function Step4({ nextStep, prevStep, formData }) {
   const selectedLaknamRasi =
     [...Array(12)]
       .map((_, i) => ({ key: `g${i + 1}`, box: data[`g${i + 1}`] }))
-      .find((b) => b.box.includes("லக்னம்"))?.key || null;
+      .find((b) => b.box.includes("லக்"))?.key || null;
 
   // Check Laknam in Navamsam boxes
   const selectedLaknamNavamsam =
     [...Array(12)]
       .map((_, i) => ({ key: `a${i + 1}`, box: data[`a${i + 1}`] }))
-      .find((b) => b.box.includes("லக்னம்"))?.key || null;
+      .find((b) => b.box.includes("லக்"))?.key || null;
 
   return (
     <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 mx-auto border border-yellow-200 mt-12">
       <div className="flex items-center justify-center gap-2 mb-6">
         <Stars className="w-8 h-8 text-yellow-600" />
         <h3 className="text-2xl font-bold text-yellow-700">
-          Step 4: Horoscope (ஜாதகம்) Details
+           Horoscope (ஜாதகம்) Details
         </h3>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -424,6 +426,26 @@ export default function Step4({ nextStep, prevStep, formData }) {
           </select>
         </div>
 
+        {/* Lagnam */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Lagnam
+          </label>
+          <select
+            name="lagnam"
+            value={data.lagnam}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+          >
+            <option value="">Select Lagnam</option>
+            {options.moonSigns.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Thesai Irupu */}
         <div className="col-span-2 mt-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -533,7 +555,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                           for (let j = 1; j <= 12; j++) {
                             if (`g${j}` !== key) {
                               data[`g${j}`] = data[`g${j}`].filter(
-                                (x) => x !== "லக்னம்"
+                                (x) => x !== "லக்"
                               );
                             }
                           }
@@ -593,7 +615,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                           for (let j = 1; j <= 12; j++) {
                             if (`a${j}` !== key) {
                               data[`a${j}`] = data[`a${j}`].filter(
-                                (x) => x !== "லக்னம்"
+                                (x) => x !== "லக்"
                               );
                             }
                           }
@@ -663,7 +685,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
       {/* File Upload */}
       <label className="flex items-center justify-center border-2 border-dashed border-yellow-400 rounded-lg py-3 cursor-pointer col-span-2 mt-6">
         <FileUp className="w-5 h-5 text-yellow-600 mr-2" />
-        
+
         <span className="text-gray-700">
           {data.horoscopeFile
             ? data.horoscopeFile.name

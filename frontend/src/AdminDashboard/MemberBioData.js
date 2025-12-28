@@ -19,58 +19,6 @@ import "./AdminBioDisplay.css";
 
 const API = process.env.REACT_APP_API_BASE || "";
 
-// function safeParseChart(value) {
-//   if (!value || value === "" || value === "[]" || value === null) return [];
-//   try {
-//     const parsed = JSON.parse(value);
-//     if (Array.isArray(parsed)) return parsed;
-//   } catch (e) {}
-//   return value
-//     .split(",")
-//     .map((x) => x.trim())
-//     .filter((x) => x !== "");
-// }
-
-// // Helper to get header color based on MatriID prefix and gender
-// function getHeaderColor(matriId, gender) {
-//   if (!matriId) return gender === "Male" ? "#b3f0ab" : "#eabdd2";
-  
-//   const prefix = matriId.substring(0, 4).toUpperCase();
-  
-//   if (prefix === "SAMD") {
-//     // Doctor - Red shade
-//     return "#C1272D"; // Slightly lighter, clean red (BEST)
-//     // Light red/coral
-//   } else if (prefix === "SAMR") {
-//     // Remarriage - Blue shade
-//     return "#a4c4f4"; // Light blue
-//   } else if (prefix === "SAMM" || gender === "Male") {
-//     // Male - Green
-//     return "#b3f0ab";
-//   } else if (prefix === "SAMF" || gender === "Female") {
-//     // Female - Pink
-//     return "#eabdd2";
-//   }
-  
-//   return "#eabdd2"; // Default pink
-// }
-
-// function getHeaderLabel(matriId, gender) {
-//   if (!matriId) return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
-  
-//   const prefix = matriId.substring(0, 4).toUpperCase();
-  
-//   if (prefix === "SAMD") {
-//     return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மருத்துவர்)" : "பெண் வரன் ஜாதகம் (மருத்துவர்)";
-//   } else if (prefix === "SAMR") {
-//     return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மறுமணம்)" : "பெண் வரன் ஜாதகம் (மறுமணம்)";
-//   }
-  
-//   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
-// }
-
-
-
 function safeParseChart(value) {
   if (!value || value === "" || value === "[]" || value === null) return [];
   try {
@@ -88,7 +36,7 @@ function safeParseChart(value) {
 const complexionMap = {
   "Very Fair": "மிக வெள்ளை",
   "Fair": "வெள்ளை",
-  "Wheatish": "முதலியார்",
+  "Wheatish": "வெள்ளை",
   "Wheatish Medium": "நடுத்தர",
   "Wheatish Brown": "நடுத்தர பழுப்பு",
   "Dark": "கருப்பு"
@@ -204,6 +152,77 @@ const kootamMap = {
   "Bronzesmith": "வெண்கல தட்டார்"
 };
 
+
+
+// Rasi (Moonsign) mapping – EXACT format
+const rasiMap = {
+  "Mesham (Aries)": "மேஷம்",
+  "Risabam (Taurus)": "ரிஷபம்",
+  "Mithunam (Gemini)": "மிதுனம்",
+  "Kadagam (Cancer)": "கடகம்",
+  "Simmam (Leo)": "சிம்மம்",
+  "Kanni (Virgo)": "கன்னி",
+  "Thulam (Libra)": "துலாம்",
+  "Virichigam (Scorpio)": "விருச்சிகம்",
+  "Dhanush (Sagittarius)": "தனுசு",
+  "Magaram (Capricorn)": "மகரம்",
+  "Kumbam (Aquarius)": "கும்பம்",
+  "Meenam (Pisces)": "மீனம்",
+  "Does not matter": "பொருட்டல்ல",
+};
+
+
+
+// Nakshatra (Star) mapping – EXACT format
+const starMap = {
+  "Anuradha/Anusham/Anizham": "அனுஷம்",
+  "Ardra/Thiruvathira": "திருவாதிரை",
+  "Ashlesha/Ayilyam": "ஆயில்யம்",
+  "Ashwini/Ashwathi": "அஸ்வினி",
+  "Bharani": "பரணி",
+  "Chitra/Chitha": "சித்திரை",
+  "Dhanista/Avittam": "அவிட்டம்",
+  "Hastha/Atham": "அஸ்தம்",
+  "Jyesta / Kettai": "கேட்டை",
+  "Krithika/Karthika": "கார்த்திகை",
+  "Makha/Magam": "மகம்",
+  "Moolam/Moola": "மூலம்",
+  "Mrigasira/Makayiram": "மிருகசீரிடம்",
+  "Poorvabadrapada/Puratathi": "பூரட்டாதி",
+  "Poorvapalguni/Puram/Pubbhe": "பூரம்",
+  "Poorvashada/Pooradam": "பூராடம்",
+  "Punarvasu/Punarpusam": "புனர்பூசம்",
+  "Pushya/Poosam/Pooyam": "பூசம்",
+  "Revathi": "ரேவதி",
+  "Rohini": "ரோகிணி",
+  "Shatataraka/Sadayam/Satabishek": "சதயம்",
+  "Shravan/Thiruvonam": "திருவோணம்",
+  "Swati/Chothi": "சோதி",
+  "Uttarabadrapada/Uthratadhi": "உத்திரட்டாதி",
+  "Uttarapalguni/Uthram": "உத்திரம்",
+  "Uttarashada/Uthradam": "உத்திராடம்",
+  "Vishaka/Vishakam": "விசாகம்",
+  "Does not matter": "பொருட்டல்ல",
+};
+
+
+const moonSignMap = {
+  "Mesham (Aries)": "மேஷம்",
+  "Risabam (Taurus)": "ரிஷபம்",
+  "Mithunam (Gemini)": "மிதுனம்",
+  "Kadagam (Cancer)": "கடகம்",
+  "Simmam (Leo)": "சிம்மம்",
+  "Kanni (Virgo)": "கன்னி",
+  "Thulam (Libra)": "துலாம்",
+  "Virichigam (Scorpio)": "விருச்சிகம்",
+  "Dhanush (Sagittarius)": "தனுசு",
+  "Magaram (Capricorn)": "மகரம்",
+  "Kumbam (Aquarius)": "கும்பம்",
+  "Meenam (Pisces)": "மீனம்",
+  "Does not matter": "பொருட்டல்ல",
+};
+
+
 // Helper function to convert to Tamil
 function convertToTamil(value, mapObject) {
   if (!value) return value;
@@ -314,7 +333,7 @@ export default function MemberBioData() {
           height: user.HeightText || "",
           weight: user.Weight || "",
           // complexion: user.Complexion || "",
-            complexion: convertToTamil(user.Complexion || "", complexionMap),
+          complexion: convertToTamil(user.Complexion || "", complexionMap),
           family_deity: `${user.Kuladeivam || ""}, ${user.City || ""}`,
           // kulam: user.Caste || "",
           kulam: convertToTamil(user.Caste || "", kulamMap),
@@ -332,7 +351,6 @@ export default function MemberBioData() {
           family_income: `${user.Annualincome || ""}, ${
             user.family_wealth || ""
           }`,
-          
 
           siblings_details: [
             user.noofbrothers > 0
@@ -345,9 +363,10 @@ export default function MemberBioData() {
             .filter(Boolean)
             .join(", "),
 
-          star: user.Star || "",
-          rasi: user.Moonsign || "",
-          lagnam: user.Star || "",
+          star: convertToTamil(user.Star || "", starMap),
+          rasi: convertToTamil(user.Moonsign || "", rasiMap),
+          lagnam: convertToTamil(user.Lagnam || "", moonSignMap),
+
           suddham: "",
           rahu: user.Raghu || "",
           ketu: user.Keethu || "",
@@ -487,14 +506,16 @@ export default function MemberBioData() {
     }
   };
 
-  const downloadAsPDF = async () => {
+
+const downloadAsPDF = async () => {
   if (!hiddenPrintRef.current) return;
   setDownloading(true);
 
   try {
-   
+    hiddenPrintRef.current.classList.add("pdf-generation"); // 👈 ADD
+
     const canvas = await html2canvas(hiddenPrintRef.current, {
-      scale: 4,              // ⬅️ IMPORTANT (increase clarity)
+      scale: 4,
       useCORS: true,
       backgroundColor: "#ffffff",
     });
@@ -508,10 +529,11 @@ export default function MemberBioData() {
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
     pdf.save(`biodata_${currentData.matriId}.pdf`);
   } finally {
-    hiddenPrintRef.current.classList.remove("pdf-generation");
+    hiddenPrintRef.current.classList.remove("pdf-generation"); // 👈 REMOVE
     setDownloading(false);
   }
 };
+
 
 
   const downloadAsImage = async () => {
@@ -519,22 +541,20 @@ export default function MemberBioData() {
     setDownloading(true);
 
     try {
-      const element = hiddenPrintRef.current;
-      
-      const canvas = await html2canvas(element, {
+      hiddenPrintRef.current.classList.add("pdf-generation"); // 👈 ADD
+
+      const canvas = await html2canvas(hiddenPrintRef.current, {
         scale: 4,
         useCORS: true,
-        logging: false,
         backgroundColor: "#ffffff",
       });
 
       const link = document.createElement("a");
-      link.download = `biodata_${currentData.matriId || currentData.name}.png`;
+      link.download = `biodata_${currentData.matriId}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-    } catch (err) {
-      console.error("Error generating image:", err);
     } finally {
+      hiddenPrintRef.current.classList.remove("pdf-generation"); // 👈 REMOVE
       setDownloading(false);
     }
   };
@@ -829,20 +849,13 @@ export default function MemberBioData() {
                     }}
                   >
                     {/* HEADER */}
-                    {/* <div
-                      className="display-header"
-                      style={{ backgroundColor: headerColor, width: "100%" }}
-                    >
-                      <img
-                        src={headerpic}
-                        alt="header"
-                        style={{ width: "1275px", height: "340px" }}
-                      />
-                    </div> */}
 
-                     <div className="relative" style={{ backgroundColor: headerColor }}>
+                    <div
+                      className="relative"
+                      style={{ backgroundColor: headerColor }}
+                    >
                       <img src={headerpic} alt="header" className="w-full" />
-                    
+
                       <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
                         MATRIID: {currentData.matriId}
                       </div>
@@ -1105,7 +1118,7 @@ export default function MemberBioData() {
                           மாதவருமானம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "190px" }}
+                            style={{ minWidth: "110px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1186,7 +1199,7 @@ export default function MemberBioData() {
                           நிறம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "125px" }}
+                            style={{ minWidth: "270px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1924,6 +1937,7 @@ export default function MemberBioData() {
                               alignItems: "center",
                               justifyContent: "center",
                               fontWeight: "bold",
+                              color: "#2e7d32",
                             }}
                           >
                             இராசி
@@ -1977,7 +1991,9 @@ export default function MemberBioData() {
                                   }}
                                 >
                                   {safeParseChart(val).map((planet, idx) => (
-                                    <div key={idx}  className="planet-text">{planet}</div>
+                                    <div key={idx} className="planet-text">
+                                      {planet}
+                                    </div>
                                   ))}
                                 </div>
                               );
@@ -1993,6 +2009,7 @@ export default function MemberBioData() {
                               alignItems: "center",
                               justifyContent: "center",
                               fontWeight: "bold",
+                              color: "#2e7d32",
                             }}
                           >
                             நவாம்சம்
@@ -2161,29 +2178,16 @@ export default function MemberBioData() {
             }}
           >
             {/* HEADER */}
-            {/* <div
-              className="display-header"
-              style={{ backgroundColor: headerColor, width: "100%" }}
-            >
-              <img
-                src={headerpic}
-                alt="header"
-                style={{ width: "1275px", height: "340px" }}
-              />
-            </div> */}
 
-                                
-                    
-<div className="relative" style={{ backgroundColor: headerColor }}>
-  <img src={headerpic} alt="header" className="w-full" />
+            <div className="relative" style={{ backgroundColor: headerColor }}>
+              <img src={headerpic} alt="header" className="w-full" />
 
-  <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
-    ID: {currentData.matriId}
-  </div>
-</div>
+              <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
+                ID: {currentData.matriId}
+              </div>
+            </div>
 
-
-            <div className="display-div">
+            <div className="display-div mb-5">
               <h2>{getHeaderLabel(currentData.matriId, currentData.gender)}</h2>
             </div>
 
@@ -2289,7 +2293,7 @@ export default function MemberBioData() {
                   மாதவருமானம்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "250px" }}
+                    style={{ minWidth: "110px" }}
                   >
                     <span className="display-data">
                       {currentData.monthly_income}
@@ -2312,7 +2316,7 @@ export default function MemberBioData() {
                   நிறம்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "125px" }}
+                    style={{ minWidth: "270px" }}
                   >
                     <span className="display-data">
                       {currentData.complexion}
@@ -2342,14 +2346,14 @@ export default function MemberBioData() {
                   குலம்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "480px" }}
+                    style={{ minWidth: "420px" }}
                   >
                     <span className="display-data">{currentData.kulam}</span>
                   </div>
                   , கூட்டம்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "480px" }}
+                    style={{ minWidth: "510px" }}
                   >
                     <span className="display-data">{currentData.kootam}</span>
                   </div>
@@ -2567,6 +2571,7 @@ export default function MemberBioData() {
                     gridTemplateRows: "repeat(4, 1fr)",
                     width: "400px",
                     height: "400px",
+
                     border: "2px solid #000",
                     margin: "20px",
                   }}
@@ -2599,13 +2604,18 @@ export default function MemberBioData() {
                             flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
-                            padding: "5px",
+                            padding: "3px",
                             textAlign: "center",
+                            gap: "2px",
                           }}
                         >
-                          {safeParseChart(val).map((planet, idx) => (
-                            <div key={idx}  className="planet-text">{planet}</div>
-                          ))}
+                          <div className="planet-wrapper">
+                            {safeParseChart(val).map((planet, idx) => (
+                              <div key={idx} className="planet-text">
+                                {planet}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       );
                     }
@@ -2618,7 +2628,10 @@ export default function MemberBioData() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontWeight: "bold",
+                      fontWeight: "700",
+                      fontSize: "32px", // 🔼 increase size (try 28–36)
+                      letterSpacing: "1px", // optional – looks traditional
+                      color: "#7a0019",
                     }}
                   >
                     இராசி
@@ -2634,6 +2647,7 @@ export default function MemberBioData() {
                     gridTemplateRows: "repeat(4, 1fr)",
                     width: "400px",
                     height: "400px",
+                    fontSize: "32px",
                     border: "2px solid #000",
                     margin: "20px",
                   }}
@@ -2666,13 +2680,31 @@ export default function MemberBioData() {
                             flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
-                            padding: "5px",
+                            padding: "3px",
                             textAlign: "center",
+                            gap: "2px",
                           }}
                         >
-                          {safeParseChart(val).map((planet, idx) => (
-                            <div key={idx}  className="planet-text">{planet}</div>
-                          ))}
+                          {/* {safeParseChart(val).map((planet, idx) => (
+                            <div
+                              key={idx}
+                              className="planet-text"
+                              style={{
+                                fontSize: "18px",
+                                lineHeight: "1.3",
+                                width: "100%",
+                              }}
+                            >
+                              {planet}
+                            </div>
+                          ))} */}
+                          <div className="planet-wrapper">
+                            {safeParseChart(val).map((planet, idx) => (
+                              <div key={idx} className="planet-text">
+                                {planet}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       );
                     }
@@ -2686,6 +2718,7 @@ export default function MemberBioData() {
                       alignItems: "center",
                       justifyContent: "center",
                       fontWeight: "bold",
+                      color: "#7a0019",
                     }}
                   >
                     நவாம்சம்

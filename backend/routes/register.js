@@ -217,50 +217,11 @@ router.post(
     try {
       const b = req.body;
 
-      // // ----------------- HARD VALIDATION -----------------
-      // if (!b.email) {
-      //   return res.status(400).json({ message: "Email is required" });
-      // }
-
-      // if (!b.gender || !b.maritalStatus) {
-      //   return res.status(400).json({ message: "Basic profile data missing" });
-      // }
-
-      // // Email must be verified
-      // // if (
-      // //   !b.otpVerified ||
-      // //   (b.otpVerified !== "true" && b.otpVerified !== true)
-      // // ) {
-      // //   return res.status(403).json({ message: "Email not verified" });
-      // // }
-
-      // // Payment must be completed
-      // if (b.paymentDone !== "1") {
-      //   return res.status(403).json({ message: "Payment not completed" });
-      // }
-
-      // if (!b.plan) {
-      //   return res.status(403).json({ message: "Plan not selected" });
-      // }
+      
 
       conn = await db.promise().getConnection();
 
-      // ----------------- VERIFY PAYMENT FROM DB -----------------
-  //     const [paymentRows] = await conn.query(
-  //       `SELECT id FROM payments 
-  //  WHERE email = ? 
-  //  AND status = 'SUCCESS' 
-  //  ORDER BY created_at DESC 
-  //  LIMIT 1`,
-  //       [b.email]
-  //     );
-
-  //     if (!paymentRows.length) {
-  //       return res.status(403).json({
-  //         message: "No successful payment found for this email",
-  //       });
-  //     }
-
+    
       // ---------- GENERATE MATRI ID IF NOT PROVIDED ----------
       let matriId = toTrimOrNull(b.matriId);
 
@@ -444,9 +405,37 @@ router.post(
         Sevai: toTrimOrNull(b.sevai) || "",
         Raghu: toTrimOrNull(b.raghu) || "",
         Keethu: toTrimOrNull(b.keethu) || "",
+        Lagnam: toTrimOrNull(b.lagnam) || null,
         Kuladeivam: toTrimOrNull(b.kuladeivam) || "",
         ThesaiIrupu: toTrimOrNull(b.thesaiirupu) || "",
         Horosother: savedHoroscopeFilename || null,
+        // Rasi 12
+        g1: toTrimOrNull(b.g1),
+        g2: toTrimOrNull(b.g2),
+        g3: toTrimOrNull(b.g3),
+        g4: toTrimOrNull(b.g4),
+        g5: toTrimOrNull(b.g5),
+        g6: toTrimOrNull(b.g6),
+        g7: toTrimOrNull(b.g7),
+        g8: toTrimOrNull(b.g8),
+        g9: toTrimOrNull(b.g9),
+        g10: toTrimOrNull(b.g10),
+        g11: toTrimOrNull(b.g11),
+        g12: toTrimOrNull(b.g12),
+
+        // Navamsam 12
+        a1: toTrimOrNull(b.a1),
+        a2: toTrimOrNull(b.a2),
+        a3: toTrimOrNull(b.a3),
+        a4: toTrimOrNull(b.a4),
+        a5: toTrimOrNull(b.a5),
+        a6: toTrimOrNull(b.a6),
+        a7: toTrimOrNull(b.a7),
+        a8: toTrimOrNull(b.a8),
+        a9: toTrimOrNull(b.a9),
+        a10: toTrimOrNull(b.a10),
+        a11: toTrimOrNull(b.a11),
+        a12: toTrimOrNull(b.a12),
 
         Address: toTrimOrNull(b.address),
         City: toTrimOrNull(b.city),
@@ -488,34 +477,6 @@ router.post(
         Interests: toTrimOrNull(b.interests),
         OtherInterests: toTrimOrNull(b.otherInterests),
         achievement: toTrimOrNull(b.achievement),
-
-        // Rasi 12
-        g1: toTrimOrNull(b.g1),
-        g2: toTrimOrNull(b.g2),
-        g3: toTrimOrNull(b.g3),
-        g4: toTrimOrNull(b.g4),
-        g5: toTrimOrNull(b.g5),
-        g6: toTrimOrNull(b.g6),
-        g7: toTrimOrNull(b.g7),
-        g8: toTrimOrNull(b.g8),
-        g9: toTrimOrNull(b.g9),
-        g10: toTrimOrNull(b.g10),
-        g11: toTrimOrNull(b.g11),
-        g12: toTrimOrNull(b.g12),
-
-        // Navamsam 12
-        a1: toTrimOrNull(b.a1),
-        a2: toTrimOrNull(b.a2),
-        a3: toTrimOrNull(b.a3),
-        a4: toTrimOrNull(b.a4),
-        a5: toTrimOrNull(b.a5),
-        a6: toTrimOrNull(b.a6),
-        a7: toTrimOrNull(b.a7),
-        a8: toTrimOrNull(b.a8),
-        a9: toTrimOrNull(b.a9),
-        a10: toTrimOrNull(b.a10),
-        a11: toTrimOrNull(b.a11),
-        a12: toTrimOrNull(b.a12),
 
         Familyvalues: toTrimOrNull(b.familyValues),
         FamilyType: toTrimOrNull(b.familyType),

@@ -401,7 +401,7 @@
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link , useLocation } from "react-router-dom";
 import { API } from "../config/api";
 
 const API_BASE = API + "/";
@@ -425,17 +425,19 @@ export default function Step1({ nextStep, formData = {} }) {
     mobile: false,
   });
 
-  // OTP verification states
-  // const [otpSent, setOtpSent] = useState(false);
-  // const [otp, setOtp] = useState("");
-  // const [verifyingOtp, setVerifyingOtp] = useState(false);
-  // const [resendingOtp, setResendingOtp] = useState(false);
-  // const [countdown, setCountdown] = useState(0);
-  // const [emailVerified, setEmailVerified] = useState(
-  //   formData.otpVerified || false
-  // );
-  // const [sendingOtp, setSendingOtp] = useState(false);
+  const location = useLocation();
 
+  useEffect(() => {
+    if (location.state?.refreshOnce) {
+      // remove state so it doesn't refresh again
+      window.history.replaceState({}, document.title);
+
+      // refresh once
+      window.location.reload();
+    }
+  }, [location]);
+
+ 
   const [data, setData] = useState({
     fname: formData.fname || "",
     lname: formData.lname || "",
@@ -455,14 +457,6 @@ export default function Step1({ nextStep, formData = {} }) {
     aboutYourself: formData.aboutYourself || "",
     terms: formData.terms || false,
   });
-
-  // Countdown timer for resend OTP
-  // useEffect(() => {
-  //   if (countdown > 0) {
-  //     const t = setTimeout(() => setCountdown(countdown - 1), 1000);
-  //     return () => clearTimeout(t);
-  //   }
-  // }, [countdown]);
 
   // Sync local state when formData prop changes
   useEffect(() => {
@@ -730,64 +724,7 @@ export default function Step1({ nextStep, formData = {} }) {
     return null;
   }, [data, errors]);
 
-  // const handleSendOtp = async () => {
-  //   const validationError = validateBasicInfo();
-  //   if (validationError) {
-  //     alert(validationError);
-  //     return;
-  //   }
-  //   try {
-  //     setSendingOtp(true);
-  //     await axios.post(`${REGISTER_API}/send-otp`, {
-  //       email: data.email.trim(),
-  //     });
-  //     setOtpSent(true);
-  //     setCountdown(60);
-  //     alert("OTP sent to your email.");
-  //   } catch (error) {
-  //     console.error("Error sending OTP:", error);
-  //     const errorMsg =
-  //       error?.response?.data?.error || "Failed to send OTP. Please try again.";
-  //     alert(errorMsg);
-  //   } finally {
-  //     setSendingOtp(false);
-  //   }
-  // };
 
-  // const handleVerifyOtp = async () => {
-  //   if (otp.length !== 6) {
-  //     alert("Enter valid 6-digit OTP");
-  //     return;
-  //   }
-
-  //   try {
-  //     setVerifyingOtp(true);
-  //     await axios.post(`${REGISTER_API}/verify-otp`, {
-  //       email: data.email,
-  //       otp,
-  //     });
-  //     setEmailVerified(true);
-  //     alert("Email verified successfully!");
-  //   } catch {
-  //     alert("Invalid or expired OTP");
-  //   } finally {
-  //     setVerifyingOtp(false);
-  //   }
-  // };
-
-  // const handleResendOtp = async () => {
-  //   try {
-  //     setResendingOtp(true);
-  //     await axios.post(`${REGISTER_API}/send-otp`, { email: data.email });
-  //     setCountdown(60);
-  //     setOtp("");
-  //     alert("OTP resent to your email.");
-  //   } catch {
-  //     alert("Failed to resend OTP");
-  //   } finally {
-  //     setResendingOtp(false);
-  //   }
-  // };
 
   const handleNext = () => {
     const validationError = validateFullForm();
@@ -834,34 +771,18 @@ export default function Step1({ nextStep, formData = {} }) {
         />
 
         <div className="md:col-span-2 relative">
-          {/* <input
+        
+          <input
             name="email"
             type="email"
             placeholder="Email Address *"
             value={data.email}
             onChange={handleChange}
-            disabled={emailVerified}
             className={`border p-2 rounded-lg w-full focus:ring-2 focus:ring-rose-400 outline-none ${
               errors.email ? "border-red-500" : ""
-            } ${emailVerified ? "bg-gray-50" : ""}`}
-          /> */}
-          <input
-  name="email"
-  type="email"
-  placeholder="Email Address *"
-  value={data.email}
-  onChange={handleChange}
-  className={`border p-2 rounded-lg w-full focus:ring-2 focus:ring-rose-400 outline-none ${
-    errors.email ? "border-red-500" : ""
-  }`}
-/>
+            }`}
+          />
 
-          {/* {checking.email && (
-            <Loader2 className="animate-spin w-4 h-4 text-rose-600 absolute right-3 top-3" />
-          )} */}
-          {/* {emailVerified && (
-            <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-2.5" />
-          )} */}
         </div>
         {errors.email && (
           <p className="text-red-600 text-sm md:col-span-2 -mt-3">
@@ -878,86 +799,7 @@ export default function Step1({ nextStep, formData = {} }) {
           className="border p-2 rounded-lg w-full md:col-span-2 focus:ring-2 focus:ring-rose-400 outline-none"
         />
 
-        {/* OTP Verification Section */}
-        {/* {!emailVerified && (
-          <div className="md:col-span-2 bg-rose-50 border border-rose-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <MailCheck className="w-5 h-5 text-rose-600" />
-              <h4 className="font-semibold text-rose-700">
-                Email Verification
-              </h4>
-            </div>
-
-            {!otpSent ? (
-              <button
-                onClick={handleSendOtp}
-                disabled={
-                  sendingOtp || !data.email || errors.email || checking.email
-                }
-                className="w-full bg-rose-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-rose-700 transition disabled:opacity-60 flex items-center justify-center gap-2"
-              >
-                {sendingOtp ? (
-                  <>
-                    <Loader2 className="animate-spin w-4 h-4" />
-                    Sending OTP...
-                  </>
-                ) : (
-                  "Send OTP to Email"
-                )}
-              </button>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-sm text-gray-600 text-center">
-                  Enter the 6-digit OTP sent to{" "}
-                  <span className="font-semibold">{data.email}</span>
-                </p>
-                <input
-                  value={otp}
-                  onChange={(e) =>
-                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                  }
-                  placeholder="Enter 6-digit OTP"
-                  className="border text-center text-lg tracking-widest p-3 rounded-lg w-full focus:ring-2 focus:ring-rose-400 outline-none"
-                  maxLength={6}
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleVerifyOtp}
-                    disabled={verifyingOtp || otp.length !== 6}
-                    className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-60 flex items-center justify-center gap-2"
-                  >
-                    {verifyingOtp ? (
-                      <>
-                        <Loader2 className="animate-spin w-4 h-4" />
-                        Verifying...
-                      </>
-                    ) : (
-                      "Verify OTP"
-                    )}
-                  </button>
-                  <button
-                    onClick={handleResendOtp}
-                    disabled={resendingOtp || countdown > 0}
-                    className="px-4 py-2 border border-rose-300 rounded-lg text-rose-600 font-semibold hover:bg-rose-50 transition disabled:opacity-60 flex items-center gap-1"
-                  >
-                    <RefreshCcw className="w-4 h-4" />
-                    {countdown > 0 ? `${countdown}s` : "Resend"}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )} */}
-
-        {/* {emailVerified && (
-          <div className="md:col-span-2 bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-green-600" />
-            <span className="text-green-700 font-semibold">
-              Email Verified Successfully!
-            </span>
-          </div>
-        )} */}
-
+      
         <select
           name="profileBy"
           value={data.profileBy}
@@ -1141,14 +983,7 @@ export default function Step1({ nextStep, formData = {} }) {
           className="accent-rose-600 w-4 h-4"
         />
         <span className="text-sm text-gray-700">
-          I agree to the{" "}
-          <Link
-            to="/terms"
-        
-            className="text-rose-600 font-semibold hover:underline"
-          >
-            Terms & Conditions
-          </Link>
+          I agree to the Terms & Conditions
           
         </span>
       </label>
