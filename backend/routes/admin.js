@@ -10,6 +10,96 @@ const router = express.Router();
 const BASE_URL = config.baseUrl;
 
 // =========================
+// HELPER FUNCTIONS FOR DATA FORMATTING
+// =========================
+
+/**
+ * Format date value to MySQL-compatible format (YYYY-MM-DD)
+ * Handles ISO strings, Date objects, and existing YYYY-MM-DD strings
+ */
+const formatDateForMySQL = (dateValue) => {
+  if (!dateValue || dateValue === 'null' || dateValue === 'undefined') return null;
+  
+  // If already in YYYY-MM-DD format, return as is
+  if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+    return dateValue;
+  }
+  
+  try {
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return null;
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    console.error('Date formatting error:', e);
+    return null;
+  }
+};
+
+/**
+ * Format time value to MySQL-compatible format (HH:MM:SS)
+ * Handles various time formats including "HH:MM:SS AM/PM"
+ */
+const formatTimeForMySQL = (timeValue) => {
+  if (!timeValue || timeValue === 'null' || timeValue === 'undefined') return null;
+  
+  // If already in HH:MM:SS format (24-hour), return as is
+  if (typeof timeValue === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(timeValue)) {
+    return timeValue;
+  }
+  
+  // Handle "HH:MM:SS AM/PM" format
+  if (typeof timeValue === 'string') {
+    const match = timeValue.match(/(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)?/i);
+    if (match) {
+      let hours = parseInt(match[1], 10);
+      const minutes = match[2];
+      const seconds = match[3];
+      const period = match[4]?.toUpperCase();
+      
+      if (period === 'PM' && hours !== 12) hours += 12;
+      if (period === 'AM' && hours === 12) hours = 0;
+      
+      return `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+    }
+  }
+  
+  return timeValue; // Return original if no conversion needed
+};
+
+/**
+ * Sanitize and format field value based on field name
+ */
+const sanitizeFieldValue = (key, value) => {
+  // Handle null/undefined/empty
+  if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
+    return null;
+  }
+  
+  // Date fields
+  if (key === 'DOB' || key === 'Regdate') {
+    return formatDateForMySQL(value);
+  }
+  
+  // Time fields
+  if (key === 'TOB') {
+    return formatTimeForMySQL(value);
+  }
+  
+  // Numeric fields - ensure they're proper numbers or null
+  const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters', 'Raghu', 'Keethu', 'Sevai'];
+  if (numericFields.includes(key)) {
+    const num = parseFloat(value);
+    return isNaN(num) ? null : value;
+  }
+  
+  return value;
+};
+
+// =========================
 // ADMIN REGISTER
 // =========================
 router.post("/register", async (req, res) => {
@@ -514,6 +604,8 @@ router.put("/member/:matriId", async (req, res) => {
   const { matriId } = req.params;
   const updateData = req.body;
 
+  console.log(`➡️ Processing update for member: ${matriId}`);
+
   try {
     // Build dynamic update query
     const allowedFields = [
@@ -536,7 +628,9 @@ router.put("/member/:matriId", async (req, res) => {
     for (const [key, value] of Object.entries(updateData)) {
       if (allowedFields.includes(key)) {
         updates.push(`${key} = ?`);
-        values.push(value);
+        // Sanitize and format the value appropriately
+        const sanitizedValue = sanitizeFieldValue(key, value);
+        values.push(sanitizedValue);
       }
     }
 
@@ -547,22 +641,30 @@ router.put("/member/:matriId", async (req, res) => {
     values.push(matriId);
 
     const sql = `UPDATE register SET ${updates.join(', ')} WHERE MatriID = ?`;
+    
+    // Log sanitized SQL for debugging (without sensitive data)
+    console.log(`📝 Executing update with ${updates.length} fields for ${matriId}`);
 
     db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Update error:", err);
-        return res.status(500).json({ success: false, message: "Database error", error: err });
+        console.error("Update error:", err.message);
+        return res.status(500).json({ 
+          success: false, 
+          message: "Database error", 
+          error: err.message 
+        });
       }
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ success: false, message: "Member not found" });
       }
 
+      console.log(`✅ Member ${matriId} updated successfully`);
       res.json({ success: true, message: "Member updated successfully" });
     });
   } catch (err) {
     console.error("Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 });
 
@@ -572,6 +674,8 @@ router.put("/member/:matriId", async (req, res) => {
 router.put("/biodata/:matriId", async (req, res) => {
   const { matriId } = req.params;
   const updateData = req.body;
+
+  console.log(`➡️ Processing biodata update for member: ${matriId}`);
 
   try {
     // All allowed fields for biodata including horoscope grids
@@ -607,7 +711,9 @@ router.put("/biodata/:matriId", async (req, res) => {
         if (Array.isArray(value)) {
           values.push(JSON.stringify(value));
         } else {
-          values.push(value);
+          // Sanitize and format the value appropriately
+          const sanitizedValue = sanitizeFieldValue(key, value);
+          values.push(sanitizedValue);
         }
       }
     }
@@ -620,9 +726,12 @@ router.put("/biodata/:matriId", async (req, res) => {
 
     const sql = `UPDATE register SET ${updates.join(', ')} WHERE MatriID = ?`;
 
+    // Log sanitized SQL for debugging (without sensitive data)
+    console.log(`📝 Executing biodata update with ${updates.length} fields for ${matriId}`);
+
     db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Biodata update error:", err);
+        console.error("Biodata update error:", err.message);
         return res.status(500).json({ success: false, message: "Database error", error: err.message });
       }
 
@@ -630,11 +739,12 @@ router.put("/biodata/:matriId", async (req, res) => {
         return res.status(404).json({ success: false, message: "Member not found" });
       }
 
+      console.log(`✅ Biodata for ${matriId} updated successfully`);
       res.json({ success: true, message: "Biodata updated successfully" });
     });
   } catch (err) {
     console.error("Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 });
 
