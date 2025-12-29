@@ -1,15 +1,16 @@
 import axios from "axios";
 import {
     Activity,
-    ArrowDownRight,
-    ArrowUpRight,
+    Briefcase,
     Calendar,
-    Heart,
+    Crown,
+    RefreshCw,
+    Stethoscope,
     TrendingUp,
     UserCheck,
     UserCircle,
     UserPlus,
-    Users,
+    Users
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -25,6 +26,11 @@ export default function HomeDashboard() {
     monthlyRegistrations: 0,
     activeUsers: 0,
     pendingApprovals: 0,
+    premiumCount: 0,
+    doctorsCount: 0,
+    remarriageCount: 0,
+    profileCompletionRate: 0,
+    photoApprovalRate: 0,
   });
 
   const [recentMembers, setRecentMembers] = useState([]);
@@ -64,8 +70,6 @@ export default function HomeDashboard() {
       title: "Total Members",
       value: stats.totalCount,
       icon: Users,
-      trend: "+12%",
-      trendUp: true,
       color: "from-blue-500 to-blue-600",
       bgLight: "bg-blue-50",
       textColor: "text-blue-600",
@@ -74,8 +78,6 @@ export default function HomeDashboard() {
       title: "Male Members",
       value: stats.maleCount,
       icon: UserCheck,
-      trend: "+8%",
-      trendUp: true,
       color: "from-emerald-500 to-emerald-600",
       bgLight: "bg-emerald-50",
       textColor: "text-emerald-600",
@@ -84,43 +86,70 @@ export default function HomeDashboard() {
       title: "Female Members",
       value: stats.femaleCount,
       icon: UserCheck,
-      trend: "+15%",
-      trendUp: true,
       color: "from-purple-500 to-purple-600",
       bgLight: "bg-purple-50",
       textColor: "text-purple-600",
     },
     {
       title: "New This Month",
-      value: stats.monthlyRegistrations || Math.floor(stats.totalCount * 0.1),
+      value: stats.monthlyRegistrations,
       icon: UserPlus,
-      trend: "+5%",
-      trendUp: true,
       color: "from-rose-500 to-rose-600",
       bgLight: "bg-rose-50",
       textColor: "text-rose-600",
     },
   ];
 
+  // Category-wise stat cards
+  const categoryCards = [
+    {
+      title: "Doctors",
+      value: stats.doctorsCount,
+      icon: Stethoscope,
+      description: "Medical professionals",
+      bgLight: "bg-teal-50",
+      textColor: "text-teal-600",
+      borderColor: "border-teal-200",
+    },
+    {
+      title: "Premium Members",
+      value: stats.premiumCount,
+      icon: Crown,
+      description: "Paid subscribers",
+      bgLight: "bg-amber-50",
+      textColor: "text-amber-600",
+      borderColor: "border-amber-200",
+    },
+    {
+      title: "Remarriage",
+      value: stats.remarriageCount,
+      icon: RefreshCw,
+      description: "Divorced/Widow(er)",
+      bgLight: "bg-indigo-50",
+      textColor: "text-indigo-600",
+      borderColor: "border-indigo-200",
+    },
+  ];
+
   const quickStats = [
     {
       label: "Today's Registrations",
-      value: stats.todayRegistrations || 3,
+      value: stats.todayRegistrations,
       icon: Calendar,
     },
     {
       label: "Active This Week",
-      value: stats.weeklyRegistrations || 28,
+      value: stats.weeklyRegistrations,
       icon: Activity,
     },
     {
-      label: "Success Matches",
-      value: stats.successMatches || 156,
-      icon: Heart,
+      label: "Pending Approvals",
+      value: stats.pendingApprovals,
+      icon: Briefcase,
     },
     {
-      label: "Conversion Rate",
-      value: "68%",
+      label: "Active Users (7d)",
+      value: stats.activeUsers,
       icon: TrendingUp,
     },
   ];
@@ -151,22 +180,33 @@ export default function HomeDashboard() {
               >
                 <card.icon className={`w-6 h-6 ${card.textColor}`} />
               </div>
-              <div
-                className={`flex items-center gap-1 text-xs font-medium ${
-                  card.trendUp ? "text-emerald-600" : "text-red-500"
-                }`}
-              >
-                {card.trendUp ? (
-                  <ArrowUpRight size={14} />
-                ) : (
-                  <ArrowDownRight size={14} />
-                )}
-                {card.trend}
-              </div>
             </div>
             <div className="mt-4">
               <h3 className="text-3xl font-bold text-gray-800">{card.value}</h3>
               <p className="text-sm text-gray-500 mt-1">{card.title}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Category Cards - Doctors, Premium, Remarriage */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {categoryCards.map((card, index) => (
+          <div
+            key={index}
+            className={`bg-white rounded-xl p-5 shadow-sm border ${card.borderColor} hover:shadow-md transition-shadow`}
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className={`w-14 h-14 ${card.bgLight} rounded-xl flex items-center justify-center`}
+              >
+                <card.icon className={`w-7 h-7 ${card.textColor}`} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800">{card.value}</h3>
+                <p className="text-sm font-medium text-gray-700">{card.title}</p>
+                <p className="text-xs text-gray-500">{card.description}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -279,40 +319,69 @@ export default function HomeDashboard() {
               <span className="text-sm text-gray-600">Male to Female Ratio</span>
               <span className="font-semibold text-blue-600">
                 {stats.maleCount && stats.femaleCount
-                  ? `${((stats.maleCount / stats.femaleCount) * 100).toFixed(0)}%`
+                  ? `${stats.maleCount} : ${stats.femaleCount}`
                   : "N/A"}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
               <span className="text-sm text-gray-600">Profile Completion</span>
-              <span className="font-semibold text-emerald-600">78%</span>
+              <span className="font-semibold text-emerald-600">
+                {stats.profileCompletionRate}%
+              </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
               <span className="text-sm text-gray-600">Photo Approval Rate</span>
-              <span className="font-semibold text-purple-600">92%</span>
+              <span className="font-semibold text-purple-600">
+                {stats.photoApprovalRate}%
+              </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-rose-50 rounded-lg">
               <span className="text-sm text-gray-600">Active Users (7d)</span>
               <span className="font-semibold text-rose-600">
-                {stats.activeUsers || 45}
+                {stats.activeUsers}
               </span>
             </div>
 
-            {/* Mini Chart Placeholder */}
+            {/* Category Summary */}
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-2">Monthly Growth</p>
-              <div className="flex items-end gap-1 h-16">
-                {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 bg-rose-400 rounded-t"
-                    style={{ height: `${h}%` }}
-                  />
-                ))}
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-gray-400">
-                <span>Mon</span>
-                <span>Sun</span>
+              <p className="text-xs text-gray-500 mb-3 font-medium">Category Breakdown</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Doctors</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-teal-500 rounded-full"
+                        style={{ width: `${stats.totalCount > 0 ? Math.min((stats.doctorsCount / stats.totalCount) * 100, 100) : 0}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">{stats.doctorsCount}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Premium</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-amber-500 rounded-full"
+                        style={{ width: `${stats.totalCount > 0 ? Math.min((stats.premiumCount / stats.totalCount) * 100, 100) : 0}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">{stats.premiumCount}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Remarriage</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-indigo-500 rounded-full"
+                        style={{ width: `${stats.totalCount > 0 ? Math.min((stats.remarriageCount / stats.totalCount) * 100, 100) : 0}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">{stats.remarriageCount}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

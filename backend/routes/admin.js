@@ -185,12 +185,12 @@ router.get("/dashboard-stats", async (req, res) => {
 
     // Male Count
     const [[{ maleCount }]] = await conn.query(
-      "SELECT COUNT(*) AS maleCount FROM register WHERE Gender = 'Male'"
+      "SELECT COUNT(*) AS maleCount FROM register WHERE Gender = 'Male' AND Status <> 'Banned'"
     );
 
     // Female Count
     const [[{ femaleCount }]] = await conn.query(
-      "SELECT COUNT(*) AS femaleCount FROM register WHERE Gender = 'Female'"
+      "SELECT COUNT(*) AS femaleCount FROM register WHERE Gender = 'Female' AND Status <> 'Banned'"
     );
 
     // Total Members
@@ -198,23 +198,85 @@ router.get("/dashboard-stats", async (req, res) => {
 
     // Today's registrations
     const [[{ todayRegistrations }]] = await conn.query(
-      "SELECT COUNT(*) AS todayRegistrations FROM register WHERE DATE(Regdate) = CURDATE()"
+      "SELECT COUNT(*) AS todayRegistrations FROM register WHERE DATE(Regdate) = CURDATE() AND Status <> 'Banned'"
     );
 
     // This week registrations
     const [[{ weeklyRegistrations }]] = await conn.query(
-      "SELECT COUNT(*) AS weeklyRegistrations FROM register WHERE Regdate >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
+      "SELECT COUNT(*) AS weeklyRegistrations FROM register WHERE Regdate >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND Status <> 'Banned'"
     );
 
     // This month registrations
     const [[{ monthlyRegistrations }]] = await conn.query(
-      "SELECT COUNT(*) AS monthlyRegistrations FROM register WHERE MONTH(Regdate) = MONTH(CURDATE()) AND YEAR(Regdate) = YEAR(CURDATE())"
+      "SELECT COUNT(*) AS monthlyRegistrations FROM register WHERE MONTH(Regdate) = MONTH(CURDATE()) AND YEAR(Regdate) = YEAR(CURDATE()) AND Status <> 'Banned'"
     );
 
     // Active users (logged in within 7 days)
     const [[{ activeUsers }]] = await conn.query(
-      "SELECT COUNT(*) AS activeUsers FROM register WHERE Lastlogin >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
+      "SELECT COUNT(*) AS activeUsers FROM register WHERE Lastlogin >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND Status <> 'Banned'"
     );
+
+    // Premium members count
+    const [[{ premiumCount }]] = await conn.query(
+      "SELECT COUNT(*) AS premiumCount FROM register WHERE Plan = 'premium' AND Status <> 'Banned'"
+    );
+
+    // Doctors count (occupation contains doctor, physician, mbbs, md)
+    const [[{ doctorsCount }]] = await conn.query(
+      `SELECT COUNT(*) AS doctorsCount FROM register 
+       WHERE Status <> 'Banned' AND (
+         LOWER(Occupation) LIKE '%doctor%' OR 
+         LOWER(Occupation) LIKE '%physician%' OR 
+         LOWER(Occupation) LIKE '%mbbs%' OR 
+         LOWER(Occupation) LIKE '%md%' OR
+         LOWER(Education) LIKE '%mbbs%' OR
+         LOWER(Education) LIKE '%md %' OR
+         LOWER(Education) LIKE '%medical%'
+       )`
+    );
+
+    // Remarriage users count (divorced, widow, widower, remarriage)
+    const [[{ remarriageCount }]] = await conn.query(
+      `SELECT COUNT(*) AS remarriageCount FROM register 
+       WHERE Status <> 'Banned' AND (
+         LOWER(Maritalstatus) LIKE '%divorce%' OR 
+         LOWER(Maritalstatus) LIKE '%widow%' OR 
+         LOWER(Maritalstatus) LIKE '%remarriage%' OR
+         LOWER(Maritalstatus) = 'separated'
+       )`
+    );
+
+    // Pending approvals (users with status pending or photos not approved)
+    const [[{ pendingApprovals }]] = await conn.query(
+      "SELECT COUNT(*) AS pendingApprovals FROM register WHERE Status = 'Pending' OR Photo1Approve = 'No'"
+    );
+
+    // Profile completion rate (users with key fields filled)
+    const [[{ completedProfiles }]] = await conn.query(
+      `SELECT COUNT(*) AS completedProfiles FROM register 
+       WHERE Status <> 'Banned' AND 
+         Name IS NOT NULL AND Name <> '' AND
+         DOB IS NOT NULL AND
+         Education IS NOT NULL AND Education <> '' AND
+         Occupation IS NOT NULL AND Occupation <> '' AND
+         Photo1 IS NOT NULL AND Photo1 <> ''`
+    );
+
+    // Calculate profile completion percentage
+    const profileCompletionRate = totalCount > 0 
+      ? Math.round((completedProfiles / totalCount) * 100) 
+      : 0;
+
+    // Photo approval rate
+    const [[{ approvedPhotos }]] = await conn.query(
+      "SELECT COUNT(*) AS approvedPhotos FROM register WHERE Photo1Approve = 'Yes' AND Status <> 'Banned'"
+    );
+    const [[{ totalWithPhotos }]] = await conn.query(
+      "SELECT COUNT(*) AS totalWithPhotos FROM register WHERE Photo1 IS NOT NULL AND Photo1 <> '' AND Status <> 'Banned'"
+    );
+    const photoApprovalRate = totalWithPhotos > 0 
+      ? Math.round((approvedPhotos / totalWithPhotos) * 100) 
+      : 0;
 
     res.json({
       success: true,
@@ -226,10 +288,16 @@ router.get("/dashboard-stats", async (req, res) => {
         weeklyRegistrations,
         monthlyRegistrations,
         activeUsers,
+        premiumCount,
+        doctorsCount,
+        remarriageCount,
+        pendingApprovals,
+        profileCompletionRate,
+        photoApprovalRate,
       },
     });
   } catch (err) {
-    console.error("Dashboard Stats Error:", err); // Log the full error
+    console.error("Dashboard Stats Error:", err);
     res.status(500).json({ success: false, message: "Server Error", error: err.message });
   }
 });
