@@ -618,7 +618,7 @@ export default function Step12({ prevStep, formData }) {
     <div className="flex justify-center pt-4 pb-10">
       <div className="bg-white shadow-lg rounded-xl p-10 text-center max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4">
-          Step 11: Submit Registration
+           Submit Registration
         </h2>
 
         <button

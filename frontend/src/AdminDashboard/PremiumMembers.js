@@ -163,12 +163,16 @@ export default function PremiumMembers() {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-4 py-3">
-                        <Link
+                        {/* <Link
                           to={`/admin/profile/${m.MatriID}`}
                           className="font-medium text-rose-600 hover:text-rose-700"
                         >
                           {m.MatriID}
-                        </Link>
+                        </Link> */}
+                        <p className="font-medium text-rose-600 hover:text-rose-700">
+                          {" "}
+                          {m.MatriID}
+                        </p>
                       </td>
                       <td className="px-4 py-3">
                         {m.PhotoURL && !m.PhotoURL.includes("nophoto") ? (
@@ -183,8 +187,12 @@ export default function PremiumMembers() {
                             }}
                           />
                         ) : null}
-                        <div 
-                          className={`w-10 h-10 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 items-center justify-center ${m.PhotoURL && !m.PhotoURL.includes("nophoto") ? "hidden" : "flex"}`}
+                        <div
+                          className={`w-10 h-10 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 items-center justify-center ${
+                            m.PhotoURL && !m.PhotoURL.includes("nophoto")
+                              ? "hidden"
+                              : "flex"
+                          }`}
                         >
                           <UserCircle size={24} className="text-yellow-600" />
                         </div>

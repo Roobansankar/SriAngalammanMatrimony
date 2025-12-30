@@ -178,7 +178,7 @@ useEffect(() => {
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-[#e4cbb4] mt-12">
       <h3 className="text-2xl font-bold text-[#7b1113] text-center mb-6 border-b pb-3">
-        Step 8: Family Details
+        Family Details
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

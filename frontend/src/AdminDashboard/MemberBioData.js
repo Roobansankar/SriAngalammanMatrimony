@@ -245,7 +245,10 @@ function getHeaderColor(matriId, gender, plan) {
     return "#D32F2F";
   } else if (prefix === "SAMR") {
     return "#6B8FD6";
-  } else if (prefix === "SAMM" || gender === "Male") {
+    
+  }  else if (prefix === "SAMP") {
+     return "#000000ff";
+  }  else if (prefix === "SAMM" || gender === "Male") {
     return "#3FA732";
   } else if (prefix === "SAMF" || gender === "Female") {
     return "#eabdd2";
@@ -1761,7 +1764,7 @@ const downloadAsPDF = async () => {
                           இராசி:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "220px" }}
+                            style={{ minWidth: "190px" }}
                           >
                             {isEditing ? (
                               <input
