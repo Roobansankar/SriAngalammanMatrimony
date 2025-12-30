@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,11 +36,16 @@ function safeParseArray(value) {
     .filter((x) => x !== "");
 }
 
+// Helper function to generate number arrays
+const generateNumbers = (start, end) =>
+  Array.from({ length: end - start + 1 }, (_, i) => i + start);
+
 export default function EditHoroscope() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     ConfirmEmail: "",
+    moonSignId: "",
     Moonsign: "",
     Star: "",
     Gothram: "",
@@ -55,24 +59,33 @@ export default function EditHoroscope() {
     Keethu: "",
     POB: "",
     POC: "",
-    TOB: "",
-    Kuladeivam: "", // ⭐ NEW FIELD
-    ThesaiIrupu: "", // ⭐ NEW FIELD
+    birthHour: "",
+    birthMinute: "",
+    birthSecond: "",
+    ampm: "AM",
+    Kuladeivam: "",
+    ThesaiIrupu: "",
     horoscope: null,
   });
 
   const [rasi, setRasi] = useState({});
   const [navamsa, setNavamsa] = useState({});
-  const [options, setOptions] = useState({});
+  const [options, setOptions] = useState({
+    moonSigns: [],
+    nakshatras: [],
+    gothras: [],
+    mangliks: [],
+    shanis: [],
+    horoscopeMatches: [],
+  });
   const [preview, setPreview] = useState(null);
 
   // LOAD DROPDOWN OPTIONS
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [moon, nak, goth, mang, shani, match] = await Promise.all([
+        const [moon, goth, mang, shani, match] = await Promise.all([
           fetch(API_BASE + "moon-sign").then((r) => r.json()),
-          fetch(API_BASE + "nakshatra").then((r) => r.json()),
           fetch(API_BASE + "gothra").then((r) => r.json()),
           fetch(API_BASE + "manglik").then((r) => r.json()),
           fetch(API_BASE + "shani").then((r) => r.json()),
@@ -80,8 +93,8 @@ export default function EditHoroscope() {
         ]);
 
         setOptions({
-          moonSigns: moon.map((x) => x.Moon_Sign),
-          nakshatras: nak.map((x) => x.Nakshatra),
+          moonSigns: moon, // Keep full objects [{ID, Moon_Sign}]
+          nakshatras: [],
           gothras: goth.map((x) => x.Gothra),
           mangliks: mang.map((x) => x.type),
           shanis: shani.map((x) => x.type),
@@ -95,14 +108,54 @@ export default function EditHoroscope() {
     loadOptions();
   }, []);
 
+  // FETCH NAKSHATRA WHEN MOON SIGN CHANGES
+  useEffect(() => {
+    if (!form.moonSignId) {
+      setOptions((prev) => ({ ...prev, nakshatras: [] }));
+      return;
+    }
+
+    async function fetchNakshatra() {
+      try {
+        const res = await fetch(`${API_BASE}nakshatra/${form.moonSignId}`);
+        const result = await res.json();
+
+        setOptions((prev) => ({
+          ...prev,
+          nakshatras: result.map((n) => n.nakshatra_paatham),
+        }));
+      } catch (err) {
+        console.error("Failed to fetch nakshatra:", err);
+      }
+    }
+
+    fetchNakshatra();
+  }, [form.moonSignId]);
+
   // LOAD SAVED USER DATA
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("userData"));
     if (!user) return;
 
+    // Parse TOB if it exists (format: "08:00:00 AM")
+    let hour = "",
+      minute = "",
+      second = "",
+      ampm = "AM";
+    if (user.TOB) {
+      const timeMatch = user.TOB.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
+      if (timeMatch) {
+        hour = timeMatch[1];
+        minute = timeMatch[2];
+        second = timeMatch[3];
+        ampm = timeMatch[4].toUpperCase();
+      }
+    }
+
     setForm((prev) => ({
       ...prev,
       ConfirmEmail: user.ConfirmEmail || "",
+      moonSignId: user.moonSignId || "",
       Moonsign: user.Moonsign || "",
       Star: user.Star || "",
       Gothram: user.Gothram || "",
@@ -116,9 +169,12 @@ export default function EditHoroscope() {
       Keethu: user.Keethu || "",
       POB: user.POB || "",
       POC: user.POC || "",
-      TOB: user.TOB || "",
-      Kuladeivam: user.Kuladeivam || "", // ⭐ NEW FIELD
-      ThesaiIrupu: user.ThesaiIrupu || "", // ⭐ NEW FIELD
+      birthHour: hour,
+      birthMinute: minute,
+      birthSecond: second,
+      ampm: ampm,
+      Kuladeivam: user.Kuladeivam || "",
+      ThesaiIrupu: user.ThesaiIrupu || "",
     }));
 
     // Rasi
@@ -134,6 +190,15 @@ export default function EditHoroscope() {
       n[`a${i}`] = safeParseArray(user[`a${i}`]);
     }
     setNavamsa(n);
+
+    // SET PREVIEW FOR EXISTING HOROSCOPE
+    if (user.HoroscopeURL) {
+      if (user.horosother && user.horosother.toLowerCase().includes(".pdf")) {
+        setPreview("PDF");
+      } else {
+        setPreview(user.HoroscopeURL);
+      }
+    }
   }, []);
 
   // CHECKBOX TOGGLE
@@ -162,7 +227,25 @@ export default function EditHoroscope() {
     e.preventDefault();
     const fd = new FormData();
 
-    Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+    // Convert birth time to TOB format
+    const TOB = `${form.birthHour.padStart(2, "0")}:${form.birthMinute.padStart(
+      2,
+      "0"
+    )}:${form.birthSecond.padStart(2, "0")} ${form.ampm}`;
+
+    Object.entries(form).forEach(([k, v]) => {
+      if (
+        k !== "birthHour" &&
+        k !== "birthMinute" &&
+        k !== "birthSecond" &&
+        k !== "ampm"
+      ) {
+        fd.append(k, v);
+      }
+    });
+
+    // Add formatted TOB
+    fd.append("TOB", TOB);
 
     for (let i = 1; i <= 12; i++) {
       fd.append(`g${i}`, JSON.stringify(rasi[`g${i}`] || []));
@@ -179,48 +262,64 @@ export default function EditHoroscope() {
     }
   };
 
-
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("userData"));
-    if (!user) return;
-
-    // existing code that sets form...
-
-    // ⭐ SET PREVIEW FOR EXISTING HOROSCOPE
-    if (user.HoroscopeURL) {
-      if (user.horosother && user.horosother.toLowerCase().includes(".pdf")) {
-        setPreview("PDF"); // no image preview
-      } else {
-        setPreview(user.HoroscopeURL);
-      }
-    }
-  }, []);
-
-
   return (
-    <div className="min-h-screen bg-[#FFF4E0] p-6 flex justify-center">
+    <div className="min-h-screen bg-[#FFF4E0] p-6 flex justify-center font-display">
       <div className="bg-white w-full max-w-5xl p-10 rounded-2xl shadow-xl border mt-20">
         <h1 className="text-3xl font-bold text-center mb-8">Edit Horoscope</h1>
 
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-6"
         >
-          <Drop
-            label="Moon Sign"
-            field="Moonsign"
-            options={options.moonSigns || []}
-            form={form}
-            setForm={setForm}
-          />
-          <Drop
-            label="Star"
-            field="Star"
-            options={options.nakshatras || []}
-            form={form}
-            setForm={setForm}
-          />
+          {/* Moon Sign - Special handling with ID */}
+          <div className="w-full flex flex-col">
+            <label className="text-sm font-medium mb-1 text-black">
+              Moon Sign (Rasi)
+            </label>
+            <select
+              value={form.moonSignId || ""}
+              onChange={(e) => {
+                const selected = options.moonSigns.find(
+                  (m) => m.ID == e.target.value
+                );
+                setForm({
+                  ...form,
+                  moonSignId: selected?.ID || "",
+                  Moonsign: selected?.Moon_Sign || "",
+                });
+              }}
+              className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+            >
+              <option value="">Select Moon Sign</option>
+              {options.moonSigns.map((m) => (
+                <option key={m.ID} value={m.ID}>
+                  {m.Moon_Sign}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Star - Depends on Moon Sign */}
+          <div className="w-full flex flex-col">
+            <label className="text-sm font-medium mb-1 text-black">
+              Star (Nakshatra)
+            </label>
+            <select
+              value={form.Star || ""}
+              onChange={(e) => setForm({ ...form, Star: e.target.value })}
+              className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+            >
+              <option value="">
+                {form.moonSignId ? "Select Star" : "First select Moon Sign"}
+              </option>
+              {options.nakshatras.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <Drop
             label="Gothra"
             field="Gothram"
@@ -255,40 +354,136 @@ export default function EditHoroscope() {
             form={form}
             setForm={setForm}
           />
-          <Input
+
+          {/* Numeric Dropdowns for Parigarasevai, Sevai, Raghu, Keethu */}
+          <Drop
             label="Parigarasevai"
             field="parigarasevai"
+            options={generateNumbers(0, 12)}
             form={form}
             setForm={setForm}
           />
-          <Input label="Sevai" field="Sevai" form={form} setForm={setForm} />
-          <Input label="Raghu" field="Raghu" form={form} setForm={setForm} />
-          <Input label="Keethu" field="Keethu" form={form} setForm={setForm} />
+          <Drop
+            label="Sevai"
+            field="Sevai"
+            options={generateNumbers(0, 12)}
+            form={form}
+            setForm={setForm}
+          />
+          <Drop
+            label="Raghu"
+            field="Raghu"
+            options={generateNumbers(0, 12)}
+            form={form}
+            setForm={setForm}
+          />
+          <Drop
+            label="Keethu"
+            field="Keethu"
+            options={generateNumbers(0, 12)}
+            form={form}
+            setForm={setForm}
+          />
+
+          {/* Thesai Irupu */}
+          <Input
+            label="Thesai Irupu (திசைஇருப்பு)"
+            field="ThesaiIrupu"
+            form={form}
+            setForm={setForm}
+          />
+
+          {/* Birth Time - Split into Hour/Minute/Second/AM-PM */}
+          <div className="w-full flex flex-col md:col-span-2">
+            <label className="text-sm font-medium mb-1 text-black">
+              Birth Time
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              <div>
+                <label className="text-xs text-gray-600">Hr</label>
+                <select
+                  value={form.birthHour}
+                  onChange={(e) =>
+                    setForm({ ...form, birthHour: e.target.value })
+                  }
+                  className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                >
+                  <option value="">--</option>
+                  {generateNumbers(1, 12).map((num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-600">Min</label>
+                <select
+                  value={form.birthMinute}
+                  onChange={(e) =>
+                    setForm({ ...form, birthMinute: e.target.value })
+                  }
+                  className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                >
+                  <option value="">00</option>
+                  {generateNumbers(0, 59).map((num) => (
+                    <option key={num} value={String(num).padStart(2, "0")}>
+                      {String(num).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-600">Sec</label>
+                <select
+                  value={form.birthSecond}
+                  onChange={(e) =>
+                    setForm({ ...form, birthSecond: e.target.value })
+                  }
+                  className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                >
+                  <option value="">00</option>
+                  {generateNumbers(0, 59).map((num) => (
+                    <option key={num} value={String(num).padStart(2, "0")}>
+                      {String(num).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-600">AM/PM</label>
+                <select
+                  value={form.ampm}
+                  onChange={(e) => setForm({ ...form, ampm: e.target.value })}
+                  className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <Input
             label="Place of Birth"
             field="POB"
             form={form}
             setForm={setForm}
           />
-          <Input label="Country" field="POC" form={form} setForm={setForm} />
           <Input
-            label="Time of Birth"
-            field="TOB"
+            label="Country of Birth"
+            field="POC"
             form={form}
             setForm={setForm}
-            placeholder="08:00:00 AM"
           />
 
-          {/* ⭐ NEW FIELDS */}
+          {/* Kuladeivam */}
           <Input
             label="Kuladeivam"
             field="Kuladeivam"
-            form={form}
-            setForm={setForm}
-          />
-          <Input
-            label="Thesai Irupu"
-            field="ThesaiIrupu"
             form={form}
             setForm={setForm}
           />
@@ -316,14 +511,12 @@ export default function EditHoroscope() {
 
             {preview && (
               <>
-                {/* If PDF */}
                 {preview === "PDF" && (
                   <p className="text-sm text-red-600 mt-3">
                     Existing Horoscope is a PDF – cannot show image preview
                   </p>
                 )}
 
-                {/* If IMAGE */}
                 {preview !== "PDF" && typeof preview === "string" && (
                   <img
                     src={preview}
@@ -331,12 +524,8 @@ export default function EditHoroscope() {
                     className="w-40 mt-3 rounded shadow border"
                   />
                 )}
-                
               </>
             )}
-
-
-            
           </div>
 
           {/* Rasi + Navamsa */}
@@ -386,19 +575,24 @@ export default function EditHoroscope() {
 }
 
 /* REUSABLE COMPONENTS */
-
 function Drop({ label, field, options, form, setForm }) {
   return (
-    <div>
-      <label className="text-sm font-medium">{label}</label>
+    <div className="w-full flex flex-col">
+      <label className="text-sm font-medium mb-1 text-black">{label}</label>
+
       <select
         value={form[field] || ""}
         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-        className="border p-3 rounded w-full"
+        className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
       >
-        <option value="">Select</option>
+        <option value="" className="text-gray-500">
+          Select
+        </option>
+
         {options.map((o) => (
-          <option key={o}>{o}</option>
+          <option key={o} value={o} className="text-black">
+            {o}
+          </option>
         ))}
       </select>
     </div>
@@ -407,13 +601,14 @@ function Drop({ label, field, options, form, setForm }) {
 
 function Input({ label, field, form, setForm, placeholder }) {
   return (
-    <div>
-      <label className="text-sm font-medium">{label}</label>
+    <div className="w-full flex flex-col">
+      <label className="text-sm font-medium mb-1 text-black">{label}</label>
+
       <input
         value={form[field] || ""}
         placeholder={placeholder}
         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-        className="border p-3 rounded w-full"
+        className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
       />
     </div>
   );

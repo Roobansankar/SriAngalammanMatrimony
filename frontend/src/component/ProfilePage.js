@@ -285,22 +285,6 @@ export default function ProfilePage({ setUser: setAppUser }) {
             </div>
           </div>
 
-          <section className="bg-white rounded-xl p-6 mt-12">
-            <h2 className="text-xl font-bold mb-4">My Photos</h2>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {["image1", "image2", "image3", "image4"].map((slot) => (
-                <GalleryBox
-                  key={slot}
-                  slot={slot}
-                  image={user?.[slot]}
-                  matriId={user.MatriID}
-                  refreshUser={refreshUser}
-                />
-              ))}
-            </div>
-          </section>
-
           {/* Header content: name, id, actions */}
           <div className="pt-20 px-8 pb-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -326,6 +310,23 @@ export default function ProfilePage({ setUser: setAppUser }) {
               <div className="flex w-full md:w-auto gap-3"></div>
             </div>
           </div>
+
+
+          <section className="bg-white rounded-xl p-6 mt-2">
+            {/* <h2 className="text-xl font-bold mb-4">My Photos</h2> */}
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {["image1", "image2", "image3", "image4"].map((slot) => (
+                <GalleryBox
+                  key={slot}
+                  slot={slot}
+                  image={user?.[slot]}
+                  matriId={user.MatriID}
+                  refreshUser={refreshUser}
+                />
+              ))}
+            </div>
+          </section>
         </div>
 
         {/* About Me */}
