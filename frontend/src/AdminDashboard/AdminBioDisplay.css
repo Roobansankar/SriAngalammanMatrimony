@@ -113,22 +113,43 @@
 }
 
 /* ================= DOTTED LINE SYSTEM (IMPORTANT) ================= */
+
 .display-placeholder {
-  display: inline-flex;
-  align-items: baseline;     /* 🔑 PERFECT ALIGNMENT */
-  min-height: 34px;
+  display: inline-block;
+  vertical-align: top;
+  min-height: 36px;
+  padding-left: 6px;
+  /* width: auto; */
+}
+
+
+/* ================= ADDRESS FIX ================= */
+.address-placeholder {
+  display: inline-block;
+  vertical-align: top;
+
+  width: 1075px;        /* 🔥 FIXED WIDTH – THIS IS THE KEY */
+  min-height: 36px;
+
   padding-left: 6px;
 }
 
-/* Dots ONLY for PDF / IMAGE */
-.pdf-generation .display-placeholder {
-  background: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='8' height='4'>\
-<circle cx='1' cy='2' r='1' fill='%23183c5e'/>\
-</svg>") repeat-x bottom;
 
-  background-size: 8px 4px;
-  padding-bottom: 10px;
+
+
+/* Dots ONLY for PDF / IMAGE */
+
+.pdf-generation .display-placeholder {
+  background-image: linear-gradient(
+    to right,
+    #183c5e 25%,
+    rgba(255,255,255,0) 0%
+  );
+  background-position: bottom;
+  background-size: 8px 2px;
+  background-repeat: repeat-x;
+
+  padding-bottom: 12px;
 }
 
 /* ================= ANSWER TEXT ================= */
@@ -137,10 +158,13 @@
   font-size: 30px;
   font-weight: 600;
   color: #183c8f;
-  line-height: 1;
-  vertical-align: baseline;
-  white-space: nowrap;
+  line-height: 1.4;
+
+  white-space: normal;    
+  word-break: break-word; 
+  max-width: 100%;
 }
+
 
 /* PDF size tuning */
 .pdf-generation .display-data {
@@ -227,7 +251,7 @@
   font-size: 20px !important;
   line-height: 1.2 !important;
   text-align: center !important;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 

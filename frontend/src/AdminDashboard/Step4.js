@@ -28,13 +28,28 @@ export default function Step4({ nextStep, prevStep, formData }) {
     "மாந்",
   ];
 
+
+
+  const thesaiList = [
+    "சூரி",
+    "சந்",
+    "செவ்",
+    "புத",
+    "குரு",
+    "சுக்",
+    "சனி",
+    "ராகு",
+    "கேது",
+  ];
+
   const [data, setData] = useState({
+    moonSignId: formData.moonSignId || "",
     moonSign: formData.moonSign || "",
     star: formData.star || "",
     gothra: formData.gothra || "",
     manglik: formData.manglik || "",
-    shani: formData.shani || "",
-    placeOfShani: formData.placeOfShani || "",
+    // shani: formData.shani || "",
+    // placeOfShani: formData.placeOfShani || "",
     horoscopeMatch: formData.horoscopeMatch || "",
     parigarasevai: formData.parigarasevai || "",
     sevai: formData.sevai || "",
@@ -48,9 +63,15 @@ export default function Step4({ nextStep, prevStep, formData }) {
     placeOfBirth: formData.placeOfBirth || "",
     countryOfBirth: formData.countryOfBirth || "",
     kuladeivam: formData.kuladeivam || "",
-    thesaiirupu: formData.thesaiirupu || "",
+    kootam: formData.kootam || "",
+    // thesaiirupu: formData.thesaiirupu || "",
     horoscopeFile: null,
     horoscopeFileName: formData.horoscopeFileName || "",
+
+    thesaiPlanet: formData.thesaiPlanet || "",
+    thesaiYears: formData.thesaiYears || "",
+    thesaiMonths: formData.thesaiMonths || "",
+    thesaiDays: formData.thesaiDays || "",
 
     // Rasi 12 cards
     ...Object.fromEntries(
@@ -85,7 +106,8 @@ export default function Step4({ nextStep, prevStep, formData }) {
         birthSecond: formData.birthSecond || prev.birthSecond,
         ampm: formData.ampm || prev.ampm,
         kuladeivam: formData.kuladeivam || prev.kuladeivam,
-        thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
+        kootam: formData.kootam || prev.kootam,
+        // thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
         placeOfBirth: formData.placeOfBirth || prev.placeOfBirth,
         countryOfBirth: formData.countryOfBirth || prev.countryOfBirth,
         ...Object.fromEntries(
@@ -104,75 +126,83 @@ export default function Step4({ nextStep, prevStep, formData }) {
     }
   }, [formData]);
 
-  useEffect(() => {
-    async function fetchOptions() {
-      try {
-        const [moonRes, nakshRes, gothraRes, manglikRes, shaniRes, matchRes] =
-          await Promise.all([
-            fetch(`${API_BASE}moon-sign`),
-            fetch(`${API_BASE}nakshatra`),
-            fetch(`${API_BASE}gothra`),
-            fetch(`${API_BASE}manglik`),
-            fetch(`${API_BASE}shani`),
-            fetch(`${API_BASE}horoscope-match`),
-          ]);
+   useEffect(() => {
+     async function fetchOptions() {
+       try {
+         const [moonRes, gothraRes, manglikRes, shaniRes, matchRes] =
+           await Promise.all([
+             fetch(`${API_BASE}moon-sign`),
+             fetch(`${API_BASE}gothra`),
+             fetch(`${API_BASE}manglik`),
+             fetch(`${API_BASE}shani`),
+             fetch(`${API_BASE}horoscope-match`),
+           ]);
 
-        const [
-          moonData,
-          nakshData,
-          gothraData,
-          manglikData,
-          shaniData,
-          matchData,
-        ] = await Promise.all([
-          moonRes.json(),
-          nakshRes.json(),
-          gothraRes.json(),
-          manglikRes.json(),
-          shaniRes.json(),
-          matchRes.json(),
-        ]);
+         const [moonData, gothraData, manglikData, shaniData, matchData] =
+           await Promise.all([
+             moonRes.json(),
+             gothraRes.json(),
+             manglikRes.json(),
+             shaniRes.json(),
+             matchRes.json(),
+           ]);
 
-        setOptions({
-          moonSigns: moonData.map((m) => m.Moon_Sign),
-          nakshatras: nakshData.map((n) => n.Nakshatra),
-          gothras: gothraData.map((g) => g.Gothra),
-          mangliks: manglikData.map((m) => m.type),
-          shanis: shaniData.map((s) => s.type),
-          horoscopeMatches: matchData.map((h) => h.type),
-        });
-      } catch (err) {
-        console.error("Failed to fetch options:", err);
-      }
+         setOptions({
+           moonSigns: moonData, // [{ID, Moon_Sign}]
+           nakshatras: [],
+           gothras: gothraData.map((g) => g.Gothra),
+           mangliks: manglikData.map((m) => m.type),
+           shanis: shaniData.map((s) => s.type),
+           horoscopeMatches: matchData.map((h) => h.type),
+         });
+       } catch (err) {
+         console.error("Failed to fetch options:", err);
+       }
+     }
+
+     fetchOptions();
+   }, []);
+
+useEffect(() => {
+  if (!data.moonSignId) {
+    setOptions((prev) => ({ ...prev, nakshatras: [] }));
+    return;
+  }
+
+  async function fetchNakshatra() {
+    try {
+      const res = await fetch(`${API_BASE}nakshatra/${data.moonSignId}`);
+      const result = await res.json();
+
+      setOptions((prev) => ({
+        ...prev,
+        nakshatras: result.map((n) => n.nakshatra_paatham),
+      }));
+    } catch (err) {
+      console.error("Failed to fetch nakshatra:", err);
     }
-    fetchOptions();
-  }, []);
+  }
+
+  fetchNakshatra();
+}, [data.moonSignId]);
 
   // Helper function to format place names (letters, spaces, commas, dots allowed)
   const formatPlaceName = (value) => value.replace(/[^a-zA-Z\s,.\-']/g, "");
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (files) {
       setData({
         ...data,
         horoscopeFile: files[0],
         horoscopeFileName: files[0].name,
-        // [name]: files[0],
       });
     } else {
-      // Format place name fields
-      if (
-        name === "placeOfShani" ||
-        name === "placeOfBirth" ||
-        name === "countryOfBirth"
-      ) {
-        setData({ ...data, [name]: formatPlaceName(value) });
-      } else {
-        setData({ ...data, [name]: value });
-      }
+      setData({ ...data, [name]: value });
     }
   };
+
 
   const generateNumbers = (s, e) =>
     Array.from({ length: e - s + 1 }, (_, i) => i + s);
@@ -181,7 +211,8 @@ export default function Step4({ nextStep, prevStep, formData }) {
     nextStep({
       ...data,
       kuladeivam: data.kuladeivam,
-      thesaiirupu: data.thesaiirupu,
+      kootam: data.kootam,
+      // thesaiirupu: data.thesaiirupu,
       ...Object.fromEntries(
         [...Array(12)].map((_, i) => [`g${i + 1}`, data[`g${i + 1}`]])
       ),
@@ -189,6 +220,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         [...Array(12)].map((_, i) => [`a${i + 1}`, data[`a${i + 1}`]])
       ),
       horoscopeFileName: data.horoscopeFileName,
+      thesaiirupu: `${data.thesaiPlanet}-${data.thesaiYears}-${data.thesaiMonths}-${data.thesaiDays}`,
     });
     
   };
@@ -210,24 +242,37 @@ export default function Step4({ nextStep, prevStep, formData }) {
       <div className="flex items-center justify-center gap-2 mb-6">
         <Stars className="w-8 h-8 text-yellow-600" />
         <h3 className="text-2xl font-bold text-yellow-700">
-           Horoscope (ஜாதகம்) Details
+          Horoscope (ஜாதகம்) Details
         </h3>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4 gap-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Moon Sign (Rasi)
           </label>
+
           <select
-            name="moonSign"
-            value={data.moonSign}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+            name="moonSignId"
+            value={data.moonSignId}
+            // className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+            className="border px-3 py-2.5 rounded-lg w-full
+           focus:ring-2 focus:ring-yellow-500 outline-none"
+            onChange={(e) => {
+              const selected = options.moonSigns.find(
+                (m) => m.ID == e.target.value
+              );
+
+              setData({
+                ...data,
+                moonSignId: selected.ID,
+                moonSign: selected.Moon_Sign,
+              });
+            }}
           >
             <option value="">Select Moon Sign</option>
             {options.moonSigns.map((m) => (
-              <option key={m} value={m}>
-                {m}
+              <option key={m.ID} value={m.ID}>
+                {m.Moon_Sign}
               </option>
             ))}
           </select>
@@ -242,12 +287,34 @@ export default function Step4({ nextStep, prevStep, formData }) {
             name="star"
             value={data.star}
             onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+            // className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+            className="border px-3 py-2.5 rounded-lg w-full
+           focus:ring-2 focus:ring-yellow-500 outline-none"
           >
-            <option value="">Select Star</option>
+            <option value="">First select Moon sign</option>
             {options.nakshatras.map((s) => (
               <option key={s} value={s}>
                 {s}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Lagnam */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Lagnam
+          </label>
+          <select
+            name="lagnam"
+            value={data.lagnam}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+          >
+            <option value="">Select Lagnam</option>
+            {options.moonSigns.map((m) => (
+              <option key={m.ID} value={m.Moon_Sign}>
+                {m.Moon_Sign}
               </option>
             ))}
           </select>
@@ -258,19 +325,21 @@ export default function Step4({ nextStep, prevStep, formData }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Gothra
           </label>
-          <select
+
+          <input
+            list="gothra-list"
             name="gothra"
             value={data.gothra}
             onChange={handleChange}
+            placeholder="Select or type Gothra"
             className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          >
-            <option value="">Select Gothra</option>
+          />
+
+          <datalist id="gothra-list">
             {options.gothras.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
+              <option key={g} value={g} />
             ))}
-          </select>
+          </datalist>
         </div>
 
         {/* Manglik */}
@@ -291,39 +360,6 @@ export default function Step4({ nextStep, prevStep, formData }) {
               </option>
             ))}
           </select>
-        </div>
-
-        {/* Shani */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Shani
-          </label>
-          <select
-            name="shani"
-            value={data.shani}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          >
-            <option value="">Select Shani Type</option>
-            {options.shanis.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Place of Shani */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Place of Shani
-          </label>
-          <input
-            name="placeOfShani"
-            value={data.placeOfShani}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          />
         </div>
 
         {/* Horoscope Match */}
@@ -358,7 +394,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
             className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
           >
             <option value="">Select Parigarasevai</option>
-            {generateNumbers(2, 12).map((num) => (
+            {generateNumbers(0, 12).map((num) => (
               <option key={num} value={num}>
                 {num}
               </option>
@@ -378,7 +414,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
             className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
           >
             <option value="">Select Sevai</option>
-            {generateNumbers(2, 12).map((num) => (
+            {generateNumbers(0, 12).map((num) => (
               <option key={num} value={num}>
                 {num}
               </option>
@@ -426,37 +462,69 @@ export default function Step4({ nextStep, prevStep, formData }) {
           </select>
         </div>
 
-        {/* Lagnam */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Lagnam
-          </label>
-          <select
-            name="lagnam"
-            value={data.lagnam}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          >
-            <option value="">Select Lagnam</option>
-            {options.moonSigns.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Thesai Irupu */}
         <div className="col-span-2 mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Thesai Irupu (திசைஇருப்பு)
-          </label>
-          <input
-            name="thesaiirupu"
-            value={data.thesaiirupu}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full"
-          />
+          <div className="flex gap-2 mt-7">
+            {/* Planet */}
+            <select
+              name="thesaiPlanet"
+              value={data.thesaiPlanet}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-1/4 text-sm"
+            >
+              <option value=""> Thesai Irupu (திசைஇருப்பு)</option>
+              {thesaiList.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+
+            {/* Years */}
+            <select
+              name="thesaiYears"
+              value={data.thesaiYears}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-1/4 text-sm"
+            >
+              <option value="">Years</option>
+              {generateNumbers(0, 30).map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+
+            {/* Months */}
+            <select
+              name="thesaiMonths"
+              value={data.thesaiMonths}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-1/4 text-sm"
+            >
+              <option value="">Months</option>
+              {generateNumbers(0, 12).map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+
+            {/* Days */}
+            <select
+              name="thesaiDays"
+              value={data.thesaiDays}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-1/4 text-sm"
+            >
+              <option value="">Days</option>
+              {generateNumbers(0, 30).map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Birth Time */}
@@ -678,6 +746,20 @@ export default function Step4({ nextStep, prevStep, formData }) {
           name="kuladeivam"
           value={data.kuladeivam}
           onChange={handleChange}
+          className="border p-2 rounded-lg w-full"
+        />
+      </div>
+
+      {/* Kootam */}
+      <div className="col-span-2 mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Kootam
+        </label>
+        <input
+          name="kootam"
+          value={data.kootam}
+          onChange={handleChange}
+          placeholder="Enter Kootam"
           className="border p-2 rounded-lg w-full"
         />
       </div>

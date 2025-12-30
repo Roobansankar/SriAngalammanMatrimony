@@ -508,6 +508,8 @@
 import { Bell, ChevronDown, Heart, Menu, Search, UserCircle, Users, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import logo from "./logo.png";
+
 
 export default function Header({ user, setUser }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -719,11 +721,22 @@ export default function Header({ user, setUser }) {
     >
       <nav className="container mx-auto flex items-center justify-between px-4 py-3 bg-white text-black md:bg-transparent md:text-inherit relative">
         {/* Logo */}
-        <Link to="/" onClick={handleLinkClick} className="flex items-center gap-3 flex-shrink-0 z-10">
-          <img
+        <Link
+          to="/"
+          onClick={handleLinkClick}
+          className="flex items-center gap-3 flex-shrink-0 z-10"
+        >
+          {/* <img
             src="https://sriangalammanmatrimony.com/images/logo.png"
             className={`h-14 ${!scrolled && isTransparentPage ? "md:drop-shadow-lg" : ""}`}
             alt="logo"
+          /> */}
+          <img
+            src={logo}
+            className={`h-14 ${
+              !scrolled && isTransparentPage ? "md:drop-shadow-lg" : ""
+            }`}
+            alt="Sri Angalamman Matrimony Logo"
           />
         </Link>
 
@@ -737,20 +750,34 @@ export default function Header({ user, setUser }) {
             <>
               <li className="relative" ref={aboutRef}>
                 <button
-                  onClick={() => setOpenDropdown(openDropdown === "about" ? null : "about")}
+                  onClick={() =>
+                    setOpenDropdown(openDropdown === "about" ? null : "about")
+                  }
                   className="flex items-center gap-1 hover:text-rose-600 transition-colors"
                 >
-                  About Us <ChevronDown size={16} className={`transition-transform duration-200 ${openDropdown === "about" ? "rotate-180" : ""}`} />
+                  About Us{" "}
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      openDropdown === "about" ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
 
                 {openDropdown === "about" && (
-                  <div className={`absolute top-full left-0 mt-2 w-56  ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden`}>
+                  <div
+                    className={`absolute top-full left-0 mt-2 w-56  ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden`}
+                  >
                     {aboutItems.map((item, i) => (
                       <Link
                         key={item.name}
                         to={item.path}
                         onClick={handleLinkClick}
-                        className={`block px-4 py-2.5 hover:bg-rose-50 hover:text-rose-600 transition-colors ${i !== aboutItems.length - 1 ? "border-b border-gray-100" : ""}`}
+                        className={`block px-4 py-2.5 hover:bg-rose-50 hover:text-rose-600 transition-colors ${
+                          i !== aboutItems.length - 1
+                            ? "border-b border-gray-100"
+                            : ""
+                        }`}
                       >
                         {item.name}
                       </Link>
@@ -760,7 +787,12 @@ export default function Header({ user, setUser }) {
               </li>
 
               {guestNavItems.map(({ name, path }) => (
-                <NavLink key={name} to={path} onClick={handleLinkClick} className="hover:text-rose-600 px-3 py-2 rounded transition">
+                <NavLink
+                  key={name}
+                  to={path}
+                  onClick={handleLinkClick}
+                  className="hover:text-rose-600 px-3 py-2 rounded transition"
+                >
                   {name}
                 </NavLink>
               ))}
@@ -771,14 +803,38 @@ export default function Header({ user, setUser }) {
                 if (hasSearchDropdown) {
                   return (
                     <li key={name} className="relative" ref={searchRef}>
-                      <button onClick={() => setOpenDropdown(openDropdown === "search" ? null : "search")} className="flex items-center gap-1.5 hover:text-rose-600 transition-colors">
-                        {Icon && <Icon className="w-5 h-5" />} {name} <ChevronDown size={16} className={`transition-transform duration-200 ${openDropdown === "search" ? "rotate-180" : ""}`} />
+                      <button
+                        onClick={() =>
+                          setOpenDropdown(
+                            openDropdown === "search" ? null : "search"
+                          )
+                        }
+                        className="flex items-center gap-1.5 hover:text-rose-600 transition-colors"
+                      >
+                        {Icon && <Icon className="w-5 h-5" />} {name}{" "}
+                        <ChevronDown
+                          size={16}
+                          className={`transition-transform duration-200 ${
+                            openDropdown === "search" ? "rotate-180" : ""
+                          }`}
+                        />
                       </button>
 
                       {openDropdown === "search" && (
-                        <div className={`absolute top-full left-0 mt-2 w-52 py-2 ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200`}>
+                        <div
+                          className={`absolute top-full left-0 mt-2 w-52 py-2 ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200`}
+                        >
                           {searchItems.map((it, i) => (
-                            <Link key={it.name} to={it.path} onClick={handleLinkClick} className={`block px-4 py-2.5 hover:bg-rose-50 hover:text-rose-600 transition-colors ${i !== searchItems.length - 1 ? "border-b border-gray-100" : ""}`}>
+                            <Link
+                              key={it.name}
+                              to={it.path}
+                              onClick={handleLinkClick}
+                              className={`block px-4 py-2.5 hover:bg-rose-50 hover:text-rose-600 transition-colors ${
+                                i !== searchItems.length - 1
+                                  ? "border-b border-gray-100"
+                                  : ""
+                              }`}
+                            >
                               {it.name}
                             </Link>
                           ))}
@@ -789,15 +845,27 @@ export default function Header({ user, setUser }) {
                 }
 
                 return (
-                  <NavLink key={name} to={path} onClick={handleLinkClick} className="hover:text-rose-600 px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5">
+                  <NavLink
+                    key={name}
+                    to={path}
+                    onClick={handleLinkClick}
+                    className="hover:text-rose-600 px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5"
+                  >
                     {Icon && <Icon className="w-5 h-5" />}
                     {name}
                     {name === "Notification" && unread > 0 && (
-                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{unread > 99 ? "99+" : unread}</span>
+                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {unread > 99 ? "99+" : unread}
+                      </span>
                     )}
-                    {name === "Interests" && (incomingCount + chatRequestCount) > 0 && (
-                      <span className="bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full">{(incomingCount + chatRequestCount) > 99 ? "99+" : (incomingCount + chatRequestCount)}</span>
-                    )}
+                    {name === "Interests" &&
+                      incomingCount + chatRequestCount > 0 && (
+                        <span className="bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full">
+                          {incomingCount + chatRequestCount > 99
+                            ? "99+"
+                            : incomingCount + chatRequestCount}
+                        </span>
+                      )}
                   </NavLink>
                 );
               })}
@@ -806,28 +874,42 @@ export default function Header({ user, setUser }) {
         </ul>
 
         {/* Desktop Profile/Login */}
-        <div className="hidden md:flex items-center gap-4 relative" ref={profileRef}>
+        <div
+          className="hidden md:flex items-center gap-4 relative"
+          ref={profileRef}
+        >
           {user ? (
             <>
               {/* Profile image/icon toggles dropdown (no caret) */}
               <button
-                onClick={() => setOpenDropdown(openDropdown === "profile" ? null : "profile")}
+                onClick={() =>
+                  setOpenDropdown(openDropdown === "profile" ? null : "profile")
+                }
                 className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-rose-400 transition-all focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2"
                 aria-label="Profile menu"
               >
                 {user.PhotoURL && user.PhotoURL.trim() ? (
-                  <img src={profileImage} className="w-full h-full object-cover" alt="profile" />
+                  <img
+                    src={profileImage}
+                    className="w-full h-full object-cover"
+                    alt="profile"
+                  />
                 ) : (
                   <UserCircle className="w-10 h-10 text-gray-400" />
                 )}
               </button>
 
               {openDropdown === "profile" && (
-                <div className={`absolute right-0 top-full mt-2 w-56 overflow-hidden ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200`}>
+                <div
+                  className={`absolute right-0 top-full mt-2 w-56 overflow-hidden ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200`}
+                >
                   {/* My BioData */}
                   <Link
                     to="/bio"
-                    onClick={() => { handleLinkClick(); setOpenDropdown(null); }}
+                    onClick={() => {
+                      handleLinkClick();
+                      setOpenDropdown(null);
+                    }}
                     className="block px-4 py-2.5 hover:bg-rose-50 hover:text-rose-600 transition-colors"
                   >
                     My BioData
@@ -841,7 +923,10 @@ export default function Header({ user, setUser }) {
                     <Link
                       key={it.name}
                       to={it.path}
-                      onClick={() => { handleLinkClick(); setOpenDropdown(null); }}
+                      onClick={() => {
+                        handleLinkClick();
+                        setOpenDropdown(null);
+                      }}
                       className="block px-4 py-2 text-sm hover:bg-rose-50 hover:text-rose-600 transition-colors"
                     >
                       {it.name}
@@ -851,7 +936,10 @@ export default function Header({ user, setUser }) {
                   {/* Divider & Logout */}
                   <div className="border-t border-gray-100 pt-2">
                     <button
-                      onClick={() => { setOpenDropdown(null); handleLogout(); }}
+                      onClick={() => {
+                        setOpenDropdown(null);
+                        handleLogout();
+                      }}
                       className="w-full text-left px-4 py-2.5 text-rose-600 font-medium hover:bg-rose-50 transition-colors"
                     >
                       Logout
@@ -897,7 +985,11 @@ export default function Header({ user, setUser }) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-white sticky top-0 z-10">
-          <Link to="/" onClick={handleLinkClick} className="flex items-center gap-3">
+          <Link
+            to="/"
+            onClick={handleLinkClick}
+            className="flex items-center gap-3"
+          >
             <img
               src="https://sriangalammanmatrimony.com/images/logo.png"
               alt="logo"
@@ -912,7 +1004,6 @@ export default function Header({ user, setUser }) {
         <div className={`flex-1 overflow-y-auto px-6 pb-24 mt-2 text-black`}>
           {!user ? (
             <>
-
               <button
                 onClick={() =>
                   setOpenDropdown(openDropdown === "about" ? null : "about")
@@ -1023,11 +1114,14 @@ export default function Header({ user, setUser }) {
                         {unread > 99 ? "99+" : unread}
                       </span>
                     )}
-                    {name === "Incoming interests" && (incomingCount + chatRequestCount) > 0 && (
-                      <span className="bg-pink-600 text-white text-xs px-2 rounded-full">
-                        {(incomingCount + chatRequestCount) > 99 ? "99+" : (incomingCount + chatRequestCount)}
-                      </span>
-                    )}
+                    {name === "Incoming interests" &&
+                      incomingCount + chatRequestCount > 0 && (
+                        <span className="bg-pink-600 text-white text-xs px-2 rounded-full">
+                          {incomingCount + chatRequestCount > 99
+                            ? "99+"
+                            : incomingCount + chatRequestCount}
+                        </span>
+                      )}
                   </NavLink>
                 ))}
 

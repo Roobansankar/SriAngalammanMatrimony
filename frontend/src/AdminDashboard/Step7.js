@@ -48,11 +48,7 @@ export default function Step7({ nextStep, prevStep, formData = {} }) {
     passport: formData.passport || "No",
   });
 
-  // useEffect(() => {
-  //   if (Object.keys(formData).length > 0) {
-  //     setData((prev) => ({ ...prev, ...formData }));
-  //   }
-  // }, [formData]);
+ 
 
   useEffect(() => {
   if (Object.keys(formData).length > 0) {

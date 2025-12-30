@@ -60,7 +60,7 @@ export default function About1() {
           data-aos="fade-up"
           className="flex flex-col-reverse md:flex-row items-center md:items-start gap-8 md:gap-12"
         >
-          <div data-aos="fade-right" className="w-full md:w-2/3">
+          {/* <div data-aos="fade-right" className="w-full md:w-2/3">
             <p className="mb-4 text-gray-800">
               <span className="font-semibold">Sriangalamman Matrimony</span> is
               a trusted matrimonial service that helps community members across
@@ -89,6 +89,42 @@ export default function About1() {
               data-aos="zoom-in"
               className="inline-block bg-gradient-to-r from-pink-700 to-rose-600 text-white font-semibold px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
               aria-label="Read more about Sriangalamman Matrimony"
+            >
+              Read More
+            </Link>
+          </div> */}
+
+          <div data-aos="fade-right" className="w-full md:w-2/3">
+            <p className="mb-4 text-gray-800">
+              <span className="font-semibold">Sri Angalamman Manamalai</span>{" "}
+              was founded on the joyful occasion of my 60th birthday and has
+              been successfully serving the community for the past five and a
+              half years.
+            </p>
+
+            <p className="mb-4 text-gray-800 leading-relaxed">
+              Our service helps bride and groom seekers easily find suitable
+              life partners within relatives and trusted connections, ensuring
+              clarity, comfort, and confidence throughout the process.
+            </p>
+
+            <p className="mb-4 text-gray-800 leading-relaxed">
+              With a strong foundation of trust and transparency, we have
+              proudly facilitated over{" "}
+              <span className="font-semibold">8,600 successful marriages</span>,
+              without expectations or hidden commitments.
+            </p>
+
+            <p className="mb-6 text-gray-800 leading-relaxed">
+              We sincerely wish everyone a happy, prosperous, and long married
+              life, filled with love, understanding, and harmony.
+            </p>
+
+            <Link
+              to="/about"
+              data-aos="zoom-in"
+              className="inline-block bg-gradient-to-r from-pink-700 to-rose-600 text-white font-semibold px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              aria-label="Read more about Sri Angalamman Manamalai"
             >
               Read More
             </Link>

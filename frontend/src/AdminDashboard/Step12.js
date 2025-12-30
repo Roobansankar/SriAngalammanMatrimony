@@ -312,6 +312,9 @@ export default function Step12({ prevStep, formData }) {
 
   const handleSubmit = async () => {
 
+   
+
+
     const err = validateAdminSubmit();
     if (err) {
       alert(err);
@@ -328,6 +331,14 @@ export default function Step12({ prevStep, formData }) {
         fd.append(key, val);
       };
 
+
+      // const add = (key, value) => {
+      //   if (value !== undefined && value !== null) {
+      //     formData.append(key, value);
+      //   }
+      // };
+
+ console.log("FINAL FORM DATA", f.fatherPoorvegam, f.motherPoorvegam);
       /* ------------------------------------------------
          STEP 1 — BASIC DETAILS
       ------------------------------------------------ */
@@ -361,21 +372,26 @@ export default function Step12({ prevStep, formData }) {
       add("star", f.star);
       add("gothra", f.gothra);
       add("manglik", f.manglik);
-      add("shani", f.shani);
-      add("placeOfShani", f.placeOfShani);
       add("horoscopeMatch", f.horoscopeMatch);
       add("parigarasevai", f.parigarasevai);
       add("sevai", f.sevai);
       add("raghu", f.raghu);
       add("keethu", f.keethu);
-      add("lagnam", f.lagnam); 
+      add("lagnam", f.lagnam);
       add("birthHour", f.birthHour);
       add("birthMinute", f.birthMinute);
       add("birthSecond", f.birthSecond);
       add("ampm", f.ampm);
       add("placeOfBirth", f.placeOfBirth);
       add("kuladeivam", f.kuladeivam);
-      add("thesaiirupu", f.thesaiirupu);
+      add("kootam", f.kootam);
+      // add("thesaiirupu", f.thesaiirupu);
+
+      /* NEW */
+      add("thesaiPlanet", f.thesaiPlanet);
+      add("thesaiYears", f.thesaiYears);
+      add("thesaiMonths", f.thesaiMonths);
+      add("thesaiDays", f.thesaiDays);
 
       /* ------------------------------------------------
          STEP 5 — CONTACT DETAILS
@@ -454,6 +470,9 @@ export default function Step12({ prevStep, formData }) {
       add("fatherOccupation", f.fatherOccupation);
       add("motherName", f.motherName);
       add("motherOccupation", f.motherOccupation);
+      add("fatherPoorvegam", f.fatherPoorvegam);
+      add("motherPoorvegam", f.motherPoorvegam);
+
       add(
         "familyWealth",
         Array.isArray(f.familyWealth)
@@ -525,15 +544,12 @@ export default function Step12({ prevStep, formData }) {
 
       setMatriId(res.data.matriId);
       setSubmitted(true);
-     
 
       setTimeout(() => {
         navigate("/admin/new-users", {
           state: { refreshOnce: true },
         });
       }, 2000);
-
-    
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
       setError(

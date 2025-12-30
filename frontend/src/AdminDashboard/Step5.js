@@ -748,7 +748,7 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
 
         {/* Alternative Phone */}
         <div>
-          <label className="font-medium">Alternative Phone</label>
+          <label className="font-medium">Father's Number</label>
           <input
             name="altPhone"
             value={data.altPhone}
@@ -766,7 +766,7 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
 
         {/* WhatsApp */}
         <div>
-          <label className="font-medium">WhatsApp Number</label>
+          <label className="font-medium">Mother's Number</label>
           <input
             name="whatsapp"
             value={data.whatsapp}

@@ -101,3 +101,17 @@
   background-position: right;
   transition: background-position 1s ease;
 }
+
+
+
+/* 
+ */
+
+
+ select {
+  width: 100%;
+}
+
+select option {
+  white-space: normal;
+}

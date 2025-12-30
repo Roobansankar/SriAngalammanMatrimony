@@ -24,7 +24,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     occupationDetails: formData.occupationDetails || "",
     annualIncome: formData.annualIncome || "",
     incomeType: formData.incomeType || "",
-    otherIncome: formData.otherIncome || "",
+    // otherIncome: formData.otherIncome || "",
     employedIn: formData.employedIn || "",
     workingHours: formData.workingHours || "",
     company_name: formData.company_name || "",
@@ -41,7 +41,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
         occupationDetails: formData.occupationDetails || "",
         annualIncome: formData.annualIncome || "",
         incomeType: formData.incomeType || "",
-        otherIncome: formData.otherIncome || "",
+        // otherIncome: formData.otherIncome || "",
         employedIn: formData.employedIn || "",
         workingHours: formData.workingHours || "",
         company_name: formData.company_name || "",
@@ -74,9 +74,9 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
       newErrors.annualIncome = "Income must be a number";
     }
 
-    if (data.otherIncome && !/^\d+$/.test(data.otherIncome)) {
-      newErrors.otherIncome = "Income must be a number";
-    }
+    // if (data.otherIncome && !/^\d+$/.test(data.otherIncome)) {
+    //   newErrors.otherIncome = "Income must be a number";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -233,7 +233,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
         </div>
 
         {/* Other Income */}
-        <div>
+        {/* <div>
           <label className="block font-medium text-gray-700 mb-1">
             Other Income
           </label>
@@ -251,7 +251,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           {errors.otherIncome && (
             <p className="text-red-500 text-xs mt-1">{errors.otherIncome}</p>
           )}
-        </div>
+        </div> */}
 
         {/* Employed In Dropdown */}
         <div>

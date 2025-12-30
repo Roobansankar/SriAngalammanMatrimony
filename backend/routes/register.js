@@ -397,9 +397,9 @@ router.post(
         Gothram: toTrimOrNull(b.gothra) || "",
         Horosmatch: toTrimOrNull(b.horoscopeMatch) || "",
         Manglik: toTrimOrNull(b.manglik) || "",
-        shani: toTrimOrNull(b.shani) || "",
-        // shaniplace: toTrimOrNull(b.placeOfShani),
-        shaniplace: b.shaniplace ? String(b.shaniplace).trim() : "",
+        // shani: toTrimOrNull(b.shani) || "",
+
+        // shaniplace: b.shaniplace ? String(b.shaniplace).trim() : "",
 
         parigarasevai: toTrimOrNull(b.parigarasevai) || "",
         Sevai: toTrimOrNull(b.sevai) || "",
@@ -407,7 +407,15 @@ router.post(
         Keethu: toTrimOrNull(b.keethu) || "",
         Lagnam: toTrimOrNull(b.lagnam) || null,
         Kuladeivam: toTrimOrNull(b.kuladeivam) || "",
-        ThesaiIrupu: toTrimOrNull(b.thesaiirupu) || "",
+        Kootam: toTrimOrNull(b.kootam) || null, // ✅ STORE NULL IF EMPTY
+
+        // ThesaiIrupu: toTrimOrNull(b.thesaiirupu) || "",
+
+        ThesaiPlanet: b.thesaiPlanet || null,
+        ThesaiYears: b.thesaiYears || null,
+        ThesaiMonths: b.thesaiMonths || null,
+        ThesaiDays: b.thesaiDays || null,
+
         Horosother: savedHoroscopeFilename || null,
         // Rasi 12
         g1: toTrimOrNull(b.g1),
@@ -451,6 +459,7 @@ router.post(
         Education: toTrimOrNull(b.education),
         EducationDetails: toTrimOrNull(b.educationDetails),
         Occupation: toTrimOrNull(b.occupation),
+        OccupationDetails: toTrimOrNull(b.occupationDetails),
         Employedin: toTrimOrNull(b.employedIn),
         Annualincome: toTrimOrNull(b.annualIncome),
         income_in: toTrimOrNull(b.incomeType),
@@ -494,6 +503,10 @@ router.post(
         Fathersoccupation: toTrimOrNull(b.fatherOccupation),
         Mothersname: toTrimOrNull(b.motherName),
         Mothersoccupation: toTrimOrNull(b.motherOccupation),
+        // FatherPoorvegam: toTrimOrNull(b.fatherPoorvegam),
+        // MotherPoorvegam: toTrimOrNull(b.motherPoorvegam),
+        FatherPoorvegam: toTrimOrNull(b.fatherPoorvegam),
+        MotherPoorvegam: toTrimOrNull(b.motherPoorvegam),
 
         family_wealth: toTrimOrNull(b.familyWealth),
 
@@ -562,6 +575,9 @@ router.post(
         .join(",")})`;
 
       console.log("🟢 Inserting record with", keys.length, "columns");
+
+      console.log("BODY RECEIVED:", b);
+
 
       await conn.query(sql, values);
 

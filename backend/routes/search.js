@@ -350,17 +350,37 @@ ORDER BY s.Subcaste
 
 // GET /api/moon-sign
 router.get("/moon-sign", (req, res) => {
-  const sql = "SELECT ID, Moon_Sign FROM moon_sign ORDER BY Moon_Sign";
+  const sql = `
+    SELECT ID, Moon_Sign
+    FROM moon_sign
+    ORDER BY ID
+  `;
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
 });
 
-// GET /api/nakshatra
-router.get("/nakshatra", (req, res) => {
-  const sql = "SELECT id, Nakshatra FROM nakshatra ORDER BY Nakshatra";
-  db.query(sql, (err, results) => {
+
+
+// GET /api/nakshatra/:moonSignId
+router.get("/nakshatra/:moonSignId", (req, res) => {
+  const { moonSignId } = req.params;
+
+  const sql = `
+    SELECT 
+      moon_sign_id,
+      CASE 
+        WHEN moon_sign_id = 13 OR paatham = 0
+          THEN nakshatra_name
+        ELSE CONCAT(nakshatra_name, ' ', paatham, ' aam paatham')
+      END AS nakshatra_paatham
+    FROM moon_sign_nakshatra
+    WHERE moon_sign_id = ?
+    ORDER BY nakshatra_name, paatham
+  `;
+
+  db.query(sql, [moonSignId], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });

@@ -232,17 +232,21 @@ function convertToTamil(value, mapObject) {
 // ============================================================
 
 // Helper to get header color based on MatriID prefix and gender
-function getHeaderColor(matriId, gender) {
+function getHeaderColor(matriId, gender, plan) {
+
+  if (plan === "premium") {
+    return "#B8860B"; // dark golden
+  }
   if (!matriId) return gender === "Male" ? "#b3f0ab" : "#eabdd2";
   
   const prefix = matriId.substring(0, 4).toUpperCase();
   
   if (prefix === "SAMD") {
-    return "#C1272D";
+    return "#D32F2F";
   } else if (prefix === "SAMR") {
-    return "#a4c4f4";
+    return "#6B8FD6";
   } else if (prefix === "SAMM" || gender === "Male") {
-    return "#b3f0ab";
+    return "#3FA732";
   } else if (prefix === "SAMF" || gender === "Female") {
     return "#eabdd2";
   }
@@ -306,6 +310,36 @@ export default function MemberBioData() {
     fetchMembers();
   };
 
+  const formatValue = (v) => {
+    if (v === null || v === undefined || v === "" || Number(v) === 0) {
+      return "-";
+    }
+    const num = Number(v);
+    return num < 10 ? `0${num}` : `${num}`;
+  };
+
+  const thesaiTamilMap = {
+    சூரி: "சூரிய",
+    சந்: "சந்திர",
+    செவ்: "செவ்வாய்",
+    புத: "புதன்",
+    குரு: "குரு",
+    சுக்: "சுக்கிர",
+    சனி: "சனி",
+    ராகு: "ராகு",
+    கேது: "கேது",
+  };
+
+
+  const formatDMY = (dateStr) => {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.slice(0, 10).split("-");
+    return `${day}-${month}-${year}`;
+  };
+
+
+
+
   const viewBiodata = async (matriId) => {
     setBiodataLoading(true);
     setIsEditing(false);
@@ -313,6 +347,19 @@ export default function MemberBioData() {
       const res = await axios.get(`${API}/api/admin/profile/${matriId}`);
       if (res.data.success) {
         const user = res.data.user;
+        
+
+  const planetTamil =
+    thesaiTamilMap[user.ThesaiPlanet] || user.ThesaiPlanet || "";
+
+  const dasa_balance = planetTamil
+    ? `${planetTamil} திசையில் ${formatValue(
+        user.ThesaiYears
+      )} வருடம் ${formatValue(user.ThesaiMonths)} மாதம் ${formatValue(
+        user.ThesaiDays
+      )} நாள்`
+    : "";
+
         const mapped = {
           id: user.ID,
           matriId: user.MatriID,
@@ -320,36 +367,38 @@ export default function MemberBioData() {
           type: user.Gender === "Male" ? "groom" : "bride",
           name: user.Name || "",
           photo: user.PhotoURL || "",
-          date: user.Regdate?.slice(0, 10) || "",
-          birth_date: user.DOB?.slice(0, 10) || "",
+
+          date: formatDMY(user.Regdate || "-"),
+          birth_date: formatDMY(user.DOB || "-"),
+
           birth_time: user.TOB || "",
           birth_place: user.POB || "",
-          education: user.Education || "",
-          occupation: user.Occupation || "",
+          education: user.EducationDetails || "",
+          occupation: user.OccupationDetails || "",
           company_details: `${user.company_name || ""}, ${
             user.workinglocation || ""
           }`,
           monthly_income: user.Annualincome || "",
           height: user.HeightText || "",
           weight: user.Weight || "",
-          // complexion: user.Complexion || "",
+
           complexion: convertToTamil(user.Complexion || "", complexionMap),
           family_deity: `${user.Kuladeivam || ""}, ${user.City || ""}`,
-          // kulam: user.Caste || "",
-          kulam: convertToTamil(user.Caste || "", kulamMap),
-          // kootam: user.Subcaste || "",
-          kootam: convertToTamil(user.Subcaste || "", kootamMap),
+
+          kulam: convertToTamil(user.Subcaste || "", kootamMap),
+
+          kootam: user.Kootam || "",
           father_name: user.Fathername || "",
           father_phone: user.Mobile || "",
           father_occupation: user.Fathersoccupation || "",
-          father_native_place: user.POB || "",
+          father_native_place: user.FatherPoorvegam || "",
           mother_name: user.Mothersname || "",
-          mother_phone: user.Mobile || "",
+          mother_phone: user.Mobile2 || "",
           mother_occupation: user.Mothersoccupation || "",
-          mother_native_place: user.POB || "",
+          mother_native_place: user.MotherPoorvegam || "",
           address: user.Address || "",
-          family_income: `${user.Annualincome || ""}, ${
-            user.family_wealth || ""
+          family_income: `${user.anyotherincome || ""}, ${
+            user.FamilyDetails || ""
           }`,
 
           siblings_details: [
@@ -370,7 +419,9 @@ export default function MemberBioData() {
           suddham: "",
           rahu: user.Raghu || "",
           ketu: user.Keethu || "",
-          sevvai: user.Sevai || "",
+          // sevvai: user.Sevai || "",
+          sevvai: user.Sevai || user.parigarasevai || "",
+
           navamsam: [
             user.a1,
             user.a2,
@@ -399,7 +450,9 @@ export default function MemberBioData() {
             user.g11,
             user.g12,
           ],
-          dasa_balance: user.ThesaiIrupu || "",
+          // dasa_balance: user.ThesaiIrupu || "",
+          dasa_balance: dasa_balance,
+
           other_notes: user.PartnerExpectations || "",
           mail_id: user.ConfirmEmail || "",
           blood_group: user.BloodGroup || "",
@@ -627,7 +680,7 @@ const downloadAsPDF = async () => {
   };
 
   const currentData = isEditing ? editData : selectedMember;
-  const headerColor = currentData ? getHeaderColor(currentData.matriId, currentData.gender) : "#eabdd2";
+  const headerColor = currentData ? getHeaderColor(currentData.matriId, currentData.gender, currentData.plan) : "#eabdd2";
 
   return (
     <div className="space-y-6">
@@ -1579,7 +1632,7 @@ const downloadAsPDF = async () => {
                         <span>
                           முகவரி:
                           <div
-                            className="display-placeholder"
+                            className="display-placeholder address-placeholder"
                             style={{ minWidth: "1075px" }}
                           >
                             {isEditing ? (
@@ -1708,7 +1761,7 @@ const downloadAsPDF = async () => {
                           இராசி:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "260px" }}
+                            style={{ minWidth: "220px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1760,6 +1813,7 @@ const downloadAsPDF = async () => {
                         </span>
                       </div>
 
+                      {/* SUDDHAM / RAHU / KETU / SEVVAI */}
                       {/* SUDDHAM / RAHU / KETU / SEVVAI */}
                       <div className="display-form-row">
                         <span>
@@ -1815,7 +1869,7 @@ const downloadAsPDF = async () => {
                               </span>
                             )}
                           </div>
-                          கேது:
+                          ஆமிடம், கேது:
                           <div
                             className="display-placeholder"
                             style={{ minWidth: "65px" }}
@@ -1841,7 +1895,7 @@ const downloadAsPDF = async () => {
                               </span>
                             )}
                           </div>
-                          செவ்வாய்:
+                          ஆமிடம், செவ்வாய்:
                           <div
                             className="display-placeholder"
                             style={{ minWidth: "65px" }}
@@ -1867,6 +1921,10 @@ const downloadAsPDF = async () => {
                               </span>
                             )}
                           </div>
+                          {/* ✅ INLINE FINAL TEXT */}
+                          <span className="display-text">
+                            ஆமிடம், பரிகாரசெவ்வாய்
+                          </span>
                         </span>
                       </div>
 
@@ -2214,7 +2272,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* BIRTH SECTION */}
               <div className="display-form-row">
                 <span>
@@ -2247,7 +2304,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* EDUCATION / JOB */}
               <div className="display-form-row">
                 <span>
@@ -2271,7 +2327,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* COMPANY DETAILS */}
               <div className="display-form-row">
                 <span>
@@ -2286,7 +2341,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* INCOME / HEIGHT / WEIGHT */}
               <div className="display-form-row">
                 <span>
@@ -2324,7 +2378,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* FAMILY DEITY */}
               <div className="display-form-row">
                 <span>
@@ -2339,7 +2392,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* KULAM + KOOTAM */}
               <div className="display-form-row">
                 <span>
@@ -2359,7 +2411,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* FATHER */}
               <div className="display-form-row">
                 <span>
@@ -2383,7 +2434,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* FATHER OCCUPATION */}
               <div className="display-form-row">
                 <span>
@@ -2407,7 +2457,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* MOTHER */}
               <div className="display-form-row">
                 <span>
@@ -2431,7 +2480,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* MOTHER OCCUPATION */}
               <div className="display-form-row">
                 <span>
@@ -2455,20 +2503,18 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* ADDRESS */}
               <div className="display-form-row">
                 <span>
                   முகவரி:
                   <div
-                    className="display-placeholder"
+                    className="display-placeholder address-placeholder"
                     style={{ minWidth: "1075px" }}
                   >
                     <span className="display-data">{currentData.address}</span>
                   </div>
                 </span>
               </div>
-
               {/* FAMILY INCOME */}
               <div className="display-form-row">
                 <span>
@@ -2483,7 +2529,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* SIBLINGS */}
               <div className="display-form-row">
                 <span>
@@ -2498,7 +2543,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* STAR / RASI / LAKNAM */}
               <div className="display-form-row">
                 <span>
@@ -2512,7 +2556,7 @@ const downloadAsPDF = async () => {
                   இராசி:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "260px" }}
+                    style={{ minWidth: "190px" }}
                   >
                     <span className="display-data">{currentData.rasi}</span>
                   </div>
@@ -2525,7 +2569,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* SUDDHAM / RAHU / KETU / SEVVAI */}
               <div className="display-form-row">
                 <span>
@@ -2543,20 +2586,22 @@ const downloadAsPDF = async () => {
                   >
                     <span className="display-data">{currentData.rahu}</span>
                   </div>
-                  கேது:
+                  ஆமிடம், கேது:
                   <div
                     className="display-placeholder"
                     style={{ minWidth: "65px" }}
                   >
                     <span className="display-data">{currentData.ketu}</span>
                   </div>
-                  செவ்வாய்:
+                  ஆமிடம், செவ்வாய்:
                   <div
                     className="display-placeholder"
                     style={{ minWidth: "65px" }}
                   >
                     <span className="display-data">{currentData.sevvai}</span>
                   </div>
+                  {/* ✅ THIS IS THE FIX */}
+                  <span className="display-text">ஆமிடம், பரிகாரசெவ்வாய்</span>
                 </span>
               </div>
 
@@ -2685,19 +2730,6 @@ const downloadAsPDF = async () => {
                             gap: "2px",
                           }}
                         >
-                          {/* {safeParseChart(val).map((planet, idx) => (
-                            <div
-                              key={idx}
-                              className="planet-text"
-                              style={{
-                                fontSize: "18px",
-                                lineHeight: "1.3",
-                                width: "100%",
-                              }}
-                            >
-                              {planet}
-                            </div>
-                          ))} */}
                           <div className="planet-wrapper">
                             {safeParseChart(val).map((planet, idx) => (
                               <div key={idx} className="planet-text">
@@ -2725,7 +2757,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </div>
               </div>
-
               {/* DASA BALANCE */}
               <div className="display-form-row">
                 <span>
@@ -2740,7 +2771,6 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* OTHER NOTES */}
               <div className="display-form-row">
                 <span>
@@ -2755,14 +2785,12 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-
               {/* CONFIRMATION LINE */}
               <div className="display-form-row">
                 <span>
                   மேலேகண்ட விவரங்கள் அனைத்தும் உண்மை என உறுதிகூறுகிறோம்
                 </span>
               </div>
-
               {/* FOOTER */}
               <div className="display-footer-row">
                 <span className="display-purple-text">

@@ -890,6 +890,20 @@ function ProfileRow({ r }) {
     ).padStart(2, "0")}-${date.getFullYear()}`;
   };
 
+
+  const showValue = (value) => {
+    if (
+      value === null ||
+      value === undefined ||
+      value === "" ||
+      value === "-"
+    ) {
+      return "-";
+    }
+    return value;
+  };
+
+
   return (
     <div className="rounded-md ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-900 overflow-hidden font-display">
       <div className="h-1 w-full bg-rose-600" />
@@ -912,7 +926,7 @@ function ProfileRow({ r }) {
         </div>
 
         {/* Details */}
-        <div className="min-w-0">
+        {/* <div className="min-w-0">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             <ul className="list-none m-0 p-0 space-y-2 text-[15px] md:text-[16px] leading-6 md:leading-7 text-slate-800 dark:text-slate-200">
               <Li icon={IdCard}>{r.MatriID || "—"}</Li>
@@ -940,11 +954,51 @@ function ProfileRow({ r }) {
               <Li icon={GraduationCap}>{r.Education || "—"}</Li>
               <Li icon={BriefcaseBusiness}>{r.Occupation || "—"}</Li>
               <Li icon={BadgeIndianRupee}>
-                {r.Annualincome ? `${r.Annualincome} Annual` : "Annual"}
+                {r.Annualincome ? `${r.Annualincome}` : ""}
               </Li>
               <Li icon={MapPin}>
                 <Strong>Working city:</Strong>{" "}
                 {r.Workingcity || r.workinglocation || r.City || "—"}
+              </Li>
+            </ul>
+          </div>
+        </div> */}
+
+        <div className="min-w-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            {/* Column 1 */}
+            <ul className="list-none m-0 p-0 space-y-2 text-[15px] md:text-[16px] leading-6 md:leading-7 text-slate-800 dark:text-slate-200">
+              <Li icon={IdCard}>{showValue(r.MatriID)}</Li>
+              <Li icon={UserRound}>{showValue(r.Name)}</Li>
+              <Li icon={CalendarRange}>{r.DOB ? formatDate(r.DOB) : "-"}</Li>
+              <Li icon={UserRound}>{r.Age ? `${r.Age} years` : "-"}</Li>
+            </ul>
+
+            {/* Column 2 */}
+            <ul className="list-none m-0 p-0 space-y-2 text-[15px] md:text-[16px] leading-6 md:leading-7 text-slate-800 dark:text-slate-200">
+              <Li icon={Sparkles}>
+                <Strong>Religion:</Strong> {showValue(r.Religion)}
+              </Li>
+              <Li icon={Layers}>
+                <Strong>Caste:</Strong> {showValue(r.Caste)}
+              </Li>
+              <Li icon={GitBranch}>
+                <Strong>Subcaste:</Strong> {showValue(r.Subcaste)}
+              </Li>
+              <Li icon={UserCog}>
+                <Strong>Profile Created By:</Strong>{" "}
+                {showValue(r.Profilecreatedby)}
+              </Li>
+            </ul>
+
+            {/* Column 3 */}
+            <ul className="list-none m-0 p-0 space-y-2 text-[15px] md:text-[16px] leading-6 md:leading-7 text-slate-800 dark:text-slate-200">
+              <Li icon={GraduationCap}>{showValue(r.Education)}</Li>
+              <Li icon={BriefcaseBusiness}>{showValue(r.Occupation)}</Li>
+              <Li icon={BadgeIndianRupee}>{showValue(r.Annualincome)}</Li>
+              <Li icon={MapPin}>
+                <Strong>Working city:</Strong>{" "}
+                {showValue(r.Workingcity || r.workinglocation || r.City)}
               </Li>
             </ul>
           </div>
