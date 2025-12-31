@@ -350,11 +350,17 @@ export default function EditLifestyle() {
           <div className="md:col-span-2">
             <label className="text-sm font-semibold">Hobbies</label>
             <select
+              multiple
               className="w-full border p-3 rounded-lg"
-              value={form.Hobbies}
-              onChange={(e) => updateField("Hobbies", e.target.value)}
+              value={form.Hobbies ? form.Hobbies.split(",") : []}
+              onChange={(e) => {
+                const selected = Array.from(
+                  e.target.selectedOptions,
+                  (opt) => opt.value
+                );
+                updateField("Hobbies", selected.join(","));
+              }}
             >
-              <option value="">Select</option>
               {options.hobbies.map((h) => (
                 <option key={h.id} value={h.hobbies}>
                   {h.hobbies}
@@ -367,11 +373,17 @@ export default function EditLifestyle() {
           <div className="md:col-span-2">
             <label className="text-sm font-semibold">Interests</label>
             <select
+              multiple
               className="w-full border p-3 rounded-lg"
-              value={form.Interests}
-              onChange={(e) => updateField("Interests", e.target.value)}
+              value={form.Interests ? form.Interests.split(",") : []}
+              onChange={(e) => {
+                const selected = Array.from(
+                  e.target.selectedOptions,
+                  (opt) => opt.value
+                );
+                updateField("Interests", selected.join(","));
+              }}
             >
-              <option value="">Select</option>
               {options.interests.map((i) => (
                 <option key={i.id} value={i.interest}>
                   {i.interest}

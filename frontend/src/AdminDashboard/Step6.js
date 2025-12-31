@@ -74,9 +74,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
       newErrors.annualIncome = "Income must be a number";
     }
 
-    // if (data.otherIncome && !/^\d+$/.test(data.otherIncome)) {
-    //   newErrors.otherIncome = "Income must be a number";
-    // }
+  
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

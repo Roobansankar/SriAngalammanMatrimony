@@ -311,7 +311,6 @@ export default function ProfilePage({ setUser: setAppUser }) {
             </div>
           </div>
 
-
           <section className="bg-white rounded-xl p-6 mt-2">
             {/* <h2 className="text-xl font-bold mb-4">My Photos</h2> */}
 
@@ -398,10 +397,10 @@ export default function ProfilePage({ setUser: setAppUser }) {
         </section>
         {/* Horoscope Details */}
 
+        {/* Horoscope Details */}
         <section className="mb-6 relative">
-          {/* Card */}
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            {/* Header inside card */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Horoscope Details</h2>
               <Link to="/edit/horoscope">
@@ -412,51 +411,54 @@ export default function ProfilePage({ setUser: setAppUser }) {
               </Link>
             </div>
 
-            {/* 3-column grid layout */}
+            {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
               <InfoRow
                 label="Moon Sign"
                 value={user.Moonsign || user.moonsign}
               />
               <InfoRow label="Star" value={user.Star || user.star} />
-              <InfoRow label="Gothra" value={user.Gothram} />
-              <InfoRow label="Mangalik" value={user.Manglik} />
-              <InfoRow label="Shani" value={user.shani || user.Shani || "-"} />
-              <InfoRow
-                label="Place of Shani"
-                value={user.shaniplace || user.place || "-"}
-              />
-              <InfoRow label="Horoscope Match" value={user.Horosmatch} />
+              <InfoRow label="Gothra" value={user.Gothram || "-"} />
+
+              <InfoRow label="Mangalik" value={user.Manglik || "-"} />
+
+              <InfoRow label="Horoscope Match" value={user.Horosmatch || "-"} />
+              <InfoRow label="Kootam" value={user.Kootam || "-"} />
               <InfoRow
                 label="Parigarasevai"
                 value={user.parigarasevai || "-"}
               />
+
               <InfoRow label="Sevai" value={user.Sevai || "-"} />
               <InfoRow label="Raghu" value={user.Raghu || "-"} />
               <InfoRow label="Keethu" value={user.Keethu || "-"} />
+
               <InfoRow
                 label="Place of Birth"
                 value={user.POB || user.PlaceOfBirth || user.place_of_birth}
               />
-
               <InfoRow label="Kuladeivam" value={user.Kuladeivam || "-"} />
-              <InfoRow label="thesaiirupu" value={user.ThesaiIrupu || "-"} />
               <InfoRow
-                label="Country/Place"
+                label="Country / Place"
                 value={user.POC || user.Country || user.country}
               />
 
-              {/* Combined Time of Birth */}
+              {/* Time of Birth */}
               <InfoRow label="Time of Birth" value={timeOfBirth || "-"} />
 
-              {/* RASI + NAVAMSA South Indian Charts */}
+              {/* Thesai Details */}
+              <InfoRow label="Thesai Planet" value={user.ThesaiPlanet || "-"} />
+              <InfoRow label="Thesai Years" value={user.ThesaiYears || "-"} />
+              <InfoRow label="Thesai Months" value={user.ThesaiMonths || "-"} />
+              <InfoRow label="Thesai Days" value={user.ThesaiDays || "-"} />
+
+              {/* RASI + NAVAMSA Charts */}
               <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-wrap justify-center gap-12 my-6">
                 <SouthChart title="இராசி" data={rasi} />
                 <SouthChart title="நவாம்சம்" data={navamsa} />
               </div>
 
-              {/* Horoscope Image */}
-              {/* Horoscope (Image or PDF Viewer) */}
+              {/* Horoscope Image / PDF */}
               <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-4">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
                   Horoscope (Image / PDF)
@@ -504,9 +506,12 @@ export default function ProfilePage({ setUser: setAppUser }) {
               <InfoRow label="Pincode" value={user.Pincode} />
               <InfoRow label="Residency Status" value={user.Residencystatus} />
               <InfoRow label="Address" value={user.Address} />
-              <InfoRow label="Alternate Phone" value={user.Phone} />
+              <InfoRow label="Father Number" value={user.Phone} />
               <InfoRow label="Mobile" value={user.Mobile} />
-              <InfoRow label="WhatsApp" value={user.Mobile2 || user.whatsapp} />
+              <InfoRow
+                label="Mother Number"
+                value={user.Mobile2 || user.whatsapp}
+              />
               <InfoRow
                 label="Convenient Time to Call"
                 value={user.calling_time}
@@ -637,6 +642,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
 
         {/* Family Details */}
 
+        {/* Family Details */}
         <section className="mb-6">
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
@@ -648,10 +654,12 @@ export default function ProfilePage({ setUser: setAppUser }) {
                 </button>
               </Link>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <InfoRow label="Family Values" value={user.Familyvalues} />
               <InfoRow label="Family Type" value={user.FamilyType} />
               <InfoRow label="Family Status" value={user.FamilyStatus} />
+
               <InfoRow label="Number of Brothers" value={user.noofbrothers} />
               <InfoRow label="Number of Sisters" value={user.noofsisters} />
               <InfoRow
@@ -662,16 +670,29 @@ export default function ProfilePage({ setUser: setAppUser }) {
                 label="Sisters Married"
                 value={user.noyusisters || user.nsm}
               />
+
               <InfoRow label="Father Name" value={user.Fathername} />
               <InfoRow
                 label="Father Occupation"
                 value={user.Fathersoccupation}
               />
+              {/* ✅ NEW */}
+              <InfoRow
+                label="Father Poorvegam"
+                value={user.FatherPoorvegam || "-"}
+              />
+
               <InfoRow label="Mother Name" value={user.Mothersname} />
               <InfoRow
                 label="Mother Occupation"
                 value={user.Mothersoccupation}
               />
+              {/* ✅ NEW */}
+              <InfoRow
+                label="Mother Poorvegam"
+                value={user.MotherPoorvegam || "-"}
+              />
+
               <InfoRow label="Family Wealth" value={user.family_wealth} />
               <InfoRow
                 label="Mother Tongue"
@@ -681,6 +702,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
                 label="Family Medical History"
                 value={user.familymedicalhistory}
               />
+
               <div className="col-span-1 sm:col-span-2 lg:col-span-3">
                 <span className="text-sm text-gray-500">About Family</span>
                 <div className="font-medium">

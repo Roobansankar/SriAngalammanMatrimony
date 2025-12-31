@@ -1,5 +1,7 @@
+
+
 // import axios from "axios";
-// import { AlertCircle, BadgeCheck, CheckCircle, Loader2 } from "lucide-react";
+// import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 // import { useState } from "react";
 // import { useNavigate } from "react-router-dom";
 
@@ -9,6 +11,7 @@
 //   const [submitted, setSubmitted] = useState(false);
 //   const [matriId, setMatriId] = useState("");
 //   const [error, setError] = useState("");
+  
 
 //   const handleSubmit = async () => {
 //     try {
@@ -48,28 +51,7 @@
 //         add(`a${i}`, f[`a${i}`] ? f[`a${i}`].join(",") : "");
 //       }
 
-//       /* ------------------------------------------------
-//          STEP 4 — HOROSCOPE DETAILS
-//       // ------------------------------------------------ */
-//       // add("moonSign", f.moonSign);
-//       // add("star", f.star);
-//       // add("gothra", f.gothra);
-//       // add("manglik", f.manglik);
-//       // add("shani", f.shani);
-//       // add("placeOfShani", f.placeOfShani);
-//       // add("horoscopeMatch", f.horoscopeMatch);
-//       // add("parigarasevai", f.parigarasevai);
-//       // add("sevai", f.sevai);
-//       // add("raghu", f.raghu);
-//       // add("keethu", f.keethu);
-//       // add("birthHour", f.birthHour);
-//       // add("birthMinute", f.birthMinute);
-//       // add("birthSecond", f.birthSecond);
-//       // add("ampm", f.ampm);
-//       // add("placeOfBirth", f.placeOfBirth);
-//       // add("kuladeivam", f.kuladeivam);
-//       // add("thesaiirupu", f.thesaiirupu);
-
+ 
 //       /* ------------------------------------------------
 //          STEP 5 — CONTACT DETAILS
 //       ------------------------------------------------ */
@@ -84,43 +66,7 @@
 //       add("whatsapp", f.whatsapp);
 //       add("convenientTime", f.convenientTime);
 
-//       /* ------------------------------------------------
-//          STEP 6 — EDUCATION & OCCUPATION
-//       ------------------------------------------------ */
-//       // add("education", f.education);
-//       // add("occupation", f.occupation);
-//       // add("educationDetails", f.educationDetails);
-//       // add("occupationDetails", f.occupationDetails);
-//       // add("annualIncome", f.annualIncome);
-//       // add("incomeType", f.incomeType);
-//       // add("otherIncome", f.otherIncome);
-//       // add("employedIn", f.employedIn);
-//       // add("workingHours", f.workingHours);
-//       // add("company_name", f.company_name);
-//       // add("workingLocation", f.workingLocation);
-
-//       /* ------------------------------------------------
-//          STEP 7 — PHYSICAL DETAILS
-//       ------------------------------------------------ */
-//       // add("HeightText", f.heightText || f.height);
-//       // add("weight", f.weight);
-//       // add("bloodGroup", f.bloodGroup);
-//       // add("complexion", f.complexion);
-//       // add("bodyType", f.bodyType);
-//       // add("diet", f.diet);
-//       // add("smoke", f.smoke);
-//       // add("drink", f.drink);
-//       // add("specialCases", f.specialCases);
-
-//       // add("hobbies", Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies);
-//       // add("interests", Array.isArray(f.interests) ? f.interests.join(",") : f.interests);
-
-//       // add("otherHobbies", f.otherHobbies);
-//       // add("otherInterests", f.otherInterests);
-//       // add("achievement", f.achievement);
-//       // add("medicalHistory", f.medicalHistory);
-//       // add("passport", f.passport);
-
+   
 //       /* ------------------------------------------------
 //          STEP 8 — FAMILY DETAILS
 //       ------------------------------------------------ */
@@ -141,7 +87,12 @@
 //       add("fatherOccupation", f.fatherOccupation);
 //       add("motherName", f.motherName);
 //       add("motherOccupation", f.motherOccupation);
-//       add("familyWealth", Array.isArray(f.familyWealth) ? f.familyWealth.join(",") : f.familyWealth);
+//       add(
+//         "familyWealth",
+//         Array.isArray(f.familyWealth)
+//           ? f.familyWealth.join(",")
+//           : f.familyWealth
+//       );
 //       add("familyDescription", f.familyDescription);
 //       add("familyMedicalHistory", f.familyMedicalHistory);
 
@@ -152,31 +103,13 @@
 //         fd.append("photo", f.photo);
 //       }
 
-//       /* ------------------------------------------------
-//          STEP 10 — PARTNER PREFERENCES
-//       ------------------------------------------------ */
-//       // add("partner_maritalStatus", Array.isArray(f.maritalStatus) ? f.maritalStatus.join(",") : f.maritalStatus);
-//       // add("partner_ageFrom", f.ageFrom);
-//       // add("partner_ageTo", f.ageTo);
-//       // add("partner_heightFrom", f.heightFrom);
-//       // add("partner_heightTo", f.heightTo);
-
-//       // add("partner_religion", f.religion);
-//       // add("partner_caste", f.caste);
-//       // add("partner_complexion", f.complexion);
-//       // add("partner_residencyStatus", f.residencyStatus);
-//       // add("partner_countryLivingIn", f.country);
-//       // add("partner_state", f.state);
-//       // add("partner_city", f.city);
-//       // add("partner_education", f.education);
-//       // add("partner_occupation", f.occupation);
-//       // add("partner_motherTongue", f.motherTongue);
-//       // add("partnerExpectations", f.partnerExpectations);
-
+      
 //       /* ------------------------------------------------
 //          STEP 11 — PAYMENT
 //       ------------------------------------------------ */
-//       add("plan", f.plan || "basic");
+  
+
+//       add("plan", f.paymentDone ? f.plan : null);
 //       add("paymentDone", f.paymentDone ? "1" : "0");
 
 //       /* ------------------------------------------------
@@ -191,10 +124,7 @@
 //       /* ------------------------------------------------
 //          SUBMIT TO BACKEND
 //       ------------------------------------------------ */
-//       const res = await axios.post(
-//         `${process.env.REACT_APP_API_BASE || ""}/api/register/complete`, 
-//         fd
-//       );
+//       const res = await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/register/complete`, fd);
 
 //       localStorage.removeItem("multiStepRegistration_form_v1");
 
@@ -204,9 +134,9 @@
 //       console.error("❌ Submit Error:", err?.response?.data || err);
 //       setError(
 //         err?.response?.data?.sql ||
-//         err?.response?.data?.message ||
-//         err?.message ||
-//         "Something went wrong. Please try again."
+//           err?.response?.data?.message ||
+//           err?.message ||
+//           "Something went wrong. Please try again."
 //       );
 //     } finally {
 //       setSubmitting(false);
@@ -261,7 +191,6 @@
 //   /* ------------------------------------------------
 //      DEFAULT SCREEN
 //   ------------------------------------------------ */
- 
 
 //   return (
 //     <div className="flex justify-center pt-4 pb-10">
@@ -280,8 +209,8 @@
 //       </div>
 //     </div>
 //   );
-
 // }
+
 
 
 
@@ -296,9 +225,25 @@ export default function Step12({ prevStep, formData }) {
   const [submitted, setSubmitted] = useState(false);
   const [matriId, setMatriId] = useState("");
   const [error, setError] = useState("");
-  
+
+  const validateAdminSubmit = () => {
+    if (!formData.fname || !formData.gender || !formData.mobile) {
+      return "Basic details missing";
+    }
+
+    if (!formData.plan) {
+      return "Plan not selected";
+    }
+
+    return null;
+  };
 
   const handleSubmit = async () => {
+    const err = validateAdminSubmit();
+    if (err) {
+      alert(err);
+      return;
+    }
     try {
       setSubmitting(true);
       setError("");
@@ -310,6 +255,13 @@ export default function Step12({ prevStep, formData }) {
         fd.append(key, val);
       };
 
+      // const add = (key, value) => {
+      //   if (value !== undefined && value !== null) {
+      //     formData.append(key, value);
+      //   }
+      // };
+
+      console.log("FINAL FORM DATA", f.fatherPoorvegam, f.motherPoorvegam);
       /* ------------------------------------------------
          STEP 1 — BASIC DETAILS
       ------------------------------------------------ */
@@ -336,7 +288,34 @@ export default function Step12({ prevStep, formData }) {
         add(`a${i}`, f[`a${i}`] ? f[`a${i}`].join(",") : "");
       }
 
- 
+      /* ------------------------------------------------
+         STEP 4 — HOROSCOPE DETAILS
+      ------------------------------------------------ */
+      add("moonSign", f.moonSign);
+      add("star", f.star);
+      add("gothra", f.gothra);
+      add("manglik", f.manglik);
+      add("horoscopeMatch", f.horoscopeMatch);
+      add("parigarasevai", f.parigarasevai);
+      add("sevai", f.sevai);
+      add("raghu", f.raghu);
+      add("keethu", f.keethu);
+      add("lagnam", f.lagnam);
+      add("birthHour", f.birthHour);
+      add("birthMinute", f.birthMinute);
+      add("birthSecond", f.birthSecond);
+      add("ampm", f.ampm);
+      add("placeOfBirth", f.placeOfBirth);
+      add("kuladeivam", f.kuladeivam);
+      add("kootam", f.kootam);
+      // add("thesaiirupu", f.thesaiirupu);
+
+      /* NEW */
+      add("thesaiPlanet", f.thesaiPlanet);
+      add("thesaiYears", f.thesaiYears);
+      add("thesaiMonths", f.thesaiMonths);
+      add("thesaiDays", f.thesaiDays);
+
       /* ------------------------------------------------
          STEP 5 — CONTACT DETAILS
       ------------------------------------------------ */
@@ -351,7 +330,49 @@ export default function Step12({ prevStep, formData }) {
       add("whatsapp", f.whatsapp);
       add("convenientTime", f.convenientTime);
 
-   
+      /* ------------------------------------------------
+         STEP 6 — EDUCATION & OCCUPATION
+      ------------------------------------------------ */
+      add("education", f.education);
+      add("occupation", f.occupation);
+      add("educationDetails", f.educationDetails);
+      add("occupationDetails", f.occupationDetails);
+      add("annualIncome", f.annualIncome);
+      add("incomeType", f.incomeType);
+      add("otherIncome", f.otherIncome);
+      add("employedIn", f.employedIn);
+      add("workingHours", f.workingHours);
+      add("company_name", f.company_name);
+      add("workingLocation", f.workingLocation);
+
+      /* ------------------------------------------------
+         STEP 7 — PHYSICAL DETAILS
+      ------------------------------------------------ */
+      add("HeightText", f.heightText || f.height);
+      add("weight", f.weight);
+      add("bloodGroup", f.bloodGroup);
+      add("complexion", f.complexion);
+      add("bodyType", f.bodyType);
+      add("diet", f.diet);
+      add("smoke", f.smoke);
+      add("drink", f.drink);
+      add("specialCases", f.specialCases);
+
+      add(
+        "hobbies",
+        Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies
+      );
+      add(
+        "interests",
+        Array.isArray(f.interests) ? f.interests.join(",") : f.interests
+      );
+
+      add("otherHobbies", f.otherHobbies);
+      add("otherInterests", f.otherInterests);
+      add("achievement", f.achievement);
+      add("medicalHistory", f.medicalHistory);
+      add("passport", f.passport);
+
       /* ------------------------------------------------
          STEP 8 — FAMILY DETAILS
       ------------------------------------------------ */
@@ -372,6 +393,9 @@ export default function Step12({ prevStep, formData }) {
       add("fatherOccupation", f.fatherOccupation);
       add("motherName", f.motherName);
       add("motherOccupation", f.motherOccupation);
+      add("fatherPoorvegam", f.fatherPoorvegam);
+      add("motherPoorvegam", f.motherPoorvegam);
+
       add(
         "familyWealth",
         Array.isArray(f.familyWealth)
@@ -388,14 +412,39 @@ export default function Step12({ prevStep, formData }) {
         fd.append("photo", f.photo);
       }
 
-      
       /* ------------------------------------------------
-         STEP 11 — PAYMENT
+         STEP 10 — PARTNER PREFERENCES
       ------------------------------------------------ */
-  
+      add(
+        "partner_maritalStatus",
+        Array.isArray(f.maritalStatus)
+          ? f.maritalStatus.join(",")
+          : f.maritalStatus
+      );
+      add("partner_ageFrom", f.ageFrom);
+      add("partner_ageTo", f.ageTo);
+      add("partner_heightFrom", f.heightFrom);
+      add("partner_heightTo", f.heightTo);
 
-      add("plan", f.paymentDone ? f.plan : null);
-      add("paymentDone", f.paymentDone ? "1" : "0");
+      add("partner_religion", f.religion);
+      add("partner_caste", f.caste);
+      add("partner_complexion", f.complexion);
+      add("partner_residencyStatus", f.residencyStatus);
+      add("partner_countryLivingIn", f.country);
+      add("partner_state", f.state);
+      add("partner_city", f.city);
+      add("partner_education", f.education);
+      add("partner_occupation", f.occupation);
+      add("partner_motherTongue", f.motherTongue);
+      add("partnerExpectations", f.partnerExpectations);
+
+      /* ------------------------------------------------
+         STEP 11 — PLAN SELECTION (Admin Panel - No Payment Required)
+      ------------------------------------------------ */
+
+      // Always save the plan for admin-created users
+      add("plan", f.plan || "basic");
+      add("paymentDone", "1"); // Admin bypasses payment
 
       /* ------------------------------------------------
          FILE UPLOAD — HOROSCOPE FILE (correct Multer field)
@@ -409,12 +458,21 @@ export default function Step12({ prevStep, formData }) {
       /* ------------------------------------------------
          SUBMIT TO BACKEND
       ------------------------------------------------ */
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/register/complete`, fd);
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE || ""}/api/register/complete`,
+        fd
+      );
 
       localStorage.removeItem("multiStepRegistration_form_v1");
 
       setMatriId(res.data.matriId);
       setSubmitted(true);
+
+      setTimeout(() => {
+        navigate("/login", {
+          state: { refreshOnce: true },
+        });
+      }, 2000);
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
       setError(
@@ -433,17 +491,12 @@ export default function Step12({ prevStep, formData }) {
   ------------------------------------------------ */
   if (submitted && matriId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      // <div className="min-h-screen flex items-center justify-center">
+      <div className="flex justify-center mt-10">
         <div className="bg-white shadow-lg rounded-xl p-10 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
           <h2 className="text-2xl font-bold mt-4">Registration Complete</h2>
           <p className="text-xl mt-2 font-bold text-rose-700">{matriId}</p>
-          <button
-            onClick={() => navigate("/login")}
-            className="mt-6 px-6 py-3 bg-rose-600 text-white rounded-lg"
-          >
-            Go to Login →
-          </button>
         </div>
       </div>
     );
@@ -454,7 +507,8 @@ export default function Step12({ prevStep, formData }) {
   ------------------------------------------------ */
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      // <div className="min-h-screen flex items-center justify-center">
+      <div className="flex justify-center mt-10">
         <div className="bg-white shadow-lg rounded-xl p-10 text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
           <h2 className="text-2xl font-bold text-red-600 mt-4">
@@ -480,9 +534,7 @@ export default function Step12({ prevStep, formData }) {
   return (
     <div className="flex justify-center pt-4 pb-10">
       <div className="bg-white shadow-lg rounded-xl p-10 text-center max-w-md w-full">
-        <h2 className="text-xl font-semibold mb-4">
-          Step 11: Submit Registration
-        </h2>
+        <h2 className="text-xl font-semibold mb-4">Submit Registration</h2>
 
         <button
           onClick={handleSubmit}

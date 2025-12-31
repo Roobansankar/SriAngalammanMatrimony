@@ -50,8 +50,6 @@ export default function EditHoroscope() {
     Star: "",
     Gothram: "",
     Manglik: "",
-    shani: "",
-    shaniplace: "",
     Horosmatch: "",
     parigarasevai: "",
     Sevai: "",
@@ -64,7 +62,11 @@ export default function EditHoroscope() {
     birthSecond: "",
     ampm: "AM",
     Kuladeivam: "",
-    ThesaiIrupu: "",
+    ThesaiPlanet: "",
+    ThesaiYears: "",
+    ThesaiMonths: "",
+    ThesaiDays: "",
+    Kootam: "",
     horoscope: null,
   });
 
@@ -75,29 +77,28 @@ export default function EditHoroscope() {
     nakshatras: [],
     gothras: [],
     mangliks: [],
-    shanis: [],
     horoscopeMatches: [],
   });
   const [preview, setPreview] = useState(null);
+  const [customGothra, setCustomGothra] = useState("");
+
 
   // LOAD DROPDOWN OPTIONS
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [moon, goth, mang, shani, match] = await Promise.all([
+        const [moon, goth, mang, match] = await Promise.all([
           fetch(API_BASE + "moon-sign").then((r) => r.json()),
           fetch(API_BASE + "gothra").then((r) => r.json()),
           fetch(API_BASE + "manglik").then((r) => r.json()),
-          fetch(API_BASE + "shani").then((r) => r.json()),
           fetch(API_BASE + "horoscope-match").then((r) => r.json()),
         ]);
 
         setOptions({
-          moonSigns: moon, // Keep full objects [{ID, Moon_Sign}]
+          moonSigns: moon,
           nakshatras: [],
           gothras: goth.map((x) => x.Gothra),
           mangliks: mang.map((x) => x.type),
-          shanis: shani.map((x) => x.type),
           horoscopeMatches: match.map((x) => x.type),
         });
       } catch (err) {
@@ -133,73 +134,103 @@ export default function EditHoroscope() {
   }, [form.moonSignId]);
 
   // LOAD SAVED USER DATA
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("userData"));
-    if (!user) return;
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("userData"));
+  if (!user) return;
 
-    // Parse TOB if it exists (format: "08:00:00 AM")
-    let hour = "",
-      minute = "",
-      second = "",
-      ampm = "AM";
-    if (user.TOB) {
-      const timeMatch = user.TOB.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
-      if (timeMatch) {
-        hour = timeMatch[1];
-        minute = timeMatch[2];
-        second = timeMatch[3];
-        ampm = timeMatch[4].toUpperCase();
-      }
+  // Parse TOB
+  let hour = "",
+    minute = "",
+    second = "",
+    ampm = "AM";
+
+  if (user.TOB) {
+    const timeMatch = user.TOB.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      hour = String(Number(timeMatch[1])); // ✅ FIX
+      minute = timeMatch[2];
+      second = timeMatch[3];
+      ampm = timeMatch[4].toUpperCase();
     }
+  }
 
-    setForm((prev) => ({
-      ...prev,
-      ConfirmEmail: user.ConfirmEmail || "",
-      moonSignId: user.moonSignId || "",
-      Moonsign: user.Moonsign || "",
-      Star: user.Star || "",
-      Gothram: user.Gothram || "",
-      Manglik: user.Manglik || "",
-      shani: user.shani || "",
-      shaniplace: user.shaniplace || "",
-      Horosmatch: user.Horosmatch || "",
-      parigarasevai: user.parigarasevai || "",
-      Sevai: user.Sevai || "",
-      Raghu: user.Raghu || "",
-      Keethu: user.Keethu || "",
-      POB: user.POB || "",
-      POC: user.POC || "",
-      birthHour: hour,
-      birthMinute: minute,
-      birthSecond: second,
-      ampm: ampm,
-      Kuladeivam: user.Kuladeivam || "",
-      ThesaiIrupu: user.ThesaiIrupu || "",
-    }));
+  // ✅ Handle Gothra properly
+  let gothraValue = user.Gothram || "";
+  let gothraSelect = gothraValue;
+  let gothraCustom = "";
 
-    // Rasi
-    let r = {};
-    for (let i = 1; i <= 12; i++) {
-      r[`g${i}`] = safeParseArray(user[`g${i}`]);
-    }
-    setRasi(r);
+  if (options.gothras.length && !options.gothras.includes(gothraValue)) {
+    gothraSelect = "OTHER";
+    gothraCustom = gothraValue;
+  }
 
-    // Navamsa
-    let n = {};
-    for (let i = 1; i <= 12; i++) {
-      n[`a${i}`] = safeParseArray(user[`a${i}`]);
-    }
-    setNavamsa(n);
+  setForm((prev) => ({
+    ...prev,
+    ConfirmEmail: user.ConfirmEmail || "",
+    moonSignId: user.moonSignId || "",
+    Moonsign: user.Moonsign || "",
+    Star: user.Star || "",
+    Gothram: gothraSelect,
+    Manglik: user.Manglik || "",
+    Horosmatch: user.Horosmatch || "",
+    parigarasevai: user.parigarasevai || "",
+    Sevai: user.Sevai || "",
+    Raghu: user.Raghu || "",
+    Keethu: user.Keethu || "",
+    POB: user.POB || "",
+    POC: user.POC || "",
+    birthHour: hour,
+    birthMinute: minute,
+    birthSecond: second,
+    ampm,
+    Kuladeivam: user.Kuladeivam || "",
+    ThesaiPlanet: user.ThesaiPlanet || "",
+    ThesaiYears: user.ThesaiYears || "",
+    ThesaiMonths: user.ThesaiMonths || "",
+    ThesaiDays: user.ThesaiDays || "",
+    Kootam: user.Kootam || "",
+  }));
 
-    // SET PREVIEW FOR EXISTING HOROSCOPE
-    if (user.HoroscopeURL) {
-      if (user.horosother && user.horosother.toLowerCase().includes(".pdf")) {
-        setPreview("PDF");
-      } else {
-        setPreview(user.HoroscopeURL);
-      }
-    }
-  }, []);
+  setCustomGothra(gothraCustom);
+
+  // Rasi
+  let r = {};
+  for (let i = 1; i <= 12; i++) {
+    r[`g${i}`] = safeParseArray(user[`g${i}`]);
+  }
+  setRasi(r);
+
+  // Navamsa
+  let n = {};
+  for (let i = 1; i <= 12; i++) {
+    n[`a${i}`] = safeParseArray(user[`a${i}`]);
+  }
+  setNavamsa(n);
+
+  // Preview
+  if (user.HoroscopeURL) {
+    setPreview(
+      user.horosother?.toLowerCase().includes(".pdf")
+        ? "PDF"
+        : user.HoroscopeURL
+    );
+  }
+}, [options.gothras]);
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("userData"));
+  if (!user || !options.moonSigns.length) return;
+
+  const selectedMoon = options.moonSigns.find(
+    (m) => String(m.ID) === String(user.moonSignId)
+  );
+
+  setForm((prev) => ({
+    ...prev,
+    moonSignId: selectedMoon?.ID || "",
+    Moonsign: selectedMoon?.Moon_Sign || "",
+  }));
+}, [options.moonSigns]);
+
 
   // CHECKBOX TOGGLE
   const toggleBox = (type, key, value) => {
@@ -227,33 +258,93 @@ export default function EditHoroscope() {
     e.preventDefault();
     const fd = new FormData();
 
-    // Convert birth time to TOB format
-    const TOB = `${form.birthHour.padStart(2, "0")}:${form.birthMinute.padStart(
-      2,
-      "0"
-    )}:${form.birthSecond.padStart(2, "0")} ${form.ampm}`;
+    // Convert birth time to TOB format - ensure values exist
+    const hour = form.birthHour || "00";
+    const minute = form.birthMinute || "00";
+    const second = form.birthSecond || "00";
+    const TOB = `${hour.toString().padStart(2, "0")}:${minute
+      .toString()
+      .padStart(2, "0")}:${second.toString().padStart(2, "0")} ${form.ampm}`;
 
-    Object.entries(form).forEach(([k, v]) => {
-      if (
-        k !== "birthHour" &&
-        k !== "birthMinute" &&
-        k !== "birthSecond" &&
-        k !== "ampm"
-      ) {
-        fd.append(k, v);
-      }
-    });
+    // Add all form fields
+    fd.append("ConfirmEmail", form.ConfirmEmail);
+    fd.append("Moonsign", form.Moonsign);
+    fd.append("Star", form.Star);
+    // fd.append("Gothram", form.Gothram || "");
+    const finalGothra = form.Gothram === "OTHER" ? customGothra : form.Gothram;
 
-    // Add formatted TOB
+    fd.append("Gothram", finalGothra || "");
+
+    fd.append("Manglik", form.Manglik || "");
+    fd.append("Horosmatch", form.Horosmatch || "");
+    fd.append("parigarasevai", form.parigarasevai || "");
+    fd.append("Sevai", form.Sevai || "");
+    fd.append("Raghu", form.Raghu || "");
+    fd.append("Keethu", form.Keethu || "");
+    fd.append("POB", form.POB || "");
+    fd.append("POC", form.POC || "");
     fd.append("TOB", TOB);
+    fd.append("Kuladeivam", form.Kuladeivam || "");
+   fd.append("ThesaiPlanet", form.ThesaiPlanet || "");
+   fd.append("ThesaiYears", form.ThesaiYears || "");
+   fd.append("ThesaiMonths", form.ThesaiMonths || "");
+   fd.append("ThesaiDays", form.ThesaiDays || "");
+   fd.append("Kootam", form.Kootam || "");
 
+
+    // Add horoscope file if selected
+    if (form.horoscope) {
+      fd.append("horoscope", form.horoscope);
+    }
+
+    // Add rasi and navamsa data
     for (let i = 1; i <= 12; i++) {
       fd.append(`g${i}`, JSON.stringify(rasi[`g${i}`] || []));
       fd.append(`a${i}`, JSON.stringify(navamsa[`a${i}`] || []));
     }
 
     try {
-      await axios.put(API_BASE + "auth/update/horoscope", fd);
+
+      await axios.put(API_BASE + "auth/update/horoscope", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+
+      // Update localStorage with new values
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const updatedUser = {
+        ...userData,
+        Moonsign: form.Moonsign,
+        Star: form.Star,
+        moonSignId: form.moonSignId,
+        TOB: TOB,
+        Gothram: finalGothra,
+        Manglik: form.Manglik,
+        Horosmatch: form.Horosmatch,
+        parigarasevai: form.parigarasevai,
+        Sevai: form.Sevai,
+        Raghu: form.Raghu,
+        Keethu: form.Keethu,
+        POB: form.POB,
+        POC: form.POC,
+        Kuladeivam: form.Kuladeivam,
+        ThesaiPlanet: form.ThesaiPlanet,
+        ThesaiYears: form.ThesaiYears,
+        ThesaiMonths: form.ThesaiMonths,
+        ThesaiDays: form.ThesaiDays,
+        Kootam: form.Kootam,
+      };
+
+      // Update rasi and navamsa in localStorage
+      for (let i = 1; i <= 12; i++) {
+        updatedUser[`g${i}`] = JSON.stringify(rasi[`g${i}`] || []);
+        updatedUser[`a${i}`] = JSON.stringify(navamsa[`a${i}`] || []);
+      }
+
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
+
       alert("Horoscope Updated Successfully");
       navigate("/profile");
     } catch (err) {
@@ -261,6 +352,23 @@ export default function EditHoroscope() {
       alert("Update failed");
     }
   };
+
+
+
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("userData"));
+  if (!user || !options.nakshatras.length) return;
+
+  if (options.nakshatras.includes(user.Star)) {
+    setForm((prev) => ({
+      ...prev,
+      Star: user.Star,
+    }));
+  }
+}, [options.nakshatras]);
+
+
+  
 
   return (
     <div className="min-h-screen bg-[#FFF4E0] p-6 flex justify-center font-display">
@@ -286,6 +394,7 @@ export default function EditHoroscope() {
                   ...form,
                   moonSignId: selected?.ID || "",
                   Moonsign: selected?.Moon_Sign || "",
+                  // Star: "",
                 });
               }}
               className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
@@ -308,6 +417,7 @@ export default function EditHoroscope() {
               value={form.Star || ""}
               onChange={(e) => setForm({ ...form, Star: e.target.value })}
               className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+              disabled={!form.moonSignId}
             >
               <option value="">
                 {form.moonSignId ? "Select Star" : "First select Moon Sign"}
@@ -320,30 +430,48 @@ export default function EditHoroscope() {
             </select>
           </div>
 
-          <Drop
-            label="Gothra"
-            field="Gothram"
-            options={options.gothras || []}
-            form={form}
-            setForm={setForm}
-          />
+          <div className="w-full flex flex-col">
+            <label className="text-sm font-medium mb-1 text-black">
+              Gothra
+            </label>
+
+            <select
+              value={form.Gothram || ""}
+              onChange={(e) => {
+                setForm({ ...form, Gothram: e.target.value });
+                if (e.target.value !== "OTHER") {
+                  setCustomGothra("");
+                }
+              }}
+              className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+            >
+              <option value="">Select Gothra</option>
+
+              {options.gothras.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+
+              <option value="OTHER">Other</option>
+            </select>
+
+            {/* Show input only if Other selected */}
+            {form.Gothram === "OTHER" && (
+              <input
+                type="text"
+                placeholder="Enter your Gothra"
+                value={customGothra}
+                onChange={(e) => setCustomGothra(e.target.value)}
+                className="border p-3 rounded w-full mt-2 bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+              />
+            )}
+          </div>
+
           <Drop
             label="Manglik"
             field="Manglik"
             options={options.mangliks || []}
-            form={form}
-            setForm={setForm}
-          />
-          <Drop
-            label="Shani"
-            field="shani"
-            options={options.shanis || []}
-            form={form}
-            setForm={setForm}
-          />
-          <Input
-            label="Place of Shani"
-            field="shaniplace"
             form={form}
             setForm={setForm}
           />
@@ -385,14 +513,6 @@ export default function EditHoroscope() {
             setForm={setForm}
           />
 
-          {/* Thesai Irupu */}
-          <Input
-            label="Thesai Irupu (திசைஇருப்பு)"
-            field="ThesaiIrupu"
-            form={form}
-            setForm={setForm}
-          />
-
           {/* Birth Time - Split into Hour/Minute/Second/AM-PM */}
           <div className="w-full flex flex-col md:col-span-2">
             <label className="text-sm font-medium mb-1 text-black">
@@ -424,9 +544,9 @@ export default function EditHoroscope() {
                   onChange={(e) =>
                     setForm({ ...form, birthMinute: e.target.value })
                   }
-                  className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  className="border p-3 rounded w-full bg-white"
                 >
-                  <option value="">00</option>
+                  <option value="">--</option>
                   {generateNumbers(0, 59).map((num) => (
                     <option key={num} value={String(num).padStart(2, "0")}>
                       {String(num).padStart(2, "0")}
@@ -440,11 +560,11 @@ export default function EditHoroscope() {
                 <select
                   value={form.birthSecond}
                   onChange={(e) =>
-                    setForm({ ...form, birthSecond: e.target.value })
+                    setForm({ ...form, birthMinute: e.target.value })
                   }
-                  className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  className="border p-3 rounded w-full bg-white"
                 >
-                  <option value="">00</option>
+                  <option value="">--</option>
                   {generateNumbers(0, 59).map((num) => (
                     <option key={num} value={String(num).padStart(2, "0")}>
                       {String(num).padStart(2, "0")}
@@ -466,6 +586,40 @@ export default function EditHoroscope() {
               </div>
             </div>
           </div>
+
+          <Drop
+            label="Thesai Planet"
+            field="ThesaiPlanet"
+            options={PLANETS}
+            form={form}
+            setForm={setForm}
+          />
+
+          <Drop
+            label="Thesai Years"
+            field="ThesaiYears"
+            options={generateNumbers(0, 120)}
+            form={form}
+            setForm={setForm}
+          />
+
+          <Drop
+            label="Thesai Months"
+            field="ThesaiMonths"
+            options={generateNumbers(0, 11)}
+            form={form}
+            setForm={setForm}
+          />
+
+          <Drop
+            label="Thesai Days"
+            field="ThesaiDays"
+            options={generateNumbers(0, 30)}
+            form={form}
+            setForm={setForm}
+          />
+
+          <Input label="Kootam" field="Kootam" form={form} setForm={setForm} />
 
           <Input
             label="Place of Birth"

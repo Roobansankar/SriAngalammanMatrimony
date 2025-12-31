@@ -289,7 +289,7 @@ export default function EditContact() {
 
           {/* Phone */}
           <div>
-            <label className="font-semibold">Alternate Phone</label>
+            <label className="font-semibold">Father Number</label>
             <input
               value={form.Phone}
               onChange={(e) => updateField("Phone", e.target.value)}
@@ -309,7 +309,7 @@ export default function EditContact() {
 
           {/* WhatsApp */}
           <div>
-            <label className="font-semibold">WhatsApp Number</label>
+            <label className="font-semibold">Mother Number</label>
             <input
               value={form.Mobile2}
               onChange={(e) => updateField("Mobile2", e.target.value)}
@@ -335,14 +335,14 @@ export default function EditContact() {
           </div>
 
           {/* POC */}
-          <div className="md:col-span-2">
+          {/* <div className="md:col-span-2">
             <label className="font-semibold">Place / POC</label>
             <input
               value={form.POC}
               onChange={(e) => updateField("POC", e.target.value)}
               className="border p-3 w-full rounded-lg"
             />
-          </div>
+          </div> */}
 
           {/* Submit */}
           <div className="md:col-span-2">

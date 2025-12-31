@@ -332,6 +332,37 @@ export default function ProfileView() {
     );
   if (!user) return <div className="p-8">No profile data</div>;
 
+  
+  const rasi = [
+    user.g1,
+    user.g2,
+    user.g3,
+    user.g4,
+    user.g5,
+    user.g6,
+    user.g7,
+    user.g8,
+    user.g9,
+    user.g10,
+    user.g11,
+    user.g12,
+  ];
+
+  const navamsa = [
+    user.a1,
+    user.a2,
+    user.a3,
+    user.a4,
+    user.a5,
+    user.a6,
+    user.a7,
+    user.a8,
+    user.a9,
+    user.a10,
+    user.a11,
+    user.a12,
+  ];
+
   const dobParts = formatDOB(user.DOB || user.Regdate);
   const tob = parseTimeOfBirth(user.TOB);
   const primary = "#ec1380";
@@ -376,31 +407,61 @@ const multiMatch = (pref, actual) => {
 
 
   // Convert "5Ft 7 Inch" → total inches
-  const heightToInches = (h) => {
-    if (!h) return 0;
-    const match = h.match(/(\d+)\s*Ft\s*(\d*)\s*Inch/i);
-    if (!match) return 0;
+  // const heightToInches = (h) => {
+  //   if (!h) return 0;
+  //   const match = h.match(/(\d+)\s*Ft\s*(\d*)\s*Inch/i);
+  //   if (!match) return 0;
 
-    const ft = parseInt(match[1] || 0);
-    const inch = parseInt(match[2] || 0);
+  //   const ft = parseInt(match[1] || 0);
+  //   const inch = parseInt(match[2] || 0);
+
+  //   return ft * 12 + inch;
+  // };
+
+  const heightToInches = (h) => {
+    if (!h) return null;
+
+    const str = h.toLowerCase().replace(/\s+/g, "");
+
+    const ftMatch = str.match(/(\d+)(ft|feet)/);
+    const inMatch = str.match(/(\d+)(in|inch|inches)/);
+
+    const ft = ftMatch ? parseInt(ftMatch[1]) : 0;
+    const inch = inMatch ? parseInt(inMatch[1]) : 0;
 
     return ft * 12 + inch;
   };
 
-  // Height range match
-const heightMatch = (minH, maxH, actual) => {
-  // If no preference → OK
-  if (isEmptyValue(minH) && isEmptyValue(maxH)) return true;
 
-  // If partner height missing → OK
+//   // Height range match
+// const heightMatch = (minH, maxH, actual) => {
+//   // If no preference → OK
+//   if (isEmptyValue(minH) && isEmptyValue(maxH)) return true;
+
+//   // If partner height missing → OK
+//   if (isEmptyValue(actual)) return true;
+
+//   const actualIn = heightToInches(actual);
+//   const minIn = heightToInches(minH);
+//   const maxIn = heightToInches(maxH);
+
+//   return actualIn >= minIn && actualIn <= maxIn;
+// };
+
+
+const heightMatch = (minH, maxH, actual) => {
+  if (isEmptyValue(minH) && isEmptyValue(maxH)) return true;
   if (isEmptyValue(actual)) return true;
 
   const actualIn = heightToInches(actual);
   const minIn = heightToInches(minH);
   const maxIn = heightToInches(maxH);
 
+  if (!actualIn || !minIn || !maxIn) return true;
+
   return actualIn >= minIn && actualIn <= maxIn;
 };
+
 
 
 
@@ -539,6 +600,21 @@ const heightMatch = (minH, maxH, actual) => {
   const total = compatibility.length;
   const score = compatibility.filter((c) => c.pass).length;
 
+
+  const showDash = (value) => {
+    if (
+      value === null ||
+      value === undefined ||
+      value === "" ||
+      value === "-" ||
+      (typeof value === "string" && value.trim() === "")
+    ) {
+      return "-";
+    }
+    return value;
+  };
+
+
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b]"
@@ -546,11 +622,17 @@ const heightMatch = (minH, maxH, actual) => {
     >
       {/* Toast Notification */}
       {toast.show && (
-        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 ease-in-out ${
-          toast.type === "error" ? "bg-red-500" : "bg-green-500"
-        }`}>
+        <div
+          className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 ease-in-out ${
+            toast.type === "error" ? "bg-red-500" : "bg-green-500"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            {toast.type === "error" ? <AlertTriangle size={20} /> : <Check size={20} />}
+            {toast.type === "error" ? (
+              <AlertTriangle size={20} />
+            ) : (
+              <Check size={20} />
+            )}
             <span className="font-medium">{toast.message}</span>
           </div>
         </div>
@@ -561,7 +643,11 @@ const heightMatch = (minH, maxH, actual) => {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all scale-100">
             <div className="p-6">
-              <h3 className={`text-xl font-bold mb-2 ${modal.isDestructive ? 'text-red-600' : 'text-gray-800'}`}>
+              <h3
+                className={`text-xl font-bold mb-2 ${
+                  modal.isDestructive ? "text-red-600" : "text-gray-800"
+                }`}
+              >
                 {modal.title}
               </h3>
               <p className="text-gray-600 mb-6 leading-relaxed">
@@ -569,7 +655,14 @@ const heightMatch = (minH, maxH, actual) => {
               </p>
               <div className="flex justify-end gap-3">
                 <button
-                  onClick={() => setModal({ show: false, title: "", message: "", onConfirm: null })}
+                  onClick={() =>
+                    setModal({
+                      show: false,
+                      title: "",
+                      message: "",
+                      onConfirm: null,
+                    })
+                  }
                   className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
                 >
                   Cancel
@@ -578,9 +671,9 @@ const heightMatch = (minH, maxH, actual) => {
                   onClick={modal.onConfirm}
                   disabled={processing}
                   className={`px-5 py-2.5 rounded-lg text-white font-medium shadow-sm transition-colors flex items-center gap-2 ${
-                    modal.isDestructive 
-                      ? 'bg-red-500 hover:bg-red-600' 
-                      : 'bg-green-500 hover:bg-green-600'
+                    modal.isDestructive
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-green-500 hover:bg-green-600"
                   }`}
                 >
                   {processing ? "Processing..." : "Confirm"}
@@ -625,8 +718,6 @@ const heightMatch = (minH, maxH, actual) => {
                     backgroundPosition: "top center",
                   }}
                 />
-
-               
               </div>
             </div>
           </div>
@@ -710,13 +801,15 @@ const heightMatch = (minH, maxH, actual) => {
                         ? "Interest Sent"
                         : "Send Interest"}
                     </button>
-                    
+
                     {blockedByMe ? (
                       <button
                         onClick={unblockUser}
                         className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 bg-yellow-500 text-white text-sm font-bold flex-1 gap-2 hover:bg-yellow-600 transition"
                       >
-                        <span className="material-symbols-outlined text-base">undo</span>
+                        <span className="material-symbols-outlined text-base">
+                          undo
+                        </span>
                         <span className="truncate">Unblock</span>
                       </button>
                     ) : (
@@ -777,32 +870,50 @@ const heightMatch = (minH, maxH, actual) => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
-              <InfoRow label="Name" value={user.Name} />
-              <InfoRow label="Matri ID" value={user.MatriID || user.matid} />
-              <InfoRow label="Email" value={user.ConfirmEmail || user.email} />
+              <InfoRow label="Name" value={showDash(user.Name)} />
+
+              <InfoRow
+                label="Matri ID"
+                value={showDash(user.MatriID || user.matid)}
+              />
+
+              <InfoRow
+                label="Email"
+                value={showDash(user.ConfirmEmail || user.email)}
+              />
+
               <InfoRow
                 label="Profile Created By"
-                value={user.Profilecreatedby}
+                value={showDash(user.Profilecreatedby)}
               />
-              <InfoRow label="Gender" value={user.Gender} />
-              <InfoRow label="Date of Birth (Day)" value={dobParts.day} />
-              <InfoRow label="Month" value={dobParts.month} />
-              <InfoRow label="Year" value={dobParts.year} />
+
+              <InfoRow label="Gender" value={showDash(user.Gender)} />
+
+              <InfoRow
+                label="Date of Birth (Day)"
+                value={showDash(dobParts.day)}
+              />
+              <InfoRow label="Month" value={showDash(dobParts.month)} />
+              <InfoRow label="Year" value={showDash(dobParts.year)} />
+
               <InfoRow
                 label="Marital Status"
-                value={user.Maritalstatus || user.maritalstatus}
+                value={showDash(user.Maritalstatus || user.maritalstatus)}
               />
-              <InfoRow label="Religion" value={user.Religion} />
-              <InfoRow label="Caste" value={user.Caste} />
+
+              <InfoRow label="Religion" value={showDash(user.Religion)} />
+              <InfoRow label="Caste" value={showDash(user.Caste)} />
+
               <InfoRow
                 label="Subcaste"
-                value={user.Subcaste || user.sub_caste || "-"}
+                value={showDash(user.Subcaste || user.sub_caste)}
               />
+
               <InfoRow
                 label="Mobile Number"
                 value={
                   contactVisible ? (
-                    user.Mobile || user.Phone
+                    showDash(user.Mobile || user.Phone)
                   ) : (
                     <span className="inline-flex items-center gap-2">
                       <span className="blur-sm select-none pointer-events-none">
@@ -819,6 +930,7 @@ const heightMatch = (minH, maxH, actual) => {
         {/* Horoscope Details */}
         <section className="mb-6 relative">
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Horoscope Details</h2>
               {isOwner && (
@@ -832,20 +944,25 @@ const heightMatch = (minH, maxH, actual) => {
               )}
             </div>
 
+            {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
               <InfoRow
                 label="Moon Sign"
-                value={user.Moonsign || user.moonsign}
+                value={user.Moonsign || user.moonsign || "-"}
               />
-              <InfoRow label="Star" value={user.Star || user.star} />
-              <InfoRow label="Gothra" value={user.Gothram} />
-              <InfoRow label="Mangalik" value={user.Manglik} />
-              <InfoRow label="Shani" value={user.shani || user.Shani || "-"} />
+              <InfoRow label="Star" value={user.Star || user.star || "-"} />
+              <InfoRow label="Gothra" value={user.Gothram || "-"} />
+              <InfoRow label="Mangalik" value={user.Manglik || "-"} />
+
+              <InfoRow label="Shani" value={user.Shani || user.shani || "-"} />
               <InfoRow
                 label="Place of Shani"
                 value={user.shaniplace || user.place || "-"}
               />
-              <InfoRow label="Horoscope Match" value={user.Horosmatch} />
+
+              <InfoRow label="Horoscope Match" value={user.Horosmatch || "-"} />
+              <InfoRow label="Kootam" value={user.Kootam || "-"} />
+
               <InfoRow
                 label="Parigarasevai"
                 value={user.parigarasevai || "-"}
@@ -853,21 +970,38 @@ const heightMatch = (minH, maxH, actual) => {
               <InfoRow label="Sevai" value={user.Sevai || "-"} />
               <InfoRow label="Raghu" value={user.Raghu || "-"} />
               <InfoRow label="Keethu" value={user.Keethu || "-"} />
+
               <InfoRow
                 label="Place of Birth"
-                value={user.POB || user.PlaceOfBirth || user.place_of_birth}
+                value={
+                  user.POB || user.PlaceOfBirth || user.place_of_birth || "-"
+                }
               />
               <InfoRow
-                label="Country/Place"
-                value={user.POC || user.Country || user.country}
+                label="Country / Place"
+                value={user.POC || user.Country || user.country || "-"}
               />
+
               <InfoRow label="Time of Birth" value={timeOfBirth(tob) || "-"} />
 
-              {/* Horoscope Image */}
-              <div className="col-span-1 sm:col-span-2 lg:col-span-3">
+              {/* Thesai Details */}
+              <InfoRow label="Thesai Planet" value={user.ThesaiPlanet || "-"} />
+              <InfoRow label="Thesai Years" value={user.ThesaiYears || "-"} />
+              <InfoRow label="Thesai Months" value={user.ThesaiMonths || "-"} />
+              <InfoRow label="Thesai Days" value={user.ThesaiDays || "-"} />
+
+              {/* RASI + NAVAMSA Charts */}
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-wrap justify-center gap-12 my-6">
+                <SouthChart title="இராசி" data={rasi} />
+                <SouthChart title="நவாம்சம்" data={navamsa} />
+              </div>
+
+              {/* Horoscope Image / PDF */}
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-4">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Horoscope Image
+                  Horoscope (Image / PDF)
                 </span>
+
                 <div className="mt-2">
                   {user.horoscope ? (
                     <img
@@ -911,25 +1045,25 @@ const heightMatch = (minH, maxH, actual) => {
                 <div className="text-sm text-gray-500">
                   Education Qualification
                 </div>
-                <div className="font-medium">{user.Education || "-"}</div>
+                <div className="font-medium">{showDash(user.Education)}</div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">Education Details</div>
                 <div className="font-medium">
-                  {user.EducationDetails || "-"}
+                  {showDash(user.EducationDetails)}
                 </div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">Occupation</div>
-                <div className="font-medium">{user.Occupation || "-"}</div>
+                <div className="font-medium">{showDash(user.Occupation)}</div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">Occupation Details</div>
                 <div className="font-medium">
-                  {user.occu_details || user.OccupationDetails || "-"}
+                  {showDash(user.occu_details || user.OccupationDetails)}
                 </div>
               </div>
 
@@ -937,31 +1071,37 @@ const heightMatch = (minH, maxH, actual) => {
                 <div className="text-sm text-gray-500">Annual Income</div>
                 <div className="font-medium">
                   {user.Annualincome
-                    ? `${user.income_in || "Rs"} ${user.Annualincome}`
+                    ? `${showDash(user.income_in) || "Rs"} ${user.Annualincome}`
                     : "-"}
                 </div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">Any Other Income</div>
-                <div className="font-medium">{user.anyotherincome || "-"}</div>
+                <div className="font-medium">
+                  {showDash(user.anyotherincome)}
+                </div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">Employed In</div>
-                <div className="font-medium">{user.Employedin || "-"}</div>
+                <div className="font-medium">{showDash(user.Employedin)}</div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">Working Hours</div>
-                <div className="font-medium">{user.working_hours || "-"}</div>
+                <div className="font-medium">
+                  {showDash(user.working_hours)}
+                </div>
               </div>
 
               <div>
                 <div className="text-sm text-gray-500">
                   Working Location / City
                 </div>
-                <div className="font-medium">{user.workinglocation || "-"}</div>
+                <div className="font-medium">
+                  {showDash(user.workinglocation)}
+                </div>
               </div>
             </div>
           </div>
@@ -988,17 +1128,18 @@ const heightMatch = (minH, maxH, actual) => {
                 label="Height"
                 value={user.Height ? `${user.Height}` : "-"}
               />
-              <InfoRow label="Weight" value={user.Weight} />
-              <InfoRow label="Blood Group" value={user.BloodGroup} />
-              <InfoRow label="Complexion" value={user.Complexion} />
-              <InfoRow label="Body Type" value={user.Bodytype} />
-              <InfoRow label="Diet" value={user.Diet} />
-              <InfoRow label="Smoke" value={user.Smoke} />
-              <InfoRow label="Drink" value={user.Drink} />
-              <InfoRow label="Special Cases" value={user.spe_cases} />
-              <InfoRow label="Hobbies" value={user.Hobbies} />
-              <InfoRow label="Interests" value={user.Interests} />
-              <InfoRow label="Passport" value={user.passport} />
+              <InfoRow label="Height" value={showDash(user.Height)} />
+              <InfoRow label="Weight" value={showDash(user.Weight)} />
+              <InfoRow label="Blood Group" value={showDash(user.BloodGroup)} />
+              <InfoRow label="Complexion" value={showDash(user.Complexion)} />
+              <InfoRow label="Body Type" value={showDash(user.Bodytype)} />
+              <InfoRow label="Diet" value={showDash(user.Diet)} />
+              <InfoRow label="Smoke" value={showDash(user.Smoke)} />
+              <InfoRow label="Drink" value={showDash(user.Drink)} />
+              <InfoRow label="Special Cases" value={showDash(user.spe_cases)} />
+              <InfoRow label="Hobbies" value={showDash(user.Hobbies)} />
+              <InfoRow label="Interests" value={showDash(user.Interests)} />
+              <InfoRow label="Passport" value={showDash(user.passport)} />
             </div>
           </div>
         </section>
@@ -1019,42 +1160,77 @@ const heightMatch = (minH, maxH, actual) => {
               )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <InfoRow label="Family Values" value={user.Familyvalues} />
-              <InfoRow label="Family Type" value={user.FamilyType} />
-              <InfoRow label="Family Status" value={user.FamilyStatus} />
-              <InfoRow label="Number of Brothers" value={user.noofbrothers} />
-              <InfoRow label="Number of Sisters" value={user.noofsisters} />
+              <InfoRow
+                label="Family Values"
+                value={showDash(user.Familyvalues)}
+              />
+              <InfoRow label="Family Type" value={showDash(user.FamilyType)} />
+              <InfoRow
+                label="Family Status"
+                value={showDash(user.FamilyStatus)}
+              />
+              <InfoRow
+                label="Number of Brothers"
+                value={showDash(user.noofbrothers)}
+              />
+              <InfoRow
+                label="Number of Sisters"
+                value={showDash(user.noofsisters)}
+              />
+
               <InfoRow
                 label="Brothers Married"
-                value={user.noyubrothers || user.nbm}
+                value={showDash(user.noyubrothers || user.nbm)}
               />
+
               <InfoRow
                 label="Sisters Married"
-                value={user.noyusisters || user.nsm}
+                value={showDash(user.noyusisters || user.nsm)}
               />
-              <InfoRow label="Father Name" value={user.Fathername} />
+
+              <InfoRow label="Father Name" value={showDash(user.Fathername)} />
+
               <InfoRow
                 label="Father Occupation"
-                value={user.Fathersoccupation}
+                value={showDash(user.Fathersoccupation)}
               />
-              <InfoRow label="Mother Name" value={user.Mothersname} />
+
+              <InfoRow
+                label="Father Poorvegam"
+                value={showDash(user.FatherPoorvegam)}
+              />
+
+              <InfoRow label="Mother Name" value={showDash(user.Mothersname)} />
+
               <InfoRow
                 label="Mother Occupation"
-                value={user.Mothersoccupation}
+                value={showDash(user.Mothersoccupation)}
               />
-              <InfoRow label="Family Wealth" value={user.family_wealth} />
+
+              <InfoRow
+                label="Mother Poorvegam"
+                value={showDash(user.MotherPoorvegam)}
+              />
+
+              <InfoRow
+                label="Family Wealth"
+                value={showDash(user.family_wealth)}
+              />
+
               <InfoRow
                 label="Mother Tongue"
-                value={user.mother_tounge || user.Language}
+                value={showDash(user.mother_tounge || user.Language)}
               />
+
               <InfoRow
                 label="Family Medical History"
-                value={user.familymedicalhistory}
+                value={showDash(user.familymedicalhistory)}
               />
+
               <div className="col-span-1 sm:col-span-2 lg:col-span-3">
                 <span className="text-sm text-gray-500">About Family</span>
                 <div className="font-medium">
-                  {user.FamilyDetails || user.FamilyDetails_new || "-"}
+                  {showDash(user.FamilyDetails || user.FamilyDetails_new)}
                 </div>
               </div>
             </div>
@@ -1211,4 +1387,57 @@ const heightMatch = (minH, maxH, actual) => {
 
 
   
+}
+
+
+function SouthChart({ title, data }) {
+  return (
+    <div className="inline-block my-6">
+      <div className="grid grid-cols-4 grid-rows-4 w-[300px] h-[300px] border border-black">
+        {/* ROW 1 */}
+        <Cell value={data?.[0]} />
+        <Cell value={data?.[1]} />
+        <Cell value={data?.[2]} />
+        <Cell value={data?.[3]} />
+
+        {/* ROW 2 */}
+        <Cell value={data?.[11]} />
+        <div className="col-span-2 row-span-2 border border-black flex items-center justify-center font-bold text-lg">
+          {title}
+        </div>
+        <Cell value={data?.[4]} />
+
+        {/* ROW 3 */}
+        <Cell value={data?.[10]} />
+        <Cell value={data?.[5]} />
+
+        {/* ROW 4 */}
+        <Cell value={data?.[9]} />
+        <Cell value={data?.[8]} />
+        <Cell value={data?.[7]} />
+        <Cell value={data?.[6]} />
+      </div>
+    </div>
+  );
+}
+
+function Cell({ value }) {
+  if (!value) return <div className="border border-black p-1 text-[12px]" />;
+
+  let items = [];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) items = parsed;
+  } catch {
+    items = value.split(",").map((v) => v.trim());
+  }
+
+  return (
+    <div className="border border-black p-1 text-[11px] leading-tight">
+      {items.map((item, i) => (
+        <div key={i}>{item}</div>
+      ))}
+    </div>
+  );
 }

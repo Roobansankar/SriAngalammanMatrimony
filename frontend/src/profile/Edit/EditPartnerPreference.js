@@ -441,6 +441,7 @@ export default function EditPartnerPreference() {
           </div>
 
           {/* EDUCATION */}
+          {/* EDUCATION */}
           <div>
             <label className="font-semibold">Education</label>
             <select
@@ -448,15 +449,20 @@ export default function EditPartnerPreference() {
               value={form.PE_Education}
               onChange={(e) => updateField("PE_Education", e.target.value)}
             >
-              <option value="">Select</option>
-              {options.educations.map((e) => (
-                <option key={e.id} value={e.edu}>
-                  {e.edu}
-                </option>
-              ))}
+              {/* ✅ Any option */}
+              <option value="Any">Any</option>
+
+              {options.educations
+                .filter((e) => e.status === "enabled") // ✅ only enabled
+                .map((e) => (
+                  <option key={e.id} value={e.edu}>
+                    {e.edu}
+                  </option>
+                ))}
             </select>
           </div>
 
+          {/* OCCUPATION */}
           {/* OCCUPATION */}
           <div>
             <label className="font-semibold">Occupation</label>
@@ -465,7 +471,9 @@ export default function EditPartnerPreference() {
               value={form.PE_Occupation}
               onChange={(e) => updateField("PE_Occupation", e.target.value)}
             >
-              <option value="">Select</option>
+              {/* ✅ Any option */}
+              <option value="Any">Any</option>
+
               {options.occupations.map((o) => (
                 <option key={o.id} value={o.occu}>
                   {o.occu}

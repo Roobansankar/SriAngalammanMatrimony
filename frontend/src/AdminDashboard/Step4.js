@@ -48,8 +48,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
     star: formData.star || "",
     gothra: formData.gothra || "",
     manglik: formData.manglik || "",
-    // shani: formData.shani || "",
-    // placeOfShani: formData.placeOfShani || "",
+
     horoscopeMatch: formData.horoscopeMatch || "",
     parigarasevai: formData.parigarasevai || "",
     sevai: formData.sevai || "",

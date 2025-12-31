@@ -569,9 +569,134 @@ function safeToJSONArray(input) {
 // --------------------------------------------
 // UPDATE HOROSCOPE (image or PDF)
 // --------------------------------------------
+// router.put(
+//   "/update/horoscope",
+//   upload.single("horoscope"), // multer upload
+//   async (req, res) => {
+//     try {
+//       const {
+//         ConfirmEmail,
+//         Moonsign,
+//         Star,
+//         Gothram,
+//         Manglik,
+//         shani,
+//         shaniplace,
+//         Horosmatch,
+//         parigarasevai,
+//         Sevai,
+//         Raghu,
+//         Keethu,
+//         POB,
+//         POC,
+//         TOB,
+//         Kuladeivam,
+//         ThesaiIrupu,
+//       } = req.body;
+
+//       if (!ConfirmEmail) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Email missing",
+//         });
+//       }
+
+//       // -----------------------------------
+//       // SAVE UPLOADED FILE → kundli folder
+//       // -----------------------------------
+//       let uploadedFileName = null;
+
+//       if (req.file) {
+//         const ext = req.file.originalname.split(".").pop().toLowerCase();
+//         const newName = `horoscope_${Date.now()}.${ext}`;
+
+//         fs.renameSync(req.file.path, `kundli/${newName}`);
+
+//         uploadedFileName = newName;
+//       }
+
+//       // -----------------------------------
+//       // PARSE 12 RASI + 12 NAVAMSA
+//       // -----------------------------------
+//       const rasi = {};
+//       const navamsa = {};
+
+//       for (let i = 1; i <= 12; i++) {
+//         rasi[`g${i}`] = safeToJSONArray(req.body[`g${i}`]);
+//         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
+//       }
+
+//       const conn = db.promise();
+
+//       // -----------------------------------
+//       // UPDATE DB RECORD
+//       // -----------------------------------
+//       await conn.query(
+//         `
+//         UPDATE register SET
+//           Moonsign=?, Star=?, Gothram=?, Manglik=?, shani=?, shaniplace=?,
+//           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?, 
+//           POB=?, POC=?, TOB=?, Kuladeivam=?, ThesaiIrupu=?,
+
+//           -- ⭐ STORE FILENAME HERE
+//           horosother=?,
+
+//           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
+//           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
+
+//           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
+//           a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
+
+//         WHERE ConfirmEmail=?
+//       `,
+//         [
+//           Moonsign,
+//           Star,
+//           Gothram,
+//           Manglik,
+//           shani,
+//           shaniplace,
+//           Horosmatch,
+//           parigarasevai,
+//           Sevai,
+//           Raghu,
+//           Keethu,
+//           POB,
+//           POC,
+//           TOB,
+//           Kuladeivam,
+//           ThesaiIrupu,
+
+//           uploadedFileName, // ⭐ IMPORTANT
+
+//           rasi.g1, rasi.g2, rasi.g3, rasi.g4, rasi.g5, rasi.g6,
+//           rasi.g7, rasi.g8, rasi.g9, rasi.g10, rasi.g11, rasi.g12,
+
+//           navamsa.a1, navamsa.a2, navamsa.a3, navamsa.a4, navamsa.a5, navamsa.a6,
+//           navamsa.a7, navamsa.a8, navamsa.a9, navamsa.a10, navamsa.a11, navamsa.a12,
+
+//           ConfirmEmail,
+//         ]
+//       );
+
+//       return res.json({
+//         success: true,
+//         message: "Horoscope updated successfully",
+//       });
+//     } catch (err) {
+//       console.error("update/horoscope error:", err);
+//       return res.status(500).json({
+//         success: false,
+//         message: "Server error",
+//       });
+//     }
+//   }
+// );
+
+
 router.put(
   "/update/horoscope",
-  upload.single("horoscope"), // multer upload
+  upload.single("horoscope"),
   async (req, res) => {
     try {
       const {
@@ -580,8 +705,6 @@ router.put(
         Star,
         Gothram,
         Manglik,
-        shani,
-        shaniplace,
         Horosmatch,
         parigarasevai,
         Sevai,
@@ -591,7 +714,11 @@ router.put(
         POC,
         TOB,
         Kuladeivam,
-        ThesaiIrupu,
+        ThesaiPlanet,
+        ThesaiYears,
+        ThesaiMonths,
+        ThesaiDays,
+        Kootam,
       } = req.body;
 
       if (!ConfirmEmail) {
@@ -602,21 +729,18 @@ router.put(
       }
 
       // -----------------------------------
-      // SAVE UPLOADED FILE → kundli folder
+      // HANDLE FILE UPLOAD
       // -----------------------------------
       let uploadedFileName = null;
 
       if (req.file) {
         const ext = req.file.originalname.split(".").pop().toLowerCase();
-        const newName = `horoscope_${Date.now()}.${ext}`;
-
-        fs.renameSync(req.file.path, `kundli/${newName}`);
-
-        uploadedFileName = newName;
+        uploadedFileName = `horoscope_${Date.now()}.${ext}`;
+        fs.renameSync(req.file.path, `kundli/${uploadedFileName}`);
       }
 
       // -----------------------------------
-      // PARSE 12 RASI + 12 NAVAMSA
+      // PARSE RASI + NAVAMSA
       // -----------------------------------
       const rasi = {};
       const navamsa = {};
@@ -626,58 +750,84 @@ router.put(
         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
       }
 
-      const conn = db.promise();
-
       // -----------------------------------
-      // UPDATE DB RECORD
+      // BUILD QUERY
       // -----------------------------------
-      await conn.query(
-        `
+      const updateQuery = `
         UPDATE register SET
-          Moonsign=?, Star=?, Gothram=?, Manglik=?, shani=?, shaniplace=?,
-          Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?, 
-          POB=?, POC=?, TOB=?, Kuladeivam=?, ThesaiIrupu=?,
-
-          -- ⭐ STORE FILENAME HERE
-          horosother=?,
-
+          Moonsign=?, Star=?, Gothram=?, Manglik=?,
+          Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?,
+          POB=?, POC=?, TOB=?, Kuladeivam=?,
+          ThesaiPlanet=?, ThesaiYears=?, ThesaiMonths=?, ThesaiDays=?, Kootam=?,
+          ${uploadedFileName ? "horosother=?," : ""}
           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
-
           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
           a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
+        WHERE ConfirmEmail = ? COLLATE utf8mb4_general_ci
+      `;
 
-        WHERE ConfirmEmail=?
-      `,
-        [
-          Moonsign,
-          Star,
-          Gothram,
-          Manglik,
-          shani,
-          shaniplace,
-          Horosmatch,
-          parigarasevai,
-          Sevai,
-          Raghu,
-          Keethu,
-          POB,
-          POC,
-          TOB,
-          Kuladeivam,
-          ThesaiIrupu,
+      // -----------------------------------
+      // BUILD PARAMS (ORDER IS CRITICAL)
+      // -----------------------------------
+      const params = [
+        Moonsign,
+        Star,
+        Gothram,
+        Manglik,
+        Horosmatch,
+        parigarasevai,
+        Sevai,
+        Raghu,
+        Keethu,
+        POB,
+        POC,
+        TOB,
+        Kuladeivam,
+        ThesaiPlanet,
+        ThesaiYears,
+        ThesaiMonths,
+        ThesaiDays,
+        Kootam,
+      ];
 
-          uploadedFileName, // ⭐ IMPORTANT
+      if (uploadedFileName) {
+        params.push(uploadedFileName);
+      }
 
-          rasi.g1, rasi.g2, rasi.g3, rasi.g4, rasi.g5, rasi.g6,
-          rasi.g7, rasi.g8, rasi.g9, rasi.g10, rasi.g11, rasi.g12,
-
-          navamsa.a1, navamsa.a2, navamsa.a3, navamsa.a4, navamsa.a5, navamsa.a6,
-          navamsa.a7, navamsa.a8, navamsa.a9, navamsa.a10, navamsa.a11, navamsa.a12,
-
-          ConfirmEmail,
-        ]
+      params.push(
+        rasi.g1,
+        rasi.g2,
+        rasi.g3,
+        rasi.g4,
+        rasi.g5,
+        rasi.g6,
+        rasi.g7,
+        rasi.g8,
+        rasi.g9,
+        rasi.g10,
+        rasi.g11,
+        rasi.g12,
+        navamsa.a1,
+        navamsa.a2,
+        navamsa.a3,
+        navamsa.a4,
+        navamsa.a5,
+        navamsa.a6,
+        navamsa.a7,
+        navamsa.a8,
+        navamsa.a9,
+        navamsa.a10,
+        navamsa.a11,
+        navamsa.a12,
+        ConfirmEmail
       );
+
+      // -----------------------------------
+      // EXECUTE QUERY
+      // -----------------------------------
+      const conn = db.promise();
+      await conn.query(updateQuery, params);
 
       return res.json({
         success: true,
@@ -692,7 +842,6 @@ router.put(
     }
   }
 );
-
 
 
 
@@ -927,7 +1076,6 @@ router.put("/update/lifestyle", async (req, res) => {
     });
   }
 });
-
 router.put("/update/family", async (req, res) => {
   try {
     const {
@@ -941,42 +1089,49 @@ router.put("/update/family", async (req, res) => {
       noyusisters,
       Fathername,
       Fathersoccupation,
+      FatherPoorvegam, // ✅ NEW
       Mothersname,
       Mothersoccupation,
+      MotherPoorvegam, // ✅ NEW
       family_wealth,
       mother_tounge,
       familymedicalhistory,
       FamilyDetails,
     } = req.body;
 
+    // ✅ Validation
     if (!ConfirmEmail) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email required" });
+      return res.status(400).json({
+        success: false,
+        message: "Email required",
+      });
     }
 
     const conn = db.promise();
 
+    // ✅ SQL Update
     await conn.query(
       `
       UPDATE register SET
-        Familyvalues = ?, 
-        FamilyType = ?, 
-        FamilyStatus = ?, 
-        noofbrothers = ?, 
-        noofsisters = ?, 
-        noyubrothers = ?, 
-        noyusisters = ?, 
-        Fathername = ?, 
-        Fathersoccupation = ?, 
-        Mothersname = ?, 
-        Mothersoccupation = ?, 
-        family_wealth = ?, 
-        mother_tounge = ?, 
-        familymedicalhistory = ?, 
+        Familyvalues = ?,
+        FamilyType = ?,
+        FamilyStatus = ?,
+        noofbrothers = ?,
+        noofsisters = ?,
+        noyubrothers = ?,
+        noyusisters = ?,
+        Fathername = ?,
+        Fathersoccupation = ?,
+        FatherPoorvegam = ?,      -- ✅
+        Mothersname = ?,
+        Mothersoccupation = ?,
+        MotherPoorvegam = ?,      -- ✅
+        family_wealth = ?,
+        mother_tounge = ?,
+        familymedicalhistory = ?,
         FamilyDetails = ?
       WHERE ConfirmEmail = ?
-    `,
+      `,
       [
         Familyvalues,
         FamilyType,
@@ -987,8 +1142,10 @@ router.put("/update/family", async (req, res) => {
         noyusisters,
         Fathername,
         Fathersoccupation,
+        FatherPoorvegam, // ✅
         Mothersname,
         Mothersoccupation,
+        MotherPoorvegam, // ✅
         family_wealth,
         mother_tounge,
         familymedicalhistory,
@@ -999,7 +1156,7 @@ router.put("/update/family", async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Family details updated",
+      message: "Family details updated successfully",
     });
   } catch (err) {
     console.error("update/family error:", err);
@@ -1009,6 +1166,7 @@ router.put("/update/family", async (req, res) => {
     });
   }
 });
+
 
 router.put("/update/partner", async (req, res) => {
   try {

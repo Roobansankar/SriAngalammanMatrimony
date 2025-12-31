@@ -235,11 +235,15 @@ router.post(
           ? (b.plan || "basic").toLowerCase().trim() 
           : null;
 
+          
+
         if (!plan) {
           return res
             .status(403)
             .json({ message: "Plan not selected. Please select a plan." });
         }
+
+      
 
         const gender = (b.gender || "").toLowerCase().trim();
 

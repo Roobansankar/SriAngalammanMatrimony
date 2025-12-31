@@ -24,7 +24,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     occupationDetails: formData.occupationDetails || "",
     annualIncome: formData.annualIncome || "",
     incomeType: formData.incomeType || "",
-    otherIncome: formData.otherIncome || "",
+   
     employedIn: formData.employedIn || "",
     workingHours: formData.workingHours || "",
     company_name: formData.company_name || "",
@@ -41,7 +41,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
         occupationDetails: formData.occupationDetails || "",
         annualIncome: formData.annualIncome || "",
         incomeType: formData.incomeType || "",
-        otherIncome: formData.otherIncome || "",
+    
         employedIn: formData.employedIn || "",
         workingHours: formData.workingHours || "",
         company_name: formData.company_name || "",
@@ -74,9 +74,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
       newErrors.annualIncome = "Income must be a number";
     }
 
-    if (data.otherIncome && !/^\d+$/.test(data.otherIncome)) {
-      newErrors.otherIncome = "Income must be a number";
-    }
+  
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -115,7 +113,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-gray-100 mt-12">
       {/* Title */}
       <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center border-b pb-3">
-        Step 4: Education & Occupation Details
+         Education & Occupation Details
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -232,26 +230,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           </select>
         </div>
 
-        {/* Other Income */}
-        <div>
-          <label className="block font-medium text-gray-700 mb-1">
-            Family Income
-          </label>
-          <input
-            type="text"
-            name="otherIncome"
-            value={data.otherIncome}
-            onChange={handleChange}
-            inputMode="numeric"
-            placeholder="Enter amount"
-            className={`w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 ${
-              errors.otherIncome ? "border-red-500" : "border-gray-300"
-            }`}
-          />
-          {errors.otherIncome && (
-            <p className="text-red-500 text-xs mt-1">{errors.otherIncome}</p>
-          )}
-        </div>
+       
 
         {/* Employed In Dropdown */}
         <div>
@@ -342,3 +321,4 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
     </div>
   );
 }
+

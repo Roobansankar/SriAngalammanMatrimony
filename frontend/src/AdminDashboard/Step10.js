@@ -589,11 +589,6 @@ export default function Step10({ nextStep, prevStep, formData = {} }) {
     caste: formData.caste || "",
     complexion: formData.complexion || "",
     residencyStatus: formData.residencyStatus || "",
-    // country: formData.country || "",
-    // state: formData.state || "",
-    // city: formData.city || "",
-    // education: formData.education || "",
-    // occupation: formData.occupation || "",
     partnerEducation: formData.partnerEducation || "Any",
 partnerOccupation: formData.partnerOccupation || "Any",
 partnerCountry: formData.partnerCountry || "",
@@ -774,7 +769,7 @@ partnerCity: formData.partnerCity || "",
     });
   };
 
-  // const handleNext = () => nextStep(data);
+  
   const handleNext = () =>
   nextStep({
     ...data,

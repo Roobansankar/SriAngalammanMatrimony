@@ -59,19 +59,19 @@ const kulamMap = {
 // Sub-caste/Kootam mapping
 const kootamMap = {
   // Mudaliyar variants
-  "Thuluva Vellala Mudaliyar": "துளுவ வேளாளர் முதலியார்",
-  "Agamudaiyar Mudaliyar": "அகமுடையார் முதலியார்",
-  "Sengunthar Mudaliyar (Kaikolar)": "செங்குந்தர் முதலியார்",
-  "Kaikolar": "கைக்கோளர்",
-  "Saiva Vellala Mudaliyar": "சைவ வேளாளர் முதலியார்",
-  "Isai Vellalar Mudaliyar": "இசை வேளாளர் முதலியார்",
-  "Nattuvanar": "நட்டுவனர்",
-  "Pattinavar Mudaliyar": "பட்டினவர் முதலியார்",
-  "Arcot Mudaliyar": "ஆற்காடு முதலியார்",
+  "Thuluva Vellala Mudhaliyar": "துளுவ வேளாளர் முதலியார்",
+  "Agamudaiyar Mudhaliyar": "அகமுடையார் முதலியார்",
+  "Sengunthar Mudhaliyar (Kaikolar)": "செங்குந்தர் முதலியார்",
+  Kaikolar: "கைக்கோளர்",
+  "Saiva Vellala Mudhaliyar": "சைவ வேளாளர் முதலியார்",
+  "Isai Vellalar Mudhaliyar": "இசை வேளாளர் முதலியார்",
+  Nattuvanar: "நட்டுவனர்",
+  "Pattinavar Mudhaliyar": "பட்டினவர் முதலியார்",
+  "Arcot Mudhaliyar": "ஆற்காடு முதலியார்",
   "Arcot Vellalar": "ஆற்காடு வேளாளர்",
   "Karkatha Mudhaliyar": "கார்கத்த முதலியார்",
   "Senaithalivar Mudhaliyar": "சேனைத் தலைவர் முதலியார்",
-  
+
   // Gounder variants
   "Aadhi Saiva Gounder": "ஆதி சைவ கவுண்டர்",
   "Vellala Gounder": "வேளாளர் கவுண்டர்",
@@ -81,23 +81,23 @@ const kootamMap = {
   "Vettuva Gounder": "வேட்டுவ கவுண்டர்",
   "Nattu Gounder": "நாட்டுக் கவுண்டர்",
   "Pillai Gounder": "பிள்ளை கவுண்டர்",
-  
+
   // Nadar variants
   "Kalla Nadar": "கள்ள நாடார்",
   "Shanivar Nadar": "சணிவார் நாடார்",
   "Kumari Nadar": "குமரி நாடார்",
-  "Nadan": "நாடன்",
+  Nadan: "நாடன்",
   "Nadar Mudali": "நாடார் முதலியார்",
   "Nadar Thalaiva": "நாடார் தலைவர்",
-  
+
   // Mukkulathor
-  "Kallar": "கள்ளர்",
-  "Maravar": "மறவர்",
-  "Agamudayar": "அகமுடையார்",
-  
+  Kallar: "கள்ளர்",
+  Maravar: "மறவர்",
+  Agamudayar: "அகமுடையார்",
+
   // Brahmin variants
-  "Iyer": "ஐயர்",
-  "Iyengar": "ஐயங்கார்",
+  Iyer: "ஐயர்",
+  Iyengar: "ஐயங்கார்",
   "Smarta Brahmin": "ஸ்மார்த்த பிராமணர்",
   "Vadama Iyer": "வடம ஐயர்",
   "Brahacharanam Iyer": "பிரஹச்சரணம் ஐயர்",
@@ -106,15 +106,15 @@ const kootamMap = {
   "Deshastha Brahmin": "தேசஸ்த பிராமணர்",
   "Mandyam Iyer": "மாண்டியம் ஐயர்",
   "Viswakarma Brahmin": "விஸ்வகர்மா பிராமணர்",
-  
+
   // Chettiyar variants
   "Nattukottai Chettiyar": "நாட்டுக்கோட்டை செட்டியார்",
-  "Nagarathar": "நகரத்தார்",
+  Nagarathar: "நகரத்தார்",
   "Kottai Chettiyar": "கோட்டை செட்டியார்",
   "Sattai Chettiyar": "சட்டை செட்டியார்",
   "Devanga Chettiyar": "தேவாங்க செட்டியார்",
   "Jain Chettiyar": "ஜைன செட்டியார்",
-  
+
   // Nayakar variants
   "Balija Nayakar": "பாலிஜா நாயக்கர்",
   "Kapu Nayakar": "காப்பு நாயக்கர்",
@@ -125,7 +125,7 @@ const kootamMap = {
   "Reddiar Nayakar": "ரெட்டியார் நாயக்கர்",
   "Thottiya Nayakar": "தொட்டிய நாயக்கர்",
   "Periya Nayakar": "பெரிய நாயக்கர்",
-  
+
   // Pillai variants
   "Kondaikatti Pillai": "கொண்டைக்கட்டி பிள்ளை",
   "Vellala Pillai": "வேளாளர் பிள்ளை",
@@ -133,23 +133,23 @@ const kootamMap = {
   "Saiva Pillai": "சைவ பிள்ளை",
   "Vathima Pillai": "வாதிமா பிள்ளை",
   "Mudali Pillai": "முதலியார் பிள்ளை",
-  
+
   // Viswakarma variants
-  "Kammalar": "கம்மாளர்",
-  "Achari": "ஆச்சாரி",
-  "Kannar": "கண்ணார்",
-  "Kollan": "கொல்லன்",
-  "Thattar": "தட்டார்",
-  "Goldsmith": "தட்டான்",
-  "Thattan": "தட்டான்",
-  "Blacksmith": "இரும்புக் கொல்லர்",
-  "Carpenter": "தச்சன்",
-  "Thachan": "தச்சன்",
-  "Sculptor": "சிற்பி",
-  "Shilpi": "சிற்பி",
+  Kammalar: "கம்மாளர்",
+  Achari: "ஆச்சாரி",
+  Kannar: "கண்ணார்",
+  Kollan: "கொல்லன்",
+  Thattar: "தட்டார்",
+  Goldsmith: "தட்டான்",
+  Thattan: "தட்டான்",
+  Blacksmith: "இரும்புக் கொல்லர்",
+  Carpenter: "தச்சன்",
+  Thachan: "தச்சன்",
+  Sculptor: "சிற்பி",
+  Shilpi: "சிற்பி",
   "Stone Worker": "கல் தச்சன்",
   "Kal Thachan": "கல் தச்சன்",
-  "Bronzesmith": "வெண்கல தட்டார்"
+  Bronzesmith: "வெண்கல தட்டார்",
 };
 
 
@@ -245,9 +245,6 @@ function getHeaderColor(matriId, gender, plan) {
     return "#D32F2F";
   } else if (prefix === "SAMR") {
     return "#6B8FD6";
-    
-  }  else if (prefix === "SAMP") {
-     return "#000000ff";
   }  else if (prefix === "SAMM" || gender === "Male") {
     return "#3FA732";
   } else if (prefix === "SAMF" || gender === "Female") {
@@ -257,19 +254,54 @@ function getHeaderColor(matriId, gender, plan) {
   return "#eabdd2";
 }
 
+// function getHeaderLabel(matriId, gender) {
+//   if (!matriId) return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
+  
+//   const prefix = matriId.substring(0, 4).toUpperCase();
+  
+//   if (prefix === "SAMD") {
+//     return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மருத்துவர்)" : "பெண் வரன் ஜாதகம் (மருத்துவர்)";
+//   } else if (prefix === "SAMR") {
+//     return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மறுமணம்)" : "பெண் வரன் ஜாதகம் (மறுமணம்)";
+//   }
+  
+//   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
+// }
+
+
 function getHeaderLabel(matriId, gender) {
-  if (!matriId) return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
-  
-  const prefix = matriId.substring(0, 4).toUpperCase();
-  
-  if (prefix === "SAMD") {
-    return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மருத்துவர்)" : "பெண் வரன் ஜாதகம் (மருத்துவர்)";
-  } else if (prefix === "SAMR") {
-    return gender === "Male" ? "ஆண் வரன் ஜாதகம் (மறுமணம்)" : "பெண் வரன் ஜாதகம் (மறுமணம்)";
+  if (!matriId) {
+    return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
   }
-  
+
+  const prefix5 = matriId.substring(0, 5).toUpperCase();
+  const prefix4 = matriId.substring(0, 4).toUpperCase();
+
+  // ✅ PREMIUM
+  if (prefix5 === "SAMPM") {
+    return " பிரீமியம் ஆண் வரன் ஜாதகம் ";
+  }
+
+  if (prefix5 === "SAMPF") {
+    return "பிரீமியம் பெண் வரன் ஜாதகம் ";
+  }
+
+  // Existing conditions
+  if (prefix4 === "SAMD") {
+    return gender === "Male"
+      ? "ஆண் வரன் ஜாதகம் (மருத்துவர்)"
+      : "பெண் வரன் ஜாதகம் (மருத்துவர்)";
+  }
+
+  if (prefix4 === "SAMR") {
+    return gender === "Male"
+      ? "ஆண் வரன் ஜாதகம் (மறுமணம்)"
+      : "பெண் வரன் ஜாதகம் (மறுமணம்)";
+  }
+
   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
 }
+
 
 export default function MemberBioData() {
   const [members, setMembers] = useState([]);
