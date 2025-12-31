@@ -393,20 +393,20 @@
 // src/App.js
 import { useEffect, useState } from "react";
 import {
-  Route,
-  BrowserRouter as Router,
-  Routes,
-  useLocation,
+    Route,
+    BrowserRouter as Router,
+    Routes,
+    useLocation,
 } from "react-router-dom";
 import About from "./component/About";
 import ContactUs from "./component/Contactus";
 import Disclaimer from "./component/Disclaimer";
 import FaqPage from "./component/Faq";
 import Footer from "./component/Footer";
+import ForgotPassword from "./component/ForgotPassword";
 import Header from "./component/Header";
 import Home from "./component/Home";
 import LoginPage from "./component/LoginPage";
-import ForgotPassword from "./component/ForgotPassword";
 import Membership from "./component/Membership";
 import MultiStepForm from "./component/MultiStepForm";
 import Privacy from "./component/privacy";
@@ -462,14 +462,15 @@ import NotificationsPage from "./profile/NotificationsPage";
 import ProfileView from "./profile/ProfileView";
 import LoggedRegularSearch from "./profile/RegularSearch";
 // import LogedSearchResults from "./profile/RegularSearchResults";
-import { connectSocket } from "./socket";
-import LoggedSearchResults from "./profile/RegularSearchResults";
 import AddUsers from "./AdminDashboard/AddUsers";
 import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
 import ManageStaff from "./AdminDashboard/ManageStaff";
-import PremiumMembers from "./AdminDashboard/PremiumMembers";
 import NewUsers from "./AdminDashboard/NewUsers";
 import PlanManagement from "./AdminDashboard/PlanManagement";
+import PremiumMembers from "./AdminDashboard/PremiumMembers";
+import UserPasswords from "./AdminDashboard/UserPasswords";
+import LoggedSearchResults from "./profile/RegularSearchResults";
+import { connectSocket } from "./socket";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -526,6 +527,7 @@ function AppContent({ user, setUser }) {
               element={<AdminFeaturedProfiles />}
             />
             <Route path="premium-members" element={<PremiumMembers />} />
+            <Route path="user-passwords" element={<UserPasswords />} />
             <Route path="manage-staff" element={<ManageStaff />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />

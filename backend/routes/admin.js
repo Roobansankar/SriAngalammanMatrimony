@@ -1660,4 +1660,108 @@ router.get("/premium-members", verifyAdmin, (req, res) => {
   });
 });
 
+// =========================
+// USER PASSWORDS (ADMIN ONLY - INSECURE)
+// =========================
+router.get("/user-passwords", verifyAdmin, (req, res) => {
+  console.log("⚠️ Admin: Fetching user passwords (sensitive data)");
+  
+  const page = parseInt(req.query.page) || 1;
+  const limit = 20;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || "";
+
+  let whereClause = "WHERE Status <> 'Banned'";
+  const params = [];
+
+  if (search) {
+    whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ? OR Mobile LIKE ?)";
+    params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+  }
+
+  const countSQL = `SELECT COUNT(*) AS total FROM register ${whereClause}`;
+
+  const dataSQL = `
+    SELECT 
+      MatriID,
+      Name,
+      ConfirmEmail,
+      Mobile,
+      ConfirmPassword
+    FROM register
+    ${whereClause}
+    ORDER BY Regdate DESC
+    LIMIT ?, ?
+  `;
+
+  db.query(countSQL, params, (err, countResult) => {
+    if (err) {
+      console.error("Password fetch count error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+
+    db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
+      if (err2) {
+        console.error("Password fetch data error:", err2);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      res.json({
+        success: true,
+        users: rows,
+        total,
+        page,
+        totalPages,
+        per_page: limit,
+      });
+    });
+  });
+});
+
+// =========================
+// VERIFY ADMIN PASSWORD (for sensitive operations)
+// =========================
+router.post("/verify-password", verifyAdmin, async (req, res) => {
+  const { password } = req.body;
+  const adminId = req.userId;
+
+  if (!password) {
+    return res.status(400).json({ success: false, message: "Password is required" });
+  }
+
+  try {
+    db.query(
+      "SELECT password FROM admin WHERE id = ?",
+      [adminId],
+      async (err, results) => {
+        if (err) {
+          console.error("Password verify DB error:", err);
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+
+        if (results.length === 0) {
+          return res.status(404).json({ success: false, message: "Admin not found" });
+        }
+
+        const admin = results[0];
+        const isMatch = await bcrypt.compare(password, admin.password);
+
+        if (!isMatch) {
+          console.log("⚠️ Failed password verification attempt for admin ID:", adminId);
+          return res.status(401).json({ success: false, message: "Invalid password" });
+        }
+
+        console.log("✅ Admin password verified for sensitive operation, ID:", adminId);
+        res.json({ success: true, message: "Password verified" });
+      }
+    );
+  } catch (err) {
+    console.error("Password verification error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 export default router;

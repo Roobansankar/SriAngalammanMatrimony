@@ -324,22 +324,23 @@
 
 
 import {
-  Bell,
-  BookOpen,
-  ChevronDown,
-  Crown,
-  FileText,
-  Globe,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Shield,
-  UserCircle,
-  UserCheck,
-  UserCog,
-  Users,
-  X,
-  CreditCard
+    Bell,
+    BookOpen,
+    ChevronDown,
+    CreditCard,
+    Crown,
+    FileText,
+    Globe,
+    KeyRound,
+    LayoutDashboard,
+    LogOut,
+    Menu,
+    Shield,
+    UserCheck,
+    UserCircle,
+    UserCog,
+    Users,
+    X
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -354,6 +355,7 @@ const navLinks = [
   { name: "Member BioData", path: "/admin/member-biodata", icon: FileText },
   { name: "Featured Profiles", path: "/admin/featured-profiles", icon: Users },
   { name: "Premium Members", path: "/admin/premium-members", icon: Crown, adminOnly: true },
+  { name: "User Passwords", path: "/admin/user-passwords", icon: KeyRound, adminOnly: true },
   { name: "Manage Staff", path: "/admin/manage-staff", icon: Shield, adminOnly: true },
   { name: "Add Religion/Caste", path: "/admin/master-data", icon: BookOpen },
   {
@@ -479,23 +481,123 @@ export default function DashboardLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Notifications */}
-            <button
-              onClick={() => setNotificationOpen(!notificationOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 relative"
-            >
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full" />
-            </button>
+            {/* Notifications Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setNotificationOpen(!notificationOpen);
+                  setProfileDropdown(false);
+                }}
+                className="p-2 rounded-lg hover:bg-gray-100 relative"
+              >
+                <Bell size={20} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full" />
+              </button>
 
-            {/* Profile */}
-            <button
-              onClick={() => setProfileDropdown(!profileDropdown)}
-              className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100"
-            >
-              <UserCircle size={24} />
-              <ChevronDown size={16} />
-            </button>
+              {notificationOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
+                    <p className="text-sm font-semibold text-gray-800">Notifications</p>
+                    <span className="text-xs bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">New</span>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Users size={14} className="text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-800">Welcome to Admin Panel</p>
+                          <p className="text-xs text-gray-500 mt-0.5">Manage your matrimony platform</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Bell size={14} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-800">Check dashboard for stats</p>
+                          <p className="text-xs text-gray-500 mt-0.5">View member statistics</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-4 py-2 border-t border-gray-100">
+                    <button 
+                      onClick={() => {
+                        setNotificationOpen(false);
+                        navigate("/admin/homedashboard");
+                      }}
+                      className="w-full text-center text-sm text-rose-600 hover:text-rose-700 font-medium"
+                    >
+                      View Dashboard
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setProfileDropdown(!profileDropdown);
+                  setNotificationOpen(false);
+                }}
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100"
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-rose-600 rounded-full flex items-center justify-center">
+                  <UserCircle size={20} className="text-white" />
+                </div>
+                <span className="hidden sm:block text-sm font-medium text-gray-700">
+                  {currentUser?.username || "Admin"}
+                </span>
+                <ChevronDown size={16} className="text-gray-500" />
+              </button>
+
+              {profileDropdown && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-800">
+                      {currentUser?.username || "Admin"}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize">
+                      {currentUser?.role || "Administrator"}
+                    </p>
+                  </div>
+                  <NavLink
+                    to="/admin/settings"
+                    onClick={() => setProfileDropdown(false)}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <Shield size={16} className="text-gray-500" />
+                    Settings
+                  </NavLink>
+                  <NavLink
+                    to="/admin/homedashboard"
+                    onClick={() => setProfileDropdown(false)}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <Users size={16} className="text-gray-500" />
+                    Dashboard
+                  </NavLink>
+                  <div className="border-t border-gray-100 mt-1 pt-1">
+                    <button
+                      onClick={() => {
+                        setProfileDropdown(false);
+                        handleLogout();
+                      }}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
