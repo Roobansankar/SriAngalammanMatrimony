@@ -14,7 +14,7 @@ import chatRoutes from "./routes/chat.js";
 import forgotPasswordRoutes from "./routes/forgotPassword.js";
 import galleryRoutes from "./routes/gallery.js";
 import interestRoutes from "./routes/interest.js";
-import paymentRoutes from "./routes/payment.js";
+import paymentRoutes from "./routes/payment/index.js";
 import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
@@ -136,6 +136,8 @@ app.use("/api/auth/forgot-password", forgotPasswordRoutes);
 
 app.use("/api", searchRoutes);
 app.use("/api/admin", adminRoutes);
+
+
 
 // Logic routes for gallery (upload/delete)
 app.use("/api/gallery", galleryRoutes);

@@ -5,6 +5,7 @@ import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
+
 // Set a runtime API base available to all pages. Prefer REACT_APP_API_BASE if set at build time,
 // otherwise fall back to the current origin so requests are same-origin.
 // Force empty string to ensure we use relative paths and Nginx proxy

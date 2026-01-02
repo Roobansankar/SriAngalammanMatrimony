@@ -396,11 +396,13 @@
 //   );
 // }
 
+
 import axios from "axios";
 import { CheckCircle, Loader2, MailCheck, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { API } from "../config/api";
+
 
 // API already includes /api prefix from centralized config
 const API_BASE = API + "/";
@@ -967,6 +969,8 @@ export default function Step1({ nextStep, formData = {} }) {
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
+
+
         <div className="flex gap-2 md:col-span-2">
           <select
             name="dobDay"
