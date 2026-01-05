@@ -509,6 +509,8 @@ import { Bell, ChevronDown, Heart, Menu, Search, UserCircle, Users, X } from "lu
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "./logo.png";
+import noPhoto from "./nophoto.jpg";
+
 
 
 export default function Header({ user, setUser }) {
@@ -552,12 +554,15 @@ export default function Header({ user, setUser }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+ 
   const getProfileImage = (u) => {
-    const placeholder = "https://via.placeholder.com/40";
-    if (!u) return placeholder;
-    if (u.PhotoURL && u.PhotoURL.trim()) return u.PhotoURL;
-    return placeholder;
+    if (u?.PhotoURL && u.PhotoURL.trim() !== "") {
+      return u.PhotoURL;
+    }
+    return noPhoto;
   };
+
+
   const profileImage = getProfileImage(user);
 
   const handleLogout = () => {
@@ -726,11 +731,7 @@ export default function Header({ user, setUser }) {
           onClick={handleLinkClick}
           className="flex items-center gap-3 flex-shrink-0 z-10"
         >
-          {/* <img
-            src="https://sriangalammanmatrimony.com/images/logo.png"
-            className={`h-14 ${!scrolled && isTransparentPage ? "md:drop-shadow-lg" : ""}`}
-            alt="logo"
-          /> */}
+          
           <img
             src={logo}
             className={`h-14 ${
@@ -888,7 +889,7 @@ export default function Header({ user, setUser }) {
                 className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-rose-400 transition-all focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2"
                 aria-label="Profile menu"
               >
-                {user.PhotoURL && user.PhotoURL.trim() ? (
+                {/* {user.PhotoURL && user.PhotoURL.trim() ? (
                   <img
                     src={profileImage}
                     className="w-full h-full object-cover"
@@ -896,7 +897,12 @@ export default function Header({ user, setUser }) {
                   />
                 ) : (
                   <UserCircle className="w-10 h-10 text-gray-400" />
-                )}
+                )} */}
+                <img
+                  src={profileImage}
+                  className="w-full h-full object-cover"
+                  alt="profile"
+                />
               </button>
 
               {openDropdown === "profile" && (
@@ -991,7 +997,7 @@ export default function Header({ user, setUser }) {
             className="flex items-center gap-3"
           >
             <img
-              src="https://sriangalammanmatrimony.com/images/logo.png"
+              src={logo}
               alt="logo"
               className="h-14"
             />

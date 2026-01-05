@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
 function makePhotoUrl1(photoFilename, photoApprove) {
   const hasPhoto =
     photoFilename &&
-    photoFilename !== "no-photo.gif" &&
+    photoFilename !== "no-photo.jpg" &&
     String(photoApprove).toLowerCase() === "yes";
   const file = hasPhoto ? photoFilename : FALLBACK;
   // ensure filename is encoded for URLs
@@ -77,12 +77,12 @@ function makePhotoUrl1(photoFilename, photoApprove) {
 // Helper: Build Photo URL
 // ----------------------------------------------
 function makePhotoUrl(photoFilename, photoApprove) {
-  const FALLBACK = "no-photo.gif";
+  const FALLBACK = "no-photo.jpg";
   const GALLERY_PATH = "/gallery/";
 
   const hasPhoto =
     photoFilename &&
-    photoFilename !== "no-photo.gif" &&
+    photoFilename !== "no-photo.jpg" &&
     String(photoApprove).toLowerCase() === "yes";
 
   const file = hasPhoto ? photoFilename : FALLBACK;

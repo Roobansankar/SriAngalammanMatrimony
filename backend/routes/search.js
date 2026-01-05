@@ -12,7 +12,7 @@ const FALLBACK = "nophoto.jpg";
 function makePhotoUrl(photoFilename, photoApprove) {
   const valid =
     photoFilename &&
-    photoFilename !== "no-photo.gif" &&
+    photoFilename !== "no-photo.jpg" &&
     String(photoApprove).toLowerCase() === "yes";
 
   if (valid) {
@@ -20,34 +20,6 @@ function makePhotoUrl(photoFilename, photoApprove) {
   }
   return null;
 }
-
-function makePhotoUrl1(photoFilename, photoApprove) {
-  const valid =
-    photoFilename &&
-    photoFilename !== "no-photo.gif" &&
-    String(photoApprove).toLowerCase() === "yes";
-
-  if (valid) {
-    return `${GALLERY_PATH}${encodeURIComponent(photoFilename)}`;
-  }
-  return null;
-}
-
-function makePhotoUrl2(photoFilename, photoApprove) {
-  const valid =
-    photoFilename &&
-    photoFilename !== "no-photo.gif" &&
-    String(photoApprove).toLowerCase() === "yes";
-
-  if (valid) {
-    return `${GALLERY_PATH}${encodeURIComponent(photoFilename)}`;
-  }
-  return null;
-}
-
-// ... rest of the file ...
-
-
 
 // ============================
 // MAIN SEARCH ROUTE
@@ -142,9 +114,23 @@ router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) 
     }
 
     // With Photo
-    if (with_photo) {
-      whereClauses.push("Photo1 IS NOT NULL AND Photo1 <> '' AND Photo1 <> 'no-photo.gif' AND Photo1Approve = 'Yes'");
-    }
+    // if (with_photo) {
+    //   whereClauses.push("Photo1 IS NOT NULL AND Photo1 <> '' AND Photo1 <> 'no-photo.jpg' AND Photo1Approve = 'Yes'");
+    // }
+
+    // With Photo logic
+if (with_photo === true) {
+  // ✅ Show ONLY profiles WITH approved photo
+  whereClauses.push(
+    "Photo1 IS NOT NULL AND Photo1 <> '' AND Photo1 <> 'no-photo.jpg' AND Photo1Approve = 'Yes'"
+  );
+} else {
+  // ❌ Show ONLY profiles WITHOUT photo
+  whereClauses.push(
+    "(Photo1 IS NULL OR Photo1 = '' OR Photo1 = 'no-photo.jpg' OR Photo1Approve <> 'Yes')"
+  );
+}
+
 
     // Blocking check (if viewerId is provided)
     if (viewerId) {

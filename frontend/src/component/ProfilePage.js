@@ -2,6 +2,8 @@ import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import noPhoto from "./nophoto.jpg";
+
 
 export default function ProfilePage({ setUser: setAppUser }) {
   const [user, setUser] = useState(null);
@@ -9,6 +11,54 @@ export default function ProfilePage({ setUser: setAppUser }) {
   const navigate = useNavigate();
   const [showHoroscope, setShowHoroscope] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+
+
+
+ const hasValue = (v) => {
+   if (v === null || v === undefined) return false;
+   if (typeof v === "string" && v.trim() === "") return false;
+   if (v === "-" || v === "null") return false;
+   return true;
+ };
+
+const profileFields = [
+  // 🟢 Basic Details
+  user?.Name,
+  user?.DOB,
+  user?.Gender,
+  user?.Religion,
+  user?.Caste,
+  user?.Maritalstatus,
+  user?.Profilecreatedby,
+
+  // 🟢 Contact Details
+  user?.Mobile,
+  user?.Country,
+  user?.State,
+  user?.City,
+
+  // 🟢 Education & Professional
+  user?.Education,
+  user?.Occupation,
+  user?.Annualincome,
+
+  // 🟢 Basic & Lifestyle
+  user?.HeightText,
+  user?.Diet,
+
+  // 🟢 Family
+  user?.Fathername,
+  user?.Mothersname,
+
+  // 🟢 Partner Preference
+  user?.PE_FromAge,
+  user?.PE_ToAge,
+  user?.PE_Religion,
+
+  // 🟢 Photo
+  user?.PhotoURL,
+];
+
 
 
 
@@ -224,6 +274,32 @@ export default function ProfilePage({ setUser: setAppUser }) {
     .join(":")
     .concat(tob.ap ? ` ${tob.ap}` : "");
 
+
+    const getSafeProfilePhoto = (u) => {
+  const photo = u?.PhotoURL?.trim();
+
+  // ❌ invalid or backend default values
+  if (
+    !photo ||
+    photo === "null" ||
+    photo === "undefined" ||
+    photo.includes("no-photo") ||
+    photo.includes("nophoto")
+  ) {
+    return noPhoto;
+  }
+
+  return photo;
+};
+
+
+const filledCount = profileFields.filter(hasValue).length;
+const totalCount = profileFields.length;
+
+const completionPercentage = Math.round((filledCount / totalCount) * 100);
+
+
+
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display"
@@ -235,7 +311,7 @@ export default function ProfilePage({ setUser: setAppUser }) {
         <div className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden">
           <div className="relative">
             {/* Banner */}
-            <div
+            {/* <div
               className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end min-h-[220px]"
               style={{
                 backgroundImage: `url(${
@@ -244,6 +320,11 @@ export default function ProfilePage({ setUser: setAppUser }) {
                   "https://lh3.googleusercontent.com/aida-public/AB6AXuCBZ4EFVao53pjOuSJDv5KALO-pbijH2rwxoJdNtEKYBlL3ZejOkXrSBt_D-eA-2sXzOZm2k77yDIi77LnXcWBzv491MC2tSL3H5MzMF89YHqdU1Pc8BRsMeuuKev3VlSXZaD2wMUdYU659o1JqMbgCjc8PBajptkzCTcH-9qHvamovnVGY6KP2XyV4H2mciLgwUI3SAaef9LmApUzaF9NdPg6Zzg6QV0O0cVoMp2FZ0jOvSmA-0Bl825eC8VzI7U39lVLNEzkbT5xE"
                 })`,
               }}
+              data-alt="Profile banner"
+            > */}
+
+            <div
+              className="w-full min-h-[220px] bg-gradient-to-r from-pink-400 to-purple-500 flex flex-col justify-end"
               data-alt="Profile banner"
             >
               <button
@@ -265,7 +346,9 @@ export default function ProfilePage({ setUser: setAppUser }) {
                   style={{
                     width: 128,
                     height: 128,
-                    backgroundImage: `url(${user?.PhotoURL || "/nophoto.jpg"})`,
+                    // backgroundImage: `url(${user?.PhotoURL || "/nophoto.jpg"})`,
+                    backgroundImage: `url(${getSafeProfilePhoto(user)})`,
+
                     backgroundPosition: "top center",
                   }}
                 />
@@ -281,6 +364,41 @@ export default function ProfilePage({ setUser: setAppUser }) {
                     </span>
                   </button>
                 </Link>
+              </div>
+
+              {/* Profile Completion */}
+              {/* Profile Completion Card */}
+              <div className="absolute left-[160px] top-2 w-64 bg-white rounded-xl shadow-md border p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-700">
+                    Profile Completion
+                  </span>
+                  <span className="text-sm font-bold text-pink-600">
+                    {completionPercentage}%
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-pink-500 to-pink-700 h-2 rounded-full transition-all duration-700"
+                    style={{ width: `${completionPercentage}%` }}
+                  />
+                </div>
+
+                {/* Status text */}
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>
+                    {filledCount} of {totalCount} fields
+                  </span>
+                  {completionPercentage < 100 ? (
+                    <span className="text-red-500">Incomplete</span>
+                  ) : (
+                    <span className="text-green-600 font-medium">
+                      Completed
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -777,8 +895,13 @@ export default function ProfilePage({ setUser: setAppUser }) {
             {/* Image Container */}
             <div className="relative rounded-xl overflow-hidden shadow-2xl">
               {/* Image */}
-              <img
+              {/* <img
                 src={user?.PhotoURL || "/nophoto.jpg"}
+                alt="Profile Preview"
+                className="w-full max-h-[80vh] object-contain bg-black"
+              /> */}
+              <img
+                src={getSafeProfilePhoto(user)}
                 alt="Profile Preview"
                 className="w-full max-h-[80vh] object-contain bg-black"
               />

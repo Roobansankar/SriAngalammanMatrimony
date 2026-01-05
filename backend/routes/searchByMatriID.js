@@ -89,7 +89,7 @@ const FALLBACK = "nophoto.jpg";
 function makePhotoUrl(photoFilename, photoApprove) {
   const hasPhoto =
     photoFilename &&
-    photoFilename !== "no-photo.gif" &&
+    photoFilename !== "no-photo.jpg" &&
     String(photoApprove).toLowerCase() === "yes";
 
   const file = hasPhoto ? photoFilename : FALLBACK;

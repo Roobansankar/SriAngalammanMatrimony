@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import noPhoto from "./././Assets/nophoto.jpg";
 
 export default function HoroscopeSearchResults() {
   const { state } = useLocation();
@@ -235,8 +236,7 @@ export default function HoroscopeSearchResults() {
 }
 
 function ProfileRow({ r }) {
-  const fallbackImg =
-    "https://sriangalammanmatrimony.com/photoprocess.php?image=images/nophoto.jpg&square=200";
+  const fallbackImg = noPhoto;
 
   // Format date: day-month-year
   const formatDate = (d) => {

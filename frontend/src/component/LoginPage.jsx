@@ -64,7 +64,7 @@ export default function LoginPage({ setUser }) {
         <form onSubmit={handleSubmit} className="space-y-6 text-left">
           <div>
             <label className="block text-gray-700 mb-2 font-medium">
-              Email / Username / Mobile No.
+              Email
             </label>
             <input
               type="text"
@@ -72,7 +72,7 @@ export default function LoginPage({ setUser }) {
               value={form.txtusername}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-pink-400 outline-none transition-all"
-              placeholder="Enter your username"
+              placeholder="Enter your email"
               required
             />
           </div>
@@ -122,12 +122,7 @@ export default function LoginPage({ setUser }) {
           </p>
         </form>
 
-        <p className="text-xs text-gray-500 mt-8">
-          By logging in, you agree to our{" "}
-          <Link to="/terms" className="text-pink-600 hover:underline">
-            Terms & Conditions
-          </Link>
-        </p>
+      
       </div>
     </div>
   );

@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import noPhoto from "./././Assets/nophoto.jpg";
+
 
 const API = process.env.REACT_APP_API_BASE || "";
 
@@ -256,9 +258,7 @@ export default function LoggedSearchResults() {
 }
 
 function ProfileRow({ r }) {
-  const fallbackImg =
-    "https://sriangalammanmatrimony.com/photoprocess.php?image=images/nophoto.jpg&square=200";
-
+  const fallbackImg = noPhoto;
   // Format date: day-month-year
   const formatDate = (d) => {
     if (!d) return "—";
