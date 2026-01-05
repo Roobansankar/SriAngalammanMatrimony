@@ -311,17 +311,6 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
         <div className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm overflow-hidden">
           <div className="relative">
             {/* Banner */}
-            {/* <div
-              className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end min-h-[220px]"
-              style={{
-                backgroundImage: `url(${
-                  user.banner ||
-                  user.bannerUrl ||
-                  "https://lh3.googleusercontent.com/aida-public/AB6AXuCBZ4EFVao53pjOuSJDv5KALO-pbijH2rwxoJdNtEKYBlL3ZejOkXrSBt_D-eA-2sXzOZm2k77yDIi77LnXcWBzv491MC2tSL3H5MzMF89YHqdU1Pc8BRsMeuuKev3VlSXZaD2wMUdYU659o1JqMbgCjc8PBajptkzCTcH-9qHvamovnVGY6KP2XyV4H2mciLgwUI3SAaef9LmApUzaF9NdPg6Zzg6QV0O0cVoMp2FZ0jOvSmA-0Bl825eC8VzI7U39lVLNEzkbT5xE"
-                })`,
-              }}
-              data-alt="Profile banner"
-            > */}
 
             <div
               className="w-full min-h-[220px] bg-gradient-to-r from-pink-400 to-purple-500 flex flex-col justify-end"
@@ -365,67 +354,68 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
                   </button>
                 </Link>
               </div>
-
-              {/* Profile Completion */}
-              {/* Profile Completion Card */}
-              <div className="absolute left-[160px] top-2 w-64 bg-white rounded-xl shadow-md border p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-gray-700">
-                    Profile Completion
-                  </span>
-                  <span className="text-sm font-bold text-pink-600">
-                    {completionPercentage}%
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-pink-500 to-pink-700 h-2 rounded-full transition-all duration-700"
-                    style={{ width: `${completionPercentage}%` }}
-                  />
-                </div>
-
-                {/* Status text */}
-                <div className="flex justify-between text-xs text-gray-500 mt-2">
-                  <span>
-                    {filledCount} of {totalCount} fields
-                  </span>
-                  {completionPercentage < 100 ? (
-                    <span className="text-red-500">Incomplete</span>
-                  ) : (
-                    <span className="text-green-600 font-medium">
-                      Completed
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
 
           {/* Header content: name, id, actions */}
+          {/* Header + Profile Completion */}
           <div className="pt-20 px-8 pb-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              {/* LEFT: Name + Matri details */}
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-text-light-primary dark:text-text-dark-primary text-2xl font-bold leading-tight tracking-[-0.015em]">
+                  <p className="text-2xl font-bold text-[#181114]">
                     {user.Name || "-"}
                   </p>
-                  {/* optional verified icon */}
+
                   {user.isVerified && (
                     <span className="material-symbols-outlined text-blue-500 text-xl">
                       verified
                     </span>
                   )}
                 </div>
-                <p className="text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal mt-1">
-                  {user.MatriID || user.matid || "-"} &nbsp;|&nbsp;{" "}
-                  {user.Religion || "-"} &nbsp;|&nbsp;{" "}
-                  {user.Maritalstatus || "-"} &nbsp;|&nbsp; {user.Age || "-"}
+
+                <p className="text-sm text-gray-600 mt-1">
+                  {user.MatriID || user.matid || "-"} &nbsp;|&nbsp;
+                  {user.Religion || "-"} &nbsp;|&nbsp;
+                  {user.Maritalstatus || "-"} &nbsp;|&nbsp;
+                  {user.Age || "-"}
                 </p>
               </div>
 
-              <div className="flex w-full md:w-auto gap-3"></div>
+              {/* RIGHT: Profile Completion */}
+              <div className="w-full lg:w-[320px]">
+                <div className="bg-white rounded-xl shadow-md border p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-700">
+                      Profile Completion
+                    </span>
+                    <span className="text-sm font-bold text-pink-600">
+                      {completionPercentage}%
+                    </span>
+                  </div>
+
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-pink-500 to-pink-700 h-2 rounded-full transition-all duration-700"
+                      style={{ width: `${completionPercentage}%` }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between text-xs text-gray-500 mt-2">
+                    <span>
+                      {filledCount} of {totalCount} fields
+                    </span>
+                    {completionPercentage < 100 ? (
+                      <span className="text-red-500">Incomplete</span>
+                    ) : (
+                      <span className="text-green-600 font-medium">
+                        Completed
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -444,6 +434,9 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
               ))}
             </div>
           </section>
+
+          {/* Profile Completion */}
+          {/* Profile Completion Card */}
         </div>
 
         {/* About Me */}
@@ -556,7 +549,7 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
                 value={user.POB || user.PlaceOfBirth || user.place_of_birth}
               />
               <InfoRow label="Kuladeivam" value={user.Kuladeivam || "-"} />
-              <InfoRow label="sutham" value={user.Sutham || "-"}/>
+              <InfoRow label="sutham" value={user.Sutham || "-"} />
               <InfoRow
                 label="Country / Place"
                 value={user.POC || user.Country || user.country}
@@ -937,35 +930,39 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
       )}
 
       {/* Horoscope Viewer Modal */}
+      {/* Horoscope Viewer Modal */}
       {showHoroscope && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-3xl p-4 rounded shadow-lg relative">
-            {/* Close Button */}
-            <button
-              className="absolute top-2 right-2 text-gray-700"
-              onClick={() => setShowHoroscope(false)}
-            >
-              ✕
-            </button>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-xl shadow-lg relative flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <h2 className="text-lg font-bold">Horoscope View</h2>
+              <button
+                className="text-gray-600 hover:text-black text-xl"
+                onClick={() => setShowHoroscope(false)}
+              >
+                ✕
+              </button>
+            </div>
 
-            <h2 className="text-lg font-bold mb-4">Horoscope View</h2>
-
-            {/* Preview Image or PDF */}
-            {user.HoroscopeURL &&
-            (user.HoroscopeURL.endsWith(".pdf") ||
-              user.HoroscopeURL.includes("pdf")) ? (
-              <iframe
-                src={user.HoroscopeURL}
-                className="w-full h-[600px] border rounded"
-                title="Horoscope PDF"
-              ></iframe>
-            ) : (
-              <img
-                src={user.HoroscopeURL}
-                alt="Horoscope"
-                className="w-full max-h-[600px] object-contain border rounded"
-              />
-            )}
+            {/* CONTENT */}
+            <div className="flex-1 overflow-auto p-4 flex justify-center items-center">
+              {user.HoroscopeURL &&
+              (user.HoroscopeURL.endsWith(".pdf") ||
+                user.HoroscopeURL.includes("pdf")) ? (
+                <iframe
+                  src={user.HoroscopeURL}
+                  className="w-full h-[80vh] rounded border"
+                  title="Horoscope PDF"
+                />
+              ) : (
+                <img
+                  src={user.HoroscopeURL}
+                  alt="Horoscope"
+                  className="max-h-[80vh] w-auto object-contain rounded"
+                />
+              )}
+            </div>
           </div>
         </div>
       )}
