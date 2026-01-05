@@ -2076,7 +2076,7 @@ const downloadAsPDF = async () => {
                           ஆமிடம், செவ்வாய்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "65px" }}
+                            style={{ minWidth: "45px" }}
                           >
                             {isEditing ? (
                               <input
@@ -2774,7 +2774,7 @@ const downloadAsPDF = async () => {
                   ஆமிடம், செவ்வாய்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "65px" }}
+                    style={{ minWidth: "45px" }}
                   >
                     <span className="display-data">{currentData.sevvai}</span>
                   </div>
