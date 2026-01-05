@@ -189,19 +189,37 @@ useEffect(() => {
   // Helper function to format place names (letters, spaces, commas, dots allowed)
   const formatPlaceName = (value) => value.replace(/[^a-zA-Z\s,.\-']/g, "");
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
+  // const handleChange = (e) => {
+  //   const { name, value, files } = e.target;
 
-    if (files) {
-      setData({
-        ...data,
-        horoscopeFile: files[0],
-        horoscopeFileName: files[0].name,
-      });
-    } else {
-      setData({ ...data, [name]: value });
-    }
-  };
+  //   if (files) {
+  //     setData({
+  //       ...data,
+  //       horoscopeFile: files[0],
+  //       horoscopeFileName: files[0].name,
+  //     });
+  //   } else {
+  //     setData({ ...data, [name]: value });
+  //   }
+  // };
+
+
+  const handleChange = (e) => {
+  const { name, value, files } = e.target;
+
+  if (files) {
+    setData({
+      ...data,
+      horoscopeFile: files[0],
+      horoscopeFileName: files[0].name,
+    });
+  } else {
+    // FORCE ENGLISH (remove non-latin characters)
+    const englishOnly = value.replace(/[^\x00-\x7F]/g, "");
+    setData({ ...data, [name]: englishOnly });
+  }
+};
+
 
 
   const generateNumbers = (s, e) =>
@@ -746,13 +764,24 @@ useEffect(() => {
 
       {/* Place of Birth */}
       <div className="col-span-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        {/* 
+        <input
+          name="placeOfBirth"
+          value={data.placeOfBirth}
+          onChange={handleChange}
+          className="border p-2 rounded-lg w-full"
+        /> */}
+<label className="block text-sm font-medium text-gray-700 mb-1">
           Place of Birth
         </label>
         <input
           name="placeOfBirth"
           value={data.placeOfBirth}
           onChange={handleChange}
+          lang="en"
+          inputMode="latin"
+          autoComplete="off"
+          spellCheck={false}
           className="border p-2 rounded-lg w-full"
         />
       </div>
@@ -772,13 +801,24 @@ useEffect(() => {
 
       {/* Kuladeivam */}
       <div className="col-span-2 mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        {/* <label className="block text-sm font-medium text-gray-700 mb-1">
           Kuladeivam
         </label>
         <input
           name="kuladeivam"
           value={data.kuladeivam}
           onChange={handleChange}
+          className="border p-2 rounded-lg w-full"
+        /> */}
+
+        <input
+          name="kuladeivam"
+          value={data.kuladeivam}
+          onChange={handleChange}
+          lang="en"
+          inputMode="latin"
+          autoComplete="off"
+          spellCheck={false}
           className="border p-2 rounded-lg w-full"
         />
       </div>

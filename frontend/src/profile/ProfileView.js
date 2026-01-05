@@ -433,20 +433,6 @@ const multiMatch = (pref, actual) => {
   };
 
 
-//   // Height range match
-// const heightMatch = (minH, maxH, actual) => {
-//   // If no preference → OK
-//   if (isEmptyValue(minH) && isEmptyValue(maxH)) return true;
-
-//   // If partner height missing → OK
-//   if (isEmptyValue(actual)) return true;
-
-//   const actualIn = heightToInches(actual);
-//   const minIn = heightToInches(minH);
-//   const maxIn = heightToInches(maxH);
-
-//   return actualIn >= minIn && actualIn <= maxIn;
-// };
 
 
 const heightMatch = (minH, maxH, actual) => {
