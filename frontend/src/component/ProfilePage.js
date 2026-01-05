@@ -556,6 +556,7 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
                 value={user.POB || user.PlaceOfBirth || user.place_of_birth}
               />
               <InfoRow label="Kuladeivam" value={user.Kuladeivam || "-"} />
+              <InfoRow label="sutham" value={user.Sutham || "-"}/>
               <InfoRow
                 label="Country / Place"
                 value={user.POC || user.Country || user.country}

@@ -719,6 +719,7 @@ router.put(
         ThesaiMonths,
         ThesaiDays,
         Kootam,
+        Sutham,
       } = req.body;
 
       if (!ConfirmEmail) {
@@ -757,7 +758,7 @@ router.put(
         UPDATE register SET
           Moonsign=?, Star=?, Gothram=?, Manglik=?,
           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?,
-          POB=?, POC=?, TOB=?, Kuladeivam=?,
+          POB=?, POC=?, TOB=?, Kuladeivam=?,Sutham=?,
           ThesaiPlanet=?, ThesaiYears=?, ThesaiMonths=?, ThesaiDays=?, Kootam=?,
           ${uploadedFileName ? "horosother=?," : ""}
           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
@@ -770,26 +771,28 @@ router.put(
       // -----------------------------------
       // BUILD PARAMS (ORDER IS CRITICAL)
       // -----------------------------------
-      const params = [
-        Moonsign,
-        Star,
-        Gothram,
-        Manglik,
-        Horosmatch,
-        parigarasevai,
-        Sevai,
-        Raghu,
-        Keethu,
-        POB,
-        POC,
-        TOB,
-        Kuladeivam,
-        ThesaiPlanet,
-        ThesaiYears,
-        ThesaiMonths,
-        ThesaiDays,
-        Kootam,
-      ];
+    const params = [
+      Moonsign,
+      Star,
+      Gothram,
+      Manglik,
+      Horosmatch,
+      parigarasevai,
+      Sevai,
+      Raghu,
+      Keethu,
+      POB,
+      POC,
+      TOB,
+      Kuladeivam,
+      Sutham, // ✅ CORRECT POSITION
+      ThesaiPlanet,
+      ThesaiYears,
+      ThesaiMonths,
+      ThesaiDays,
+      Kootam,
+    ];
+
 
       if (uploadedFileName) {
         params.push(uploadedFileName);

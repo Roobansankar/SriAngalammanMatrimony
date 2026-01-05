@@ -411,7 +411,8 @@ router.post(
         Keethu: toTrimOrNull(b.keethu) || "",
         Lagnam: toTrimOrNull(b.lagnam) || null,
         Kuladeivam: toTrimOrNull(b.kuladeivam) || "",
-        Kootam: toTrimOrNull(b.kootam) || null, // ✅ STORE NULL IF EMPTY
+        Kootam: toTrimOrNull(b.kootam) || null,
+        Sutham: toTrimOrNull(b.sutham) || "",
 
         // ThesaiIrupu: toTrimOrNull(b.thesaiirupu) || "",
 

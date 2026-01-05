@@ -206,6 +206,149 @@ const starMap = {
 };
 
 
+
+
+const nakshatraPaathamMap = {
+  "Ashwini 1 aam paatham": "அஸ்வினி 1ஆம் பாதம்",
+  "Ashwini 2 aam paatham": "அஸ்வினி 2ஆம் பாதம்",
+  "Ashwini 3 aam paatham": "அஸ்வினி 3ஆம் பாதம்",
+  "Ashwini 4 aam paatham": "அஸ்வினி 4ஆம் பாதம்",
+
+  "Bharani 1 aam paatham": "பரணி 1ஆம் பாதம்",
+  "Bharani 2 aam paatham": "பரணி 2ஆம் பாதம்",
+  "Bharani 3 aam paatham": "பரணி 3ஆம் பாதம்",
+  "Bharani 4 aam paatham": "பரணி 4ஆம் பாதம்",
+
+  "Krittikai 1 aam paatham": "கிருத்திகை 1ஆம் பாதம்",
+  "Krittikai 2 aam paatham": "கிருத்திகை 2ஆம் பாதம்",
+  "Krittikai 3 aam paatham": "கிருத்திகை 3ஆம் பாதம்",
+  "Krittikai 4 aam paatham": "கிருத்திகை 4ஆம் பாதம்",
+
+  "Rohini 1 aam paatham": "ரோகிணி 1ஆம் பாதம்",
+  "Rohini 2 aam paatham": "ரோகிணி 2ஆம் பாதம்",
+  "Rohini 3 aam paatham": "ரோகிணி 3ஆம் பாதம்",
+  "Rohini 4 aam paatham": "ரோகிணி 4ஆம் பாதம்",
+
+  "Mrigasiram 1 aam paatham": "மிருகசீரிஷம் 1ஆம் பாதம்",
+  "Mrigasiram 2 aam paatham": "மிருகசீரிஷம் 2ஆம் பாதம்",
+  "Mrigasiram 3 aam paatham": "மிருகசீரிஷம் 3ஆம் பாதம்",
+  "Mrigasiram 4 aam paatham": "மிருகசீரிஷம் 4ஆம் பாதம்",
+
+  "Thiruvathirai 1 aam paatham": "திருவாதிரை 1ஆம் பாதம்",
+  "Thiruvathirai 2 aam paatham": "திருவாதிரை 2ஆம் பாதம்",
+  "Thiruvathirai 3 aam paatham": "திருவாதிரை 3ஆம் பாதம்",
+  "Thiruvathirai 4 aam paatham": "திருவாதிரை 4ஆம் பாதம்",
+
+  "Punarpoosam 1 aam paatham": "புனர்பூசம் 1ஆம் பாதம்",
+  "Punarpoosam 2 aam paatham": "புனர்பூசம் 2ஆம் பாதம்",
+  "Punarpoosam 3 aam paatham": "புனர்பூசம் 3ஆம் பாதம்",
+  "Punarpoosam 4 aam paatham": "புனர்பூசம் 4ஆம் பாதம்",
+
+  "Poosam 1 aam paatham": "பூசம் 1ஆம் பாதம்",
+  "Poosam 2 aam paatham": "பூசம் 2ஆம் பாதம்",
+  "Poosam 3 aam paatham": "பூசம் 3ஆம் பாதம்",
+  "Poosam 4 aam paatham": "பூசம் 4ஆம் பாதம்",
+
+  "Ayilyam 1 aam paatham": "ஆயில்யம் 1ஆம் பாதம்",
+  "Ayilyam 2 aam paatham": "ஆயில்யம் 2ஆம் பாதம்",
+  "Ayilyam 3 aam paatham": "ஆயில்யம் 3ஆம் பாதம்",
+  "Ayilyam 4 aam paatham": "ஆயில்யம் 4ஆம் பாதம்",
+
+  "Magam 1 aam paatham": "மகம் 1ஆம் பாதம்",
+  "Magam 2 aam paatham": "மகம் 2ஆம் பாதம்",
+  "Magam 3 aam paatham": "மகம் 3ஆம் பாதம்",
+  "Magam 4 aam paatham": "மகம் 4ஆம் பாதம்",
+
+  "Pooram 1 aam paatham": "பூரம் 1ஆம் பாதம்",
+  "Pooram 2 aam paatham": "பூரம் 2ஆம் பாதம்",
+  "Pooram 3 aam paatham": "பூரம் 3ஆம் பாதம்",
+  "Pooram 4 aam paatham": "பூரம் 4ஆம் பாதம்",
+
+  "Uthiram 1 aam paatham": "உத்திரம் 1ஆம் பாதம்",
+  "Uthiram 2 aam paatham": "உத்திரம் 2ஆம் பாதம்",
+  "Uthiram 3 aam paatham": "உத்திரம் 3ஆம் பாதம்",
+  "Uthiram 4 aam paatham": "உத்திரம் 4ஆம் பாதம்",
+
+  "Hastham 1 aam paatham": "ஹஸ்தம் 1ஆம் பாதம்",
+  "Hastham 2 aam paatham": "ஹஸ்தம் 2ஆம் பாதம்",
+  "Hastham 3 aam paatham": "ஹஸ்தம் 3ஆம் பாதம்",
+  "Hastham 4 aam paatham": "ஹஸ்தம் 4ஆம் பாதம்",
+
+  "Chithirai 1 aam paatham": "சித்திரை 1ஆம் பாதம்",
+  "Chithirai 2 aam paatham": "சித்திரை 2ஆம் பாதம்",
+  "Chithirai 3 aam paatham": "சித்திரை 3ஆம் பாதம்",
+  "Chithirai 4 aam paatham": "சித்திரை 4ஆம் பாதம்",
+
+  "Swathi 1 aam paatham": "ஸ்வாதி 1ஆம் பாதம்",
+  "Swathi 2 aam paatham": "ஸ்வாதி 2ஆம் பாதம்",
+  "Swathi 3 aam paatham": "ஸ்வாதி 3ஆம் பாதம்",
+  "Swathi 4 aam paatham": "ஸ்வாதி 4ஆம் பாதம்",
+
+  "Visakam 1 aam paatham": "விசாகம் 1ஆம் பாதம்",
+  "Visakam 2 aam paatham": "விசாகம் 2ஆம் பாதம்",
+  "Visakam 3 aam paatham": "விசாகம் 3ஆம் பாதம்",
+  "Visakam 4 aam paatham": "விசாகம் 4ஆம் பாதம்",
+
+  "Anusham 1 aam paatham": "அனுஷம் 1ஆம் பாதம்",
+  "Anusham 2 aam paatham": "அனுஷம் 2ஆம் பாதம்",
+  "Anusham 3 aam paatham": "அனுஷம் 3ஆம் பாதம்",
+  "Anusham 4 aam paatham": "அனுஷம் 4ஆம் பாதம்",
+
+  "Kettai 1 aam paatham": "கேட்டை 1ஆம் பாதம்",
+  "Kettai 2 aam paatham": "கேட்டை 2ஆம் பாதம்",
+  "Kettai 3 aam paatham": "கேட்டை 3ஆம் பாதம்",
+  "Kettai 4 aam paatham": "கேட்டை 4ஆம் பாதம்",
+
+  "Moolam 1 aam paatham": "மூலம் 1ஆம் பாதம்",
+  "Moolam 2 aam paatham": "மூலம் 2ஆம் பாதம்",
+  "Moolam 3 aam paatham": "மூலம் 3ஆம் பாதம்",
+  "Moolam 4 aam paatham": "மூலம் 4ஆம் பாதம்",
+
+  "Pooradam 1 aam paatham": "பூராடம் 1ஆம் பாதம்",
+  "Pooradam 2 aam paatham": "பூராடம் 2ஆம் பாதம்",
+  "Pooradam 3 aam paatham": "பூராடம் 3ஆம் பாதம்",
+  "Pooradam 4 aam paatham": "பூராடம் 4ஆம் பாதம்",
+
+  "Uthiradam 1 aam paatham": "உத்திராடம் 1ஆம் பாதம்",
+  "Uthiradam 2 aam paatham": "உத்திராடம் 2ஆம் பாதம்",
+  "Uthiradam 3 aam paatham": "உத்திராடம் 3ஆம் பாதம்",
+  "Uthiradam 4 aam paatham": "உத்திராடம் 4ஆம் பாதம்",
+
+  "Thiruvonam 1 aam paatham": "திருவோணம் 1ஆம் பாதம்",
+  "Thiruvonam 2 aam paatham": "திருவோணம் 2ஆம் பாதம்",
+  "Thiruvonam 3 aam paatham": "திருவோணம் 3ஆம் பாதம்",
+  "Thiruvonam 4 aam paatham": "திருவோணம் 4ஆம் பாதம்",
+
+  "Avittam 1 aam paatham": "அவிட்டம் 1ஆம் பாதம்",
+  "Avittam 2 aam paatham": "அவிட்டம் 2ஆம் பாதம்",
+  "Avittam 3 aam paatham": "அவிட்டம் 3ஆம் பாதம்",
+  "Avittam 4 aam paatham": "அவிட்டம் 4ஆம் பாதம்",
+
+  "Sadhayam 1 aam paatham": "சதயம் 1ஆம் பாதம்",
+  "Sadhayam 2 aam paatham": "சதயம் 2ஆம் பாதம்",
+  "Sadhayam 3 aam paatham": "சதயம் 3ஆம் பாதம்",
+  "Sadhayam 4 aam paatham": "சதயம் 4ஆம் பாதம்",
+
+  "Poorattathi 1 aam paatham": "பூரட்டாதி 1ஆம் பாதம்",
+  "Poorattathi 2 aam paatham": "பூரட்டாதி 2ஆம் பாதம்",
+  "Poorattathi 3 aam paatham": "பூரட்டாதி 3ஆம் பாதம்",
+  "Poorattathi 4 aam paatham": "பூரட்டாதி 4ஆம் பாதம்",
+
+  "Uthirattathi 1 aam paatham": "உத்திரட்டாதி 1ஆம் பாதம்",
+  "Uthirattathi 2 aam paatham": "உத்திரட்டாதி 2ஆம் பாதம்",
+  "Uthirattathi 3 aam paatham": "உத்திரட்டாதி 3ஆம் பாதம்",
+  "Uthirattathi 4 aam paatham": "உத்திரட்டாதி 4ஆம் பாதம்",
+
+  "Revathi 1 aam paatham": "ரேவதி 1ஆம் பாதம்",
+  "Revathi 2 aam paatham": "ரேவதி 2ஆம் பாதம்",
+  "Revathi 3 aam paatham": "ரேவதி 3ஆம் பாதம்",
+  "Revathi 4 aam paatham": "ரேவதி 4ஆம் பாதம்",
+
+  "Does not matter": "பொருட்டல்ல",
+};
+
+
+
 const moonSignMap = {
   "Mesham (Aries)": "மேஷம்",
   "Risabam (Taurus)": "ரிஷபம்",
@@ -447,11 +590,11 @@ export default function MemberBioData() {
             .filter(Boolean)
             .join(", "),
 
-          star: convertToTamil(user.Star || "", starMap),
+          star: convertToTamil(user.Star || "", nakshatraPaathamMap),
           rasi: convertToTamil(user.Moonsign || "", rasiMap),
           lagnam: convertToTamil(user.Lagnam || "", moonSignMap),
 
-          suddham: "",
+          suddham: user.Sutham || "",
           rahu: user.Raghu || "",
           ketu: user.Keethu || "",
           // sevvai: user.Sevai || "",

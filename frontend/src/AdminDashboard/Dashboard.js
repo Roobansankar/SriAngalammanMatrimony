@@ -412,7 +412,7 @@ export default function DashboardLayout() {
             className="h-10"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "/logo192.png";
+              e.target.src = "/logo.png";
             }}
           />
           <button

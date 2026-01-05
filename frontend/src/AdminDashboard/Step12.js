@@ -385,14 +385,13 @@ export default function Step12({ prevStep, formData }) {
       add("placeOfBirth", f.placeOfBirth);
       add("kuladeivam", f.kuladeivam);
       add("kootam", f.kootam);
-      // add("thesaiirupu", f.thesaiirupu);
-
+   
       /* NEW */
       add("thesaiPlanet", f.thesaiPlanet);
       add("thesaiYears", f.thesaiYears);
       add("thesaiMonths", f.thesaiMonths);
       add("thesaiDays", f.thesaiDays);
-
+      add("sutham", f.sutham);
       /* ------------------------------------------------
          STEP 5 — CONTACT DETAILS
       ------------------------------------------------ */

@@ -68,6 +68,7 @@ export default function EditHoroscope() {
     ThesaiDays: "",
     Kootam: "",
     horoscope: null,
+    Sutham: "",
   });
 
   const [rasi, setRasi] = useState({});
@@ -81,6 +82,7 @@ export default function EditHoroscope() {
   });
   const [preview, setPreview] = useState(null);
   const [customGothra, setCustomGothra] = useState("");
+  const [customSutham, setCustomSutham] = useState("");
 
 
   // LOAD DROPDOWN OPTIONS
@@ -215,6 +217,18 @@ useEffect(() => {
         : user.HoroscopeURL
     );
   }
+
+  // ---------- SUTHAM (Yes / No / Others) ----------
+  let suthamValue = user.Sutham || "";
+
+  if (!["Yes", "No", "Others"].includes(suthamValue)) {
+    suthamValue = ""; // fallback safety
+  }
+
+  setForm((prev) => ({
+    ...prev,
+    Sutham: suthamValue,
+  }));
 }, [options.gothras]);
 useEffect(() => {
   const user = JSON.parse(localStorage.getItem("userData"));
@@ -290,7 +304,7 @@ useEffect(() => {
    fd.append("ThesaiMonths", form.ThesaiMonths || "");
    fd.append("ThesaiDays", form.ThesaiDays || "");
    fd.append("Kootam", form.Kootam || "");
-
+fd.append("Sutham", form.Sutham || "");
 
     // Add horoscope file if selected
     if (form.horoscope) {
@@ -335,6 +349,7 @@ useEffect(() => {
         ThesaiMonths: form.ThesaiMonths,
         ThesaiDays: form.ThesaiDays,
         Kootam: form.Kootam,
+        Sutham: form.Sutham
       };
 
       // Update rasi and navamsa in localStorage
@@ -468,6 +483,24 @@ useEffect(() => {
             )}
           </div>
 
+          {/* Sutham */}
+          <div className="w-full flex flex-col">
+            <label className="text-sm font-medium mb-1 text-black">
+              Sutham
+            </label>
+
+            <select
+              value={form.Sutham}
+              onChange={(e) => setForm({ ...form, Sutham: e.target.value })}
+              className="border p-3 rounded w-full bg-white focus:ring-2 focus:ring-pink-400"
+            >
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+
           <Drop
             label="Manglik"
             field="Manglik"
@@ -514,7 +547,7 @@ useEffect(() => {
           />
 
           {/* Birth Time - Split into Hour/Minute/Second/AM-PM */}
-          <div className="w-full flex flex-col md:col-span-2">
+          {/* <div className="w-full flex flex-col md:col-span-2">
             <label className="text-sm font-medium mb-1 text-black">
               Birth Time
             </label>
@@ -579,6 +612,84 @@ useEffect(() => {
                   value={form.ampm}
                   onChange={(e) => setForm({ ...form, ampm: e.target.value })}
                   className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+          </div> */}
+          {/* Birth Time */}
+          <div className="w-full flex flex-col md:col-span-2">
+            <label className="text-sm font-medium mb-2 text-black">
+              Birth Time
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* Hour */}
+              <div>
+                <label className="text-xs text-gray-600">Hr</label>
+                <select
+                  value={form.birthHour}
+                  onChange={(e) =>
+                    setForm({ ...form, birthHour: e.target.value })
+                  }
+                  className="border p-3 rounded w-full bg-white"
+                >
+                  <option value="">--</option>
+                  {generateNumbers(1, 12).map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Minute */}
+              <div>
+                <label className="text-xs text-gray-600">Min</label>
+                <select
+                  value={form.birthMinute}
+                  onChange={(e) =>
+                    setForm({ ...form, birthMinute: e.target.value })
+                  }
+                  className="border p-3 rounded w-full bg-white"
+                >
+                  <option value="">--</option>
+                  {generateNumbers(0, 59).map((n) => (
+                    <option key={n} value={String(n).padStart(2, "0")}>
+                      {String(n).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Second */}
+              <div>
+                <label className="text-xs text-gray-600">Sec</label>
+                <select
+                  value={form.birthSecond}
+                  onChange={(e) =>
+                    setForm({ ...form, birthSecond: e.target.value })
+                  }
+                  className="border p-3 rounded w-full bg-white"
+                >
+                  <option value="">--</option>
+                  {generateNumbers(0, 59).map((n) => (
+                    <option key={n} value={String(n).padStart(2, "0")}>
+                      {String(n).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* AM / PM */}
+              <div>
+                <label className="text-xs text-gray-600">AM / PM</label>
+                <select
+                  value={form.ampm}
+                  onChange={(e) => setForm({ ...form, ampm: e.target.value })}
+                  className="border p-3 rounded w-full bg-white"
                 >
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>

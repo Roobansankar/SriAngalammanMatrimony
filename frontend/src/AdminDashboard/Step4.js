@@ -48,6 +48,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
     star: formData.star || "",
     gothra: formData.gothra || "",
     manglik: formData.manglik || "",
+    sutham: formData.sutham || "",
 
     horoscopeMatch: formData.horoscopeMatch || "",
     parigarasevai: formData.parigarasevai || "",
@@ -220,6 +221,7 @@ useEffect(() => {
       ),
       horoscopeFileName: data.horoscopeFileName,
       thesaiirupu: `${data.thesaiPlanet}-${data.thesaiYears}-${data.thesaiMonths}-${data.thesaiDays}`,
+      sutham: data.sutham,
     });
     
   };
@@ -235,6 +237,14 @@ useEffect(() => {
     [...Array(12)]
       .map((_, i) => ({ key: `a${i + 1}`, box: data[`a${i + 1}`] }))
       .find((b) => b.box.includes("லக்"))?.key || null;
+
+
+      const clockwiseGrid = [
+        [1, 2, 3, 4],
+        [12, null, null, 5],
+        [11, null, null, 6],
+        [10, 9, 8, 7],
+      ];
 
   return (
     <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 mx-auto border border-yellow-200 mt-12">
@@ -462,8 +472,13 @@ useEffect(() => {
         </div>
 
         {/* Thesai Irupu */}
+        {/* Thesai Irupu */}
         <div className="col-span-2 mt-4">
-          <div className="flex gap-2 mt-7">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Thesai Irupu (திசைஇருப்பு)
+          </label>
+
+          <div className="flex gap-2">
             {/* Planet */}
             <select
               name="thesaiPlanet"
@@ -587,10 +602,29 @@ useEffect(() => {
             </select>
           </div>
         </div>
+
+        {/* Sutham */}
+        <div className="col-span-2 mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sutham
+          </label>
+
+          <select
+            name="sutham"
+            value={data.sutham}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+          >
+            <option value="">Select Sutham</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
       </div>
       {/* ---------------- Rasi 12 Cards ---------------- */}
-      <h2 className="text-lg font-bold text-yellow-700 mb-2 col-span-2">
-        12 Rasi Boxes (ராகு)
+      <h2 className="text-lg font-bold text-yellow-700 mb-2 col-span-2 mt-5">
+        12 Rasi Boxes (ராகு) Clockwise
       </h2>
 
       <div className="grid grid-cols-3 gap-3 col-span-2 mb-6">
@@ -650,7 +684,7 @@ useEffect(() => {
 
       {/* ---------------- Navamsam 12 Cards ---------------- */}
       <h2 className="text-lg font-bold text-purple-700 mb-2 col-span-2">
-        12 Navamsam Boxes (நவாம்சம்)
+        12 Navamsam Boxes (நவாம்சம்) Clockwise
       </h2>
 
       <div className="grid grid-cols-3 gap-3 col-span-2 mb-6">
