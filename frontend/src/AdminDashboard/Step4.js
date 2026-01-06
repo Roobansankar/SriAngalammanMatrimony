@@ -801,15 +801,17 @@ useEffect(() => {
 
       {/* Kuladeivam */}
       <div className="col-span-2 mt-4">
-        {/* <label className="block text-sm font-medium text-gray-700 mb-1">
-          Kuladeivam
-        </label>
+        {/* 
         <input
           name="kuladeivam"
           value={data.kuladeivam}
           onChange={handleChange}
           className="border p-2 rounded-lg w-full"
         /> */}
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Kuladeivam
+        </label>
 
         <input
           name="kuladeivam"
