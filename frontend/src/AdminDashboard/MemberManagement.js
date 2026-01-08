@@ -580,6 +580,44 @@ export default function MemberManagement() {
                       onChange={handleEditChange}
                     />
                     <EditField
+                      label="Marital Status"
+                      field="Maritalstatus"
+                      type="select"
+                      options={["Unmarried", "Divorced", "Widowed", "Separated"]}
+                      value={
+                        isEditing ? editData.Maritalstatus : selectedMember.Maritalstatus
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Religion"
+                      field="Religion"
+                      value={
+                        isEditing ? editData.Religion : selectedMember.Religion
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Mother Tongue"
+                      field="mother_tounge"
+                      value={
+                        isEditing ? editData.mother_tounge : selectedMember.mother_tounge
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Country"
+                      field="Country"
+                      value={
+                        isEditing ? editData.Country : selectedMember.Country
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
                       label="Education"
                       field="Education"
                       value={
@@ -648,6 +686,35 @@ export default function MemberManagement() {
                         isEditing
                           ? editData.Complexion
                           : selectedMember.Complexion
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Height (Text)"
+                      field="HeightText"
+                      value={
+                        isEditing ? editData.HeightText : selectedMember.HeightText
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Handicap Status"
+                      field="Handicapt_status"
+                      type="select"
+                      options={["No", "Yes"]}
+                      value={
+                        isEditing ? editData.Handicapt_status : selectedMember.Handicapt_status
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Handicap Reason"
+                      field="Handicapt_reson"
+                      value={
+                        isEditing ? editData.Handicapt_reson : selectedMember.Handicapt_reson
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
@@ -802,6 +869,70 @@ export default function MemberManagement() {
                       isEditing={isEditing}
                       onChange={handleEditChange}
                     />
+                    <EditField
+                      label="Younger Brothers"
+                      field="noyubrothers"
+                      value={
+                        isEditing ? editData.noyubrothers : selectedMember.noyubrothers
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Younger Sisters"
+                      field="noyusisters"
+                      value={
+                        isEditing ? editData.noyusisters : selectedMember.noyusisters
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Unmarried Brothers"
+                      field="nb_unmarried"
+                      value={
+                        isEditing ? editData.nb_unmarried : selectedMember.nb_unmarried
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Unmarried Sisters"
+                      field="ns_unmarried"
+                      value={
+                        isEditing ? editData.ns_unmarried : selectedMember.ns_unmarried
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Parents Stay"
+                      field="parents_stay"
+                      value={
+                        isEditing ? editData.parents_stay : selectedMember.parents_stay
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Village"
+                      field="village"
+                      value={
+                        isEditing ? editData.village : selectedMember.village
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Relatives"
+                      field="relatives"
+                      type="textarea"
+                      value={
+                        isEditing ? editData.relatives : selectedMember.relatives
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
                     {/* Professional Details */}
                     <div className="pt-3 border-t border-gray-200">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">
@@ -905,6 +1036,123 @@ export default function MemberManagement() {
                         isEditing
                           ? editData.DasaBalance
                           : selectedMember.DasaBalance
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Kuladeivam"
+                      field="Kuladeivam"
+                      value={
+                        isEditing ? editData.Kuladeivam : selectedMember.Kuladeivam
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Thesai Irupu"
+                      field="ThesaiIrupu"
+                      value={
+                        isEditing ? editData.ThesaiIrupu : selectedMember.ThesaiIrupu
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Thosam"
+                      field="thosam"
+                      value={
+                        isEditing ? editData.thosam : selectedMember.thosam
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Charan"
+                      field="charan"
+                      value={
+                        isEditing ? editData.charan : selectedMember.charan
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Gan"
+                      field="Gan"
+                      value={
+                        isEditing ? editData.Gan : selectedMember.Gan
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Nadi"
+                      field="nadi"
+                      value={
+                        isEditing ? editData.nadi : selectedMember.nadi
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Parigara Sevai"
+                      field="parigarasevai"
+                      value={
+                        isEditing ? editData.parigarasevai : selectedMember.parigarasevai
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Shani"
+                      field="shani"
+                      value={
+                        isEditing ? editData.shani : selectedMember.shani
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Shani Place"
+                      field="shaniplace"
+                      value={
+                        isEditing ? editData.shaniplace : selectedMember.shaniplace
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Dasa Type"
+                      field="dasatype"
+                      value={
+                        isEditing ? editData.dasatype : selectedMember.dasatype
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Dasa Year"
+                      field="dasayear"
+                      value={
+                        isEditing ? editData.dasayear : selectedMember.dasayear
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Dasa Month"
+                      field="dasamonth"
+                      value={
+                        isEditing ? editData.dasamonth : selectedMember.dasamonth
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Dasa Date"
+                      field="dasadate"
+                      value={
+                        isEditing ? editData.dasadate : selectedMember.dasadate
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
@@ -1029,6 +1277,73 @@ export default function MemberManagement() {
                       isEditing={isEditing}
                       onChange={handleEditChange}
                     />
+                    <EditField
+                      label="About Us"
+                      field="aboutus"
+                      type="textarea"
+                      value={
+                        isEditing ? editData.aboutus : selectedMember.aboutus
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Passport"
+                      field="passport"
+                      value={
+                        isEditing ? editData.passport : selectedMember.passport
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Achievement"
+                      field="achievement"
+                      type="textarea"
+                      value={
+                        isEditing ? editData.achievement : selectedMember.achievement
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Medical History"
+                      field="medicalhistory"
+                      type="textarea"
+                      value={
+                        isEditing ? editData.medicalhistory : selectedMember.medicalhistory
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Family Medical History"
+                      field="familymedicalhistory"
+                      type="textarea"
+                      value={
+                        isEditing ? editData.familymedicalhistory : selectedMember.familymedicalhistory
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Any Other Income"
+                      field="anyotherincome"
+                      value={
+                        isEditing ? editData.anyotherincome : selectedMember.anyotherincome
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Reference"
+                      field="reference"
+                      value={
+                        isEditing ? editData.reference : selectedMember.reference
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
                     {/* Status */}
                     <div className="pt-3 border-t border-gray-200">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">
@@ -1046,7 +1361,149 @@ export default function MemberManagement() {
                       isEditing={isEditing}
                       onChange={handleEditChange}
                     />
-                    Actions
+                    <EditField
+                      label="Plan"
+                      field="Plan"
+                      type="select"
+                      options={["basic", "premium"]}
+                      value={
+                        isEditing ? editData.Plan : selectedMember.Plan
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Visibility"
+                      field="visibility"
+                      type="select"
+                      options={["visible", "hidden"]}
+                      value={
+                        isEditing ? editData.visibility : selectedMember.visibility
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Featured"
+                      field="featured"
+                      type="select"
+                      options={["", "Yes", "No"]}
+                      value={
+                        isEditing ? editData.featured : selectedMember.featured
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Featured User"
+                      field="featured_user"
+                      type="select"
+                      options={["", "Yes", "No"]}
+                      value={
+                        isEditing ? editData.featured_user : selectedMember.featured_user
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Photo 1 Approve"
+                      field="Photo1Approve"
+                      type="select"
+                      options={["No", "Yes"]}
+                      value={
+                        isEditing ? editData.Photo1Approve : selectedMember.Photo1Approve
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Photo 2 Approve"
+                      field="Photo2Approve"
+                      type="select"
+                      options={["No", "Yes"]}
+                      value={
+                        isEditing ? editData.Photo2Approve : selectedMember.Photo2Approve
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Photo 3 Approve"
+                      field="Photo3Approve"
+                      type="select"
+                      options={["No", "Yes"]}
+                      value={
+                        isEditing ? editData.Photo3Approve : selectedMember.Photo3Approve
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Photo Visibility"
+                      field="photo_visibility"
+                      type="select"
+                      options={["", "visible", "hidden"]}
+                      value={
+                        isEditing ? editData.photo_visibility : selectedMember.photo_visibility
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Phone Visibility"
+                      field="phone_visibility"
+                      type="select"
+                      options={["", "visible", "hidden"]}
+                      value={
+                        isEditing ? editData.phone_visibility : selectedMember.phone_visibility
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Horoscope Approve"
+                      field="HorosApprove"
+                      type="select"
+                      options={["", "Yes", "No"]}
+                      value={
+                        isEditing ? editData.HorosApprove : selectedMember.HorosApprove
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Horoscope Visibility"
+                      field="horoscope_visibility"
+                      type="select"
+                      options={["", "visible", "hidden"]}
+                      value={
+                        isEditing ? editData.horoscope_visibility : selectedMember.horoscope_visibility
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="ID Proof Approve"
+                      field="idproof_approve"
+                      type="select"
+                      options={["", "Yes", "No"]}
+                      value={
+                        isEditing ? editData.idproof_approve : selectedMember.idproof_approve
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
+                    <EditField
+                      label="Biodata Approve"
+                      field="Biodata_approve"
+                      type="select"
+                      options={["", "Yes", "No"]}
+                      value={
+                        isEditing ? editData.Biodata_approve : selectedMember.Biodata_approve
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                    />
                     {/* Quick Actions */}
                     {!isEditing && (
                       <div className="pt-4 border-t border-gray-100 space-y-2">

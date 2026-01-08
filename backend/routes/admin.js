@@ -74,8 +74,16 @@ const formatTimeForMySQL = (timeValue) => {
  * Sanitize and format field value based on field name
  */
 const sanitizeFieldValue = (key, value) => {
+  // NOT NULL text fields in the database that should never receive null
+  // These fields are TEXT/VARCHAR with NOT NULL constraint
+  const notNullTextFields = ['Raghu', 'Keethu', 'Sevai'];
+  
   // Handle null/undefined/empty
   if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
+    // For NOT NULL text fields, return empty string instead of null
+    if (notNullTextFields.includes(key)) {
+      return '';
+    }
     return null;
   }
   
@@ -90,7 +98,7 @@ const sanitizeFieldValue = (key, value) => {
   }
   
   // Numeric fields - ensure they're proper numbers or null
-  const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters', 'Raghu', 'Keethu', 'Sevai'];
+  const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters'];
   if (numericFields.includes(key)) {
     const num = parseFloat(value);
     return isNaN(num) ? null : value;
@@ -675,19 +683,42 @@ router.put("/member/:matriId", async (req, res) => {
   console.log(`➡️ Processing update for member: ${matriId}`);
 
   try {
-    // Build dynamic update query
+    // Build dynamic update query - Extended to include most database fields
     const allowedFields = [
-      'Name', 'DOB', 'TOB', 'POB', 'Gender', 'Education', 'Occupation',
-      'company_name', 'Annualincome', 'Height', 'Weight', 'Complexion',
-      'Caste', 'Subcaste', 'Fathername', 'Fathersoccupation', 'Mothersname',
-      'Mothersoccupation', 'Address', 'City', 'State', 'Mobile', 'ConfirmEmail',
-      'Star', 'Moonsign', 'Raghu', 'Keethu', 'Sevai', 'noofbrothers', 'noofsisters',
-      'family_wealth', 'Status', 'BloodGroup', 'workinglocation', 'occu_details',
-      'Lagnam', 'Suddham', 'DasaBalance', 'OtherNotes', 'PartnerExpectations',
+      // Personal Info
+      'Name', 'DOB', 'TOB', 'POB', 'Gender', 'Maritalstatus', 'Religion', 'Country',
+      'mother_tounge', 'BloodGroup', 'middlename', 'lastname',
+      // Education & Career
+      'Education', 'Occupation', 'company_name', 'Annualincome', 'workinglocation', 
+      'occu_details', 'income_in', 'working_hours', 'anyotherincome',
+      // Physical
+      'Height', 'HeightText', 'Weight', 'Complexion', 'Handicapt_status', 'Handicapt_reson',
+      // Family
+      'Caste', 'Subcaste', 'sub_caste', 'Fathername', 'fathermiddle', 'fatherLast',
+      'Fathersoccupation', 'Mothersname', 'mothermiddle', 'motherlast', 'Mothersoccupation',
+      'noofbrothers', 'noofsisters', 'noyubrothers', 'noyusisters', 'nb_unmarried', 'ns_unmarried',
+      'family_wealth', 'parents_stay', 'village', 'relatives',
+      // Contact
+      'Address', 'City', 'State', 'Mobile', 'ConfirmEmail', 'countrycode',
+      // Horoscope basic
+      'Star', 'Moonsign', 'Lagnam', 'Suddham', 'Raghu', 'Keethu', 'Sevai', 'DasaBalance',
+      'Kuladeivam', 'ThesaiIrupu', 'thosam', 'charan', 'Gan', 'nadi', 'parigarasevai',
+      'shani', 'shaniplace', 'dasatype', 'dasayear', 'dasamonth', 'dasadate',
       // Rasi grid (g1-g12)
       'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10', 'g11', 'g12',
       // Navamsam grid (a1-a12)
-      'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12'
+      'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12',
+      // Partner Expectations
+      'PartnerExpectations', 'PE_Height', 'PE_Height2', 'PE_Age', 'PE_Age2', 'PE_Education',
+      'PE_Occupation', 'PE_Maritalstatus', 'PE_Country', 'PE_State', 'PE_City', 'PE_subcaste',
+      'pe_subcaste_marry',
+      // Account & Status
+      'Status', 'Plan', 'visibility', 'featured', 'featured_user',
+      'Photo1Approve', 'Photo2Approve', 'Photo3Approve', 'photo_visibility', 'phone_visibility',
+      'HorosApprove', 'horoscope_visibility', 'idproof_approve', 'Biodata_approve',
+      // Other
+      'OtherNotes', 'aboutus', 'passport', 'achievement', 'medicalhistory', 
+      'familymedicalhistory', 'reference', 'branch_name', 'branch_state'
     ];
 
     const updates = [];
