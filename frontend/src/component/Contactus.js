@@ -1,7 +1,10 @@
 
 
-import React, { useState, useEffect } from "react";
-import { MapPin, Phone, Mail, Send } from "lucide-react";
+import axios from "axios";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useEffect, useState } from "react";
+
+const API_BASE = process.env.REACT_APP_API_BASE || "";
 
 export default function ContactUs() {
   const [form, setForm] = useState({
@@ -13,6 +16,9 @@ export default function ContactUs() {
   });
 
   const [fadeIn, setFadeIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => setFadeIn(true), 200);
@@ -22,19 +28,36 @@ export default function ContactUs() {
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
+    if (error) setError(null);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log("Contact form submitted:", form);
-    alert("✅ Thanks! Your message has been received.");
-    setForm({
-      firstName: "",
-      lastName: "",
-      subject: "",
-      email: "",
-      message: "",
-    });
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const res = await axios.post(`${API_BASE}/api/admin/contact-message`, form);
+      
+      if (res.data.success) {
+        setSuccess(true);
+        setForm({
+          firstName: "",
+          lastName: "",
+          subject: "",
+          email: "",
+          message: "",
+        });
+        setTimeout(() => setSuccess(false), 5000);
+      } else {
+        setError(res.data.message || "Failed to send message");
+      }
+    } catch (err) {
+      console.error("Contact form error:", err);
+      setError(err.response?.data?.message || "Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -218,14 +241,41 @@ export default function ContactUs() {
               />
             </div>
 
+            {/* Success Message */}
+            {success && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-center">
+                ✅ Thanks! Your message has been sent successfully. We'll get back to you soon.
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-center">
+                ❌ {error}
+              </div>
+            )}
+
             {/* Button */}
             <div className="pt-2 flex justify-center">
               <button
                 type="submit"
-                className="px-8 py-3 bg-[#d16b86] hover:bg-[#b24b63] text-white rounded-full font-medium shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                disabled={loading}
+                className={`px-8 py-3 bg-[#d16b86] hover:bg-[#b24b63] text-white rounded-full font-medium shadow-md hover:shadow-lg transition-all flex items-center gap-2 ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
-                <Send className="w-4 h-4" />
-                <span>Send Message</span>
+                {loading ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>Send Message</span>
+                  </>
+                )}
               </button>
             </div>
           </form>

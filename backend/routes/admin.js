@@ -1795,4 +1795,88 @@ router.post("/verify-password", verifyAdmin, async (req, res) => {
   }
 });
 
+// =========================
+// CONTACT MESSAGE MANAGEMENT
+// =========================
+
+// GET all contact messages (for admin panel)
+router.get("/contact-messages", verifyToken, async (req, res) => {
+  try {
+    const conn = db.promise();
+    const [rows] = await conn.query(
+      "SELECT * FROM contact_messages ORDER BY created_at DESC"
+    );
+    res.json({ success: true, messages: rows });
+  } catch (err) {
+    console.error("Error fetching contact messages:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// POST new contact message (public - no auth required)
+router.post("/contact-message", async (req, res) => {
+  try {
+    const { firstName, lastName, email, subject, message } = req.body;
+    
+    if (!firstName || !email || !message) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "First name, email and message are required" 
+      });
+    }
+
+    const conn = db.promise();
+    await conn.query(
+      `INSERT INTO contact_messages (first_name, last_name, email, subject, message) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [firstName, lastName || '', email, subject || '', message]
+    );
+
+    console.log(`📩 New contact message from: ${email}`);
+    res.json({ success: true, message: "Message sent successfully" });
+  } catch (err) {
+    console.error("Error saving contact message:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// PUT resolve/rectify a contact message
+router.put("/contact-message/:id/resolve", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUser = JSON.parse(req.headers['x-user-data'] || '{}');
+    const resolvedBy = currentUser.username || 'Admin';
+
+    const conn = db.promise();
+    await conn.query(
+      `UPDATE contact_messages 
+       SET status = 'resolved', resolved_at = NOW(), resolved_by = ?
+       WHERE id = ?`,
+      [resolvedBy, id]
+    );
+
+    console.log(`✅ Contact message #${id} resolved by ${resolvedBy}`);
+    res.json({ success: true, message: "Message marked as resolved" });
+  } catch (err) {
+    console.error("Error resolving contact message:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// DELETE contact message
+router.delete("/contact-message/:id", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const conn = db.promise();
+    await conn.query("DELETE FROM contact_messages WHERE id = ?", [id]);
+
+    console.log(`🗑️ Contact message #${id} deleted`);
+    res.json({ success: true, message: "Message deleted" });
+  } catch (err) {
+    console.error("Error deleting contact message:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 export default router;
