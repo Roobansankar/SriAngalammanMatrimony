@@ -252,7 +252,7 @@ import Step8 from "./Step8";
 import Step9 from "./Step9";
 
 import Step12 from "./Step12";
-import Step6PlanSelect from "./Step6PlanSelect";
+import Step11PlanSelect from "./Step11PlanSelect";
 
 const STORAGE_KEY = "multiStepRegistration_form_v1";
 const TOTAL_STEPS = 7;
@@ -407,7 +407,7 @@ export default function MultiStepForm() {
           <Route
             path="step/6"
             element={
-              <Step6PlanSelect
+              <Step11PlanSelect
                 nextStep={nextStepFactory(7)}
                 prevStep={prevStepFactory(5)}
                 formData={formData}

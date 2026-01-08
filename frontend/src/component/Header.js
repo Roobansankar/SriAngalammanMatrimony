@@ -426,7 +426,7 @@ export default function Header({ user, setUser }) {
                   className={`absolute right-0 top-full mt-2 w-56 overflow-hidden ${dropdownBgClass} animate-in fade-in slide-in-from-top-2 duration-200`}
                 >
                   {/* My BioData */}
-                  <Link
+                  {/* <Link
                     to="/bio"
                     onClick={() => {
                       handleLinkClick();
@@ -435,7 +435,7 @@ export default function Header({ user, setUser }) {
                     className="block px-4 py-2.5 hover:bg-rose-50 hover:text-rose-600 transition-colors"
                   >
                     My BioData
-                  </Link>
+                  </Link> */}
 
                   {/* Modify Profile - submenu header */}
                   <div className="px-4  py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide border-t border-gray-100">

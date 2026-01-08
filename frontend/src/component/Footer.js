@@ -1,13 +1,12 @@
 
+
 // src/component/Footer.js
 import { Heart, Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "./logo.png";
 
-
 export default function Footer() {
   return (
-
     <footer className="w-full bg-gradient-to-r from-[#8F1537] to-[#A61C3C] text-white font-display">
       {/* Footer Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-12">
@@ -68,7 +67,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/refund" className="hover:underline text-white/90">
+                <Link to="/returns" className="hover:underline text-white/90">
                   Refund Policy
                 </Link>
               </li>
@@ -87,24 +86,21 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Contact</h3>
             <ul className="space-y-3 text-sm text-white/90">
-              <li className="flex items-center gap-2">
-                <Mail size={16} />
-                <a
-                  href="mailto:info@sriangalamman.com"
-                  className="hover:underline"
-                >
-                  info@sriangalamman.com
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone size={16} />
-                <a href="tel:+919876543210" className="hover:underline">
-                  +91 98765 43210
-                </a>
+              <li className="flex items-start gap-2">
+                <Mail size={16} className="mt-1 flex-shrink-0" />
+                <span>sriangalammanspsk2020@gmail.com</span>
               </li>
               <li className="flex items-start gap-2">
-                <MapPin size={16} className="mt-1" />
-                <span>Coimbatore, Tamil Nadu, India</span>
+                <Phone size={16} className="mt-1 flex-shrink-0" />
+                <span>9443946541, 70104 59106</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin size={16} className="mt-1 flex-shrink-0" />
+                <span>
+                  Sri Angalamman Matrimony, 108 Anna Street, Near SPS
+                  Documentation Office, Sivagiri, Erode (DT), Tamil Nadu -
+                  638109
+                </span>
               </li>
             </ul>
           </div>
@@ -112,17 +108,6 @@ export default function Footer() {
 
         {/* Divider and Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex gap-5">
-            <span className="text-sm text-white/90 hover:underline cursor-pointer">
-              Facebook
-            </span>
-            <span className="text-sm text-white/90 hover:underline cursor-pointer">
-              Instagram
-            </span>
-            <span className="text-sm text-white/90 hover:underline cursor-pointer">
-              Twitter
-            </span>
-          </div>
           <p className="text-sm text-white/80 text-center">
             © {new Date().getFullYear()} Sri Angalamman Matrimony. All rights
             reserved.

@@ -40,8 +40,9 @@ const {
   state,
   district,
   with_photo,
-  star,
-  moonsign,
+  moonSign,     // ✅ STRING
+  nakshatra,    // ✅ STRING
+
   Sevai,
   Raghu,
   Keethu,
@@ -109,18 +110,33 @@ const {
     }
 
     // Star (Horoscope)
-    if (star && Array.isArray(star) && !star.includes("Any") && star.length > 0) {
-      const placeholders = star.map(() => "LOWER(?)").join(",");
-      whereClauses.push(`LOWER(Star) IN (${placeholders})`);
-      params.push(...star.map(v => v.toLowerCase()));
-    }
+    // if (star && Array.isArray(star) && !star.includes("Any") && star.length > 0) {
+    //   const placeholders = star.map(() => "LOWER(?)").join(",");
+    //   whereClauses.push(`LOWER(Star) IN (${placeholders})`);
+    //   params.push(...star.map(v => v.toLowerCase()));
+    // }
 
-    // Moon Sign (Horoscope)
-    if (moonsign && Array.isArray(moonsign) && !moonsign.includes("Any") && moonsign.length > 0) {
-      const placeholders = moonsign.map(() => "LOWER(?)").join(",");
-      whereClauses.push(`LOWER(Moonsign) IN (${placeholders})`);
-      params.push(...moonsign.map(v => v.toLowerCase()));
-    }
+    // Nakshatra (Star)
+// Moon Sign (Rasi)
+if (moonSign && moonSign !== "Any") {
+  whereClauses.push("LOWER(Moonsign) = LOWER(?)");
+  params.push(moonSign);
+}
+
+
+// Nakshatra (Star)
+if (nakshatra && nakshatra !== "Any") {
+  whereClauses.push("LOWER(Star) = LOWER(?)");
+  params.push(nakshatra);
+}
+
+
+    // // Moon Sign (Horoscope)
+    // if (moonsign && Array.isArray(moonsign) && !moonsign.includes("Any") && moonsign.length > 0) {
+    //   const placeholders = moonsign.map(() => "LOWER(?)").join(",");
+    //   whereClauses.push(`LOWER(Moonsign) IN (${placeholders})`);
+    //   params.push(...moonsign.map(v => v.toLowerCase()));
+    // }
 
 
     // Sevai

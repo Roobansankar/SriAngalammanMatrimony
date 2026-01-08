@@ -549,7 +549,11 @@ export default function MemberBioData() {
           date: formatDMY(user.Regdate || "-"),
           birth_date: formatDMY(user.DOB || "-"),
 
-          birth_time: user.TOB || "",
+          // birth_time: user.TOB || "",
+           birth_time : user.TOB
+  ? user.TOB.replace(/:\d{2}\s/, " ")
+  : "",
+
           birth_place: user.POB || "",
           education: user.EducationDetails || "",
           occupation: user.OccupationDetails || "",
@@ -1201,7 +1205,7 @@ const downloadAsPDF = async () => {
                           பிறந்த நேரம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "188px" }}
+                            style={{ minWidth: "148px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1227,7 +1231,7 @@ const downloadAsPDF = async () => {
                           பிறந்த ஊர்:
                           <div
                             className="display-placeholder "
-                            style={{ minWidth: "200px" }}
+                            style={{ minWidth: "220px" }}
                           >
                             {isEditing ? (
                               <input
@@ -1436,7 +1440,7 @@ const downloadAsPDF = async () => {
                           நிறம்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "270px" }}
+                            style={{ minWidth: "320px" }}
                           >
                             {isEditing ? (
                               <input
@@ -2471,7 +2475,7 @@ const downloadAsPDF = async () => {
                   பிறந்த நேரம்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "188px" }}
+                    style={{ minWidth: "148px" }}
                   >
                     <span className="display-data">
                       {currentData.birth_time}
@@ -2480,7 +2484,7 @@ const downloadAsPDF = async () => {
                   பிறந்த ஊர்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "200px" }}
+                    style={{ minWidth: "220px" }}
                   >
                     <span className="display-data">
                       {currentData.birth_place}
@@ -2489,7 +2493,7 @@ const downloadAsPDF = async () => {
                 </span>
               </div>
               {/* EDUCATION / JOB */}
-              <div className="display-form-row">
+              {/* <div className="display-form-row">
                 <span>
                   வரனின்படிப்பு:
                   <div
@@ -2510,7 +2514,73 @@ const downloadAsPDF = async () => {
                     </span>
                   </div>
                 </span>
-              </div>
+              </div> */}
+
+              {/* EDUCATION / JOB */}
+<div className="display-form-row">
+  <span>
+    வரனின்படிப்பு:
+    <div
+      className="display-placeholder"
+      style={{ minWidth: "400px" }}
+    >
+      {isEditing ? (
+        <input
+          type="text"
+          value={editData.education || ""}
+          onChange={(e) =>
+            handleEditChange("education", e.target.value)
+          }
+          className="display-data"
+          style={{
+            border: "2px solid #3b82f6",
+            background: "#eff6ff",
+            padding: "2px 8px",
+            width: "100%",
+          }}
+        />
+      ) : (
+        <span className="display-data">
+          {currentData.education}
+        </span>
+      )}
+    </div>
+    வேலை:
+    <div
+      className="display-placeholder"
+      style={{ 
+        minWidth: "520px",  // Changed from 420px to 520px
+        wordWrap: "break-word",
+        whiteSpace: "normal"
+      }}
+    >
+      {isEditing ? (
+        <input
+          type="text"
+          value={editData.occupation || ""}
+          onChange={(e) =>
+            handleEditChange("occupation", e.target.value)
+          }
+          className="display-data"
+          style={{
+            border: "2px solid #3b82f6",
+            background: "#eff6ff",
+            padding: "2px 8px",
+            width: "100%",
+          }}
+        />
+      ) : (
+        <span className="display-data" style={{ 
+          wordWrap: "break-word",
+          whiteSpace: "normal",
+          display: "inline-block"
+        }}>
+          {currentData.occupation}
+        </span>
+      )}
+    </div>
+  </span>
+</div>
               {/* COMPANY DETAILS */}
               <div className="display-form-row">
                 <span>
@@ -2554,7 +2624,7 @@ const downloadAsPDF = async () => {
                   நிறம்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "270px" }}
+                    style={{ minWidth: "320px" }}
                   >
                     <span className="display-data">
                       {currentData.complexion}

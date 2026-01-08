@@ -1,7 +1,7 @@
 import { Crown, Star } from "lucide-react";
 import { useState } from "react";
 
-export default function Step6PlanSelect({
+export default function Step11PlanSelect({
   nextStep,
   prevStep,
   formData,
@@ -27,7 +27,7 @@ export default function Step6PlanSelect({
   return (
     <div className="max-w-lg mx-auto mt-12 bg-white shadow-lg rounded-2xl p-8 border text-center">
       <h3 className="text-2xl font-semibold mb-2 text-gray-800">
-        Step 10: Select Membership Plan
+         Select Membership Plan
       </h3>
       <p className="text-gray-500 mb-6 text-sm">
         Choose a membership plan for this user

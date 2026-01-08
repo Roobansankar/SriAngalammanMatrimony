@@ -308,7 +308,7 @@ export default function Step1({ nextStep, formData = {} }) {
   }, []);
 
   const validateBasicInfo = useCallback(() => {
-    if (!data.fname.trim()) return "Please enter your first name.";
+    if (!data.fname.trim()) return "Please enter you  initial.";
     if (!data.lname.trim()) return "Please enter your surname.";
     if (!data.email.trim()) return "Please enter your email.";
     if (errors.email) return errors.email;
@@ -422,7 +422,7 @@ export default function Step1({ nextStep, formData = {} }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           name="fname"
-          placeholder="First Name *"
+          placeholder="Initial*"
           value={data.fname}
           onChange={handleChange}
           className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-rose-400 outline-none"

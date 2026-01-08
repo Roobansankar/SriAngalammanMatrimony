@@ -43,7 +43,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
     keethu: formData.keethu || "",
     birthHour: formData.birthHour || "",
     birthMinute: formData.birthMinute || "",
-    birthSecond: formData.birthSecond || "",
+    // birthSecond: formData.birthSecond || "",
     ampm: formData.ampm || "AM",
     placeOfBirth: formData.placeOfBirth || "",
     countryOfBirth: formData.countryOfBirth || "",
@@ -80,7 +80,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         keethu: formData.keethu || prev.keethu,
         birthHour: formData.birthHour || prev.birthHour,
         birthMinute: formData.birthMinute || prev.birthMinute,
-        birthSecond: formData.birthSecond || prev.birthSecond,
+        // birthSecond: formData.birthSecond || prev.birthSecond,
         ampm: formData.ampm || prev.ampm,
         kuladeivam: formData.kuladeivam || prev.kuladeivam,
         thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
@@ -465,7 +465,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
               ))}
             </select>
 
-            <select
+            {/* <select
               name="birthSecond"
               value={data.birthSecond}
               onChange={handleChange}
@@ -478,7 +478,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                   {String(num).padStart(2, "0")}
                 </option>
               ))}
-            </select>
+            </select> */}
 
             <select
               name="ampm"

@@ -1,123 +1,173 @@
-
-// import React from "react";
+// import axios from "axios";
+// import { useEffect, useState } from "react";
 // import { Link } from "react-router-dom";
-
+// import { API } from "../config/api";
 
 // export const FeaturedProfiles = () => {
+//   const [profiles, setProfiles] = useState([]);
+
+//   useEffect(() => {
+//     axios
+//       .get(`${API}/admin/featured-profiles`) 
+//       .then((res) => setProfiles(res.data.profiles))
+//       .catch(console.error);
+//   }, []);
+
 //   return (
-//     <div>
-//       <section className="py-20 bg-[#FFF8E1]">
-//         <div className="container mx-auto px-6">
-//           {/* Heading */}
-//           <h2
-//             data-aos="fade-down"
-//             className="text-3xl md:text-4xl font-extrabold tracking-wide text-center mb-12 text-gray-900"
-//           >
-//             Welcome to{" "}
-//             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-700 via-rose-600 to-red-600">
-//               Bride & Groom Profiles
-//             </span>
-//           </h2>
+//     <section className="py-20 bg-[#FFF8E1]">
+//       <div className="container mx-auto px-6">
+//         <h2 className="text-4xl font-bold text-center mb-12">
+//           Featured Profiles
+//         </h2>
 
-//           {/* Profile Grid */}
-//           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-//             {/* Priya */}
-//             <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+//           {profiles.map((p) => (
+//             <div
+//               key={p.MatriID}
+//               className="bg-white rounded-xl shadow-md overflow-hidden"
+//             >
 //               <img
-//                 alt="Priya"
+//                 src={p.PhotoURL}
+//                 alt={p.Name}
 //                 className="w-full h-64 object-cover"
-//                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_WNKCBPJfwxpFa_RLIn_a74sgSYgQ47nuJCjklEZ9uYTYsdjOQOrFN9HT_TglUkUGiaFnGnRv39aF3iSN2OoUy1jvE549aWcJ2Z8vlaYo4Rc8tvWgs68_HeOiSFDRpLaqEOf4RZgRqvmvfarxxsnlAl6u-gv6b7eI5OO_qBdZi_4CLX9NH-SKzBgAbX4pwLzs3DXhk7xpUav-U30CS_bd8EkMipGq8hPLEYQHeHw6G6rVWvhosFjCV91Tuv8bLfOfen0SuvY1JM5U"
 //               />
-//               <div className="p-6 text-center">
-//                 <p className="text-sm text-rose-600 font-semibold mb-1">
-//                   Matri ID: KS10074
+
+//               <div className="p-5 text-center">
+//                 <p className="text-rose-600 text-sm font-semibold">
+//                   Matri ID: {p.MatriID}
 //                 </p>
-//                 <h3 className="text-xl font-bold text-[#4d4d4d]">Priya, 28</h3>
-//                 <p className="text-gray-600">IT Professional</p>
+//                 <h3 className="font-bold text-xl">
+//                   {p.Name}, {p.Age}
+//                 </h3>
+//                 <p className="text-gray-600">{p.Occupation}</p>
 
 //                 <Link
 //                   to="/login"
-//                   className="inline-block mt-4 px-5 py-2 bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold rounded-full hover:from-pink-700 hover:to-rose-600 transition-all duration-300 shadow-md"
+//                   className="inline-block mt-3 px-4 py-2 bg-rose-500 text-white rounded-full"
 //                 >
 //                   View Profile
 //                 </Link>
 //               </div>
 //             </div>
-
-//             {/* Arjun */}
-//             <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-//               <img
-//                 alt="Arjun"
-//                 className="w-full h-64 object-cover"
-//                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1I32bOMXRa4Fn9-qRZeJgx8edyvSOiYxcnrflfYfyHVLQKDtKceU6QN38_yIfuuDkP0KYxSVgv6TgyZRbtWD2DDzAB9KPZgcWK1mjqbs2p9zylGx8ZSFBdXqaen4uJNXzz57xXO3BONvc4rDUw7zid_Qx5XPkM0kXSNPDqdEoZeMN9qAYGZ6rfhn8t3FGhN3ZNOragp1Q9zCgozGwNrnC_9AZGyH0vhXHacCB0c5hMVv7Xkg_45-XROQ9JvmaRFaPztXuTitjm2K3"
-//               />
-//               <div className="p-6 text-center">
-//                 <p className="text-sm text-rose-600 font-semibold mb-1">
-//                   Matri ID: KS10075
-//                 </p>
-//                 <h3 className="text-xl font-bold text-[#4d4d4d]">Arjun, 32</h3>
-//                 <p className="text-gray-600">Govt Employee</p>
-
-//                 <Link
-//                   to="/login"
-//                   className="inline-block mt-4 px-5 py-2 bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold rounded-full hover:from-pink-700 hover:to-rose-600 transition-all duration-300 shadow-md"
-//                 >
-//                   View Profile
-//                 </Link>
-//               </div>
-//             </div>
-
-//             {/* Meera */}
-//             <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-//               <img
-//                 alt="Meera"
-//                 className="w-full h-64 object-cover"
-//                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw-QaCQWWW1ArIz8f970PDdft6Ku6SRT0gjQfd93TK57Nn8qDkM3rR5rQRPRjLoZxuF6AWw8hDRoH_kH97peBsBS7-9QbkrrnROrNGp1Fo-BhOW8rDDaPDMiR5TO0pNQtHeAHI1sDB-QJgtcwnkJnZAvesanqhY_fxsdMfF9WJ6eWU7ZTmfgIqQMcrDXjVUuTJRQw4qZYX0xuBJl_-fRyZjfddaET7Ou1sD6wsRyowb_q1zh6w6udAwQN0V2-ZyoqtCHNqSGPczgeS"
-//               />
-//               <div className="p-6 text-center">
-//                 <p className="text-sm text-rose-600 font-semibold mb-1">
-//                   Matri ID: KS10076
-//                 </p>
-//                 <h3 className="text-xl font-bold text-[#4d4d4d]">Meera, 25</h3>
-//                 <p className="text-gray-600">Fashion & Jewellery</p>
-
-//                 <Link
-//                   to="/login"
-//                   className="inline-block mt-4 px-5 py-2 bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold rounded-full hover:from-pink-700 hover:to-rose-600 transition-all duration-300 shadow-md"
-//                 >
-//                   View Profile
-//                 </Link>
-//               </div>
-//             </div>
-
-//             {/* Vikram */}
-//             <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-//               <img
-//                 alt="Vikram"
-//                 className="w-full h-64 object-cover"
-//                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-BRp-XGlJuJswtVsDQ_b9cy23_QuaOjVjdSKM-Pn6tkXuGB3mpewC4yAQtOd0sjj3JEwgR2jtjM68YRNTBhKy-rbeYmlTk2xv2tSFz1DkMpzkVA7k6zRGJniTgd38uREoBiDudweQ8PfCcco7s-z813uG_9o1WLS0DGKffTjQTL1Cw3_UUVZLrjbbSwl6j4czFGhHmA6wWg0nK7ZrhVh5x3L6RO-ylvGFOHoqSwrzyiooV4tCb3j4Q_XPv7n--uPbV4KdA5rw-rzv"
-//               />
-//               <div className="p-6 text-center">
-//                 <p className="text-sm text-rose-600 font-semibold mb-1">
-//                   Matri ID: KS10077
-//                 </p>
-//                 <h3 className="text-xl font-bold text-[#4d4d4d]">Vikram, 30</h3>
-//                 <p className="text-gray-600">Business Owner</p>
-
-//                 <Link
-//                   to="/login"
-//                   className="inline-block mt-4 px-5 py-2 bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold rounded-full hover:from-pink-700 hover:to-rose-600 transition-all duration-300 shadow-md"
-//                 >
-//                   View Profile
-//                 </Link>
-//               </div>
-//             </div>
-//           </div>
+//           ))}
 //         </div>
-//       </section>
-//     </div>
+//       </div>
+//     </section>
 //   );
 // };
+
+
+
+
+
+
+// import axios from "axios";
+// import { useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
+// import { API } from "../config/api";
+
+// export const FeaturedProfiles = () => {
+//   const [profiles, setProfiles] = useState([]);
+
+//   useEffect(() => {
+//     axios
+//       .get(`${API}/admin/featured-profiles`) 
+//       .then((res) => setProfiles(res.data.profiles))
+//       .catch(console.error);
+//   }, []);
+
+//   return (
+//     <section className="py-16 bg-white overflow-hidden">
+//       <div className="container mx-auto px-6">
+//         <div className="text-center mb-12">
+//           <h2 className="text-3xl font-bold text-gray-900">
+//             Featured Profiles
+//           </h2>
+//         </div>
+
+//         {/* Scrolling Row */}
+//         <div className="mb-8 overflow-hidden">
+//           <div className="flex gap-6 animate-scroll-right">
+//             {profiles.slice(0, 4).map((p) => (
+//               <div
+//                 key={p.MatriID}
+//                 className="flex-shrink-0 w-64 bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 text-center shadow-lg hover:shadow-2xl transition-all duration-300"
+//               >
+//                 <img
+//                   src={p.PhotoURL}
+//                   alt={p.Name}
+//                   className="w-40 h-40 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-md"
+//                 />
+//                 <p className="text-rose-600 text-xs font-semibold mb-2">
+//                   ID: {p.MatriID}
+//                 </p>
+//                 <h3 className="font-bold text-base text-gray-900 mb-1">
+//                   {p.Name}, {p.Age}
+//                 </h3>
+//                 <p className="text-xs text-gray-600 mb-4">{p.Occupation}</p>
+
+//                 <Link
+//                   to="/login"
+//                   className="inline-block px-6 py-2 bg-rose-500 text-white text-xs font-medium rounded-full hover:bg-rose-600 transition-all duration-200"
+//                 >
+//                   View Profile
+//                 </Link>
+//               </div>
+//             ))}
+//             {/* Duplicate for infinite scroll effect */}
+//             {profiles.slice(0, 4).map((p) => (
+//               <div
+//                 key={`dup1-${p.MatriID}`}
+//                 className="flex-shrink-0 w-64 bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 text-center shadow-lg"
+//               >
+//                 <img
+//                   src={p.PhotoURL}
+//                   alt={p.Name}
+//                   className="w-40 h-40 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-md"
+//                 />
+//                 <p className="text-rose-600 text-xs font-semibold mb-2">
+//                   ID: {p.MatriID}
+//                 </p>
+//                 <h3 className="font-bold text-base text-gray-900 mb-1">
+//                   {p.Name}, {p.Age}
+//                 </h3>
+//                 <p className="text-xs text-gray-600 mb-4">{p.Occupation}</p>
+
+//                 <Link
+//                   to="/login"
+//                   className="inline-block px-6 py-2 bg-rose-500 text-white text-xs font-medium rounded-full hover:bg-rose-600 transition-all duration-200"
+//                 >
+//                   View Profile
+//                 </Link>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+
+//       <style jsx>{`
+//         @keyframes scroll-right {
+//           0% {
+//             transform: translateX(0);
+//           }
+//           100% {
+//             transform: translateX(-50%);
+//           }
+//         }
+
+//         .animate-scroll-right {
+//           animation: scroll-right 30s linear infinite;
+//         }
+
+//         .animate-scroll-right:hover {
+//           animation-play-state: paused;
+//         }
+//       `}</style>
+//     </section>
+//   );
+// };
+
+
 
 
 import axios from "axios";
@@ -136,44 +186,92 @@ export const FeaturedProfiles = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-[#FFF8E1]">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="container mx-auto px-6">
-        <h2 className="text-4xl font-bold text-center mb-12">
-          Featured Profiles
-        </h2>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Featured Profiles
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {profiles.map((p) => (
-            <div
-              key={p.MatriID}
-              className="bg-white rounded-xl shadow-md overflow-hidden"
-            >
-              <img
-                src={p.PhotoURL}
-                alt={p.Name}
-                className="w-full h-64 object-cover"
-              />
-
-              <div className="p-5 text-center">
-                <p className="text-rose-600 text-sm font-semibold">
-                  Matri ID: {p.MatriID}
+        {/* Scrolling Row */}
+        <div className="mb-8 overflow-hidden">
+          <div className="flex gap-6 animate-scroll-right">
+            {profiles.slice(0, 6).map((p) => (
+              <div
+                key={p.MatriID}
+                className="flex-shrink-0 w-64 bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 text-center shadow-lg hover:shadow-2xl transition-all duration-300"
+              >
+                <img
+                  src={p.PhotoURL}
+                  alt={p.Name}
+                  className="w-40 h-40 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-md"
+                />
+                <p className="text-rose-600 text-xs font-semibold mb-2">
+                  ID: {p.MatriID}
                 </p>
-                <h3 className="font-bold text-xl">
+                <h3 className="font-bold text-base text-gray-900 mb-1">
                   {p.Name}, {p.Age}
                 </h3>
-                <p className="text-gray-600">{p.Occupation}</p>
+                <p className="text-xs text-gray-600 mb-4">{p.Occupation}</p>
 
                 <Link
                   to="/login"
-                  className="inline-block mt-3 px-4 py-2 bg-rose-500 text-white rounded-full"
+                  className="inline-block px-6 py-2 bg-rose-500 text-white text-xs font-medium rounded-full hover:bg-rose-600 transition-all duration-200"
                 >
                   View Profile
                 </Link>
               </div>
-            </div>
-          ))}
+            ))}
+            {/* Duplicate for infinite scroll effect */}
+            {profiles.slice(0, 6).map((p) => (
+              <div
+                key={`dup1-${p.MatriID}`}
+                className="flex-shrink-0 w-64 bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 text-center shadow-lg"
+              >
+                <img
+                  src={p.PhotoURL}
+                  alt={p.Name}
+                  className="w-40 h-40 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-md"
+                />
+                <p className="text-rose-600 text-xs font-semibold mb-2">
+                  ID: {p.MatriID}
+                </p>
+                <h3 className="font-bold text-base text-gray-900 mb-1">
+                  {p.Name}, {p.Age}
+                </h3>
+                <p className="text-xs text-gray-600 mb-4">{p.Occupation}</p>
+
+                <Link
+                  to="/login"
+                  className="inline-block px-6 py-2 bg-rose-500 text-white text-xs font-medium rounded-full hover:bg-rose-600 transition-all duration-200"
+                >
+                  View Profile
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes scroll-right {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
+        .animate-scroll-right {
+          animation: scroll-right 30s linear infinite;
+        }
+
+        .animate-scroll-right:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
     </section>
   );
 };

@@ -186,22 +186,7 @@ useEffect(() => {
   fetchNakshatra();
 }, [data.moonSignId]);
 
-  // Helper function to format place names (letters, spaces, commas, dots allowed)
-  const formatPlaceName = (value) => value.replace(/[^a-zA-Z\s,.\-']/g, "");
 
-  // const handleChange = (e) => {
-  //   const { name, value, files } = e.target;
-
-  //   if (files) {
-  //     setData({
-  //       ...data,
-  //       horoscopeFile: files[0],
-  //       horoscopeFileName: files[0].name,
-  //     });
-  //   } else {
-  //     setData({ ...data, [name]: value });
-  //   }
-  // };
 
 
   const handleChange = (e) => {
@@ -594,20 +579,7 @@ useEffect(() => {
               ))}
             </select>
 
-            {/* <select
-              name="birthSecond"
-              value={data.birthSecond}
-              onChange={handleChange}
-              className="border p-2 rounded-lg w-1/3 text-center focus:ring-2 focus:ring-yellow-500 outline-none"
-            >
-              <option value="">Sec</option>
-              <option value="00">00</option>
-              {generateNumbers(1, 60).map((num) => (
-                <option key={num} value={String(num).padStart(2, "0")}>
-                  {String(num).padStart(2, "0")}
-                </option>
-              ))}
-            </select> */}
+           
 
             <select
               name="ampm"
