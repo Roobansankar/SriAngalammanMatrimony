@@ -439,7 +439,9 @@ import MemberBioData from "./AdminDashboard/MemberBioData";
 import MemberManagement from "./AdminDashboard/MemberManagement";
 import Settings from "./AdminDashboard/Settings";
 import ChatPage from "./component/ChatPage";
+import PendingVerification from "./component/PendingVerification";
 import PrivateRoute from "./component/PrivateRoute";
+import VerifiedRoute from "./component/VerifiedRoute";
 import AdvancedSearchResults from "./profile/AdbvancedSearchResults";
 import AdvancedSearch from "./profile/AdvancedSearch";
 import BiodataDisplay from "./profile/BiodataDisplay";
@@ -553,6 +555,7 @@ function AppContent({ user, setUser }) {
           <Route path="/success-story" element={<SuccessStories />} />
           <Route path="/login" element={<LoginPage setUser={setUser} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/pending-verification" element={<PendingVerification />} />
 
           <Route path="/register/*" element={<MultiStepForm />} />
 
@@ -569,9 +572,9 @@ function AppContent({ user, setUser }) {
           <Route
             path="/matches/:page?"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <Matchs />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
@@ -722,18 +725,18 @@ function AppContent({ user, setUser }) {
           <Route
             path="/id-search"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <IDSearchPage />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/regular-search"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <LoggedRegularSearch />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
@@ -742,81 +745,81 @@ function AppContent({ user, setUser }) {
           <Route
             path="/regularsearch-results/:page?"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <LoggedSearchResults />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/advanced-search"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <AdvancedSearch />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/advancedsearch-results/:page?"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <AdvancedSearchResults />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/horoscope-search"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <HoroscopeSearch />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/horoscopesearch-results/:page?"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <HoroscopeSearchResults />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/profile/view/:matriid"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <ProfileView />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/other-activities"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <InterestsPanel />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/incoming"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <InterestsPage />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
           <Route
             path="/notifications"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <NotificationsPage />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
 
@@ -833,17 +836,17 @@ function AppContent({ user, setUser }) {
           <Route
             path="/chat"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <ChatPage />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
           <Route
             path="/chat/:partnerId"
             element={
-              <PrivateRoute>
+              <VerifiedRoute>
                 <ChatPage />
-              </PrivateRoute>
+              </VerifiedRoute>
             }
           />
         </Routes>
