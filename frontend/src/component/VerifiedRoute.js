@@ -26,8 +26,11 @@ export default function VerifiedRoute({ children }) {
     console.error("Error parsing user data:", e);
   }
   
-  // If user is not verified (not Active), redirect to pending page
-  if (status !== "Active") {
+  // Valid statuses that indicate a verified/approved user
+  const verifiedStatuses = ["Active", "Paid"];
+  
+  // If user is not verified (not Active or Paid), redirect to pending page
+  if (!verifiedStatuses.includes(status)) {
     return <Navigate to="/pending-verification" replace />;
   }
   
