@@ -74,8 +74,16 @@ const formatTimeForMySQL = (timeValue) => {
  * Sanitize and format field value based on field name
  */
 const sanitizeFieldValue = (key, value) => {
+  // NOT NULL text fields in the database that should never receive null
+  // These fields are TEXT/VARCHAR with NOT NULL constraint
+  const notNullTextFields = ['Raghu', 'Keethu', 'Sevai'];
+  
   // Handle null/undefined/empty
   if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
+    // For NOT NULL text fields, return empty string instead of null
+    if (notNullTextFields.includes(key)) {
+      return '';
+    }
     return null;
   }
   
@@ -90,7 +98,7 @@ const sanitizeFieldValue = (key, value) => {
   }
   
   // Numeric fields - ensure they're proper numbers or null
-  const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters', 'Raghu', 'Keethu', 'Sevai'];
+  const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters'];
   if (numericFields.includes(key)) {
     const num = parseFloat(value);
     return isNaN(num) ? null : value;
