@@ -183,6 +183,34 @@ router.post("/login", async (req, res) => {
   );
 });
 
+// =========================
+// PUBLIC ROUTES (No authentication required)
+// =========================
+
+// GET featured profiles (public - for homepage)
+router.get("/featured-profiles", (req, res) => {
+  const sql = `
+    SELECT f.id, r.MatriID, r.Name, r.Age, r.Occupation,
+      CASE
+        WHEN r.Photo1 IS NOT NULL AND r.Photo1Approve='Yes'
+        THEN CONCAT(?, '/gallery/', r.Photo1)
+        ELSE CONCAT(?, '/gallery/nophoto.jpg')
+      END AS PhotoURL
+    FROM featured_profiles f
+    JOIN register r ON r.MatriID = f.MatriID
+    ORDER BY f.created_at DESC
+  `;
+
+  db.query(sql, [BASE_URL, BASE_URL], (err, rows) => {
+    if (err) return res.status(500).json(err);
+    res.json({ profiles: rows });
+  });
+});
+
+// =========================
+// PROTECTED ROUTES (Authentication required below this line)
+// =========================
+
 // Apply verifyToken to all subsequent routes
 router.use(verifyToken);
 
@@ -1485,25 +1513,25 @@ router.delete("/master/cities/:id", verifyAdmin, (req, res) => {
 // });
 
 
-/* GET */
-router.get("/featured-profiles", (req, res) => {
-  const sql = `
-    SELECT f.id, r.MatriID, r.Name, r.Age, r.Occupation,
-      CASE
-        WHEN r.Photo1 IS NOT NULL AND r.Photo1Approve='Yes'
-        THEN CONCAT(?, '/gallery/', r.Photo1)
-        ELSE CONCAT(?, '/gallery/nophoto.jpg')
-      END AS PhotoURL
-    FROM featured_profiles f
-    JOIN register r ON r.MatriID = f.MatriID
-    ORDER BY f.created_at DESC
-  `;
+/* GET - MOVED TO PUBLIC SECTION (before verifyToken middleware) */
+// router.get("/featured-profiles", (req, res) => {
+//   const sql = `
+//     SELECT f.id, r.MatriID, r.Name, r.Age, r.Occupation,
+//       CASE
+//         WHEN r.Photo1 IS NOT NULL AND r.Photo1Approve='Yes'
+//         THEN CONCAT(?, '/gallery/', r.Photo1)
+//         ELSE CONCAT(?, '/gallery/nophoto.jpg')
+//       END AS PhotoURL
+//     FROM featured_profiles f
+//     JOIN register r ON r.MatriID = f.MatriID
+//     ORDER BY f.created_at DESC
+//   `;
 
-  db.query(sql, [BASE_URL, BASE_URL], (err, rows) => {
-    if (err) return res.status(500).json(err);
-    res.json({ profiles: rows });
-  });
-});
+//   db.query(sql, [BASE_URL, BASE_URL], (err, rows) => {
+//     if (err) return res.status(500).json(err);
+//     res.json({ profiles: rows });
+//   });
+// });
 
 /* POST */
 router.post("/featured-profiles", (req, res) => {
