@@ -250,8 +250,9 @@ import Step5 from "./Step5";
 import Step6 from "./Step6";
 import Step8 from "./Step8";
 import Step9 from "./Step9";
-import Step11Payment from "./Step11Payment";
+
 import Step12 from "./Step12";
+import Step6PlanSelect from "./Step6PlanSelect";
 
 const STORAGE_KEY = "multiStepRegistration_form_v1";
 const TOTAL_STEPS = 7;
@@ -401,10 +402,12 @@ export default function MultiStepForm() {
           />
 
           {/* Step 6 – Payment */}
+        
+
           <Route
             path="step/6"
             element={
-              <Step11Payment
+              <Step6PlanSelect
                 nextStep={nextStepFactory(7)}
                 prevStep={prevStepFactory(5)}
                 formData={formData}

@@ -27,21 +27,30 @@ function makePhotoUrl(photoFilename, photoApprove) {
 
 router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) => {
   try {
-    const {
-      gender,
-      txtSAge,
-      txtEAge,
-      looking,
-      religion,
-      caste,
-      edu,
-      occu,
-      with_photo,
-      star,
-      moonsign,
-      page = 1,
-      viewerId
-    } = req.body;
+const {
+  gender,
+  txtSAge,
+  txtEAge,
+  looking,
+  religion,
+  caste,
+  edu,
+  occu,
+  country,
+  state,
+  district,
+  with_photo,
+  star,
+  moonsign,
+  Sevai,
+  Raghu,
+  Keethu,
+  page = 1,
+  viewerId,
+} = req.body;
+
+
+
 
     const perPage = 10;
     const offset = (page - 1) * perPage;
@@ -112,6 +121,47 @@ router.post(["/search", "/advancesearch", "/horoscopesearch"], async (req, res) 
       whereClauses.push(`LOWER(Moonsign) IN (${placeholders})`);
       params.push(...moonsign.map(v => v.toLowerCase()));
     }
+
+
+    // Sevai
+if (Sevai && Sevai !== "Any") {
+  whereClauses.push("Sevai = ?");
+  params.push(Sevai);
+}
+
+// Raghu
+if (Raghu && Raghu !== "Any") {
+  whereClauses.push("Raghu = ?");
+  params.push(Raghu);
+}
+
+// Keethu
+if (Keethu && Keethu !== "Any") {
+  whereClauses.push("Keethu = ?");
+  params.push(Keethu);
+}
+
+
+
+    if (country && Array.isArray(country) && !country.includes("Any") && country.length > 0) {
+  const placeholders = country.map(() => "LOWER(?)").join(",");
+  whereClauses.push(`LOWER(Country) IN (${placeholders})`);
+  params.push(...country.map(c => c.toLowerCase()));
+}
+
+if (country && Array.isArray(country) && !country.includes("Any") && country.length > 0) {
+  const placeholders = country.map(() => "LOWER(?)").join(",");
+  whereClauses.push(`LOWER(Country) IN (${placeholders})`);
+  params.push(...country.map(c => c.toLowerCase()));
+}
+
+
+if (district && Array.isArray(district) && !district.includes("Any") && district.length > 0) {
+  const placeholders = district.map(() => "LOWER(?)").join(",");
+  whereClauses.push(`LOWER(District) IN (${placeholders})`);
+  params.push(...district.map(d => d.toLowerCase()));
+}
+
 
     // With Photo
     // if (with_photo) {

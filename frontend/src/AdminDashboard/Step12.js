@@ -380,7 +380,7 @@ export default function Step12({ prevStep, formData }) {
       add("lagnam", f.lagnam);
       add("birthHour", f.birthHour);
       add("birthMinute", f.birthMinute);
-      add("birthSecond", f.birthSecond);
+      // add("birthSecond", f.birthSecond);
       add("ampm", f.ampm);
       add("placeOfBirth", f.placeOfBirth);
       add("kuladeivam", f.kuladeivam);

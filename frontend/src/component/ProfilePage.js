@@ -300,6 +300,15 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
 
 
 
+const safeValue = (v) => {
+  if (v === null || v === undefined) return "-";
+  if (typeof v === "string" && v.trim() === "") return "-";
+  if (v === "-" || v === "null" || v === "undefined") return "-";
+  return v;
+};
+
+
+
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display"
@@ -316,14 +325,14 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
               className="w-full min-h-[220px] bg-gradient-to-r from-pink-400 to-purple-500 flex flex-col justify-end"
               data-alt="Profile banner"
             >
-              <button
+              {/* <button
                 className="absolute top-4 right-4 flex items-center justify-center size-8 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors p-2"
                 aria-label="Edit banner"
               >
                 <span className="material-symbols-outlined text-base">
                   edit
                 </span>
-              </button>
+              </button> */}
             </div>
 
             {/* Avatar (overlap) */}
@@ -436,7 +445,6 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
           </section>
 
           {/* Profile Completion */}
-          {/* Profile Completion Card */}
         </div>
 
         {/* About Me */}
@@ -840,28 +848,46 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <InfoRow label="Looking For" value={user.Looking} />
-              <InfoRow label="Age From" value={user.PE_FromAge} />
-              <InfoRow label="Age To" value={user.PE_ToAge} />
-              <InfoRow label="Height From" value={user.PE_from_Height} />
-              <InfoRow label="Height To" value={user.PE_to_Height} />
-              <InfoRow label="Complexion" value={user.PE_Complexion} />
-              <InfoRow label="Mother Tongue" value={user.PE_MotherTongue} />
-              <InfoRow label="Religion" value={user.PE_Religion} />
-              <InfoRow label="Caste" value={user.PE_Caste} />
-              <InfoRow label="Education" value={user.PE_Education} />
-              <InfoRow label="Occupation" value={user.PE_Occupation} />
-              <InfoRow label="Resident Status" value={user.PE_Residentstatus} />
-              <InfoRow label="Country" value={user.PE_Countrylivingin} />
+              <InfoRow label="Looking For" value={safeValue(user.Looking)} />
+              <InfoRow label="Age From" value={safeValue(user.PE_FromAge)} />
+              <InfoRow label="Age To" value={safeValue(user.PE_ToAge)} />
+              <InfoRow
+                label="Height From"
+                value={safeValue(user.PE_from_Height)}
+              />
+              <InfoRow label="Height To" value={safeValue(user.PE_to_Height)} />
+              <InfoRow
+                label="Complexion"
+                value={safeValue(user.PE_Complexion)}
+              />
+              <InfoRow
+                label="Mother Tongue"
+                value={safeValue(user.PE_MotherTongue)}
+              />
+              <InfoRow label="Religion" value={safeValue(user.PE_Religion)} />
+              <InfoRow label="Caste" value={safeValue(user.PE_Caste)} />
+              <InfoRow label="Education" value={safeValue(user.PE_Education)} />
+              <InfoRow
+                label="Occupation"
+                value={safeValue(user.PE_Occupation)}
+              />
+              <InfoRow
+                label="Resident Status"
+                value={safeValue(user.PE_Residentstatus)}
+              />
+              <InfoRow
+                label="Country"
+                value={safeValue(user.PE_Countrylivingin)}
+              />
 
               <div className="col-span-1 sm:col-span-2 lg:col-span-3">
                 <span className="text-sm text-gray-500">
                   Partner Expectations
                 </span>
                 <div className="font-medium">
-                  {user.PartnerExpectations ||
-                    user.PartnerExpectations_new ||
-                    "-"}
+                  {safeValue(
+                    user.PartnerExpectations || user.PartnerExpectations_new
+                  )}
                 </div>
               </div>
             </div>
@@ -889,11 +915,7 @@ const completionPercentage = Math.round((filledCount / totalCount) * 100);
             {/* Image Container */}
             <div className="relative rounded-xl overflow-hidden shadow-2xl">
               {/* Image */}
-              {/* <img
-                src={user?.PhotoURL || "/nophoto.jpg"}
-                alt="Profile Preview"
-                className="w-full max-h-[80vh] object-contain bg-black"
-              /> */}
+
               <img
                 src={getSafeProfilePhoto(user)}
                 alt="Profile Preview"

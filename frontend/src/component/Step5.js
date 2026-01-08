@@ -224,22 +224,24 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Country */}
-        <div>
-          <label className="font-medium">Country</label>
-          <select
-            name="country"
-            value={data.country}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full"
-          >
-            <option value="">Country</option>
-            {options.countries.map((c) => (
-              <option key={c.id} value={c.country}>
-                {c.country}
-              </option>
-            ))}
-          </select>
-        </div>
+       {/* Country – FULL WIDTH */}
+<div className="sm:col-span-2">
+  <label className="font-medium">Country</label>
+  <select
+    name="country"
+    value={data.country}
+    onChange={handleChange}
+    className="border p-3 rounded-lg w-full text-sm"
+  >
+    <option value="">Select Country</option>
+    {options.countries.map((c) => (
+      <option key={c.id} value={c.country} title={c.country}>
+        {c.country}
+      </option>
+    ))}
+  </select>
+</div>
+
 
         {/* State */}
         <div>

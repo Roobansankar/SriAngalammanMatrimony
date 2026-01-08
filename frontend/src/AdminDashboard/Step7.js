@@ -193,9 +193,9 @@ useEffect(() => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Height */}
-        <div>
+        {/* <div>
           <label className="block font-medium text-gray-700 mb-1">Height</label>
-          <select
+            <select
   name="heightText"
   value={data.heightText}
   onChange={handleChange}
@@ -209,7 +209,31 @@ useEffect(() => {
   ))}
 </select>
 
-        </div>
+        </div> */}
+
+        {/* Height (Type or Select) */}
+<div>
+  <label className="block font-medium text-gray-700 mb-1">
+    Height (Type or Select)
+  </label>
+
+  <input
+    type="text"
+    name="heightText"
+    list="heightOptions"
+    value={data.heightText}
+    onChange={handleChange}
+    placeholder="e.g. 5Ft 7 inch"
+    className="border rounded-xl px-4 py-3 w-full"
+  />
+
+  <datalist id="heightOptions">
+    {heightOptions.map((h) => (
+      <option key={h.value} value={h.label} />
+    ))}
+  </datalist>
+</div>
+
 
         {/* Weight */}
         <div>

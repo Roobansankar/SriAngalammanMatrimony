@@ -184,7 +184,7 @@ export default function EditLifestyle() {
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
           {/* HEIGHT */}
-          <div>
+          {/* <div>
             <label className="text-sm font-semibold text-gray-700">
               Height
             </label>
@@ -206,7 +206,37 @@ export default function EditLifestyle() {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
+
+          {/* HEIGHT (Type or Select) */}
+<div>
+  <label className="text-sm font-semibold text-gray-700">
+    Height
+  </label>
+
+  <input
+    type="text"
+    list="heightOptions"
+    className="w-full border p-3 rounded-lg"
+    placeholder="e.g. 5Ft 6 inch, 170 cm, 6Ft"
+    value={form.HeightText}
+    onChange={(e) => {
+      const text = e.target.value;
+      updateField("HeightText", text);
+
+      // auto sync Height code if matched
+      const matched = heightOptions.find((h) => h.label === text);
+      updateField("Height", matched?.value || "");
+    }}
+  />
+
+  <datalist id="heightOptions">
+    {heightOptions.map((h) => (
+      <option key={h.value} value={h.label} />
+    ))}
+  </datalist>
+</div>
+
 
           {/* WEIGHT */}
           <div>

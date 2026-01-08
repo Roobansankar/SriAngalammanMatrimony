@@ -863,10 +863,7 @@ const heightMatch = (minH, maxH, actual) => {
                 value={showDash(user.MatriID || user.matid)}
               />
 
-              <InfoRow
-                label="Email"
-                value={showDash(user.ConfirmEmail || user.email)}
-              />
+             
 
               <InfoRow
                 label="Profile Created By"
@@ -956,7 +953,8 @@ const heightMatch = (minH, maxH, actual) => {
               <InfoRow label="Sevai" value={user.Sevai || "-"} />
               <InfoRow label="Raghu" value={user.Raghu || "-"} />
               <InfoRow label="Keethu" value={user.Keethu || "-"} />
-
+             <InfoRow label="Sutham" value={user.Sutham || "-"} />
+ 
               <InfoRow
                 label="Place of Birth"
                 value={

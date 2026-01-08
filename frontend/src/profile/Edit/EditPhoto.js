@@ -80,11 +80,7 @@ return (
         {/* Image preview */}
         {preview && (
           <div className="flex justify-center">
-            {/* <img
-              src={preview}
-              alt="Preview"
-              className="w-48 h-48 object-cover rounded-xl border shadow-md mt-3"
-            /> */}
+           
 
             <img
               src={preview}

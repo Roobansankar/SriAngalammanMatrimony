@@ -72,16 +72,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Password */}
-        {/* <div className="mb-6">
-          <label className="block text-sm text-gray-300 mb-1">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
-            className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-          />
-        </div> */}
+        
 
         {/* Password */}
         <div className="mb-6">

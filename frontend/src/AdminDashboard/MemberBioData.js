@@ -579,16 +579,22 @@ export default function MemberBioData() {
             user.FamilyDetails || ""
           }`,
 
+        
           siblings_details: [
-            user.noofbrothers > 0
-              ? `${user.noofbrothers} Brothers (${user.nbm || 0} Married)`
-              : null,
-            user.noofsisters > 0
-              ? `${user.noofsisters} Sisters (${user.nsm || 0} Married)`
-              : null,
-          ]
-            .filter(Boolean)
-            .join(", "),
+  user.noofbrothers > 0
+    ? `${user.noofbrothers} Brothers (${
+        user.noyubrothers > 0 ? `${user.noyubrothers} Married` : "No Married"
+      })`
+    : null,
+
+  user.noofsisters > 0
+    ? `${user.noofsisters} Sisters (${
+        user.noyusisters > 0 ? `${user.noyusisters} Married` : "No Married"
+      })`
+    : null,
+]
+  .filter(Boolean)
+  .join(", "),
 
           star: convertToTamil(user.Star || "", nakshatraPaathamMap),
           rasi: convertToTamil(user.Moonsign || "", rasiMap),
@@ -1220,7 +1226,7 @@ const downloadAsPDF = async () => {
                           </div>
                           பிறந்த ஊர்:
                           <div
-                            className="display-placeholder"
+                            className="display-placeholder "
                             style={{ minWidth: "200px" }}
                           >
                             {isEditing ? (

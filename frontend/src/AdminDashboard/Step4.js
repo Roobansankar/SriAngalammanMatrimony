@@ -58,7 +58,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
     lagnam: formData.lagnam || "",
     birthHour: formData.birthHour || "",
     birthMinute: formData.birthMinute || "",
-    birthSecond: formData.birthSecond || "",
+    // birthSecond: formData.birthSecond || "",
     ampm: formData.ampm || "AM",
     placeOfBirth: formData.placeOfBirth || "",
     countryOfBirth: formData.countryOfBirth || "",
@@ -103,7 +103,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
         lagnam: formData.lagnam || prev.lagnam,
         birthHour: formData.birthHour || prev.birthHour,
         birthMinute: formData.birthMinute || prev.birthMinute,
-        birthSecond: formData.birthSecond || prev.birthSecond,
+        // birthSecond: formData.birthSecond || prev.birthSecond,
         ampm: formData.ampm || prev.ampm,
         kuladeivam: formData.kuladeivam || prev.kuladeivam,
         kootam: formData.kootam || prev.kootam,
@@ -594,7 +594,7 @@ useEffect(() => {
               ))}
             </select>
 
-            <select
+            {/* <select
               name="birthSecond"
               value={data.birthSecond}
               onChange={handleChange}
@@ -607,7 +607,7 @@ useEffect(() => {
                   {String(num).padStart(2, "0")}
                 </option>
               ))}
-            </select>
+            </select> */}
 
             <select
               name="ampm"
@@ -764,14 +764,8 @@ useEffect(() => {
 
       {/* Place of Birth */}
       <div className="col-span-2">
-        {/* 
-        <input
-          name="placeOfBirth"
-          value={data.placeOfBirth}
-          onChange={handleChange}
-          className="border p-2 rounded-lg w-full"
-        /> */}
-<label className="block text-sm font-medium text-gray-700 mb-1">
+        
+         <label className="block text-sm font-medium text-gray-700 mb-1">
           Place of Birth
         </label>
         <input
@@ -801,13 +795,7 @@ useEffect(() => {
 
       {/* Kuladeivam */}
       <div className="col-span-2 mt-4">
-        {/* 
-        <input
-          name="kuladeivam"
-          value={data.kuladeivam}
-          onChange={handleChange}
-          className="border p-2 rounded-lg w-full"
-        /> */}
+       
 
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Kuladeivam

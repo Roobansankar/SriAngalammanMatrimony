@@ -71,36 +71,31 @@ export default function HoroscopeSearchResults() {
     fetchResults();
   }, [state, page]);
 
-  // Pagination
+ 
+
+
   const getPagination = () => {
-    const pages = [];
-    const total = totalPages;
-    const current = page;
+  const pages = [];
+  const total = totalPages;
+  const current = page;
+  const visible = 4; // 👈 ALWAYS 4 buttons
 
-    if (total <= 7) {
-      // show all pages when small
-      for (let i = 1; i <= total; i++) pages.push(i);
-      return pages;
-    }
+  let start = Math.max(1, current);
+  let end = start + visible - 1;
 
-    pages.push(1); // always show first
+  // If exceeding total pages, shift left
+  if (end > total) {
+    end = total;
+    start = Math.max(1, end - visible + 1);
+  }
 
-    if (current > 3) pages.push("...");
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
 
-    // middle pages
-    const start = Math.max(2, current - 1);
-    const end = Math.min(total - 1, current + 1);
+  return pages;
+};
 
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    if (current < total - 2) pages.push("...");
-
-    pages.push(total); // always show last
-
-    return pages;
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fee2e2] via-[#fca5a5] to-[#ef4444] dark:bg-slate-950 font-display">

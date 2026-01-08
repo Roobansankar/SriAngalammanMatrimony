@@ -388,7 +388,7 @@ router.post(
         DOBday: toTrimOrNull(b.dobDay),
         DOBmonth: toTrimOrNull(b.dobMonth),
         DOByear: toTrimOrNull(b.dobYear),
-        TOB: buildTOB(b.birthHour, b.birthMinute, b.birthSecond, b.ampm),
+        TOB: buildTOB(b.birthHour, b.birthMinute, b.ampm),
         POB: toTrimOrNull(b.placeOfBirth),
         Maritalstatus: toCSV(b.maritalStatus) || "Unmarried",
 
