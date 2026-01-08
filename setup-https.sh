@@ -11,6 +11,21 @@ EMAIL="sriangalammanspsk2020@gmail.com"  # Change to your email
 
 echo "🔐 Setting up HTTPS for $DOMAIN"
 
+# Stop any running containers first
+echo "🛑 Stopping any running containers..."
+docker compose -f docker-compose.prod.yml down 2>/dev/null || true
+docker compose down 2>/dev/null || true
+docker stop temp-nginx 2>/dev/null || true
+docker rm temp-nginx 2>/dev/null || true
+
+# Also stop any standalone nginx
+docker stop $(docker ps -q --filter "ancestor=nginx:stable-alpine") 2>/dev/null || true
+
+# Kill any process using port 80
+echo "🔧 Freeing up port 80..."
+sudo fuser -k 80/tcp 2>/dev/null || true
+sleep 2
+
 # Create directories for Certbot
 echo "📁 Creating certificate directories..."
 mkdir -p ./certbot/conf
@@ -18,88 +33,86 @@ mkdir -p ./certbot/www
 
 # Check if certificates already exist
 if [ -d "./certbot/conf/live/$DOMAIN" ]; then
-    echo "✅ Certificates already exist. Skipping initial certificate request."
-else
-    echo "📜 Requesting initial SSL certificate..."
+    echo "✅ Certificates already exist!"
+    echo "🚀 Starting production services with HTTPS..."
+    docker compose -f docker-compose.prod.yml up -d --build
     
-    # First, we need a temporary nginx config without SSL
-    echo "🔧 Creating temporary nginx config for certificate validation..."
-    
-    cat > ./frontend/nginx.temp.conf << 'TEMPCONF'
-server {
-    listen 80;
-    server_name sriangalammanmatrimony.com www.sriangalammanmatrimony.com;
-    
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-    
-    location / {
-        root /usr/share/nginx/html;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-    }
-    
-    location /api {
-        proxy_pass http://backend:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
+    echo ""
+    echo "✅ HTTPS Setup Complete!"
+    echo ""
+    echo "🌐 Your site is now available at:"
+    echo "   https://$DOMAIN"
+    echo "   https://www.$DOMAIN"
+    exit 0
+fi
+
+echo "📜 Requesting initial SSL certificate..."
+
+# Create a minimal nginx config for certificate validation
+echo "🔧 Creating temporary nginx config..."
+mkdir -p ./certbot-temp
+
+cat > ./certbot-temp/nginx.conf << 'TEMPCONF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen 80;
+        server_name sriangalammanmatrimony.com www.sriangalammanmatrimony.com;
+        
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+        }
+        
+        location / {
+            return 200 'Certificate validation server';
+            add_header Content-Type text/plain;
+        }
     }
 }
 TEMPCONF
 
-    # Build and start with temporary config
-    echo "🏗️ Building frontend with temporary config..."
-    docker compose -f docker-compose.prod.yml build frontend
-    
-    # Create a temporary Dockerfile that uses temp config
-    cp ./frontend/Dockerfile.prod ./frontend/Dockerfile.temp
-    sed -i 's/nginx.prod.conf/nginx.temp.conf/g' ./frontend/Dockerfile.temp
-    
-    # Start services
-    echo "🚀 Starting services for certificate validation..."
-    docker compose -f docker-compose.prod.yml up -d db backend
-    
-    # Wait for backend to be ready
-    sleep 10
-    
-    # Run nginx with temp config
-    docker run -d --name temp-nginx \
-        --network sriangalammanmatrimony_matrimony-network \
-        -p 80:80 \
-        -v $(pwd)/certbot/www:/var/www/certbot \
-        -v $(pwd)/frontend/nginx.temp.conf:/etc/nginx/conf.d/default.conf \
-        nginx:stable-alpine
-    
-    # Wait for nginx
-    sleep 5
-    
-    # Request certificate
-    echo "📜 Requesting SSL certificate from Let's Encrypt..."
-    docker run --rm \
-        -v $(pwd)/certbot/conf:/etc/letsencrypt \
-        -v $(pwd)/certbot/www:/var/www/certbot \
-        certbot/certbot certonly \
-        --webroot \
-        --webroot-path=/var/www/certbot \
-        --email $EMAIL \
-        --agree-tos \
-        --no-eff-email \
-        -d $DOMAIN \
-        -d www.$DOMAIN
-    
-    # Stop temporary nginx
-    docker stop temp-nginx && docker rm temp-nginx
-    
-    # Clean up temp files
-    rm -f ./frontend/nginx.temp.conf ./frontend/Dockerfile.temp
-    
-    echo "✅ SSL certificate obtained successfully!"
-fi
+# Start temporary nginx for certificate validation
+echo "🚀 Starting temporary nginx for certificate validation..."
+docker run -d --name temp-nginx \
+    -p 80:80 \
+    -v $(pwd)/certbot/www:/var/www/certbot:ro \
+    -v $(pwd)/certbot-temp/nginx.conf:/etc/nginx/nginx.conf:ro \
+    nginx:stable-alpine
 
+# Wait for nginx to start
+sleep 5
+
+# Test if nginx is responding
+echo "🔍 Testing nginx..."
+curl -s http://localhost/ > /dev/null && echo "✅ Nginx is running" || echo "⚠️ Nginx may not be responding"
+
+# Request certificate
+echo "📜 Requesting SSL certificate from Let's Encrypt..."
+docker run --rm \
+    -v $(pwd)/certbot/conf:/etc/letsencrypt \
+    -v $(pwd)/certbot/www:/var/www/certbot \
+    certbot/certbot certonly \
+    --webroot \
+    --webroot-path=/var/www/certbot \
+    --email $EMAIL \
+    --agree-tos \
+    --no-eff-email \
+    -d $DOMAIN \
+    -d www.$DOMAIN
+
+# Stop temporary nginx
+echo "🛑 Stopping temporary nginx..."
+docker stop temp-nginx && docker rm temp-nginx
+
+# Clean up temp files
+rm -rf ./certbot-temp
+
+echo "✅ SSL certificate obtained successfully!"
 echo ""
 echo "🚀 Starting production services with HTTPS..."
-docker compose -f docker-compose.prod.yml down 2>/dev/null || true
 docker compose -f docker-compose.prod.yml up -d --build
 
 echo ""
