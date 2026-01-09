@@ -207,6 +207,33 @@ router.get("/featured-profiles", (req, res) => {
   });
 });
 
+// POST new contact message (public - for contact form)
+router.post("/contact-message", async (req, res) => {
+  try {
+    const { firstName, lastName, email, subject, message } = req.body;
+    
+    if (!firstName || !email || !message) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "First name, email and message are required" 
+      });
+    }
+
+    const conn = db.promise();
+    await conn.query(
+      `INSERT INTO contact_messages (first_name, last_name, email, subject, message) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [firstName, lastName || '', email, subject || '', message]
+    );
+
+    console.log(`📩 New contact message from: ${email}`);
+    res.json({ success: true, message: "Message sent successfully" });
+  } catch (err) {
+    console.error("Error saving contact message:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 // =========================
 // PROTECTED ROUTES (Authentication required below this line)
 // =========================
@@ -1841,32 +1868,7 @@ router.get("/contact-messages", verifyToken, async (req, res) => {
   }
 });
 
-// POST new contact message (public - no auth required)
-router.post("/contact-message", async (req, res) => {
-  try {
-    const { firstName, lastName, email, subject, message } = req.body;
-    
-    if (!firstName || !email || !message) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "First name, email and message are required" 
-      });
-    }
-
-    const conn = db.promise();
-    await conn.query(
-      `INSERT INTO contact_messages (first_name, last_name, email, subject, message) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [firstName, lastName || '', email, subject || '', message]
-    );
-
-    console.log(`📩 New contact message from: ${email}`);
-    res.json({ success: true, message: "Message sent successfully" });
-  } catch (err) {
-    console.error("Error saving contact message:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
+// POST contact-message is now in PUBLIC ROUTES section (before verifyToken)
 
 // PUT resolve/rectify a contact message
 router.put("/contact-message/:id/resolve", verifyToken, async (req, res) => {
