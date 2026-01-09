@@ -5,7 +5,6 @@ import logo from "./logo.png";
 import noPhoto from "./nophoto.jpg";
 
 
-
 export default function Header({ user, setUser }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);

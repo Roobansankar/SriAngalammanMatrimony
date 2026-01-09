@@ -195,33 +195,54 @@ const heightMatch = (minH, maxH, actual) => {
 
 
 
-  const getPagination = () => {
-    const pages = [];
-    const total = totalPages;
-    const current = page;
+  // const getPagination = () => {
+  //   const pages = [];
+  //   const total = totalPages;
+  //   const current = page;
 
-    if (total <= 7) {
-      for (let i = 1; i <= total; i++) pages.push(i);
-      return pages;
-    }
+  //   if (total <= 7) {
+  //     for (let i = 1; i <= total; i++) pages.push(i);
+  //     return pages;
+  //   }
 
-    pages.push(1);
+  //   pages.push(1);
 
-    if (current > 3) pages.push("...");
+  //   if (current > 3) pages.push("...");
 
-    const start = Math.max(2, current - 1);
-    const end = Math.min(total - 1, current + 1);
+  //   const start = Math.max(2, current - 1);
+  //   const end = Math.min(total - 1, current + 1);
 
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
+  //   for (let i = start; i <= end; i++) {
+  //     pages.push(i);
+  //   }
 
-    if (current < total - 2) pages.push("...");
+  //   if (current < total - 2) pages.push("...");
 
-    pages.push(total);
+  //   pages.push(total);
 
-    return pages;
-  };
+  //   return pages;
+  // };
+const getPagination = () => {
+  const pages = [];
+  const total = totalPages;
+  const current = page;
+  const visible = 4; // ✅ ALWAYS 4 buttons
+
+  let start = Math.max(1, current);
+  let end = start + visible - 1;
+
+  // Shift left if exceeding total pages
+  if (end > total) {
+    end = total;
+    start = Math.max(1, end - visible + 1);
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  return pages;
+};
 
 
   /* ---------- RENDER ---------- */
