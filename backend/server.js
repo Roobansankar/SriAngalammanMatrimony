@@ -18,7 +18,7 @@ import paymentRoutes from "./routes/payment/index.js";
 import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
-
+import contactRoutes from "./routes/contact.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -129,6 +129,7 @@ app.get("/api/db-debug", (req, res) => {
 app.use("/api/register", registerRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", idSearchRoutes);
