@@ -74,6 +74,7 @@ import ProfileView from "./profile/ProfileView";
 import LoggedRegularSearch from "./profile/RegularSearch";
 import AddUsers from "./AdminDashboard/AddUsers";
 import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
+import ContactMessages from "./AdminDashboard/ContactMessages";
 import ManageStaff from "./AdminDashboard/ManageStaff";
 import NewUsers from "./AdminDashboard/NewUsers";
 import PlanManagement from "./AdminDashboard/PlanManagement";
@@ -141,6 +142,7 @@ function AppContent({ user, setUser }) {
             <Route path="manage-staff" element={<ManageStaff />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />
+            <Route path="contact-messages" element={<ContactMessages />} />
           </Route>
 
           {/* Public routes */}

@@ -335,6 +335,7 @@ import {
     LayoutDashboard,
     LogOut,
     Menu,
+    MessageSquare,
     Shield,
     UserCheck,
     UserCircle,
@@ -358,11 +359,8 @@ const navLinks = [
   { name: "User Passwords", path: "/admin/user-passwords", icon: KeyRound, adminOnly: true },
   { name: "Manage Staff", path: "/admin/manage-staff", icon: Shield, adminOnly: true },
   { name: "Add Religion/Caste", path: "/admin/master-data", icon: BookOpen },
-  {
-    name: "Add City/State/Country",
-    path: "/admin/location-data",
-    icon: Globe,
-  },
+  { name: "Add City/State/Country", path: "/admin/location-data", icon: Globe },
+  { name: "Contact Messages", path: "/admin/contact-messages", icon: MessageSquare },
 ];
 
 export default function DashboardLayout() {

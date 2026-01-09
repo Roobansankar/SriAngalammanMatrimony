@@ -1,0 +1,92 @@
+version: "3.8"
+
+# =============================================================================
+# PRODUCTION DOCKER COMPOSE WITH HTTPS
+# Usage: docker compose -f docker-compose.prod.yml up -d
+# =============================================================================
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: matrimony-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-8220}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-sriang}
+      MYSQL_USER: ${MYSQL_USER:-matrimony}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-matrimony}
+    volumes:
+      - ${MYSQL_DATA_DIR:-/var/lib/matrimony/mysql}:/var/lib/mysql
+    networks:
+      - matrimony-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: matrimony-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_USER=${MYSQL_USER:-matrimony}
+      - DB_PASS=${MYSQL_PASSWORD:-matrimony}
+      - DB_NAME=${MYSQL_DATABASE:-sriang}
+      - BASE_URL=https://sriangalammanmatrimony.com
+      - JWT_SECRET=${JWT_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/gallery:/app/gallery
+      - ./backend/kundli:/app/kundli
+      - ./backend/uploads:/app/uploads
+    networks:
+      - matrimony-network
+
+  # Frontend with HTTPS
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: matrimony-frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - backend
+    networks:
+      - matrimony-network
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  # Certbot for SSL certificate renewal
+  certbot:
+    image: certbot/certbot
+    container_name: matrimony-certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+networks:
+  matrimony-network:
+    driver: bridge
