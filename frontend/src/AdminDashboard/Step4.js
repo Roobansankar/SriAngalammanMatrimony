@@ -28,28 +28,13 @@ export default function Step4({ nextStep, prevStep, formData }) {
     "மாந்",
   ];
 
-
-
-  const thesaiList = [
-    "சூரி",
-    "சந்",
-    "செவ்",
-    "புத",
-    "குரு",
-    "சுக்",
-    "சனி",
-    "ராகு",
-    "கேது",
-  ];
-
   const [data, setData] = useState({
-    moonSignId: formData.moonSignId || "",
     moonSign: formData.moonSign || "",
     star: formData.star || "",
     gothra: formData.gothra || "",
     manglik: formData.manglik || "",
-    sutham: formData.sutham || "",
-
+    shani: formData.shani || "",
+    placeOfShani: formData.placeOfShani || "",
     horoscopeMatch: formData.horoscopeMatch || "",
     parigarasevai: formData.parigarasevai || "",
     sevai: formData.sevai || "",
@@ -58,20 +43,14 @@ export default function Step4({ nextStep, prevStep, formData }) {
     lagnam: formData.lagnam || "",
     birthHour: formData.birthHour || "",
     birthMinute: formData.birthMinute || "",
-    // birthSecond: formData.birthSecond || "",
+    birthSecond: formData.birthSecond || "",
     ampm: formData.ampm || "AM",
     placeOfBirth: formData.placeOfBirth || "",
     countryOfBirth: formData.countryOfBirth || "",
     kuladeivam: formData.kuladeivam || "",
-    kootam: formData.kootam || "",
-    // thesaiirupu: formData.thesaiirupu || "",
+    thesaiirupu: formData.thesaiirupu || "",
     horoscopeFile: null,
     horoscopeFileName: formData.horoscopeFileName || "",
-
-    thesaiPlanet: formData.thesaiPlanet || "",
-    thesaiYears: formData.thesaiYears || "",
-    thesaiMonths: formData.thesaiMonths || "",
-    thesaiDays: formData.thesaiDays || "",
 
     // Rasi 12 cards
     ...Object.fromEntries(
@@ -103,11 +82,10 @@ export default function Step4({ nextStep, prevStep, formData }) {
         lagnam: formData.lagnam || prev.lagnam,
         birthHour: formData.birthHour || prev.birthHour,
         birthMinute: formData.birthMinute || prev.birthMinute,
-        // birthSecond: formData.birthSecond || prev.birthSecond,
+        birthSecond: formData.birthSecond || prev.birthSecond,
         ampm: formData.ampm || prev.ampm,
         kuladeivam: formData.kuladeivam || prev.kuladeivam,
-        kootam: formData.kootam || prev.kootam,
-        // thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
+        thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
         placeOfBirth: formData.placeOfBirth || prev.placeOfBirth,
         countryOfBirth: formData.countryOfBirth || prev.countryOfBirth,
         ...Object.fromEntries(
@@ -126,86 +104,75 @@ export default function Step4({ nextStep, prevStep, formData }) {
     }
   }, [formData]);
 
-   useEffect(() => {
-     async function fetchOptions() {
-       try {
-         const [moonRes, gothraRes, manglikRes, shaniRes, matchRes] =
-           await Promise.all([
-             fetch(`${API_BASE}moon-sign`),
-             fetch(`${API_BASE}gothra`),
-             fetch(`${API_BASE}manglik`),
-             fetch(`${API_BASE}shani`),
-             fetch(`${API_BASE}horoscope-match`),
-           ]);
+  useEffect(() => {
+    async function fetchOptions() {
+      try {
+        const [moonRes, nakshRes, gothraRes, manglikRes, shaniRes, matchRes] =
+          await Promise.all([
+            fetch(`${API_BASE}moon-sign`),
+            fetch(`${API_BASE}nakshatra`),
+            fetch(`${API_BASE}gothra`),
+            fetch(`${API_BASE}manglik`),
+            fetch(`${API_BASE}shani`),
+            fetch(`${API_BASE}horoscope-match`),
+          ]);
 
-         const [moonData, gothraData, manglikData, shaniData, matchData] =
-           await Promise.all([
-             moonRes.json(),
-             gothraRes.json(),
-             manglikRes.json(),
-             shaniRes.json(),
-             matchRes.json(),
-           ]);
+        const [
+          moonData,
+          nakshData,
+          gothraData,
+          manglikData,
+          shaniData,
+          matchData,
+        ] = await Promise.all([
+          moonRes.json(),
+          nakshRes.json(),
+          gothraRes.json(),
+          manglikRes.json(),
+          shaniRes.json(),
+          matchRes.json(),
+        ]);
 
-         setOptions({
-           moonSigns: moonData, // [{ID, Moon_Sign}]
-           nakshatras: [],
-           gothras: gothraData.map((g) => g.Gothra),
-           mangliks: manglikData.map((m) => m.type),
-           shanis: shaniData.map((s) => s.type),
-           horoscopeMatches: matchData.map((h) => h.type),
-         });
-       } catch (err) {
-         console.error("Failed to fetch options:", err);
-       }
-     }
-
-     fetchOptions();
-   }, []);
-
-useEffect(() => {
-  if (!data.moonSignId) {
-    setOptions((prev) => ({ ...prev, nakshatras: [] }));
-    return;
-  }
-
-  async function fetchNakshatra() {
-    try {
-      const res = await fetch(`${API_BASE}nakshatra/${data.moonSignId}`);
-      const result = await res.json();
-
-      setOptions((prev) => ({
-        ...prev,
-        nakshatras: result.map((n) => n.nakshatra_paatham),
-      }));
-    } catch (err) {
-      console.error("Failed to fetch nakshatra:", err);
+        setOptions({
+          moonSigns: moonData.map((m) => m.Moon_Sign),
+          nakshatras: nakshData.map((n) => n.Nakshatra),
+          gothras: gothraData.map((g) => g.Gothra),
+          mangliks: manglikData.map((m) => m.type),
+          shanis: shaniData.map((s) => s.type),
+          horoscopeMatches: matchData.map((h) => h.type),
+        });
+      } catch (err) {
+        console.error("Failed to fetch options:", err);
+      }
     }
-  }
+    fetchOptions();
+  }, []);
 
-  fetchNakshatra();
-}, [data.moonSignId]);
-
-
-
+  // Helper function to format place names (letters, spaces, commas, dots allowed)
+  const formatPlaceName = (value) => value.replace(/[^a-zA-Z\s,.\-']/g, "");
 
   const handleChange = (e) => {
-  const { name, value, files } = e.target;
-
-  if (files) {
-    setData({
-      ...data,
-      horoscopeFile: files[0],
-      horoscopeFileName: files[0].name,
-    });
-  } else {
-    // FORCE ENGLISH (remove non-latin characters)
-    const englishOnly = value.replace(/[^\x00-\x7F]/g, "");
-    setData({ ...data, [name]: englishOnly });
-  }
-};
-
-
+    const { name, value, files } = e.target;
+    if (files) {
+      setData({
+        ...data,
+        horoscopeFile: files[0],
+        horoscopeFileName: files[0].name,
+        // [name]: files[0],
+      });
+    } else {
+      // Format place name fields
+      if (
+        name === "placeOfShani" ||
+        name === "placeOfBirth" ||
+        name === "countryOfBirth"
+      ) {
+        setData({ ...data, [name]: formatPlaceName(value) });
+      } else {
+        setData({ ...data, [name]: value });
+      }
+    }
+  };
 
   const generateNumbers = (s, e) =>
     Array.from({ length: e - s + 1 }, (_, i) => i + s);
@@ -213,9 +180,9 @@ useEffect(() => {
   const handleNext = () => {
     nextStep({
       ...data,
+      lagnam: data.lagnam,
       kuladeivam: data.kuladeivam,
-      kootam: data.kootam,
-      // thesaiirupu: data.thesaiirupu,
+      thesaiirupu: data.thesaiirupu,
       ...Object.fromEntries(
         [...Array(12)].map((_, i) => [`g${i + 1}`, data[`g${i + 1}`]])
       ),
@@ -223,8 +190,6 @@ useEffect(() => {
         [...Array(12)].map((_, i) => [`a${i + 1}`, data[`a${i + 1}`]])
       ),
       horoscopeFileName: data.horoscopeFileName,
-      thesaiirupu: `${data.thesaiPlanet}-${data.thesaiYears}-${data.thesaiMonths}-${data.thesaiDays}`,
-      sutham: data.sutham,
     });
     
   };
@@ -241,50 +206,29 @@ useEffect(() => {
       .map((_, i) => ({ key: `a${i + 1}`, box: data[`a${i + 1}`] }))
       .find((b) => b.box.includes("லக்"))?.key || null;
 
-
-      const clockwiseGrid = [
-        [1, 2, 3, 4],
-        [12, null, null, 5],
-        [11, null, null, 6],
-        [10, 9, 8, 7],
-      ];
-
   return (
     <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 mx-auto border border-yellow-200 mt-12">
       <div className="flex items-center justify-center gap-2 mb-6">
         <Stars className="w-8 h-8 text-yellow-600" />
         <h3 className="text-2xl font-bold text-yellow-700">
-          Horoscope (ஜாதகம்) Details
+          Step 4: Horoscope (ஜாதகம்) Details
         </h3>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4 gap-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Moon Sign (Rasi)
           </label>
-
           <select
-            name="moonSignId"
-            value={data.moonSignId}
-            // className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-            className="border px-3 py-2.5 rounded-lg w-full
-           focus:ring-2 focus:ring-yellow-500 outline-none"
-            onChange={(e) => {
-              const selected = options.moonSigns.find(
-                (m) => m.ID == e.target.value
-              );
-
-              setData({
-                ...data,
-                moonSignId: selected.ID,
-                moonSign: selected.Moon_Sign,
-              });
-            }}
+            name="moonSign"
+            value={data.moonSign}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
           >
             <option value="">Select Moon Sign</option>
             {options.moonSigns.map((m) => (
-              <option key={m.ID} value={m.ID}>
-                {m.Moon_Sign}
+              <option key={m} value={m}>
+                {m}
               </option>
             ))}
           </select>
@@ -299,34 +243,12 @@ useEffect(() => {
             name="star"
             value={data.star}
             onChange={handleChange}
-            // className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-            className="border px-3 py-2.5 rounded-lg w-full
-           focus:ring-2 focus:ring-yellow-500 outline-none"
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
           >
-            <option value="">First select Moon sign</option>
+            <option value="">Select Star</option>
             {options.nakshatras.map((s) => (
               <option key={s} value={s}>
                 {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Lagnam */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Lagnam
-          </label>
-          <select
-            name="lagnam"
-            value={data.lagnam}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          >
-            <option value="">Select Lagnam</option>
-            {options.moonSigns.map((m) => (
-              <option key={m.ID} value={m.Moon_Sign}>
-                {m.Moon_Sign}
               </option>
             ))}
           </select>
@@ -337,21 +259,19 @@ useEffect(() => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Gothra
           </label>
-
-          <input
-            list="gothra-list"
+          <select
             name="gothra"
             value={data.gothra}
             onChange={handleChange}
-            placeholder="Select or type Gothra"
             className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          />
-
-          <datalist id="gothra-list">
+          >
+            <option value="">Select Gothra</option>
             {options.gothras.map((g) => (
-              <option key={g} value={g} />
+              <option key={g} value={g}>
+                {g}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
 
         {/* Manglik */}
@@ -372,6 +292,39 @@ useEffect(() => {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Shani */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Shani
+          </label>
+          <select
+            name="shani"
+            value={data.shani}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+          >
+            <option value="">Select Shani Type</option>
+            {options.shanis.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Place of Shani */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Place of Shani
+          </label>
+          <input
+            name="placeOfShani"
+            value={data.placeOfShani}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+          />
         </div>
 
         {/* Horoscope Match */}
@@ -406,7 +359,7 @@ useEffect(() => {
             className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
           >
             <option value="">Select Parigarasevai</option>
-            {generateNumbers(0, 12).map((num) => (
+            {generateNumbers(2, 12).map((num) => (
               <option key={num} value={num}>
                 {num}
               </option>
@@ -426,7 +379,7 @@ useEffect(() => {
             className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
           >
             <option value="">Select Sevai</option>
-            {generateNumbers(0, 12).map((num) => (
+            {generateNumbers(2, 12).map((num) => (
               <option key={num} value={num}>
                 {num}
               </option>
@@ -474,74 +427,37 @@ useEffect(() => {
           </select>
         </div>
 
-        {/* Thesai Irupu */}
+        {/* Lagnam */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Lagnam
+          </label>
+          <select
+            name="lagnam"
+            value={data.lagnam}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
+          >
+            <option value="">Select Lagnam</option>
+            {options.moonSigns.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Thesai Irupu */}
         <div className="col-span-2 mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Thesai Irupu (திசைஇருப்பு)
           </label>
-
-          <div className="flex gap-2">
-            {/* Planet */}
-            <select
-              name="thesaiPlanet"
-              value={data.thesaiPlanet}
-              onChange={handleChange}
-              className="border p-2 rounded-lg w-1/4 text-sm"
-            >
-              <option value=""> Thesai Irupu (திசைஇருப்பு)</option>
-              {thesaiList.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-
-            {/* Years */}
-            <select
-              name="thesaiYears"
-              value={data.thesaiYears}
-              onChange={handleChange}
-              className="border p-2 rounded-lg w-1/4 text-sm"
-            >
-              <option value="">Years</option>
-              {generateNumbers(0, 30).map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </select>
-
-            {/* Months */}
-            <select
-              name="thesaiMonths"
-              value={data.thesaiMonths}
-              onChange={handleChange}
-              className="border p-2 rounded-lg w-1/4 text-sm"
-            >
-              <option value="">Months</option>
-              {generateNumbers(0, 12).map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-
-            {/* Days */}
-            <select
-              name="thesaiDays"
-              value={data.thesaiDays}
-              onChange={handleChange}
-              className="border p-2 rounded-lg w-1/4 text-sm"
-            >
-              <option value="">Days</option>
-              {generateNumbers(0, 30).map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
+          <input
+            name="thesaiirupu"
+            value={data.thesaiirupu}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          />
         </div>
 
         {/* Birth Time */}
@@ -579,7 +495,20 @@ useEffect(() => {
               ))}
             </select>
 
-           
+            <select
+              name="birthSecond"
+              value={data.birthSecond}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-1/3 text-center focus:ring-2 focus:ring-yellow-500 outline-none"
+            >
+              <option value="">Sec</option>
+              <option value="00">00</option>
+              {generateNumbers(1, 60).map((num) => (
+                <option key={num} value={String(num).padStart(2, "0")}>
+                  {String(num).padStart(2, "0")}
+                </option>
+              ))}
+            </select>
 
             <select
               name="ampm"
@@ -592,29 +521,10 @@ useEffect(() => {
             </select>
           </div>
         </div>
-
-        {/* Sutham */}
-        <div className="col-span-2 mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Sutham (சுத்தம்)
-          </label>
-
-          <select
-            name="sutham"
-            value={data.sutham}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"
-          >
-            <option value="">Select Sutham</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-            <option value="Others">Others</option>
-          </select>
-        </div>
       </div>
       {/* ---------------- Rasi 12 Cards ---------------- */}
-      <h2 className="text-lg font-bold text-yellow-700 mb-2 col-span-2 mt-5">
-        12 Rasi Boxes (ராகு) Clockwise
+      <h2 className="text-lg font-bold text-yellow-700 mb-2 col-span-2">
+        12 Rasi Boxes (ராகு)
       </h2>
 
       <div className="grid grid-cols-3 gap-3 col-span-2 mb-6">
@@ -674,7 +584,7 @@ useEffect(() => {
 
       {/* ---------------- Navamsam 12 Cards ---------------- */}
       <h2 className="text-lg font-bold text-purple-700 mb-2 col-span-2">
-        12 Navamsam Boxes (நவாம்சம்) Clockwise
+        12 Navamsam Boxes (நவாம்சம்)
       </h2>
 
       <div className="grid grid-cols-3 gap-3 col-span-2 mb-6">
@@ -736,18 +646,13 @@ useEffect(() => {
 
       {/* Place of Birth */}
       <div className="col-span-2">
-        
-         <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Place of Birth
         </label>
         <input
           name="placeOfBirth"
           value={data.placeOfBirth}
           onChange={handleChange}
-          lang="en"
-          inputMode="latin"
-          autoComplete="off"
-          spellCheck={false}
           className="border p-2 rounded-lg w-full"
         />
       </div>
@@ -767,34 +672,13 @@ useEffect(() => {
 
       {/* Kuladeivam */}
       <div className="col-span-2 mt-4">
-       
-
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Kuladeivam
         </label>
-
         <input
           name="kuladeivam"
           value={data.kuladeivam}
           onChange={handleChange}
-          lang="en"
-          inputMode="latin"
-          autoComplete="off"
-          spellCheck={false}
-          className="border p-2 rounded-lg w-full"
-        />
-      </div>
-
-      {/* Kootam */}
-      <div className="col-span-2 mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Kootam
-        </label>
-        <input
-          name="kootam"
-          value={data.kootam}
-          onChange={handleChange}
-          placeholder="Enter Kootam"
           className="border p-2 rounded-lg w-full"
         />
       </div>

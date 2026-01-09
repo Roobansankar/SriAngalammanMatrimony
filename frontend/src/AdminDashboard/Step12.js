@@ -296,30 +296,7 @@ export default function Step12({ prevStep, formData }) {
   const [matriId, setMatriId] = useState("");
   const [error, setError] = useState("");
 
-
-  const validateAdminSubmit = () => {
-    if (!formData.fname || !formData.gender || !formData.mobile) {
-      return "Basic details missing";
-    }
-
-    if (!formData.plan) {
-      return "Plan not selected";
-    }
-
-    return null;
-  };
-
-
   const handleSubmit = async () => {
-
-   
-
-
-    const err = validateAdminSubmit();
-    if (err) {
-      alert(err);
-      return;
-    }
     try {
       setSubmitting(true);
       setError("");
@@ -331,14 +308,6 @@ export default function Step12({ prevStep, formData }) {
         fd.append(key, val);
       };
 
-
-      // const add = (key, value) => {
-      //   if (value !== undefined && value !== null) {
-      //     formData.append(key, value);
-      //   }
-      // };
-
- console.log("FINAL FORM DATA", f.fatherPoorvegam, f.motherPoorvegam);
       /* ------------------------------------------------
          STEP 1 — BASIC DETAILS
       ------------------------------------------------ */
@@ -372,6 +341,8 @@ export default function Step12({ prevStep, formData }) {
       add("star", f.star);
       add("gothra", f.gothra);
       add("manglik", f.manglik);
+      add("shani", f.shani);
+      add("placeOfShani", f.placeOfShani);
       add("horoscopeMatch", f.horoscopeMatch);
       add("parigarasevai", f.parigarasevai);
       add("sevai", f.sevai);
@@ -380,18 +351,12 @@ export default function Step12({ prevStep, formData }) {
       add("lagnam", f.lagnam);
       add("birthHour", f.birthHour);
       add("birthMinute", f.birthMinute);
-      // add("birthSecond", f.birthSecond);
+      add("birthSecond", f.birthSecond);
       add("ampm", f.ampm);
       add("placeOfBirth", f.placeOfBirth);
       add("kuladeivam", f.kuladeivam);
-      add("kootam", f.kootam);
-   
-      /* NEW */
-      add("thesaiPlanet", f.thesaiPlanet);
-      add("thesaiYears", f.thesaiYears);
-      add("thesaiMonths", f.thesaiMonths);
-      add("thesaiDays", f.thesaiDays);
-      add("sutham", f.sutham);
+      add("thesaiirupu", f.thesaiirupu);
+ 
       /* ------------------------------------------------
          STEP 5 — CONTACT DETAILS
       ------------------------------------------------ */
@@ -406,7 +371,8 @@ export default function Step12({ prevStep, formData }) {
       add("whatsapp", f.whatsapp);
       add("convenientTime", f.convenientTime);
 
-      /* ------------------------------------------------
+
+       /* ------------------------------------------------
          STEP 6 — EDUCATION & OCCUPATION
       ------------------------------------------------ */
       add("education", f.education);
@@ -434,21 +400,15 @@ export default function Step12({ prevStep, formData }) {
       add("drink", f.drink);
       add("specialCases", f.specialCases);
 
-      add(
-        "hobbies",
-        Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies
-      );
-      add(
-        "interests",
-        Array.isArray(f.interests) ? f.interests.join(",") : f.interests
-      );
+      add("hobbies", Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies);
+      add("interests", Array.isArray(f.interests) ? f.interests.join(",") : f.interests);
 
       add("otherHobbies", f.otherHobbies);
       add("otherInterests", f.otherInterests);
       add("achievement", f.achievement);
       add("medicalHistory", f.medicalHistory);
       add("passport", f.passport);
-
+   
       /* ------------------------------------------------
          STEP 8 — FAMILY DETAILS
       ------------------------------------------------ */
@@ -469,9 +429,6 @@ export default function Step12({ prevStep, formData }) {
       add("fatherOccupation", f.fatherOccupation);
       add("motherName", f.motherName);
       add("motherOccupation", f.motherOccupation);
-      add("fatherPoorvegam", f.fatherPoorvegam);
-      add("motherPoorvegam", f.motherPoorvegam);
-
       add(
         "familyWealth",
         Array.isArray(f.familyWealth)
@@ -488,15 +445,11 @@ export default function Step12({ prevStep, formData }) {
         fd.append("photo", f.photo);
       }
 
-      /* ------------------------------------------------
+
+        /* ------------------------------------------------
          STEP 10 — PARTNER PREFERENCES
       ------------------------------------------------ */
-      add(
-        "partner_maritalStatus",
-        Array.isArray(f.maritalStatus)
-          ? f.maritalStatus.join(",")
-          : f.maritalStatus
-      );
+      add("partner_maritalStatus", Array.isArray(f.maritalStatus) ? f.maritalStatus.join(",") : f.maritalStatus);
       add("partner_ageFrom", f.ageFrom);
       add("partner_ageTo", f.ageTo);
       add("partner_heightFrom", f.heightFrom);
@@ -514,10 +467,12 @@ export default function Step12({ prevStep, formData }) {
       add("partner_motherTongue", f.motherTongue);
       add("partnerExpectations", f.partnerExpectations);
 
+
+      
       /* ------------------------------------------------
          STEP 11 — PLAN SELECTION (Admin Panel - No Payment Required)
       ------------------------------------------------ */
-
+  
       // Always save the plan for admin-created users
       add("plan", f.plan || "basic");
       add("paymentDone", "1"); // Admin bypasses payment
@@ -534,21 +489,12 @@ export default function Step12({ prevStep, formData }) {
       /* ------------------------------------------------
          SUBMIT TO BACKEND
       ------------------------------------------------ */
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE || ""}/api/register/complete`,
-        fd
-      );
+      const res = await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/register/complete`, fd);
 
       localStorage.removeItem("multiStepRegistration_form_v1");
 
       setMatriId(res.data.matriId);
       setSubmitted(true);
-
-      setTimeout(() => {
-        navigate("/admin/new-users", {
-          state: { refreshOnce: true },
-        });
-      }, 2000);
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
       setError(
@@ -617,7 +563,7 @@ export default function Step12({ prevStep, formData }) {
     <div className="flex justify-center pt-4 pb-10">
       <div className="bg-white shadow-lg rounded-xl p-10 text-center max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4">
-           Submit Registration
+          Step 11: Submit Registration
         </h2>
 
         <button
