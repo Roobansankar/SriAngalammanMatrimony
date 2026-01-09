@@ -107,10 +107,25 @@ export default function Footer() {
         </div>
 
         {/* Divider and Bottom Bar */}
+        {/* <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-white/80 text-center">
+            © {new Date().getFullYear()} Sri Angalamman Matrimony. All rights
+            reserved.
+          </p>
+        </div> */}
+
+        {/* Divider and Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-white/80 text-center">
             © {new Date().getFullYear()} Sri Angalamman Matrimony. All rights
             reserved.
+          </p>
+
+          <p className="text-sm text-white/70 text-center">
+            Developed by{" "}
+            <span className="font-semibold text-white">
+              Infronex IT Products & Services
+            </span>
           </p>
         </div>
       </div>
