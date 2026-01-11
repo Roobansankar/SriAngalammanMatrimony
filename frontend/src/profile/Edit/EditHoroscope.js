@@ -546,7 +546,6 @@ fd.append("Sutham", form.Sutham || "");
             setForm={setForm}
           />
 
-      
           {/* Birth Time */}
           <div className="w-full flex flex-col md:col-span-2">
             <label className="text-sm font-medium mb-2 text-black">
@@ -686,19 +685,30 @@ fd.append("Sutham", form.Sutham || "");
             <label className="text-sm font-semibold">Upload Horoscope</label>
             <input
               type="file"
-              accept="image/*,application/pdf"
+              accept="image/*"
               className="border p-3 w-full rounded mt-1"
+              
               onChange={(e) => {
                 const file = e.target.files[0];
-                setForm({ ...form, horoscope: file });
-
                 if (!file) return;
 
-                if (file.type.includes("pdf")) {
-                  setPreview("PDF");
-                } else {
-                  setPreview(URL.createObjectURL(file));
+                // ❌ Block PDF
+                if (file.type === "application/pdf") {
+                  alert("Please upload only image files (JPG, PNG, JPEG)");
+                  e.target.value = ""; // reset input
+                  return;
                 }
+
+                // ❌ Block non-image files
+                if (!file.type.startsWith("image/")) {
+                  alert("Invalid file type. Only images are allowed.");
+                  e.target.value = "";
+                  return;
+                }
+
+                // ✅ Accept image
+                setForm({ ...form, horoscope: file });
+                setPreview(URL.createObjectURL(file));
               }}
             />
 
@@ -722,14 +732,25 @@ fd.append("Sutham", form.Sutham || "");
           </div>
 
           {/* Rasi + Navamsa */}
-          <h2 className="col-span-2 text-xl font-bold mt-6">Rasi (12 Boxes)</h2>
+          <h2 className="col-span-2 text-xl font-bold mt-6">Rasi (12 Boxes) (clock wise)</h2>
           <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 12 }).map((_, i) => {
               const key = `g${i + 1}`;
               return (
                 <Box
                   key={key}
-                  title={`Rasi Box ${i + 1}`}
+                  // title={`Rasi Box ${i + 1}`}
+                  title={`Rasi Box ${i + 1}${
+                    i + 1 === 1
+                      ? " (Left Top)"
+                      : i + 1 === 4
+                      ? " (Right Top)"
+                      : i + 1 === 7
+                      ? " (Right Bottom)"
+                      : i + 1 === 10
+                      ? " (Left Bottom)"
+                      : ""
+                  }`}
                   selected={rasi[key] || []}
                   items={PLANETS}
                   onToggle={(v) => toggleBox("rasi", key, v)}
@@ -739,7 +760,7 @@ fd.append("Sutham", form.Sutham || "");
           </div>
 
           <h2 className="col-span-2 text-xl font-bold mt-6">
-            Navamsa (12 Boxes)
+            Navamsa (12 Boxes) (clock wise)
           </h2>
           <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 12 }).map((_, i) => {
@@ -747,7 +768,18 @@ fd.append("Sutham", form.Sutham || "");
               return (
                 <Box
                   key={key}
-                  title={`Navamsa Box ${i + 1}`}
+                  // title={`Navamsa Box ${i + 1}`}
+                  title={`Navamsa Box ${i + 1}${
+                    i + 1 === 1
+                      ? " (Left Top)"
+                      : i + 1 === 4
+                      ? " (Right Top)"
+                      : i + 1 === 7
+                      ? " (Right Bottom)"
+                      : i + 1 === 10
+                      ? " (Left Bottom)"
+                      : ""
+                  }`}
                   selected={navamsa[key] || []}
                   items={PLANETS}
                   onToggle={(v) => toggleBox("navamsa", key, v)}

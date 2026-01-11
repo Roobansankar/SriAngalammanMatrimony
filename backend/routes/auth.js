@@ -402,296 +402,59 @@ router.put("/update/basic", async (req, res) => {
 
 
 
-function safeToJSONArray(input) {
-  if (!input || input === "" || input === "null") return "[]";
+// function safeToJSONArray(input) {
+//   if (!input || input === "" || input === "null") return "[]";
 
-  // If already JSON array → OK
-  try {
-    const parsed = JSON.parse(input);
-    if (Array.isArray(parsed)) return JSON.stringify(parsed);
-  } catch (err) {}
+//   // If already JSON array → OK
+//   try {
+//     const parsed = JSON.parse(input);
+//     if (Array.isArray(parsed)) return JSON.stringify(parsed);
+//   } catch (err) {}
 
-  // Otherwise convert comma-separated → array
-  const arr = input
-    .split(",")
-    .map((x) => x.trim())
-    .filter((x) => x !== "");
+//   // Otherwise convert comma-separated → array
+//   const arr = input
+//     .split(",")
+//     .map((x) => x.trim())
+//     .filter((x) => x !== "");
 
-  return JSON.stringify(arr);
-}
+//   return JSON.stringify(arr);
+// }
 
 // --------------------------------------------------
 // UPDATE HOROSCOPE
 // --------------------------------------------------
 
+/* ----------------------------------
+   MULTER CONFIG
+---------------------------------- */
 
-// router.put(
-//   "/update/horoscope",
-//   upload.single("horoscope"),
-//   async (req, res) => {
-//     try {
-//       const {
-//         ConfirmEmail,
-//         Moonsign,
-//         Star,
-//         Gothram,
-//         Manglik,
-//         shani,
-//         shaniplace,
-//         Horosmatch,
-//         parigarasevai,
-//         Sevai,
-//         Raghu,
-//         Keethu,
-//         POB,
-//         POC,
-//         TOB,
-//         Kuladeivam, // ⭐ NEW FIELD
-//         ThesaiIrupu, // ⭐ NEW FIELD
-//       } = req.body;
+/* ----------------------------------
+   SAFE ARRAY PARSER
+---------------------------------- */
+function safeToJSONArray(value) {
+  if (!value || value === "null" || value === "") {
+    return JSON.stringify([]);
+  }
 
-//       if (!ConfirmEmail) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Email missing",
-//         });
-//       }
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return JSON.stringify(parsed);
+    }
+  } catch (e) {}
 
-//       let horoscopeBlob = null;
-//       if (req.file) {
-//         horoscopeBlob = fs.readFileSync(req.file.path);
-//         fs.unlinkSync(req.file.path);
-//       }
+  return JSON.stringify(
+    String(value)
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean)
+  );
+}
 
-//       const rasi = {};
-//       const navamsa = {};
+/* ----------------------------------
+   UPDATE HOROSCOPE
+---------------------------------- */
 
-//       for (let i = 1; i <= 12; i++) {
-//         rasi[`g${i}`] = safeToJSONArray(req.body[`g${i}`]);
-//         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
-//       }
-
-//       const conn = db.promise();
-
-//       await conn.query(
-//         `
-//         UPDATE register SET
-//           Moonsign = ?, 
-//           Star = ?, 
-//           Gothram = ?, 
-//           Manglik = ?, 
-//           shani = ?, 
-//           shaniplace = ?, 
-//           Horosmatch = ?, 
-//           parigarasevai = ?, 
-//           Sevai = ?, 
-//           Raghu = ?, 
-//           Keethu = ?, 
-//           POB = ?, 
-//           POC = ?, 
-//           TOB = ?, 
-//           Kuladeivam = ?,        -- ⭐ NEW FIELD
-//           ThesaiIrupu = ?,       -- ⭐ NEW FIELD
-//           HoroscopeMain = ?,
-
-//           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
-//           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
-
-//           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
-//           a7=?, a8=?, a9=?, a10=?, a11=?, a12=? 
-
-//         WHERE ConfirmEmail = ?
-//       `,
-//         [
-//           Moonsign,
-//           Star,
-//           Gothram,
-//           Manglik,
-//           shani,
-//           shaniplace,
-//           Horosmatch,
-//           parigarasevai,
-//           Sevai,
-//           Raghu,
-//           Keethu,
-//           POB,
-//           POC,
-//           TOB,
-//           Kuladeivam, // ⭐ NEW FIELD
-//           ThesaiIrupu, // ⭐ NEW FIELD
-//           horoscopeBlob,
-
-//           rasi.g1,
-//           rasi.g2,
-//           rasi.g3,
-//           rasi.g4,
-//           rasi.g5,
-//           rasi.g6,
-//           rasi.g7,
-//           rasi.g8,
-//           rasi.g9,
-//           rasi.g10,
-//           rasi.g11,
-//           rasi.g12,
-
-//           navamsa.a1,
-//           navamsa.a2,
-//           navamsa.a3,
-//           navamsa.a4,
-//           navamsa.a5,
-//           navamsa.a6,
-//           navamsa.a7,
-//           navamsa.a8,
-//           navamsa.a9,
-//           navamsa.a10,
-//           navamsa.a11,
-//           navamsa.a12,
-
-//           ConfirmEmail,
-//         ]
-//       );
-
-//       return res.json({
-//         success: true,
-//         message: "Horoscope updated successfully",
-//       });
-//     } catch (err) {
-//       console.error("update/horoscope error:", err);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Server error",
-//       });
-//     }
-//   }
-// );
-
-
-// --------------------------------------------
-// UPDATE HOROSCOPE (image or PDF)
-// --------------------------------------------
-// router.put(
-//   "/update/horoscope",
-//   upload.single("horoscope"), // multer upload
-//   async (req, res) => {
-//     try {
-//       const {
-//         ConfirmEmail,
-//         Moonsign,
-//         Star,
-//         Gothram,
-//         Manglik,
-//         shani,
-//         shaniplace,
-//         Horosmatch,
-//         parigarasevai,
-//         Sevai,
-//         Raghu,
-//         Keethu,
-//         POB,
-//         POC,
-//         TOB,
-//         Kuladeivam,
-//         ThesaiIrupu,
-//       } = req.body;
-
-//       if (!ConfirmEmail) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Email missing",
-//         });
-//       }
-
-//       // -----------------------------------
-//       // SAVE UPLOADED FILE → kundli folder
-//       // -----------------------------------
-//       let uploadedFileName = null;
-
-//       if (req.file) {
-//         const ext = req.file.originalname.split(".").pop().toLowerCase();
-//         const newName = `horoscope_${Date.now()}.${ext}`;
-
-//         fs.renameSync(req.file.path, `kundli/${newName}`);
-
-//         uploadedFileName = newName;
-//       }
-
-//       // -----------------------------------
-//       // PARSE 12 RASI + 12 NAVAMSA
-//       // -----------------------------------
-//       const rasi = {};
-//       const navamsa = {};
-
-//       for (let i = 1; i <= 12; i++) {
-//         rasi[`g${i}`] = safeToJSONArray(req.body[`g${i}`]);
-//         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
-//       }
-
-//       const conn = db.promise();
-
-//       // -----------------------------------
-//       // UPDATE DB RECORD
-//       // -----------------------------------
-//       await conn.query(
-//         `
-//         UPDATE register SET
-//           Moonsign=?, Star=?, Gothram=?, Manglik=?, shani=?, shaniplace=?,
-//           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?, 
-//           POB=?, POC=?, TOB=?, Kuladeivam=?, ThesaiIrupu=?,
-
-//           -- ⭐ STORE FILENAME HERE
-//           horosother=?,
-
-//           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
-//           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
-
-//           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
-//           a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
-
-//         WHERE ConfirmEmail=?
-//       `,
-//         [
-//           Moonsign,
-//           Star,
-//           Gothram,
-//           Manglik,
-//           shani,
-//           shaniplace,
-//           Horosmatch,
-//           parigarasevai,
-//           Sevai,
-//           Raghu,
-//           Keethu,
-//           POB,
-//           POC,
-//           TOB,
-//           Kuladeivam,
-//           ThesaiIrupu,
-
-//           uploadedFileName, // ⭐ IMPORTANT
-
-//           rasi.g1, rasi.g2, rasi.g3, rasi.g4, rasi.g5, rasi.g6,
-//           rasi.g7, rasi.g8, rasi.g9, rasi.g10, rasi.g11, rasi.g12,
-
-//           navamsa.a1, navamsa.a2, navamsa.a3, navamsa.a4, navamsa.a5, navamsa.a6,
-//           navamsa.a7, navamsa.a8, navamsa.a9, navamsa.a10, navamsa.a11, navamsa.a12,
-
-//           ConfirmEmail,
-//         ]
-//       );
-
-//       return res.json({
-//         success: true,
-//         message: "Horoscope updated successfully",
-//       });
-//     } catch (err) {
-//       console.error("update/horoscope error:", err);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Server error",
-//       });
-//     }
-//   }
-// );
 
 
 router.put(
@@ -729,20 +492,25 @@ router.put(
         });
       }
 
-      // -----------------------------------
-      // HANDLE FILE UPLOAD
-      // -----------------------------------
+      /* ----------------------------------
+         FILE UPLOAD
+      ---------------------------------- */
       let uploadedFileName = null;
 
       if (req.file) {
+        if (!fs.existsSync("kundli")) {
+          fs.mkdirSync("kundli", { recursive: true });
+        }
+
         const ext = req.file.originalname.split(".").pop().toLowerCase();
         uploadedFileName = `horoscope_${Date.now()}.${ext}`;
+
         fs.renameSync(req.file.path, `kundli/${uploadedFileName}`);
       }
 
-      // -----------------------------------
-      // PARSE RASI + NAVAMSA
-      // -----------------------------------
+      /* ----------------------------------
+         RASI + NAVAMSA
+      ---------------------------------- */
       const rasi = {};
       const navamsa = {};
 
@@ -751,14 +519,14 @@ router.put(
         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
       }
 
-      // -----------------------------------
-      // BUILD QUERY
-      // -----------------------------------
+      /* ----------------------------------
+         SQL QUERY
+      ---------------------------------- */
       const updateQuery = `
         UPDATE register SET
           Moonsign=?, Star=?, Gothram=?, Manglik=?,
           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?,
-          POB=?, POC=?, TOB=?, Kuladeivam=?,Sutham=?,
+          POB=?, POC=?, TOB=?, Kuladeivam=?, Sutham=?,
           ThesaiPlanet=?, ThesaiYears=?, ThesaiMonths=?, ThesaiDays=?, Kootam=?,
           ${uploadedFileName ? "horosother=?," : ""}
           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
@@ -768,30 +536,33 @@ router.put(
         WHERE ConfirmEmail = ? COLLATE utf8mb4_general_ci
       `;
 
-      // -----------------------------------
-      // BUILD PARAMS (ORDER IS CRITICAL)
-      // -----------------------------------
-    const params = [
-      Moonsign,
-      Star,
-      Gothram,
-      Manglik,
-      Horosmatch,
-      parigarasevai,
-      Sevai,
-      Raghu,
-      Keethu,
-      POB,
-      POC,
-      TOB,
-      Kuladeivam,
-      Sutham, // ✅ CORRECT POSITION
-      ThesaiPlanet,
-      ThesaiYears,
-      ThesaiMonths,
-      ThesaiDays,
-      Kootam,
-    ];
+const fixInt = (v) =>
+  v === "" || v === null || v === undefined ? 0 : Number(v);
+
+      /* ----------------------------------
+         PARAMS (ORDER MATTERS)
+      ---------------------------------- */
+     const params = [
+       Moonsign || "",
+       Star || "",
+       Gothram || "",
+       Manglik || "",
+       Horosmatch || "",
+       fixInt(parigarasevai),
+       fixInt(Sevai),
+       fixInt(Raghu),
+       fixInt(Keethu),
+       POB || "",
+       POC || "",
+       TOB || "",
+       Kuladeivam || "",
+       Sutham || "",
+       ThesaiPlanet || "",
+       fixInt(ThesaiYears), // ✅ FIX
+       fixInt(ThesaiMonths), // ✅ FIX
+       fixInt(ThesaiDays), // ✅ FIX
+       Kootam || "",
+     ];
 
 
       if (uploadedFileName) {
@@ -826,9 +597,9 @@ router.put(
         ConfirmEmail
       );
 
-      // -----------------------------------
-      // EXECUTE QUERY
-      // -----------------------------------
+      /* ----------------------------------
+         EXECUTE
+      ---------------------------------- */
       const conn = db.promise();
       await conn.query(updateQuery, params);
 
@@ -840,7 +611,7 @@ router.put(
       console.error("update/horoscope error:", err);
       return res.status(500).json({
         success: false,
-        message: "Server error",
+        message: err.message || "Server error",
       });
     }
   }
