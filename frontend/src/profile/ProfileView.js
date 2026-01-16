@@ -986,7 +986,7 @@ const heightMatch = (minH, maxH, actual) => {
                   Horoscope (Image / PDF)
                 </span>
 
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   {user.horoscope ? (
                     <img
                       src={
@@ -1002,7 +1002,22 @@ const heightMatch = (minH, maxH, actual) => {
                       No horoscope uploaded
                     </div>
                   )}
-                </div>
+                </div> */}
+
+                <div className="mt-2">
+  {user.HoroscopeURL ? (
+    <img
+      src={user.HoroscopeURL}
+      alt="Horoscope"
+      className="w-full max-w-[300px] object-contain rounded border border-gray-200 dark:border-gray-700"
+    />
+  ) : (
+    <div className="text-gray-400 dark:text-gray-500">
+      No horoscope uploaded
+    </div>
+  )}
+</div>
+
               </div>
             </div>
           </div>

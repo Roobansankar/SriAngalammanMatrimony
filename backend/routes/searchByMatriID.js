@@ -1,24 +1,33 @@
 
-
 // // routes/searchByMatriID.js
 // import express from "express";
 // import db from "../config/db.js";
+// import config from "../config/env.js";
 
 // const router = express.Router();
 
-// const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
+// const BASE_URL = config.baseUrl;
 // const GALLERY_PATH = "/gallery/";
 // const FALLBACK = "nophoto.jpg";
+
+// /* ---------------- HELPERS ---------------- */
 
 // function makePhotoUrl(photoFilename, photoApprove) {
 //   const hasPhoto =
 //     photoFilename &&
-//     photoFilename !== "no-photo.gif" &&
+//     photoFilename !== "no-photo.jpg" &&
 //     String(photoApprove).toLowerCase() === "yes";
+
 //   const file = hasPhoto ? photoFilename : FALLBACK;
 //   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
 // }
 
+// function makeGalleryUrl(filename) {
+//   if (!filename) return null;
+//   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(filename)}`;
+// }
+
+// /* ---------------- ROUTE ---------------- */
 
 // router.get("/searchByMatriID", async (req, res) => {
 //   try {
@@ -39,7 +48,7 @@
 
 //     const params = [matriid.trim(), matriid.trim()];
 
-//     // ✅ CORRECT PLAN FILTER (FIXED COLUMN NAME)
+//     /* PLAN FILTER */
 //     if ((loggedPlan || "").toLowerCase() === "basic") {
 //       sql += " AND TRIM(LOWER(Plan)) = 'basic' ";
 //     } else if ((loggedPlan || "").toLowerCase() === "premium") {
@@ -55,20 +64,38 @@
 //     }
 
 //     const user = rows[0];
-//     const { ConfirmPassword, ParentPassword, PhotoMain, ...safeUser } = user;
 
+//     /* REMOVE SENSITIVE FIELDS */
+//     const {
+//       ConfirmPassword,
+//       ParentPassword,
+//       PhotoMain,
+//       ...safeUser
+//     } = user;
+
+//     /* MAIN PROFILE PHOTO */
 //     safeUser.PhotoURL = makePhotoUrl(
 //       user.Photo1,
 //       user.Photo1Approve
 //     );
 
-//     return res.json({ success: true, user: safeUser });
+//     /* GALLERY PHOTOS (image1–image4) */
+//     safeUser.gallery = [
+//       makeGalleryUrl(user.image1),
+//       makeGalleryUrl(user.image2),
+//       makeGalleryUrl(user.image3),
+//       makeGalleryUrl(user.image4),
+//     ].filter(Boolean);
+
+//     return res.json({
+//       success: true,
+//       user: safeUser,
+//     });
 //   } catch (err) {
 //     console.error("searchByMatriID error:", err);
 //     return res.status(500).json({ success: false });
 //   }
 // });
-
 
 // export default router;
 
@@ -82,10 +109,12 @@ const router = express.Router();
 
 const BASE_URL = config.baseUrl;
 const GALLERY_PATH = "/gallery/";
+const KUNDLI_PATH = "/kundli/";
 const FALLBACK = "nophoto.jpg";
 
 /* ---------------- HELPERS ---------------- */
 
+// Main profile photo
 function makePhotoUrl(photoFilename, photoApprove) {
   const hasPhoto =
     photoFilename &&
@@ -96,9 +125,16 @@ function makePhotoUrl(photoFilename, photoApprove) {
   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
 }
 
+// Gallery images
 function makeGalleryUrl(filename) {
   if (!filename) return null;
   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(filename)}`;
+}
+
+// Horoscope image (kundli folder)
+function makeHoroscopeUrl(filename) {
+  if (!filename) return null;
+  return `${BASE_URL}${KUNDLI_PATH}${encodeURIComponent(filename)}`;
 }
 
 /* ---------------- ROUTE ---------------- */
@@ -108,7 +144,10 @@ router.get("/searchByMatriID", async (req, res) => {
     const { matriid, loggedPlan } = req.query;
 
     if (!matriid || String(matriid).trim() === "") {
-      return res.status(400).json({ success: false });
+      return res.status(400).json({
+        success: false,
+        message: "MatriID required",
+      });
     }
 
     const conn = db.promise();
@@ -143,6 +182,7 @@ router.get("/searchByMatriID", async (req, res) => {
     const {
       ConfirmPassword,
       ParentPassword,
+      Password,
       PhotoMain,
       ...safeUser
     } = user;
@@ -161,13 +201,19 @@ router.get("/searchByMatriID", async (req, res) => {
       makeGalleryUrl(user.image4),
     ].filter(Boolean);
 
+    /* HOROSCOPE IMAGE (kundli folder) */
+    safeUser.HoroscopeURL = makeHoroscopeUrl(user.horosother);
+
     return res.json({
       success: true,
       user: safeUser,
     });
   } catch (err) {
     console.error("searchByMatriID error:", err);
-    return res.status(500).json({ success: false });
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
