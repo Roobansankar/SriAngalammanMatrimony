@@ -5,7 +5,21 @@ import multer from "multer";
 import db from "../config/db.js";
 import config from "../config/env.js";
 
-const upload = multer({ dest: "uploads/" });
+// const upload = multer({ dest: "uploads/" });
+
+
+const storage1 = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "kundli"); // ✅ DIRECTLY save in kundli
+  },
+  filename: (req, file, cb) => {
+    const ext = file.originalname.split(".").pop().toLowerCase();
+    cb(null, `horoscope_${Date.now()}.${ext}`);
+  },
+});
+
+const upload = multer({ storage1 });
+
 
 const router = express.Router();
 const BASE_URL = config.baseUrl;
@@ -402,23 +416,6 @@ router.put("/update/basic", async (req, res) => {
 
 
 
-// function safeToJSONArray(input) {
-//   if (!input || input === "" || input === "null") return "[]";
-
-//   // If already JSON array → OK
-//   try {
-//     const parsed = JSON.parse(input);
-//     if (Array.isArray(parsed)) return JSON.stringify(parsed);
-//   } catch (err) {}
-
-//   // Otherwise convert comma-separated → array
-//   const arr = input
-//     .split(",")
-//     .map((x) => x.trim())
-//     .filter((x) => x !== "");
-
-//   return JSON.stringify(arr);
-// }
 
 // --------------------------------------------------
 // UPDATE HOROSCOPE
@@ -495,17 +492,24 @@ router.put(
       /* ----------------------------------
          FILE UPLOAD
       ---------------------------------- */
+      // let uploadedFileName = null;
+
+      // if (req.file) {
+      //   if (!fs.existsSync("kundli")) {
+      //     fs.mkdirSync("kundli", { recursive: true });
+      //   }
+
+      //   const ext = req.file.originalname.split(".").pop().toLowerCase();
+      //   uploadedFileName = `horoscope_${Date.now()}.${ext}`;
+
+      //   fs.renameSync(req.file.path, `kundli/${uploadedFileName}`);
+      // }
+
+
       let uploadedFileName = null;
 
       if (req.file) {
-        if (!fs.existsSync("kundli")) {
-          fs.mkdirSync("kundli", { recursive: true });
-        }
-
-        const ext = req.file.originalname.split(".").pop().toLowerCase();
-        uploadedFileName = `horoscope_${Date.now()}.${ext}`;
-
-        fs.renameSync(req.file.path, `kundli/${uploadedFileName}`);
+        uploadedFileName = req.file.filename; // already in kundli
       }
 
       /* ----------------------------------
