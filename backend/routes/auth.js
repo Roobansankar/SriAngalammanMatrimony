@@ -1,5 +1,7 @@
 // routes/auth.js
 import express from "express";
+import path from "path";
+
 import fs from "fs";
 import multer from "multer";
 import db from "../config/db.js";
@@ -8,19 +10,39 @@ import config from "../config/env.js";
 // const upload = multer({ dest: "uploads/" });
 
 
+// const storage1 = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "kundli"); // ✅ DIRECTLY save in kundli
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.originalname.split(".").pop().toLowerCase();
+//     cb(null, `horoscope_${Date.now()}.${ext}`);
+//   },
+// });
+
+// const upload = multer({ storage1 });
+
+
 const storage1 = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "kundli"); // ✅ DIRECTLY save in kundli
-  },
+  destination: (req, file, cb) => cb(null, "kundli"),
   filename: (req, file, cb) => {
-    const ext = file.originalname.split(".").pop().toLowerCase();
-    cb(null, `horoscope_${Date.now()}.${ext}`);
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `horoscope_${Date.now()}${ext}`);
   },
 });
 
-const upload = multer({ storage1 });
+const fileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith("image/")) {
+    return cb(new Error("Only image files allowed"), false);
+  }
+  cb(null, true);
+};
 
-
+const upload = multer({
+  storage: storage1,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 const router = express.Router();
 const BASE_URL = config.baseUrl;
 const GALLERY_PATH = "/gallery/";
@@ -537,7 +559,8 @@ router.put(
           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
           a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
-        WHERE ConfirmEmail = ? COLLATE utf8mb4_general_ci
+        WHERE TRIM(ConfirmEmail) = TRIM(?) COLLATE utf8mb4_general_ci
+
       `;
 
 const fixInt = (v) =>
@@ -605,7 +628,18 @@ const fixInt = (v) =>
          EXECUTE
       ---------------------------------- */
       const conn = db.promise();
-      await conn.query(updateQuery, params);
+      // await conn.query(updateQuery, params);
+      const [result] = await conn.query(updateQuery, params);
+
+if (result.affectedRows === 0) {
+  return res.status(400).json({
+    success: false,
+    message: "No record updated. Email mismatch.",
+  });
+}
+console.log("Uploaded horoscope filename:", uploadedFileName);
+console.log("Updating horoscope for:", ConfirmEmail);
+
 
       return res.json({
         success: true,

@@ -578,10 +578,10 @@ const safeValue = (v) => {
                 <SouthChart title="நவாம்சம்" data={navamsa} />
               </div>
 
-              {/* Horoscope Image / PDF */}
+              {/* Horoscope Image */}
               <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-4">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Horoscope (Image / PDF)
+                  Horoscope (Image)
                 </span>
 
                 {user.HoroscopeURL ? (
@@ -978,6 +978,11 @@ const safeValue = (v) => {
                   title="Horoscope PDF"
                 />
               ) : (
+                // <img
+                //   src={user.HoroscopeURL}
+                //   alt="Horoscope"
+                //   className="max-h-[80vh] w-auto object-contain rounded"
+                // />
                 <img
                   src={user.HoroscopeURL}
                   alt="Horoscope"

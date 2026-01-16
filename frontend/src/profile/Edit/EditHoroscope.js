@@ -210,13 +210,19 @@ useEffect(() => {
   setNavamsa(n);
 
   // Preview
+  // if (user.HoroscopeURL) {
+  //   setPreview(
+  //     user.horosother?.toLowerCase().includes(".pdf")
+  //       ? "PDF"
+  //       : user.HoroscopeURL
+  //   );
+  // }
+
+
   if (user.HoroscopeURL) {
-    setPreview(
-      user.horosother?.toLowerCase().includes(".pdf")
-        ? "PDF"
-        : user.HoroscopeURL
-    );
+    setPreview(user.HoroscopeURL);
   }
+
 
   // ---------- SUTHAM (Yes / No / Others) ----------
   let suthamValue = user.Sutham || "";
@@ -319,11 +325,15 @@ fd.append("Sutham", form.Sutham || "");
 
     try {
 
-      await axios.put(API_BASE + "auth/update/horoscope", fd, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // await axios.put(API_BASE + "auth/update/horoscope", fd, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+
+
+      await axios.put(API_BASE + "auth/update/horoscope", fd);
+
 
 
       // Update localStorage with new values
