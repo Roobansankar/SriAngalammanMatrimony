@@ -934,6 +934,7 @@ const heightMatch = (minH, maxH, actual) => {
                 value={user.Moonsign || user.moonsign || "-"}
               />
               <InfoRow label="Star" value={user.Star || user.star || "-"} />
+              <InfoRow label="Lagnam" value={user.Lagnam || "-"}/>
               <InfoRow label="Gothra" value={user.Gothram || "-"} />
               <InfoRow label="Mangalik" value={user.Manglik || "-"} />
 

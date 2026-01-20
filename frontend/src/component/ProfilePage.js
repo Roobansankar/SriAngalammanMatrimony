@@ -537,9 +537,15 @@ const safeValue = (v) => {
                 value={user.Moonsign || user.moonsign}
               />
               <InfoRow label="Star" value={user.Star || user.star} />
+              <InfoRow label="Lagnam" value={user.Lagnam || "-"} />
               <InfoRow label="Gothra" value={user.Gothram || "-"} />
 
               <InfoRow label="Mangalik" value={user.Manglik || "-"} />
+              <InfoRow label="Shani" value={user.Shani || user.shani || "-"} />
+              <InfoRow
+                label="Place of Shani"
+                value={user.shaniplace || user.place || "-"}
+              />
 
               <InfoRow label="Horoscope Match" value={user.Horosmatch || "-"} />
               <InfoRow label="Kootam" value={user.Kootam || "-"} />
@@ -886,7 +892,7 @@ const safeValue = (v) => {
                 </span>
                 <div className="font-medium">
                   {safeValue(
-                    user.PartnerExpectations || user.PartnerExpectations_new
+                    user.PartnerExpectations || user.PartnerExpectations_new,
                   )}
                 </div>
               </div>
@@ -978,11 +984,6 @@ const safeValue = (v) => {
                   title="Horoscope PDF"
                 />
               ) : (
-                // <img
-                //   src={user.HoroscopeURL}
-                //   alt="Horoscope"
-                //   className="max-h-[80vh] w-auto object-contain rounded"
-                // />
                 <img
                   src={user.HoroscopeURL}
                   alt="Horoscope"

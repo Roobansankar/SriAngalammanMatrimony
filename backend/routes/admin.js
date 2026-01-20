@@ -73,39 +73,99 @@ const formatTimeForMySQL = (timeValue) => {
 /**
  * Sanitize and format field value based on field name
  */
+// const sanitizeFieldValue = (key, value) => {
+//   // NOT NULL text fields in the database that should never receive null
+//   // These fields are TEXT/VARCHAR with NOT NULL constraint
+//   const notNullTextFields = ['Raghu', 'Keethu', 'Sevai'];
+  
+//   // Handle null/undefined/empty
+//   if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
+//     // For NOT NULL text fields, return empty string instead of null
+//     if (notNullTextFields.includes(key)) {
+//       return '';
+//     }
+//     return null;
+//   }
+  
+//   // Date fields
+//   if (key === 'DOB' || key === 'Regdate') {
+//     return formatDateForMySQL(value);
+//   }
+  
+//   // Time fields
+//   if (key === 'TOB') {
+//     return formatTimeForMySQL(value);
+//   }
+  
+//   // Numeric fields - ensure they're proper numbers or null
+//   const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters'];
+//   if (numericFields.includes(key)) {
+//     const num = parseFloat(value);
+//     return isNaN(num) ? null : value;
+//   }
+  
+//   return value;
+// };
+
+
 const sanitizeFieldValue = (key, value) => {
-  // NOT NULL text fields in the database that should never receive null
-  // These fields are TEXT/VARCHAR with NOT NULL constraint
-  const notNullTextFields = ['Raghu', 'Keethu', 'Sevai'];
-  
-  // Handle null/undefined/empty
-  if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
-    // For NOT NULL text fields, return empty string instead of null
-    if (notNullTextFields.includes(key)) {
-      return '';
-    }
-    return null;
+  // 🔐 TEXT/VARCHAR fields with NOT NULL constraint
+  const notNullTextFields = [
+    'Raghu', 'Keethu', 'Sevai', 'Suddham',
+    'shani', 'shaniplace',
+    'DasaBalance', 'Kuladeivam', 'ThesaiIrupu',
+    'thosam', 'charan', 'Gan', 'nadi',
+    'parigarasevai',
+    'dasatype', 'dasayear', 'dasamonth', 'dasadate'
+  ];
+
+  // 🔄 Normalize empty-like values
+  if (
+    value === null ||
+    value === undefined ||
+    value === '' ||
+    value === 'null' ||
+    value === 'undefined'
+  ) {
+    return notNullTextFields.includes(key) ? '' : null;
   }
-  
-  // Date fields
+
+  // 📅 Date fields
   if (key === 'DOB' || key === 'Regdate') {
     return formatDateForMySQL(value);
   }
-  
-  // Time fields
+
+  // ⏰ Time fields
   if (key === 'TOB') {
     return formatTimeForMySQL(value);
   }
-  
-  // Numeric fields - ensure they're proper numbers or null
-  const numericFields = ['Height', 'Weight', 'Annualincome', 'noofbrothers', 'noofsisters'];
+
+  // 🔢 Numeric fields
+  const numericFields = [
+    'Height',
+    'Weight',
+    'Annualincome',
+    'noofbrothers',
+    'noofsisters',
+    'noyubrothers',
+    'noyusisters',
+    'nb_unmarried',
+    'ns_unmarried'
+  ];
+
   if (numericFields.includes(key)) {
-    const num = parseFloat(value);
-    return isNaN(num) ? null : value;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
   }
-  
+
+  // ✂️ Trim strings
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+
   return value;
 };
+
 
 // =========================
 // ADMIN REGISTER
@@ -421,9 +481,9 @@ router.get("/all-members", (req, res) => {
   const params = [];
 
   // Staff restriction: only show basic users
-  if (req.userRole === 'staff') {
-    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
-  }
+  // if (req.userRole === 'staff') {
+  //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  // }
 
   if (gender) {
     whereClause += " AND Gender = ?";
@@ -504,9 +564,9 @@ router.get("/female-members", (req, res) => {
   const params = [];
 
   // Staff restriction
-  if (req.userRole === 'staff') {
-    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
-  }
+  // if (req.userRole === 'staff') {
+  //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  // }
 
   if (search) {
     whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
@@ -572,9 +632,9 @@ router.get("/male-members", (req, res) => {
   const params = [];
 
   // Staff restriction
-  if (req.userRole === 'staff') {
-    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
-  }
+  // if (req.userRole === 'staff') {
+  //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  // }
 
   if (search) {
     whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
@@ -641,9 +701,9 @@ router.get("/new-members", (req, res) => {
   const params = [];
 
   // Staff restriction
-  if (req.userRole === 'staff') {
-    whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
-  }
+  // if (req.userRole === 'staff') {
+  //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  // }
 
   if (search) {
     whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
@@ -731,6 +791,102 @@ router.get("/profile/:matriId", (req, res) => {
 // =========================
 // UPDATE MEMBER DATA
 // =========================
+
+
+
+
+// router.put("/member/:matriId", async (req, res) => {
+//   const { matriId } = req.params;
+//   const updateData = req.body;
+
+//   console.log(`➡️ Processing update for member: ${matriId}`);
+
+//   try {
+//     // Build dynamic update query - Extended to include most database fields
+//     const allowedFields = [
+//       // Personal Info
+//       'Name', 'DOB', 'TOB', 'POB', 'Gender', 'Maritalstatus', 'Religion', 'Country',
+//       'mother_tounge', 'BloodGroup', 'middlename', 'lastname',
+//       // Education & Career
+//       'Education', 'Occupation', 'company_name', 'Annualincome', 'workinglocation', 
+//       'occu_details', 'income_in', 'working_hours', 'anyotherincome',
+//       // Physical
+//       'Height', 'HeightText', 'Weight', 'Complexion', 'Handicapt_status', 'Handicapt_reson',
+//       // Family
+//       'Caste', 'Subcaste', 'sub_caste', 'Fathername', 'fathermiddle', 'fatherLast',
+//       'Fathersoccupation', 'Mothersname', 'mothermiddle', 'motherlast', 'Mothersoccupation',
+//       'noofbrothers', 'noofsisters', 'noyubrothers', 'noyusisters', 'nb_unmarried', 'ns_unmarried',
+//       'family_wealth', 'parents_stay', 'village', 'relatives',
+//       // Contact
+//       'Address', 'City', 'State', 'Mobile', 'ConfirmEmail', 'countrycode',
+//       // Horoscope basic
+//       'Star', 'Moonsign', 'Lagnam', 'Suddham', 'Raghu', 'Keethu', 'Sevai', 'DasaBalance',
+//       'Kuladeivam', 'ThesaiIrupu', 'thosam', 'charan', 'Gan', 'nadi', 'parigarasevai',
+//       'shani', 'shaniplace', 'dasatype', 'dasayear', 'dasamonth', 'dasadate',
+//       // Rasi grid (g1-g12)
+//       'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10', 'g11', 'g12',
+//       // Navamsam grid (a1-a12)
+//       'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12',
+//       // Partner Expectations
+//       'PartnerExpectations', 'PE_Height', 'PE_Height2', 'PE_Age', 'PE_Age2', 'PE_Education',
+//       'PE_Occupation', 'PE_Maritalstatus', 'PE_Country', 'PE_State', 'PE_City', 'PE_subcaste',
+//       'pe_subcaste_marry',
+//       // Account & Status
+//       'Status', 'Plan', 'visibility', 'featured', 'featured_user',
+//       'Photo1Approve', 'Photo2Approve', 'Photo3Approve', 'photo_visibility', 'phone_visibility',
+//       'HorosApprove', 'horoscope_visibility', 'idproof_approve', 'Biodata_approve',
+//       // Other
+//       'OtherNotes', 'aboutus', 'passport', 'achievement', 'medicalhistory', 
+//       'familymedicalhistory', 'reference', 'branch_name', 'branch_state'
+//     ];
+
+//     const updates = [];
+//     const values = [];
+
+//     for (const [key, value] of Object.entries(updateData)) {
+//       if (allowedFields.includes(key)) {
+//         updates.push(`${key} = ?`);
+//         // Sanitize and format the value appropriately
+//         const sanitizedValue = sanitizeFieldValue(key, value);
+//         values.push(sanitizedValue);
+//       }
+//     }
+
+//     if (updates.length === 0) {
+//       return res.status(400).json({ success: false, message: "No valid fields to update" });
+//     }
+
+//     values.push(matriId);
+
+//     const sql = `UPDATE register SET ${updates.join(', ')} WHERE MatriID = ?`;
+    
+//     // Log sanitized SQL for debugging (without sensitive data)
+//     console.log(`📝 Executing update with ${updates.length} fields for ${matriId}`);
+
+//     db.query(sql, values, (err, result) => {
+//       if (err) {
+//         console.error("Update error:", err.message);
+//         return res.status(500).json({ 
+//           success: false, 
+//           message: "Database error", 
+//           error: err.message 
+//         });
+//       }
+
+//       if (result.affectedRows === 0) {
+//         return res.status(404).json({ success: false, message: "Member not found" });
+//       }
+
+//       console.log(`✅ Member ${matriId} updated successfully`);
+//       res.json({ success: true, message: "Member updated successfully" });
+//     });
+//   } catch (err) {
+//     console.error("Error:", err);
+//     res.status(500).json({ success: false, message: "Server error", error: err.message });
+//   }
+// });
+
+
 router.put("/member/:matriId", async (req, res) => {
   const { matriId } = req.params;
   const updateData = req.body;
@@ -738,42 +894,31 @@ router.put("/member/:matriId", async (req, res) => {
   console.log(`➡️ Processing update for member: ${matriId}`);
 
   try {
-    // Build dynamic update query - Extended to include most database fields
     const allowedFields = [
-      // Personal Info
-      'Name', 'DOB', 'TOB', 'POB', 'Gender', 'Maritalstatus', 'Religion', 'Country',
-      'mother_tounge', 'BloodGroup', 'middlename', 'lastname',
-      // Education & Career
-      'Education', 'Occupation', 'company_name', 'Annualincome', 'workinglocation', 
-      'occu_details', 'income_in', 'working_hours', 'anyotherincome',
-      // Physical
-      'Height', 'HeightText', 'Weight', 'Complexion', 'Handicapt_status', 'Handicapt_reson',
-      // Family
-      'Caste', 'Subcaste', 'sub_caste', 'Fathername', 'fathermiddle', 'fatherLast',
-      'Fathersoccupation', 'Mothersname', 'mothermiddle', 'motherlast', 'Mothersoccupation',
-      'noofbrothers', 'noofsisters', 'noyubrothers', 'noyusisters', 'nb_unmarried', 'ns_unmarried',
-      'family_wealth', 'parents_stay', 'village', 'relatives',
-      // Contact
-      'Address', 'City', 'State', 'Mobile', 'ConfirmEmail', 'countrycode',
-      // Horoscope basic
-      'Star', 'Moonsign', 'Lagnam', 'Suddham', 'Raghu', 'Keethu', 'Sevai', 'DasaBalance',
-      'Kuladeivam', 'ThesaiIrupu', 'thosam', 'charan', 'Gan', 'nadi', 'parigarasevai',
-      'shani', 'shaniplace', 'dasatype', 'dasayear', 'dasamonth', 'dasadate',
-      // Rasi grid (g1-g12)
-      'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10', 'g11', 'g12',
-      // Navamsam grid (a1-a12)
-      'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12',
-      // Partner Expectations
-      'PartnerExpectations', 'PE_Height', 'PE_Height2', 'PE_Age', 'PE_Age2', 'PE_Education',
-      'PE_Occupation', 'PE_Maritalstatus', 'PE_Country', 'PE_State', 'PE_City', 'PE_subcaste',
-      'pe_subcaste_marry',
-      // Account & Status
-      'Status', 'Plan', 'visibility', 'featured', 'featured_user',
-      'Photo1Approve', 'Photo2Approve', 'Photo3Approve', 'photo_visibility', 'phone_visibility',
-      'HorosApprove', 'horoscope_visibility', 'idproof_approve', 'Biodata_approve',
-      // Other
-      'OtherNotes', 'aboutus', 'passport', 'achievement', 'medicalhistory', 
-      'familymedicalhistory', 'reference', 'branch_name', 'branch_state'
+      'Name','DOB','TOB','POB','Gender','Maritalstatus','Religion','Country',
+      'mother_tounge','BloodGroup','middlename','lastname',
+      'Education','Occupation','company_name','Annualincome','workinglocation',
+      'occu_details','income_in','working_hours','anyotherincome',
+      'Height','HeightText','Weight','Complexion','Handicapt_status','Handicapt_reson',
+      'Caste','Subcaste','sub_caste','Fathername','fathermiddle','fatherLast',
+      'Fathersoccupation','Mothersname','mothermiddle','motherlast','Mothersoccupation',
+      'noofbrothers','noofsisters','noyubrothers','noyusisters','nb_unmarried','ns_unmarried',
+      'family_wealth','parents_stay','village','relatives',
+      'Address','City','State','Mobile','ConfirmEmail','countrycode',
+      'Star','Moonsign','Lagnam','Suddham','Raghu','Keethu','Sevai','DasaBalance',
+      'Kuladeivam','ThesaiIrupu','thosam','charan','Gan','nadi','parigarasevai',
+      'shani','shaniplace','dasatype','dasayear','dasamonth','dasadate',
+      'g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12',
+      'a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11','a12',
+      'PartnerExpectations','PE_Height','PE_Height2','PE_Age','PE_Age2',
+      'PE_Education','PE_Occupation','PE_Maritalstatus','PE_Country',
+      'PE_State','PE_City','PE_subcaste','pe_subcaste_marry',
+      'Status','Plan','visibility','featured','featured_user',
+      'Photo1Approve','Photo2Approve','Photo3Approve',
+      'photo_visibility','phone_visibility',
+      'HorosApprove','horoscope_visibility','idproof_approve','Biodata_approve',
+      'OtherNotes','aboutus','passport','achievement','medicalhistory',
+      'familymedicalhistory','reference','branch_name','branch_state'
     ];
 
     const updates = [];
@@ -782,45 +927,56 @@ router.put("/member/:matriId", async (req, res) => {
     for (const [key, value] of Object.entries(updateData)) {
       if (allowedFields.includes(key)) {
         updates.push(`${key} = ?`);
-        // Sanitize and format the value appropriately
-        const sanitizedValue = sanitizeFieldValue(key, value);
-        values.push(sanitizedValue);
+        values.push(sanitizeFieldValue(key, value));
       }
     }
 
     if (updates.length === 0) {
-      return res.status(400).json({ success: false, message: "No valid fields to update" });
+      return res.status(400).json({
+        success: false,
+        message: "No valid fields to update"
+      });
     }
 
     values.push(matriId);
 
-    const sql = `UPDATE register SET ${updates.join(', ')} WHERE MatriID = ?`;
-    
-    // Log sanitized SQL for debugging (without sensitive data)
+    const sql = `UPDATE register SET ${updates.join(", ")} WHERE MatriID = ?`;
+
     console.log(`📝 Executing update with ${updates.length} fields for ${matriId}`);
 
     db.query(sql, values, (err, result) => {
       if (err) {
         console.error("Update error:", err.message);
-        return res.status(500).json({ 
-          success: false, 
-          message: "Database error", 
-          error: err.message 
+        return res.status(500).json({
+          success: false,
+          message: "Database error",
+          error: err.message
         });
       }
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: "Member not found" });
+        return res.status(404).json({
+          success: false,
+          message: "Member not found"
+        });
       }
 
       console.log(`✅ Member ${matriId} updated successfully`);
-      res.json({ success: true, message: "Member updated successfully" });
+      res.json({
+        success: true,
+        message: "Member updated successfully"
+      });
     });
   } catch (err) {
-    console.error("Error:", err);
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    console.error("Server error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message
+    });
   }
 });
+
 
 // =========================
 // UPDATE MEMBER BIODATA (Full biodata including horoscope grids)

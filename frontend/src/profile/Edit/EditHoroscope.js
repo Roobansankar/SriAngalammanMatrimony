@@ -48,7 +48,11 @@ export default function EditHoroscope() {
     moonSignId: "",
     Moonsign: "",
     Star: "",
+    lagnamId: "",
+    Lagnam: "",
     Gothram: "",
+    Shani: "",
+    ShaniPlace: "",
     Manglik: "",
     Horosmatch: "",
     parigarasevai: "",
@@ -79,6 +83,7 @@ export default function EditHoroscope() {
     gothras: [],
     mangliks: [],
     horoscopeMatches: [],
+    shani: [],
   });
   const [preview, setPreview] = useState(null);
   const [customGothra, setCustomGothra] = useState("");
@@ -89,11 +94,12 @@ export default function EditHoroscope() {
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [moon, goth, mang, match] = await Promise.all([
+        const [moon, goth, mang, match,shani] = await Promise.all([
           fetch(API_BASE + "moon-sign").then((r) => r.json()),
           fetch(API_BASE + "gothra").then((r) => r.json()),
           fetch(API_BASE + "manglik").then((r) => r.json()),
           fetch(API_BASE + "horoscope-match").then((r) => r.json()),
+          fetch(API_BASE + "shani").then((r) => r.json()),
         ]);
 
         setOptions({
@@ -102,6 +108,7 @@ export default function EditHoroscope() {
           gothras: goth.map((x) => x.Gothra),
           mangliks: mang.map((x) => x.type),
           horoscopeMatches: match.map((x) => x.type),
+          shani: shani.map((x) => x.type),
         });
       } catch (err) {
         console.error("Dropdown error:", err);
@@ -170,9 +177,13 @@ useEffect(() => {
     ...prev,
     ConfirmEmail: user.ConfirmEmail || "",
     moonSignId: user.moonSignId || "",
-    Moonsign: user.Moonsign || "",
+  
     Star: user.Star || "",
+    lagnamId: user.lagnamId || "",
+  
     Gothram: gothraSelect,
+    Shani: user.Shani || "",
+  ShaniPlace: user.ShaniPlace || "",
     Manglik: user.Manglik || "",
     Horosmatch: user.Horosmatch || "",
     parigarasevai: user.parigarasevai || "",
@@ -209,14 +220,7 @@ useEffect(() => {
   }
   setNavamsa(n);
 
-  // Preview
-  // if (user.HoroscopeURL) {
-  //   setPreview(
-  //     user.horosother?.toLowerCase().includes(".pdf")
-  //       ? "PDF"
-  //       : user.HoroscopeURL
-  //   );
-  // }
+
 
 
   if (user.HoroscopeURL) {
@@ -236,20 +240,22 @@ useEffect(() => {
     Sutham: suthamValue,
   }));
 }, [options.gothras]);
+
 useEffect(() => {
   const user = JSON.parse(localStorage.getItem("userData"));
   if (!user || !options.moonSigns.length) return;
 
-  const selectedMoon = options.moonSigns.find(
-    (m) => String(m.ID) === String(user.moonSignId)
+  const selectedLagnam = options.moonSigns.find(
+    (m) => String(m.ID) === String(user.lagnamId)
   );
 
   setForm((prev) => ({
     ...prev,
-    moonSignId: selectedMoon?.ID || "",
-    Moonsign: selectedMoon?.Moon_Sign || "",
+    lagnamId: selectedLagnam?.ID || "",
+    Lagnam: selectedLagnam?.Moon_Sign || "",
   }));
 }, [options.moonSigns]);
+
 
 
   // CHECKBOX TOGGLE
@@ -274,6 +280,24 @@ useEffect(() => {
     state.set({ ...state.map, [key]: arr });
   };
 
+
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userData"));
+    if (!user || !options.moonSigns.length) return;
+
+    const selectedLagnam = options.moonSigns.find(
+      (m) => String(m.ID) === String(user.lagnamId),
+    );
+
+    setForm((prev) => ({
+      ...prev,
+      lagnamId: selectedLagnam?.ID || "",
+      Lagnam: selectedLagnam?.Moon_Sign || "",
+    }));
+  }, [options.moonSigns]);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData();
@@ -290,10 +314,14 @@ useEffect(() => {
     fd.append("ConfirmEmail", form.ConfirmEmail);
     fd.append("Moonsign", form.Moonsign);
     fd.append("Star", form.Star);
+    fd.append("Lagnam", form.Lagnam || "");
+
     // fd.append("Gothram", form.Gothram || "");
     const finalGothra = form.Gothram === "OTHER" ? customGothra : form.Gothram;
 
     fd.append("Gothram", finalGothra || "");
+fd.append("Shani", form.Shani || "");
+fd.append("ShaniPlace", form.Shani ? form.ShaniPlace || "" : "");
 
     fd.append("Manglik", form.Manglik || "");
     fd.append("Horosmatch", form.Horosmatch || "");
@@ -325,12 +353,7 @@ fd.append("Sutham", form.Sutham || "");
 
     try {
 
-      // await axios.put(API_BASE + "auth/update/horoscope", fd, {
-      //   headers: {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      // });
-
+ 
 
       await axios.put(API_BASE + "auth/update/horoscope", fd);
 
@@ -343,8 +366,12 @@ fd.append("Sutham", form.Sutham || "");
         Moonsign: form.Moonsign,
         Star: form.Star,
         moonSignId: form.moonSignId,
+        lagnamId: form.lagnamId,
+        Lagnam: form.Lagnam,
         TOB: TOB,
         Gothram: finalGothra,
+        Shani: form.Shani,
+  ShaniPlace: form.Shani ? form.ShaniPlace : "",
         Manglik: form.Manglik,
         Horosmatch: form.Horosmatch,
         parigarasevai: form.parigarasevai,
@@ -359,7 +386,7 @@ fd.append("Sutham", form.Sutham || "");
         ThesaiMonths: form.ThesaiMonths,
         ThesaiDays: form.ThesaiDays,
         Kootam: form.Kootam,
-        Sutham: form.Sutham
+        Sutham: form.Sutham,
       };
 
       // Update rasi and navamsa in localStorage
@@ -380,7 +407,7 @@ fd.append("Sutham", form.Sutham || "");
 
 
 
-  useEffect(() => {
+ useEffect(() => {
   const user = JSON.parse(localStorage.getItem("userData"));
   if (!user || !options.nakshatras.length) return;
 
@@ -413,7 +440,7 @@ fd.append("Sutham", form.Sutham || "");
               value={form.moonSignId || ""}
               onChange={(e) => {
                 const selected = options.moonSigns.find(
-                  (m) => m.ID == e.target.value
+                  (m) => m.ID == e.target.value,
                 );
                 setForm({
                   ...form,
@@ -450,6 +477,35 @@ fd.append("Sutham", form.Sutham || "");
               {options.nakshatras.map((s) => (
                 <option key={s} value={s}>
                   {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Lagnam */}
+          <div className="w-full flex flex-col">
+            <label className="text-sm font-medium mb-1 text-black">
+              Lagnam (Ascendant)
+            </label>
+
+            <select
+              value={form.lagnamId || ""}
+              onChange={(e) => {
+                const selected = options.moonSigns.find(
+                  (m) => m.ID == e.target.value,
+                );
+                setForm({
+                  ...form,
+                  lagnamId: selected?.ID || "",
+                  Lagnam: selected?.Moon_Sign || "",
+                });
+              }}
+              className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
+            >
+              <option value="">Select Lagnam</option>
+              {options.moonSigns.map((m) => (
+                <option key={m.ID} value={m.ID}>
+                  {m.Moon_Sign}
                 </option>
               ))}
             </select>
@@ -492,6 +548,28 @@ fd.append("Sutham", form.Sutham || "");
               />
             )}
           </div>
+
+
+          {/* Shani */}
+<Drop
+  label="Shani"
+  field="Shani"
+  options={options.shani || []}
+  form={form}
+  setForm={setForm}
+/>
+
+{/* Place of Shani – show only if Shani selected */}
+{form.Shani && (
+  <Input
+    label="Place of Shani"
+    field="ShaniPlace"
+    form={form}
+    setForm={setForm}
+    placeholder="Enter Place of Shani"
+  />
+)}
+
 
           {/* Sutham */}
           <div className="w-full flex flex-col">
@@ -697,7 +775,6 @@ fd.append("Sutham", form.Sutham || "");
               type="file"
               accept="image/*"
               className="border p-3 w-full rounded mt-1"
-              
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -742,7 +819,9 @@ fd.append("Sutham", form.Sutham || "");
           </div>
 
           {/* Rasi + Navamsa */}
-          <h2 className="col-span-2 text-xl font-bold mt-6">Rasi (12 Boxes) (clock wise)</h2>
+          <h2 className="col-span-2 text-xl font-bold mt-6">
+            Rasi (12 Boxes) (clock wise)
+          </h2>
           <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 12 }).map((_, i) => {
               const key = `g${i + 1}`;
@@ -754,12 +833,12 @@ fd.append("Sutham", form.Sutham || "");
                     i + 1 === 1
                       ? " (Left Top)"
                       : i + 1 === 4
-                      ? " (Right Top)"
-                      : i + 1 === 7
-                      ? " (Right Bottom)"
-                      : i + 1 === 10
-                      ? " (Left Bottom)"
-                      : ""
+                        ? " (Right Top)"
+                        : i + 1 === 7
+                          ? " (Right Bottom)"
+                          : i + 1 === 10
+                            ? " (Left Bottom)"
+                            : ""
                   }`}
                   selected={rasi[key] || []}
                   items={PLANETS}
@@ -783,12 +862,12 @@ fd.append("Sutham", form.Sutham || "");
                     i + 1 === 1
                       ? " (Left Top)"
                       : i + 1 === 4
-                      ? " (Right Top)"
-                      : i + 1 === 7
-                      ? " (Right Bottom)"
-                      : i + 1 === 10
-                      ? " (Left Bottom)"
-                      : ""
+                        ? " (Right Top)"
+                        : i + 1 === 7
+                          ? " (Right Bottom)"
+                          : i + 1 === 10
+                            ? " (Left Bottom)"
+                            : ""
                   }`}
                   selected={navamsa[key] || []}
                   items={PLANETS}

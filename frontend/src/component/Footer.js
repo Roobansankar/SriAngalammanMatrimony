@@ -99,7 +99,7 @@ export default function Footer() {
                 <span>
                   Sri Angalamman Matrimony, 108 Anna Street, Near SPS
                   Documentation Office, Sivagiri, Erode (DT), Tamil Nadu -
-                  638109
+                  638109.
                 </span>
               </li>
             </ul>

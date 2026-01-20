@@ -485,7 +485,10 @@ router.put(
         ConfirmEmail,
         Moonsign,
         Star,
+        Lagnam,
         Gothram,
+         Shani,
+  ShaniPlace,
         Manglik,
         Horosmatch,
         parigarasevai,
@@ -550,7 +553,8 @@ router.put(
       ---------------------------------- */
       const updateQuery = `
         UPDATE register SET
-          Moonsign=?, Star=?, Gothram=?, Manglik=?,
+          Moonsign=?, Star=?,  Lagnam=?, Gothram=?, Shani=?,
+  ShaniPlace=?, Manglik=?,
           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?,
           POB=?, POC=?, TOB=?, Kuladeivam=?, Sutham=?,
           ThesaiPlanet=?, ThesaiYears=?, ThesaiMonths=?, ThesaiDays=?, Kootam=?,
@@ -572,7 +576,10 @@ const fixInt = (v) =>
      const params = [
        Moonsign || "",
        Star || "",
+       Lagnam || "",
        Gothram || "",
+        Shani || "",
+  Shani ? ShaniPlace || "" : "",
        Manglik || "",
        Horosmatch || "",
        fixInt(parigarasevai),

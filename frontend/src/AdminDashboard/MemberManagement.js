@@ -75,12 +75,34 @@ export default function MemberManagement() {
     }
   };
 
+  // const handleEditChange = (field, value) => {
+  //   setEditData((prev) => ({
+  //     ...prev,
+  //     [field]: value,
+  //   }));
+  // };
+
+
   const handleEditChange = (field, value) => {
+    let cleanedValue = value;
+
+    // If user pasted JSON array like ["சுக","குரு"]
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        cleanedValue = parsed.join(","); // convert to string
+      }
+    } catch (e) {
+      // not JSON → keep as typed
+      cleanedValue = value;
+    }
+
     setEditData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: cleanedValue,
     }));
   };
+
 
   const handleSaveChanges = async () => {
     if (!editData || !selectedMember) return;
@@ -156,6 +178,32 @@ export default function MemberManagement() {
     for (let i = start; i <= end; i++) pages.push(i);
     return pages;
   };
+
+  const renderCell = (field, pos) => (
+  <div
+    key={field}
+    className="border border-gray-300 rounded p-1 bg-gray-50 text-[11px]"
+  >
+    <div className="text-[10px] font-semibold text-gray-500 mb-1">
+      {pos}
+    </div>
+
+    {isEditing ? (
+      <input
+        type="text"
+        value={editData[field] || ""}
+        onChange={(e) => handleEditChange(field, e.target.value)}
+        className="w-full text-[11px] border rounded px-1 py-0.5"
+        placeholder="Planets"
+      />
+    ) : (
+      <div className="text-gray-800 font-medium leading-tight">
+        {selectedMember[field] || "-"}
+      </div>
+    )}
+  </div>
+);
+
 
   return (
     <>
@@ -359,31 +407,7 @@ export default function MemberManagement() {
                                 >
                                   <Edit3 size={16} />
                                 </button>
-                                {/* <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStatusChange(
-                                      m.MatriID,
-                                      m.Status === "Banned"
-                                        ? "Active"
-                                        : "Banned"
-                                    );
-                                  }}
-                                  className={`p-1.5 rounded ${
-                                    m.Status === "Banned"
-                                      ? "text-green-500 hover:bg-green-50"
-                                      : "text-orange-500 hover:bg-orange-50"
-                                  }`}
-                                  title={
-                                    m.Status === "Banned" ? "Unban" : "Ban"
-                                  }
-                                >
-                                  {m.Status === "Banned" ? (
-                                    <Check size={16} />
-                                  ) : (
-                                    <Ban size={16} />
-                                  )}
-                                </button> */}
+                  
                                 {isAdmin && (
                                   <button
                                     onClick={(e) => {
@@ -1158,7 +1182,7 @@ export default function MemberManagement() {
                       onChange={handleEditChange}
                     />
                     {/* Rasi Grid (g1-g12) */}
-                    <div className="pt-3 border-t border-gray-200">
+                    {/* <div className="pt-3 border-t border-gray-200">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">
                         Rasi Chart (Birth Chart)
                       </h4>
@@ -1201,9 +1225,36 @@ export default function MemberManagement() {
                           }
                         )}
                       </div>
-                    </div>
+                    </div> */}
+                    {/* Rasi Chart (Birth Chart) */}
+<div className="pt-3 border-t border-gray-200">
+  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+    Rasi Chart (Birth Chart)
+  </h4>
+
+  <div className="grid grid-cols-4 grid-rows-4 gap-1 mb-2 w-[300px] h-[300px]">
+
+    {/* ROW 1 */}
+    {[1, 2, 3, 4].map((pos) => renderCell(`g${pos}`, pos))}
+
+    {/* ROW 2 */}
+    {renderCell("g12", 12)}
+    <div className="col-span-2 row-span-2 border border-gray-300 rounded bg-gray-100 flex items-center justify-center font-bold text-sm">
+      RASI
+    </div>
+    {renderCell("g5", 5)}
+
+    {/* ROW 3 */}
+    {renderCell("g11", 11)}
+    {renderCell("g6", 6)}
+
+    {/* ROW 4 */}
+    {[10, 9, 8, 7].map((pos) => renderCell(`g${pos}`, pos))}
+  </div>
+</div>
+
                     {/* Navamsam Grid (a1-a12) */}
-                    <div className="pt-3 border-t border-gray-200">
+                    {/* <div className="pt-3 border-t border-gray-200">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">
                         Navamsam Chart
                       </h4>
@@ -1246,7 +1297,34 @@ export default function MemberManagement() {
                           }
                         )}
                       </div>
-                    </div>
+                    </div> */}
+                    {/* Navamsam Chart */}
+<div className="pt-3 border-t border-gray-200">
+  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+    Navamsam Chart
+  </h4>
+
+  <div className="grid grid-cols-4 grid-rows-4 gap-1 mb-2 w-[300px] h-[300px]">
+
+    {/* ROW 1 */}
+    {[1, 2, 3, 4].map((pos) => renderCell(`a${pos}`, pos))}
+
+    {/* ROW 2 */}
+    {renderCell("a12", 12)}
+    <div className="col-span-2 row-span-2 border border-gray-300 rounded bg-gray-100 flex items-center justify-center font-bold text-sm">
+      NAVAMSA
+    </div>
+    {renderCell("a5", 5)}
+
+    {/* ROW 3 */}
+    {renderCell("a11", 11)}
+    {renderCell("a6", 6)}
+
+    {/* ROW 4 */}
+    {[10, 9, 8, 7].map((pos) => renderCell(`a${pos}`, pos))}
+  </div>
+</div>
+
                     {/* Additional Notes */}
                     <div className="pt-3 border-t border-gray-200">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">
