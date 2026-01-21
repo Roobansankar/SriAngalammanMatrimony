@@ -4,6 +4,7 @@ import db from "../config/db.js";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { generateToken } from "../middleware/auth.js";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -26,7 +27,7 @@ router.post("/login", async (req, res) => {
     const conn = db.promise();
     const [rows] = await conn.query(
       "SELECT * FROM register WHERE ConfirmEmail = ? LIMIT 1",
-      [email.trim()]
+      [email.trim()],
     );
 
     if (!rows.length) {
@@ -51,10 +52,14 @@ router.post("/login", async (req, res) => {
     delete safeUser.Password; // if exists
     // You might want to remove email verification tokens etc.
 
+    // Generate JWT token for authenticated requests
+    const token = generateToken(user);
+
     return res.json({
       success: true,
       message: "Login successful",
       user: safeUser,
+      token,
     });
   } catch (err) {
     console.error("auth/login error:", err);
@@ -92,7 +97,7 @@ router.get("/user", async (req, res) => {
       WHERE ConfirmEmail = ?
       LIMIT 1
       `,
-      [email.trim()]
+      [email.trim()],
     );
 
     if (!rows.length) {
@@ -135,7 +140,7 @@ router.get("/allProfiles", async (req, res) => {
         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
       FROM register
       ORDER BY id DESC
-      `
+      `,
     );
 
     // PROCESS EACH USER → attach PhotoURL
@@ -171,7 +176,7 @@ router.get("/check-email", async (req, res) => {
     // 🔥 Use the correct column name from your DB: ConfirmEmail
     const [rows] = await conn.query(
       "SELECT id FROM register WHERE TRIM(ConfirmEmail) = TRIM(?) LIMIT 1",
-      [email]
+      [email],
     );
 
     res.json({ exists: rows.length > 0 });
@@ -189,7 +194,7 @@ router.get("/check-mobile", async (req, res) => {
     const conn = db.promise();
     const [rows] = await conn.query(
       "SELECT id FROM register WHERE mobile = ? LIMIT 1",
-      [mobile]
+      [mobile],
     );
 
     res.json({ exists: rows.length > 0 });
@@ -229,11 +234,11 @@ router.put("/update/photo1", upload1.single("photo1"), async (req, res) => {
     // 🔹 Only update Photo1 – DO NOT change Photo1Approve
     await conn.query(
       `
-      UPDATE register SET 
+      UPDATE register SET
         Photo1 = ?
       WHERE ConfirmEmail = ?
       `,
-      [fileName, ConfirmEmail]
+      [fileName, ConfirmEmail],
     );
 
     return res.json({
@@ -260,7 +265,7 @@ router.put("/update/about", async (req, res) => {
 
     const [result] = await conn.query(
       "UPDATE register SET aboutus = ? WHERE ConfirmEmail = ?",
-      [aboutus, email]
+      [aboutus, email],
     );
 
     if (result.affectedRows === 0) {
@@ -314,7 +319,7 @@ router.put("/update/basic", async (req, res) => {
     const conn = db.promise();
     const [result] = await conn.query(
       `UPDATE register SET ${setQuery} WHERE ConfirmEmail = ?`,
-      [...values, email]
+      [...values, email],
     );
 
     if (result.affectedRows === 0) {
@@ -370,21 +375,21 @@ router.put(
 
       await conn.query(
         `
-        UPDATE register SET 
-          Moonsign = ?, 
-          Star = ?, 
-          Gothram = ?, 
-          Manglik = ?, 
-          shani = ?, 
-          shaniplace = ?, 
-          Horosmatch = ?, 
-          parigarasevai = ?, 
-          Sevai = ?, 
-          Raghu = ?, 
-          Keethu = ?, 
-          POB = ?, 
-          POC = ?, 
-          TOB = ?, 
+        UPDATE register SET
+          Moonsign = ?,
+          Star = ?,
+          Gothram = ?,
+          Manglik = ?,
+          shani = ?,
+          shaniplace = ?,
+          Horosmatch = ?,
+          parigarasevai = ?,
+          Sevai = ?,
+          Raghu = ?,
+          Keethu = ?,
+          POB = ?,
+          POC = ?,
+          TOB = ?,
           HoroscopeMain = ?
         WHERE ConfirmEmail = ?
       `,
@@ -405,7 +410,7 @@ router.put(
           TOB,
           horoscopeBlob, // BLOB IMAGE
           ConfirmEmail,
-        ]
+        ],
       );
 
       return res.json({
@@ -419,7 +424,7 @@ router.put(
         message: "Server error",
       });
     }
-  }
+  },
 );
 
 router.put("/update/contact", async (req, res) => {
@@ -451,18 +456,18 @@ router.put("/update/contact", async (req, res) => {
 
     await conn.query(
       `
-      UPDATE register SET 
-        Country = ?, 
-        State = ?, 
-        Dist = ?, 
-        City = ?, 
-        Pincode = ?, 
-        Residencystatus = ?, 
-        Address = ?, 
-        Phone = ?, 
-        Mobile = ?, 
-        Mobile2 = ?, 
-        calling_time = ?, 
+      UPDATE register SET
+        Country = ?,
+        State = ?,
+        Dist = ?,
+        City = ?,
+        Pincode = ?,
+        Residencystatus = ?,
+        Address = ?,
+        Phone = ?,
+        Mobile = ?,
+        Mobile2 = ?,
+        calling_time = ?,
         POC = ?
       WHERE ConfirmEmail = ?
     `,
@@ -480,7 +485,7 @@ router.put("/update/contact", async (req, res) => {
         calling_time,
         POC,
         ConfirmEmail,
-      ]
+      ],
     );
 
     return res.json({
@@ -524,17 +529,17 @@ router.put("/update/education", async (req, res) => {
 
     await conn.query(
       `
-      UPDATE register SET 
-        Education = ?, 
-        EducationDetails = ?, 
-        Occupation = ?, 
-        occu_details = ?, 
-        Employedin = ?, 
-        Annualincome = ?, 
-        anyotherincome = ?, 
-        income_in = ?, 
-        working_hours = ?, 
-        workinglocation = ?, 
+      UPDATE register SET
+        Education = ?,
+        EducationDetails = ?,
+        Occupation = ?,
+        occu_details = ?,
+        Employedin = ?,
+        Annualincome = ?,
+        anyotherincome = ?,
+        income_in = ?,
+        working_hours = ?,
+        workinglocation = ?,
         workin = ?
       WHERE ConfirmEmail = ?
     `,
@@ -551,7 +556,7 @@ router.put("/update/education", async (req, res) => {
         workinglocation,
         workin,
         ConfirmEmail,
-      ]
+      ],
     );
 
     return res.json({
@@ -600,9 +605,9 @@ router.put("/update/lifestyle", async (req, res) => {
 
     await conn.query(
       `
-      UPDATE register SET 
+      UPDATE register SET
         height = ?,
-        HeightText = ?, 
+        HeightText = ?,
         Weight = ?,
         BloodGroup = ?,
         Complexion = ?,
@@ -637,7 +642,7 @@ router.put("/update/lifestyle", async (req, res) => {
         familymedicalhistory,
         anyotherincome,
         ConfirmEmail,
-      ]
+      ],
     );
 
     res.json({
@@ -685,20 +690,20 @@ router.put("/update/family", async (req, res) => {
     await conn.query(
       `
       UPDATE register SET
-        Familyvalues = ?, 
-        FamilyType = ?, 
-        FamilyStatus = ?, 
-        noofbrothers = ?, 
-        noofsisters = ?, 
-        noyubrothers = ?, 
-        noyusisters = ?, 
-        Fathername = ?, 
-        Fathersoccupation = ?, 
-        Mothersname = ?, 
-        Mothersoccupation = ?, 
-        family_wealth = ?, 
-        mother_tounge = ?, 
-        familymedicalhistory = ?, 
+        Familyvalues = ?,
+        FamilyType = ?,
+        FamilyStatus = ?,
+        noofbrothers = ?,
+        noofsisters = ?,
+        noyubrothers = ?,
+        noyusisters = ?,
+        Fathername = ?,
+        Fathersoccupation = ?,
+        Mothersname = ?,
+        Mothersoccupation = ?,
+        family_wealth = ?,
+        mother_tounge = ?,
+        familymedicalhistory = ?,
         FamilyDetails = ?
       WHERE ConfirmEmail = ?
     `,
@@ -719,7 +724,7 @@ router.put("/update/family", async (req, res) => {
         familymedicalhistory,
         FamilyDetails,
         ConfirmEmail,
-      ]
+      ],
     );
 
     return res.json({
@@ -769,24 +774,24 @@ router.put("/update/partner", async (req, res) => {
 
     await conn.query(
       `
-      UPDATE register SET 
-        Looking = ?, 
-        PE_FromAge = ?, 
-        PE_ToAge = ?, 
-        PE_from_Height = ?, 
-        PE_to_Height = ?, 
-        PE_Complexion = ?, 
-        PE_MotherTongue = ?, 
-        PE_Religion = ?, 
-        PE_Caste = ?, 
-        PE_subcaste = ?, 
-        PE_Education = ?, 
-        PE_Occupation = ?, 
-        PE_Residentstatus = ?, 
-        PE_Country = ?, 
-        PE_Countrylivingin = ?, 
-        PE_State = ?, 
-        PE_City = ?, 
+      UPDATE register SET
+        Looking = ?,
+        PE_FromAge = ?,
+        PE_ToAge = ?,
+        PE_from_Height = ?,
+        PE_to_Height = ?,
+        PE_Complexion = ?,
+        PE_MotherTongue = ?,
+        PE_Religion = ?,
+        PE_Caste = ?,
+        PE_subcaste = ?,
+        PE_Education = ?,
+        PE_Occupation = ?,
+        PE_Residentstatus = ?,
+        PE_Country = ?,
+        PE_Countrylivingin = ?,
+        PE_State = ?,
+        PE_City = ?,
         PartnerExpectations = ?
       WHERE ConfirmEmail = ?
       `,
@@ -810,7 +815,7 @@ router.put("/update/partner", async (req, res) => {
         PE_City,
         PartnerExpectations,
         ConfirmEmail,
-      ]
+      ],
     );
 
     return res.json({
@@ -825,9 +830,5 @@ router.put("/update/partner", async (req, res) => {
     });
   }
 });
-
-
-
-
 
 export default router;

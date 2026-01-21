@@ -14,6 +14,7 @@ import paymentRoutes from "./routes/payment.js";
 import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
+import notificationRoutes from "./routes/notifications.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,6 +46,7 @@ app.use("/api/auth", idSearchRoutes);
 app.use("/api/auth", interestRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => res.send("Matrimony API running..."));
 

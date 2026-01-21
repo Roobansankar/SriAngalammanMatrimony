@@ -1,5 +1,6 @@
 import express from "express";
 import db from "../config/db.js";
+import notificationService from "../services/notificationService.js";
 
 const router = express.Router();
 
@@ -29,8 +30,8 @@ const query = (sql, params) =>
 // Check if there's an accepted CHAT interest (separate from profile interest)
 const checkAcceptedChatInterest = async (matriid1, matriid2) => {
   const sql = `
-    SELECT id FROM chat_interests 
-    WHERE status = 'accepted' 
+    SELECT id FROM chat_interests
+    WHERE status = 'accepted'
       AND ((from_matriid = ? AND to_matriid = ?) OR (from_matriid = ? AND to_matriid = ?))
     LIMIT 1
   `;
@@ -41,7 +42,7 @@ const checkAcceptedChatInterest = async (matriid1, matriid2) => {
 // Get existing chat interest between two users
 const getChatInterest = async (matriid1, matriid2) => {
   const sql = `
-    SELECT * FROM chat_interests 
+    SELECT * FROM chat_interests
     WHERE (from_matriid = ? AND to_matriid = ?) OR (from_matriid = ? AND to_matriid = ?)
     LIMIT 1
   `;
@@ -62,7 +63,7 @@ router.get("/can-chat", async (req, res) => {
 
     const canChat = await checkAcceptedChatInterest(matriid, partner);
     const chatInterest = await getChatInterest(matriid, partner);
-    
+
     res.json({ success: true, canChat, chatInterest });
   } catch (err) {
     console.error("GET /can-chat error:", err);
@@ -79,16 +80,21 @@ router.post("/request", async (req, res) => {
   try {
     const { fromMatriID, toMatriID } = req.body;
     if (!fromMatriID || !toMatriID) {
-      return res.status(400).json({ error: "fromMatriID and toMatriID required" });
+      return res
+        .status(400)
+        .json({ error: "fromMatriID and toMatriID required" });
     }
 
     // Check if chat interest already exists
     const existing = await getChatInterest(fromMatriID, toMatriID);
     if (existing) {
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         chatInterest: existing,
-        message: existing.status === 'accepted' ? 'Chat already accepted' : 'Chat request already sent'
+        message:
+          existing.status === "accepted"
+            ? "Chat already accepted"
+            : "Chat request already sent",
       });
     }
 
@@ -96,25 +102,32 @@ router.post("/request", async (req, res) => {
     const sql = `INSERT INTO chat_interests (from_matriid, to_matriid, status) VALUES (?, ?, 'pending')`;
     const result = await query(sql, [fromMatriID, toMatriID]);
 
-    const [newRequest] = await query(`SELECT * FROM chat_interests WHERE id = ?`, [result.insertId]);
+    const [newRequest] = await query(
+      `SELECT * FROM chat_interests WHERE id = ?`,
+      [result.insertId],
+    );
+
+    // Fetch sender's name
+    const [sender] = await query(
+      `SELECT Name FROM register WHERE MatriID = ?`,
+      [fromMatriID],
+    );
+    const senderName = sender?.Name || fromMatriID;
 
     // Emit socket event for chat request
     try {
       const io = req.app.get("io");
       const onlineMap = req.app.get("onlineMap");
-      
+
       if (io && onlineMap) {
         const recipientKey = toMatriID.toString().toLowerCase().trim();
         const recipientSocketId = onlineMap.get(recipientKey);
-        
-        // Fetch sender's name
-        const [sender] = await query(`SELECT Name FROM register WHERE MatriID = ?`, [fromMatriID]);
-        
+
         if (recipientSocketId) {
           io.to(recipientSocketId).emit("chat_request_received", {
             chatInterest: newRequest,
             from_matriid: fromMatriID,
-            fromName: sender?.Name || fromMatriID
+            fromName: senderName,
           });
         }
       }
@@ -122,7 +135,22 @@ router.post("/request", async (req, res) => {
       console.warn("Socket emit error:", socketErr);
     }
 
-    res.json({ success: true, chatInterest: newRequest, message: 'Chat request sent' });
+    // Send push notification to recipient
+    try {
+      await notificationService.notifyChatRequest(
+        toMatriID,
+        senderName,
+        fromMatriID,
+      );
+    } catch (pushErr) {
+      console.warn("Push notification (chat_request) failed:", pushErr);
+    }
+
+    res.json({
+      success: true,
+      chatInterest: newRequest,
+      message: "Chat request sent",
+    });
   } catch (err) {
     console.error("POST /request error:", err);
     res.status(500).json({ error: "Server error" });
@@ -137,44 +165,76 @@ router.post("/request", async (req, res) => {
 router.post("/respond", async (req, res) => {
   try {
     const { id, status } = req.body;
-    if (!id || !['accepted', 'rejected'].includes(status)) {
-      return res.status(400).json({ error: "id and valid status (accepted/rejected) required" });
+    if (!id || !["accepted", "rejected"].includes(status)) {
+      return res
+        .status(400)
+        .json({ error: "id and valid status (accepted/rejected) required" });
     }
 
     // Get the chat interest first
-    const [existing] = await query(`SELECT * FROM chat_interests WHERE id = ?`, [id]);
+    const [existing] = await query(
+      `SELECT * FROM chat_interests WHERE id = ?`,
+      [id],
+    );
     if (!existing) {
       return res.status(404).json({ error: "Chat request not found" });
     }
 
     // Update the status
-    await query(`UPDATE chat_interests SET status = ? WHERE id = ?`, [status, id]);
-    
-    const [updated] = await query(`SELECT * FROM chat_interests WHERE id = ?`, [id]);
+    await query(`UPDATE chat_interests SET status = ? WHERE id = ?`, [
+      status,
+      id,
+    ]);
+
+    const [updated] = await query(`SELECT * FROM chat_interests WHERE id = ?`, [
+      id,
+    ]);
+
+    // Fetch responder's name
+    const [responder] = await query(
+      `SELECT Name FROM register WHERE MatriID = ?`,
+      [existing.to_matriid],
+    );
+    const responderName = responder?.Name || existing.to_matriid;
 
     // Emit socket event for response
     try {
       const io = req.app.get("io");
       const onlineMap = req.app.get("onlineMap");
-      
+
       if (io && onlineMap) {
         const senderKey = existing.from_matriid.toString().toLowerCase().trim();
         const senderSocketId = onlineMap.get(senderKey);
-        
-        // Fetch responder's name
-        const [responder] = await query(`SELECT Name FROM register WHERE MatriID = ?`, [existing.to_matriid]);
-        
+
         if (senderSocketId) {
           io.to(senderSocketId).emit("chat_request_response", {
             chatInterest: updated,
             status,
             from_matriid: existing.to_matriid,
-            fromName: responder?.Name || existing.to_matriid
+            fromName: responderName,
           });
         }
       }
     } catch (socketErr) {
       console.warn("Socket emit error:", socketErr);
+    }
+
+    // Send push notification to the original requester about the response
+    try {
+      if (status === "accepted") {
+        await notificationService.notifyChatAccepted(
+          existing.from_matriid,
+          responderName,
+          updated.id,
+        );
+      } else if (status === "rejected") {
+        await notificationService.notifyChatRejected(
+          existing.from_matriid,
+          responderName,
+        );
+      }
+    } catch (pushErr) {
+      console.warn("Push notification (chat_response) failed:", pushErr);
     }
 
     res.json({ success: true, chatInterest: updated });
@@ -203,10 +263,10 @@ router.get("/requests", async (req, res) => {
     `;
 
     const requests = await query(sql, [matriid]);
-    
-    const enriched = requests.map(req => ({
+
+    const enriched = requests.map((req) => ({
       ...req,
-      PhotoURL: makePhotoUrl(req.Photo1, req.Photo1Approve)
+      PhotoURL: makePhotoUrl(req.Photo1, req.Photo1Approve),
     }));
 
     res.json({ success: true, requests: enriched });
@@ -228,10 +288,10 @@ router.get("/conversations", async (req, res) => {
 
     // Simpler query: get distinct partners
     const partnersSql = `
-      SELECT DISTINCT 
-        CASE 
-          WHEN from_matriid = ? THEN to_matriid 
-          ELSE from_matriid 
+      SELECT DISTINCT
+        CASE
+          WHEN from_matriid = ? THEN to_matriid
+          ELSE from_matriid
         END as partner
       FROM chat_messages
       WHERE from_matriid = ? OR to_matriid = ?
@@ -241,27 +301,32 @@ router.get("/conversations", async (req, res) => {
     const enriched = await Promise.all(
       partners.map(async (p) => {
         const partner = p.partner;
-        
+
         const lastMsgSql = `
-          SELECT message, created_at 
-          FROM chat_messages 
-          WHERE (from_matriid = ? AND to_matriid = ?) 
+          SELECT message, created_at
+          FROM chat_messages
+          WHERE (from_matriid = ? AND to_matriid = ?)
              OR (from_matriid = ? AND to_matriid = ?)
-          ORDER BY created_at DESC 
+          ORDER BY created_at DESC
           LIMIT 1
         `;
-        const [lastMsg] = await query(lastMsgSql, [matriid, partner, partner, matriid]);
+        const [lastMsg] = await query(lastMsgSql, [
+          matriid,
+          partner,
+          partner,
+          matriid,
+        ]);
 
         const unreadSql = `
-          SELECT COUNT(*) as cnt 
-          FROM chat_messages 
+          SELECT COUNT(*) as cnt
+          FROM chat_messages
           WHERE from_matriid = ? AND to_matriid = ? AND is_read = 0
         `;
         const [unreadResult] = await query(unreadSql, [partner, matriid]);
 
         const profileSql = `SELECT MatriID, Name, Photo1, Photo1Approve, City, workinglocation, Occupation FROM register WHERE MatriID = ? LIMIT 1`;
         const [profileRow] = await query(profileSql, [partner]);
-        
+
         let profile = null;
         if (profileRow) {
           profile = {
@@ -270,7 +335,7 @@ router.get("/conversations", async (req, res) => {
             PhotoURL: makePhotoUrl(profileRow.Photo1, profileRow.Photo1Approve),
             City: profileRow.City,
             workinglocation: profileRow.workinglocation,
-            Occupation: profileRow.Occupation
+            Occupation: profileRow.Occupation,
           };
         }
 
@@ -279,9 +344,9 @@ router.get("/conversations", async (req, res) => {
           last_message: lastMsg?.message || null,
           last_message_time: lastMsg?.created_at || null,
           unread_count: unreadResult?.cnt || 0,
-          profile: profile || null
+          profile: profile || null,
         };
-      })
+      }),
     );
 
     enriched.sort((a, b) => {
@@ -311,10 +376,10 @@ router.get("/messages", async (req, res) => {
 
     const canChat = await checkAcceptedChatInterest(matriid, partner);
     if (!canChat) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: "Cannot view messages. Chat request must be accepted first.",
         canChat: false,
-        messages: []
+        messages: [],
       });
     }
 
@@ -328,13 +393,17 @@ router.get("/messages", async (req, res) => {
     `;
 
     const messages = await query(sql, [
-      matriid, partner, partner, matriid, 
-      parseInt(limit), parseInt(offset)
+      matriid,
+      partner,
+      partner,
+      matriid,
+      parseInt(limit),
+      parseInt(offset),
     ]);
 
     const markReadSql = `
-      UPDATE chat_messages 
-      SET is_read = 1 
+      UPDATE chat_messages
+      SET is_read = 1
       WHERE from_matriid = ? AND to_matriid = ? AND is_read = 0
     `;
     await query(markReadSql, [partner, matriid]);
@@ -356,14 +425,16 @@ router.post("/send", async (req, res) => {
     const { from_matriid, to_matriid, message } = req.body;
 
     if (!from_matriid || !to_matriid || !message) {
-      return res.status(400).json({ error: "from_matriid, to_matriid, and message required" });
+      return res
+        .status(400)
+        .json({ error: "from_matriid, to_matriid, and message required" });
     }
 
     const canChat = await checkAcceptedChatInterest(from_matriid, to_matriid);
     if (!canChat) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: "Cannot send message. Chat request must be accepted first.",
-        canChat: false 
+        canChat: false,
       });
     }
 
@@ -376,19 +447,26 @@ router.post("/send", async (req, res) => {
 
     // Fetch the inserted message
     const [newMessage] = await query(
-      `SELECT id, from_matriid, to_matriid, message, is_read, created_at 
+      `SELECT id, from_matriid, to_matriid, message, is_read, created_at
        FROM chat_messages WHERE id = ?`,
-      [result.insertId]
+      [result.insertId],
     );
+
+    // Fetch sender's name for notifications
+    const [sender] = await query(
+      `SELECT Name FROM register WHERE MatriID = ?`,
+      [from_matriid],
+    );
+    const senderName = sender?.Name || from_matriid;
 
     try {
       const io = req.app.get("io");
       const onlineMap = req.app.get("onlineMap");
-      
+
       if (io && onlineMap) {
         const recipientKey = to_matriid.toString().toLowerCase().trim();
         const recipientSocketId = onlineMap.get(recipientKey);
-        
+
         if (recipientSocketId) {
           io.to(recipientSocketId).emit("chat_message", {
             message: newMessage,
@@ -400,6 +478,18 @@ router.post("/send", async (req, res) => {
       }
     } catch (socketErr) {
       console.warn("Socket emit error:", socketErr);
+    }
+
+    // Send push notification for new message
+    try {
+      await notificationService.notifyNewMessage(
+        to_matriid,
+        senderName,
+        newMessage.id,
+        message.trim(),
+      );
+    } catch (pushErr) {
+      console.warn("Push notification (new_message) failed:", pushErr);
     }
 
     res.json({ success: true, message: newMessage });
@@ -422,8 +512,8 @@ router.post("/mark-read", async (req, res) => {
     }
 
     const sql = `
-      UPDATE chat_messages 
-      SET is_read = 1 
+      UPDATE chat_messages
+      SET is_read = 1
       WHERE from_matriid = ? AND to_matriid = ? AND is_read = 0
     `;
 
@@ -447,8 +537,8 @@ router.get("/unread-count", async (req, res) => {
     if (!matriid) return res.status(400).json({ error: "matriid required" });
 
     const sql = `
-      SELECT COUNT(*) as count 
-      FROM chat_messages 
+      SELECT COUNT(*) as count
+      FROM chat_messages
       WHERE to_matriid = ? AND is_read = 0
     `;
 
@@ -472,8 +562,8 @@ router.get("/partner-profile/:matriid", async (req, res) => {
 
     const sql = `
       SELECT MatriID, Name, Photo1, Photo1Approve, Gender, Age, City, workinglocation, Occupation
-      FROM register 
-      WHERE MatriID = ? 
+      FROM register
+      WHERE MatriID = ?
       LIMIT 1
     `;
 
@@ -491,7 +581,7 @@ router.get("/partner-profile/:matriid", async (req, res) => {
       Age: row.Age,
       City: row.City,
       workinglocation: row.workinglocation,
-      Occupation: row.Occupation
+      Occupation: row.Occupation,
     };
 
     res.json({ success: true, partner });
@@ -513,8 +603,8 @@ router.get("/partner-profile", async (req, res) => {
 
     const sql = `
       SELECT MatriID, Name, Photo1, Photo1Approve, Gender, Age, City, workinglocation, Occupation
-      FROM register 
-      WHERE MatriID = ? 
+      FROM register
+      WHERE MatriID = ?
       LIMIT 1
     `;
 
@@ -532,7 +622,7 @@ router.get("/partner-profile", async (req, res) => {
       Age: row.Age,
       City: row.City,
       workinglocation: row.workinglocation,
-      Occupation: row.Occupation
+      Occupation: row.Occupation,
     };
 
     res.json({ success: true, profile });

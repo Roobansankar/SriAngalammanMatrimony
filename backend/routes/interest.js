@@ -1,128 +1,7 @@
-// import express from "express";
-// import db from "../config/db.js";
-
-// const router = express.Router();
-
-// // POST /api/auth/interest/send
-// router.post("/interest/send", async (req, res) => {
-//   try {
-//     const { fromMatriID, toMatriID } = req.body;
-//     if (!fromMatriID || !toMatriID)
-//       return res.status(400).json({ success: false, message: "Missing ids" });
-
-//     // Insert pending interest (avoid duplicates)
-//     const conn = db.promise();
-//     // check existing pending or accepted
-//     const [exists] = await conn.query(
-//       "SELECT * FROM interests WHERE from_matriid=? AND to_matriid=? LIMIT 1",
-//       [fromMatriID, toMatriID]
-//     );
-//     if (exists.length) {
-//       // update created_at if desired or return message
-//       return res.json({
-//         success: true,
-//         message: "Interest already sent",
-//         interest: exists[0],
-//       });
-//     }
-
-//     const [insert] = await conn.query(
-//       "INSERT INTO interests (from_matriid, to_matriid) VALUES (?, ?)",
-//       [fromMatriID, toMatriID]
-//     );
-//     const [rows] = await conn.query("SELECT * FROM interests WHERE id = ?", [
-//       insert.insertId,
-//     ]);
-//     const interest = rows[0];
-
-//     // send realtime event to recipient if online
-//     const io = req.app.get("io");
-//     const onlineMap = req.app.get("onlineMap");
-//     const recipientSocket = onlineMap.get((toMatriID || "").toLowerCase());
-//     if (recipientSocket) {
-//       io.to(recipientSocket).emit("interest_received", {
-//         interest,
-//         fromMatriID,
-//         toMatriID,
-//       });
-//     }
-
-//     return res.json({ success: true, interest });
-//   } catch (err) {
-//     console.error("interest/send error", err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// });
-
-// // POST /api/auth/interest/respond
-// router.post("/interest/respond", async (req, res) => {
-//   try {
-//     const { interestId, action } = req.body; // action = 'accepted' | 'rejected'
-//     if (!interestId || !["accepted", "rejected"].includes(action))
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Invalid payload" });
-
-//     const conn = db.promise();
-//     await conn.query("UPDATE interests SET status=? WHERE id=?", [
-//       action,
-//       interestId,
-//     ]);
-//     const [rows] = await conn.query("SELECT * FROM interests WHERE id=?", [
-//       interestId,
-//     ]);
-//     const interest = rows[0];
-
-//     // notify sender via socket
-//     const io = req.app.get("io");
-//     const onlineMap = req.app.get("onlineMap");
-//     const senderSocket = onlineMap.get(
-//       (interest.from_matriid || "").toLowerCase()
-//     );
-//     if (senderSocket) {
-//       io.to(senderSocket).emit("interest_response", { interest, action });
-//     }
-
-//     // Optionally notify recipient as well that update succeeded
-//     const recipientSocket = onlineMap.get(
-//       (interest.to_matriid || "").toLowerCase()
-//     );
-//     if (recipientSocket) {
-//       io.to(recipientSocket).emit("interest_update", { interest });
-//     }
-
-//     return res.json({ success: true, interest });
-//   } catch (err) {
-//     console.error("interest/respond error", err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// });
-
-// // GET /api/auth/interest/status?from=...&to=...
-// router.get("/interest/status", async (req, res) => {
-//   try {
-//     const { from, to } = req.query;
-//     if (!from || !to)
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Missing params" });
-//     const conn = db.promise();
-//     const [rows] = await conn.query(
-//       "SELECT * FROM interests WHERE from_matriid=? AND to_matriid=? LIMIT 1",
-//       [from, to]
-//     );
-//     return res.json({ success: true, interest: rows[0] || null });
-//   } catch (err) {
-//     console.error("interest/status error", err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// });
-
-// export default router;
-
 // routes/interest.js
 import express from "express";
 import db from "../config/db.js";
+import notificationService from "../services/notificationService.js";
 
 const router = express.Router();
 
@@ -153,7 +32,7 @@ router.post("/interest/send", async (req, res) => {
     // Check existing record (any status)
     const [existsRows] = await conn.query(
       "SELECT * FROM interests WHERE from_matriid=? AND to_matriid=? LIMIT 1",
-      [fromMatriID, toMatriID]
+      [fromMatriID, toMatriID],
     );
 
     if (existsRows.length) {
@@ -168,7 +47,7 @@ router.post("/interest/send", async (req, res) => {
     // Insert new pending interest
     const [insert] = await conn.query(
       "INSERT INTO interests (from_matriid, to_matriid, status) VALUES (?, ?, 'pending')",
-      [fromMatriID, toMatriID]
+      [fromMatriID, toMatriID],
     );
 
     const [rows] = await conn.query("SELECT * FROM interests WHERE id = ?", [
@@ -179,7 +58,7 @@ router.post("/interest/send", async (req, res) => {
     // Fetch sender's name from register table
     const [senderRows] = await conn.query(
       "SELECT Name FROM register WHERE MatriID = ? LIMIT 1",
-      [fromMatriID]
+      [fromMatriID],
     );
     const senderName = senderRows.length ? senderRows[0].Name : fromMatriID;
 
@@ -198,6 +77,17 @@ router.post("/interest/send", async (req, res) => {
       }
     } catch (e) {
       console.warn("socket emit (interest_received) failed", e);
+    }
+
+    // Send push notification to recipient
+    try {
+      await notificationService.notifyInterestReceived(
+        toMatriID,
+        senderName,
+        fromMatriID,
+      );
+    } catch (e) {
+      console.warn("Push notification (interest_received) failed", e);
     }
 
     return res.json({ success: true, interest, fromName: senderName });
@@ -226,7 +116,7 @@ router.post("/interest/respond", async (req, res) => {
     // Update the interest status
     await conn.query(
       "UPDATE interests SET status=?, updated_at = CURRENT_TIMESTAMP WHERE id=?",
-      [action, interestId]
+      [action, interestId],
     );
 
     const [rows] = await conn.query("SELECT * FROM interests WHERE id=?", [
@@ -242,19 +132,25 @@ router.post("/interest/respond", async (req, res) => {
     // Fetch responder's name from register table
     const [responderRows] = await conn.query(
       "SELECT Name FROM register WHERE MatriID = ? LIMIT 1",
-      [interest.to_matriid]
+      [interest.to_matriid],
     );
-    const responderName = responderRows.length ? responderRows[0].Name : interest.to_matriid;
+    const responderName = responderRows.length
+      ? responderRows[0].Name
+      : interest.to_matriid;
 
     // Notify sender via socket
     const io = req.app.get("io");
     const onlineMap = req.app.get("onlineMap");
     try {
       const senderSocket = onlineMap.get(
-        String(interest.from_matriid).toLowerCase()
+        String(interest.from_matriid).toLowerCase(),
       );
       if (senderSocket && io) {
-        io.to(senderSocket).emit("interest_response", { interest, action, fromName: responderName });
+        io.to(senderSocket).emit("interest_response", {
+          interest,
+          action,
+          fromName: responderName,
+        });
       }
     } catch (e) {
       console.warn("socket emit (interest_response) failed", e);
@@ -263,13 +159,27 @@ router.post("/interest/respond", async (req, res) => {
     // Notify recipient (confirmation) as well
     try {
       const recipientSocket = onlineMap.get(
-        String(interest.to_matriid).toLowerCase()
+        String(interest.to_matriid).toLowerCase(),
       );
       if (recipientSocket && io) {
         io.to(recipientSocket).emit("interest_update", { interest });
       }
     } catch (e) {
       console.warn("socket emit (interest_update) failed", e);
+    }
+
+    // Send push notification to the original sender about the response
+    try {
+      if (action === "accepted") {
+        await notificationService.notifyInterestAccepted(
+          interest.from_matriid,
+          responderName,
+          interest.to_matriid,
+        );
+      }
+      // Optionally notify on rejection as well (currently not implemented to avoid negative notifications)
+    } catch (e) {
+      console.warn("Push notification (interest_response) failed", e);
     }
 
     return res.json({ success: true, interest, fromName: responderName });
@@ -296,7 +206,7 @@ router.get("/interest/status", async (req, res) => {
     const conn = db.promise();
     const [rows] = await conn.query(
       "SELECT * FROM interests WHERE from_matriid=? AND to_matriid=? LIMIT 1",
-      [from, to]
+      [from, to],
     );
     return res.json({ success: true, interest: rows[0] || null });
   } catch (err) {
@@ -321,7 +231,7 @@ router.get("/interest/incoming", async (req, res) => {
     const conn = db.promise();
     const [rows] = await conn.query(
       "SELECT * FROM interests WHERE to_matriid=? ORDER BY created_at DESC LIMIT 200",
-      [to]
+      [to],
     );
 
     // Optionally you can attach a small sender summary (name/email/phone) by joining the register table.
