@@ -9,6 +9,10 @@ services:
     image: mysql:8.0
     container_name: matrimony-mysql
     restart: always
+    command: >-
+      --innodb-page-size=32K
+      --innodb-default-row-format=DYNAMIC
+      --innodb-strict-mode=OFF
     ports:
       - "3306:3306" 
     environment:
@@ -18,13 +22,16 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-matrimony}
     volumes:
       - ${MYSQL_DATA_DIR:-./.data/mysql}:/var/lib/mysql
+      - ./backend/schema/schema.sql:/docker-entrypoint-initdb.d/00_schema.sql:ro
+      - ./backend/schema/dump.sql:/docker-entrypoint-initdb.d/01_dump.sql:ro
     networks:
       - matrimony-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 12
+      start_period: 20s
 
   backend:
     build:
