@@ -6,6 +6,7 @@ import fs from "fs";
 import multer from "multer";
 import db from "../config/db.js";
 import config from "../config/env.js";
+import { generateToken } from "../middleware/auth.js";
 
 // const upload = multer({ dest: "uploads/" });
 
@@ -85,10 +86,17 @@ router.post("/login", async (req, res) => {
     delete safeUser.Password; // if exists
     // You might want to remove email verification tokens etc.
 
+    const token = generateToken({
+      id: user.ID,
+      MatriID: user.MatriID,
+      ConfirmEmail: user.ConfirmEmail,
+    });
+
     return res.json({
       success: true,
       message: "Login successful",
       user: safeUser,
+      token,
     });
   } catch (err) {
     console.error("auth/login error:", err);
