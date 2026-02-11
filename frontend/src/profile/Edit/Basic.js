@@ -15,6 +15,7 @@ export default function BasicEdit({ adminMode = false }) {
 
   const [form, setForm] = useState({
     ConfirmEmail: "",
+    MatriID: "",
     Name: "",
     Profilecreatedby: "",
     Gender: "",
@@ -64,6 +65,16 @@ useEffect(() => {
       let data;
 
       /* 🟣 ADMIN MODE */
+      // if (adminMode && params.matriId) {
+      //   const res = await axios.get(
+      //     `${process.env.REACT_APP_API_BASE}/api/auth/profile/${params.matriId}`,
+      //   );
+
+      //   if (res.data.success) {
+      //     data = res.data.user;
+      //   }
+      // } 
+      
       if (adminMode && params.matriId) {
         const res = await axios.get(
           `${process.env.REACT_APP_API_BASE}/api/admin/profile/${params.matriId}`,
@@ -73,8 +84,7 @@ useEffect(() => {
           data = res.data.user;
         }
       } else {
-
-      /* 🟢 USER MODE */
+        /* 🟢 USER MODE */
         data = JSON.parse(localStorage.getItem("userData"));
       }
 
@@ -227,28 +237,47 @@ useEffect(() => {
   //   }
   // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      await axios.put(
-        `${process.env.REACT_APP_API_BASE}/api/auth/update/basic`,
-        form,
+  try {
+    await axios.put(
+      `${process.env.REACT_APP_API_BASE}/api/auth/update/basic`,
+      form
+    );
+
+    alert("Basic details updated!");
+
+    /* -------------------------
+       🟢 Refresh localStorage
+    ------------------------- */
+    if (!adminMode) {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_BASE}/api/auth/my-profile/${form.ConfirmEmail}`
       );
 
-      alert("Basic details updated!");
-
-      // Redirect properly
-      if (adminMode) {
-        navigate(`/admin/profile/${form.MatriID}`);
-      } else {
-        navigate("/profile");
+      if (res.data.success) {
+        localStorage.setItem(
+          "userData",
+          JSON.stringify(res.data.user)
+        );
       }
-    } catch (err) {
-      console.error(err);
-      alert("Update failed");
     }
-  };
+
+    /* -------------------------
+       Redirect
+    ------------------------- */
+    if (adminMode) {
+      navigate(`/admin/profile/${form.MatriID}`);
+    } else {
+      navigate("/profile");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Update failed");
+  }
+};
+
 
   // -------------------------------------------------------
   // UI

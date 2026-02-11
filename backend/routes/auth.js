@@ -590,17 +590,18 @@ router.put("/update/basic", async (req, res) => {
     /* -----------------------------------------
        WHITELIST FIELDS (same as your code)
     ----------------------------------------- */
-    const allowed = {
-      Name: data.Name,
-      Profilecreatedby: data.Profilecreatedby,
-      Gender: data.Gender,
-      DOB: data.DOB,
-      Maritalstatus: data.Maritalstatus,
-      Religion: data.Religion,
-      Caste: data.Caste,
-      Subcaste: data.Subcaste || data.sub_caste,
-      Mobile: data.Mobile,
-    };
+   const allowed = {
+     Name: data.Name || "",
+     Profilecreatedby: data.Profilecreatedby || "",
+     Gender: data.Gender || "",
+     DOB: data.DOB || "",
+     Maritalstatus: data.Maritalstatus || "",
+     Religion: data.Religion || "",
+     Caste: data.Caste || "",
+     Subcaste: data.Subcaste || data.sub_caste || "",
+     Mobile: data.Mobile || "",
+   };
+
 
     const fields = Object.keys(allowed);
     const values = Object.values(allowed);
