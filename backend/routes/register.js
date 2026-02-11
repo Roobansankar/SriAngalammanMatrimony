@@ -388,7 +388,9 @@ router.post(
         DOBday: toTrimOrNull(b.dobDay),
         DOBmonth: toTrimOrNull(b.dobMonth),
         DOByear: toTrimOrNull(b.dobYear),
-        TOB: buildTOB(b.birthHour, b.birthMinute, b.ampm),
+        // TOB: buildTOB(b.birthHour, b.birthMinute, b.ampm),
+        TOB: buildTOB(b.birthHour, b.birthMinute, b.birthSecond, b.ampm),
+
         POB: toTrimOrNull(b.placeOfBirth),
         Maritalstatus: toCSV(b.maritalStatus) || "Unmarried",
 
@@ -401,9 +403,6 @@ router.post(
         Gothram: toTrimOrNull(b.gothra) || "",
         Horosmatch: toTrimOrNull(b.horoscopeMatch) || "",
         Manglik: toTrimOrNull(b.manglik) || "",
-        // shani: toTrimOrNull(b.shani) || "",
-
-        // shaniplace: b.shaniplace ? String(b.shaniplace).trim() : "",
 
         parigarasevai: toTrimOrNull(b.parigarasevai) || "",
         Sevai: toTrimOrNull(b.sevai) || "",
@@ -508,8 +507,7 @@ router.post(
         Fathersoccupation: toTrimOrNull(b.fatherOccupation),
         Mothersname: toTrimOrNull(b.motherName),
         Mothersoccupation: toTrimOrNull(b.motherOccupation),
-        // FatherPoorvegam: toTrimOrNull(b.fatherPoorvegam),
-        // MotherPoorvegam: toTrimOrNull(b.motherPoorvegam),
+
         FatherPoorvegam: toTrimOrNull(b.fatherPoorvegam),
         MotherPoorvegam: toTrimOrNull(b.motherPoorvegam),
 

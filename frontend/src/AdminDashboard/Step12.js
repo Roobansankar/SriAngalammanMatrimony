@@ -355,8 +355,16 @@ export default function Step12({ prevStep, formData }) {
       add("ampm", f.ampm);
       add("placeOfBirth", f.placeOfBirth);
       add("kuladeivam", f.kuladeivam);
-      add("thesaiirupu", f.thesaiirupu);
+     
+      add("thesaiPlanet", f.thesaiPlanet);
+      add("thesaiYears", f.thesaiYears);
+      add("thesaiMonths", f.thesaiMonths);
+      add("thesaiDays", f.thesaiDays);
+      add("kootam", f.kootam);
+      add("sutham", f.sutham);
+
  
+      
       /* ------------------------------------------------
          STEP 5 — CONTACT DETAILS
       ------------------------------------------------ */
@@ -429,6 +437,9 @@ export default function Step12({ prevStep, formData }) {
       add("fatherOccupation", f.fatherOccupation);
       add("motherName", f.motherName);
       add("motherOccupation", f.motherOccupation);
+      add("fatherPoorvegam", f.fatherPoorvegam);
+      add("motherPoorvegam", f.motherPoorvegam);
+
       add(
         "familyWealth",
         Array.isArray(f.familyWealth)

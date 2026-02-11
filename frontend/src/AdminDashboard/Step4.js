@@ -726,9 +726,10 @@
 
 import { FileUp, Stars } from "lucide-react";
 import { useEffect, useState } from "react";
+import { API } from "../config/api";
 
-// Replace with your actual API base URL
-const API_BASE = "https://sriangalammanmatrimony.com/api/";
+
+const API_BASE = API + "/";
 
 export default function Step4({ nextStep, prevStep, formData }) {
   const [options, setOptions] = useState({
@@ -774,18 +775,24 @@ export default function Step4({ nextStep, prevStep, formData }) {
     placeOfBirth: formData.placeOfBirth || "",
     countryOfBirth: formData.countryOfBirth || "",
     kuladeivam: formData.kuladeivam || "",
-    thesaiirupu: formData.thesaiirupu || "",
+    thesaiPlanet: formData.thesaiPlanet || "",
+    thesaiYears: formData.thesaiYears || "",
+    thesaiMonths: formData.thesaiMonths || "",
+    thesaiDays: formData.thesaiDays || "",
+    kootam: formData.kootam || "",
+    sutham: formData.sutham || "",
+
     horoscopeFile: null,
     horoscopeFileName: formData.horoscopeFileName || "",
 
     // Rasi 12 cards
     ...Object.fromEntries(
-      [...Array(12)].map((_, i) => [`g${i + 1}`, formData[`g${i + 1}`] || []])
+      [...Array(12)].map((_, i) => [`g${i + 1}`, formData[`g${i + 1}`] || []]),
     ),
 
     // Navamsam 12 cards
     ...Object.fromEntries(
-      [...Array(12)].map((_, i) => [`a${i + 1}`, formData[`a${i + 1}`] || []])
+      [...Array(12)].map((_, i) => [`a${i + 1}`, formData[`a${i + 1}`] || []]),
     ),
   });
 
@@ -928,21 +935,29 @@ export default function Step4({ nextStep, prevStep, formData }) {
   const generateNumbers = (s, e) =>
     Array.from({ length: e - s + 1 }, (_, i) => i + s);
 
-  const handleNext = () => {
-    nextStep({
-      ...data,
-      lagnam: data.lagnam,
-      kuladeivam: data.kuladeivam,
-      thesaiirupu: data.thesaiirupu,
-      ...Object.fromEntries(
-        [...Array(12)].map((_, i) => [`g${i + 1}`, data[`g${i + 1}`]])
-      ),
-      ...Object.fromEntries(
-        [...Array(12)].map((_, i) => [`a${i + 1}`, data[`a${i + 1}`]])
-      ),
-      horoscopeFileName: data.horoscopeFileName,
-    });
-  };
+const handleNext = () => {
+  nextStep({
+    ...data,
+
+    // New fields
+    thesaiPlanet: data.thesaiPlanet,
+    thesaiYears: data.thesaiYears,
+    thesaiMonths: data.thesaiMonths,
+    thesaiDays: data.thesaiDays,
+    kootam: data.kootam,
+    sutham: data.sutham,
+
+    ...Object.fromEntries(
+      [...Array(12)].map((_, i) => [`g${i + 1}`, data[`g${i + 1}`]]),
+    ),
+    ...Object.fromEntries(
+      [...Array(12)].map((_, i) => [`a${i + 1}`, data[`a${i + 1}`]]),
+    ),
+
+    horoscopeFileName: data.horoscopeFileName,
+  });
+};
+
 
   const selectedLaknamRasi =
     [...Array(12)]
@@ -959,7 +974,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
       <div className="flex items-center justify-center gap-2 mb-6">
         <Stars className="w-8 h-8 text-yellow-600" />
         <h3 className="text-2xl font-bold text-yellow-700">
-          Step 4: Horoscope (ஜாதகம்) Details
+          Horoscope (ஜாதகம்) Details
         </h3>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1187,16 +1202,115 @@ export default function Step4({ nextStep, prevStep, formData }) {
           </select>
         </div>
 
-        <div className="col-span-2 mt-4">
+        {/* Thesai Planet */}
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Thesai Irupu (திசைஇருப்பு)
+            Thesai Planet
+          </label>
+          <select
+            name="thesaiPlanet"
+            value={data.thesaiPlanet}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          >
+            <option value="">Select Planet</option>
+            {dropdownList.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Thesai Years */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thesai Years
+          </label>
+          <select
+            name="thesaiYears"
+            value={data.thesaiYears}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          >
+            <option value="">Select Years</option>
+            {generateNumbers(0, 120).map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Thesai Months */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thesai Months
+          </label>
+          <select
+            name="thesaiMonths"
+            value={data.thesaiMonths}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          >
+            <option value="">Select Months</option>
+            {generateNumbers(0, 11).map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Thesai Days */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thesai Days
+          </label>
+          <select
+            name="thesaiDays"
+            value={data.thesaiDays}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          >
+            <option value="">Select Days</option>
+            {generateNumbers(0, 30).map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Kootam */}
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Kootam
           </label>
           <input
-            name="thesaiirupu"
-            value={data.thesaiirupu}
+            name="kootam"
+            value={data.kootam}
             onChange={handleChange}
             className="border p-2 rounded-lg w-full"
           />
+        </div>
+
+        {/* Sutham */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sutham
+          </label>
+          <select
+            name="sutham"
+            value={data.sutham}
+            onChange={handleChange}
+            className="border p-2 rounded-lg w-full"
+          >
+            <option value="">Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Others">Others</option>
+          </select>
         </div>
 
         <div className="col-span-2">
@@ -1293,7 +1407,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                           for (let j = 1; j <= 12; j++) {
                             if (`g${j}` !== key) {
                               data[`g${j}`] = data[`g${j}`].filter(
-                                (x) => x !== "லக்"
+                                (x) => x !== "லக்",
                               );
                             }
                           }
@@ -1351,7 +1465,7 @@ export default function Step4({ nextStep, prevStep, formData }) {
                           for (let j = 1; j <= 12; j++) {
                             if (`a${j}` !== key) {
                               data[`a${j}`] = data[`a${j}`].filter(
-                                (x) => x !== "லக்"
+                                (x) => x !== "லக்",
                               );
                             }
                           }
@@ -1422,8 +1536,8 @@ export default function Step4({ nextStep, prevStep, formData }) {
           {data.horoscopeFile
             ? data.horoscopeFile.name
             : data.horoscopeFileName
-            ? `Uploaded: ${data.horoscopeFileName}`
-            : "Upload Horoscope"}
+              ? `Uploaded: ${data.horoscopeFileName}`
+              : "Upload Horoscope"}
         </span>
 
         <input

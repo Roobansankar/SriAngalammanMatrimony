@@ -1,10 +1,14 @@
 import axios from "axios";
 import { ChevronLeft, ChevronRight, Search, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const API = process.env.REACT_APP_API_BASE || "";
 
 export default function AllMembers() {
+  const navigate = useNavigate();
+
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -203,14 +207,14 @@ export default function AllMembers() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {members.map((m, index) => (
+                  
                     <tr
                       key={index}
-                      className="hover:bg-gray-50 transition-colors"
+                      onClick={() => navigate(`/admin/profile/${m.MatriID}`)}
+                      className="hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                       <td className="px-4 py-3">
-                        <p
-                          className="font-medium text-rose-600 hover:text-rose-700"
-                        >
+                        <p className="font-medium text-rose-600 hover:text-rose-700">
                           {m.MatriID}
                         </p>
                       </td>
@@ -227,7 +231,7 @@ export default function AllMembers() {
                             }}
                           />
                         ) : null}
-                        <div 
+                        <div
                           className={`w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 items-center justify-center ${m.PhotoURL && !m.PhotoURL.includes("nophoto") ? "hidden" : "flex"}`}
                         >
                           <UserCircle size={24} className="text-gray-500" />

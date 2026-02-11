@@ -2,12 +2,12 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
 
-export default function EditContact() {
+export default function EditContact({ adminMode = false }) {
   const [form, setForm] = useState({
     ConfirmEmail: "",
     Country: "",
@@ -33,30 +33,74 @@ export default function EditContact() {
   });
 
   const navigate = useNavigate();
+   const params = useParams();
 
   // -------------------------------------------------------
   // 1️⃣ Load user saved data
   // -------------------------------------------------------
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) return;
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) return;
 
-    setForm({
-      ConfirmEmail: data.ConfirmEmail || "",
-      Country: data.Country || "",
-      State: data.State || "",
-      Dist: data.Dist || "",
-      City: data.City || "",
-      Pincode: data.Pincode || "",
-      Residencystatus: data.Residencystatus || "",
-      Address: data.Address || "",
-      Phone: data.Phone || "",
-      Mobile: data.Mobile || "",
-      Mobile2: data.Mobile2 || "",
-      calling_time: data.calling_time || "",
-      POC: data.POC || "",
-    });
-  }, []);
+  //   setForm({
+  //     ConfirmEmail: data.ConfirmEmail || "",
+  //     Country: data.Country || "",
+  //     State: data.State || "",
+  //     Dist: data.Dist || "",
+  //     City: data.City || "",
+  //     Pincode: data.Pincode || "",
+  //     Residencystatus: data.Residencystatus || "",
+  //     Address: data.Address || "",
+  //     Phone: data.Phone || "",
+  //     Mobile: data.Mobile || "",
+  //     Mobile2: data.Mobile2 || "",
+  //     calling_time: data.calling_time || "",
+  //     POC: data.POC || "",
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      let data;
+
+      /* 🟣 ADMIN MODE */
+      if (adminMode && params.matriId) {
+        const res = await axios.get(
+          `${API_BASE}admin/profile/${params.matriId}`,
+        );
+
+        if (res.data.success) {
+          data = res.data.user;
+        }
+      } else {
+
+      /* 🟢 USER MODE */
+        data = JSON.parse(localStorage.getItem("userData"));
+      }
+
+      if (!data) return;
+
+      setForm({
+        ConfirmEmail: data.ConfirmEmail || "",
+        MatriID: data.MatriID || "",
+        Country: data.Country || "",
+        State: data.State || "",
+        Dist: data.Dist || "",
+        City: data.City || "",
+        Pincode: data.Pincode || "",
+        Residencystatus: data.Residencystatus || "",
+        Address: data.Address || "",
+        Phone: data.Phone || "",
+        Mobile: data.Mobile || "",
+        Mobile2: data.Mobile2 || "",
+        calling_time: data.calling_time || "",
+        POC: data.POC || "",
+      });
+    };
+
+    loadData();
+  }, [adminMode, params.matriId]);
+
 
   // -------------------------------------------------------
   // 2️⃣ Load master dropdowns (countries, residency, calling time)
@@ -98,7 +142,7 @@ export default function EditContact() {
 
       try {
         const res = await fetch(
-          `${API_BASE}states?country=${encodeURIComponent(form.Country)}`
+          `${API_BASE}states?country=${encodeURIComponent(form.Country)}`,
         );
         const list = await res.json();
 
@@ -126,7 +170,7 @@ export default function EditContact() {
 
       try {
         const res = await fetch(
-          `${API_BASE}districts?state=${encodeURIComponent(form.State)}`
+          `${API_BASE}districts?state=${encodeURIComponent(form.State)}`,
         );
         const list = await res.json();
 
@@ -155,18 +199,41 @@ export default function EditContact() {
   // -------------------------------------------------------
   // Submit
   // -------------------------------------------------------
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const res = await axios.put(`${API_BASE}auth/update/contact`, form);
+
+  //     if (res.data.success) {
+  //       alert("Contact details updated!");
+  //       navigate("/profile");
+  //     } else {
+  //       alert("Update failed!");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Server error");
+  //   }
+  // };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.put(
-        `${API_BASE}auth/update/contact`,
-        form
-      );
+      const payload = adminMode ? { ...form, matriId: form.MatriID } : form;
+
+      const res = await axios.put(`${API_BASE}auth/update/contact`, payload);
 
       if (res.data.success) {
         alert("Contact details updated!");
-        navigate("/profile");
+
+        if (adminMode) {
+          navigate(`/admin/profile/${form.MatriID}`);
+        } else {
+          navigate("/profile");
+        }
       } else {
         alert("Update failed!");
       }
@@ -175,6 +242,7 @@ export default function EditContact() {
       alert("Server error");
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-[#FFF4E0] font-display">

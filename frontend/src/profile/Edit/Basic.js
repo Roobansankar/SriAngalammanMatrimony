@@ -4,13 +4,14 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
 
-export default function BasicEdit() {
+export default function BasicEdit({ adminMode = false }) {
   const navigate = useNavigate();
+  const params = useParams();
 
   const [form, setForm] = useState({
     ConfirmEmail: "",
@@ -37,26 +38,71 @@ export default function BasicEdit() {
   // -------------------------------------------------------
   // 1️⃣ LOAD USER SAVED DATA
   // -------------------------------------------------------
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) return;
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) return;
 
-    const cleanCaste = data.Caste?.split(",")[0]?.trim() || "";
+  //   const cleanCaste = data.Caste?.split(",")[0]?.trim() || "";
 
-    setForm({
-      ConfirmEmail: data.ConfirmEmail || "",
-      Name: data.Name || "",
-      Profilecreatedby: data.Profilecreatedby || "",
-      Gender: data.Gender || "",
-      DOB: data.DOB ? data.DOB.split("T")[0] : "",
-      Maritalstatus: data.Maritalstatus || "",
-      Religion: data.Religion || "",
-      Caste: cleanCaste,
-      CasteID: "",
-      Subcaste: data.Subcaste || data.sub_caste || "",
-      Mobile: data.Mobile || "",
-    });
-  }, []);
+  //   setForm({
+  //     ConfirmEmail: data.ConfirmEmail || "",
+  //     Name: data.Name || "",
+  //     Profilecreatedby: data.Profilecreatedby || "",
+  //     Gender: data.Gender || "",
+  //     DOB: data.DOB ? data.DOB.split("T")[0] : "",
+  //     Maritalstatus: data.Maritalstatus || "",
+  //     Religion: data.Religion || "",
+  //     Caste: cleanCaste,
+  //     CasteID: "",
+  //     Subcaste: data.Subcaste || data.sub_caste || "",
+  //     Mobile: data.Mobile || "",
+  //   });
+  // }, []);
+useEffect(() => {
+  const loadData = async () => {
+    try {
+      let data;
+
+      /* 🟣 ADMIN MODE */
+      if (adminMode && params.matriId) {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_BASE}/api/admin/profile/${params.matriId}`,
+        );
+
+        if (res.data.success) {
+          data = res.data.user;
+        }
+      } else {
+
+      /* 🟢 USER MODE */
+        data = JSON.parse(localStorage.getItem("userData"));
+      }
+
+      if (!data) return;
+
+      const cleanCaste = data.Caste?.split(",")[0]?.trim() || "";
+
+      setForm({
+        ConfirmEmail: data.ConfirmEmail || "",
+        MatriID: data.MatriID || "",
+        Name: data.Name || "",
+        Profilecreatedby: data.Profilecreatedby || "",
+        Gender: data.Gender || "",
+        DOB: data.DOB ? data.DOB.split("T")[0] : "",
+        Maritalstatus: data.Maritalstatus || "",
+        Religion: data.Religion || "",
+        Caste: cleanCaste,
+        CasteID: "",
+        Subcaste: data.Subcaste || data.sub_caste || "",
+        Mobile: data.Mobile || "",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadData();
+}, [adminMode, params.matriId]);
 
   // -------------------------------------------------------
   // 2️⃣ LOAD STATIC DROPDOWNS
@@ -99,7 +145,7 @@ export default function BasicEdit() {
       }
 
       const res = await fetch(
-        `${API_BASE}castes?religion=${encodeURIComponent(form.Religion)}`
+        `${API_BASE}castes?religion=${encodeURIComponent(form.Religion)}`,
       );
       const data = await res.json();
 
@@ -111,7 +157,7 @@ export default function BasicEdit() {
       setOptions((prev) => ({ ...prev, castes: list }));
 
       const match = list.find(
-        (c) => c.name.toLowerCase() === form.Caste.toLowerCase()
+        (c) => c.name.toLowerCase() === form.Caste.toLowerCase(),
       );
 
       if (match) {
@@ -138,16 +184,12 @@ export default function BasicEdit() {
       }
 
       const res = await fetch(
-        `${API_BASE}subcastes?caste=${encodeURIComponent(form.CasteID)}`
+        `${API_BASE}subcastes?caste=${encodeURIComponent(form.CasteID)}`,
       );
       const data = await res.json();
 
       const uniqueSubCastes = [
-        ...new Set(
-          data
-            .map((s) => s.Subcaste?.trim())
-            .filter(Boolean)
-        ),
+        ...new Set(data.map((s) => s.Subcaste?.trim()).filter(Boolean)),
       ];
 
       setOptions((prev) => ({
@@ -169,16 +211,39 @@ export default function BasicEdit() {
   // -------------------------------------------------------
   // SAVE
   // -------------------------------------------------------
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     await axios.put(
+  //       `${process.env.REACT_APP_API_BASE || ""}/api/auth/update/basic`,
+  //       form,
+  //     );
+  //     alert("Basic details updated!");
+  //     navigate("/profile");
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Update failed");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_BASE || ""}/api/auth/update/basic`,
-        form
+        `${process.env.REACT_APP_API_BASE}/api/auth/update/basic`,
+        form,
       );
+
       alert("Basic details updated!");
-      navigate("/profile");
+
+      // Redirect properly
+      if (adminMode) {
+        navigate(`/admin/profile/${form.MatriID}`);
+      } else {
+        navigate("/profile");
+      }
     } catch (err) {
       console.error(err);
       alert("Update failed");
@@ -214,9 +279,7 @@ export default function BasicEdit() {
             <label className="font-semibold">Profile Created By</label>
             <select
               value={form.Profilecreatedby}
-              onChange={(e) =>
-                updateField("Profilecreatedby", e.target.value)
-              }
+              onChange={(e) => updateField("Profilecreatedby", e.target.value)}
               className="w-full border p-3 rounded-lg"
             >
               <option value="">Select</option>
@@ -258,9 +321,7 @@ export default function BasicEdit() {
             <label className="font-semibold">Marital Status</label>
             <select
               value={form.Maritalstatus}
-              onChange={(e) =>
-                updateField("Maritalstatus", e.target.value)
-              }
+              onChange={(e) => updateField("Maritalstatus", e.target.value)}
               className="w-full border p-3 rounded-lg"
             >
               <option value="">Select</option>
@@ -293,7 +354,7 @@ export default function BasicEdit() {
               onChange={(e) => {
                 const id = e.target.value;
                 const obj = options.castes.find(
-                  (x) => String(x.id) === String(id)
+                  (x) => String(x.id) === String(id),
                 );
 
                 setForm((prev) => ({

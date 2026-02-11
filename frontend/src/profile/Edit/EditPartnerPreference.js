@@ -4,16 +4,16 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
 
-export default function EditPartnerPreference() {
+export default function EditPartnerPreference({ adminMode = false }) {
   const [options, setOptions] = useState({
     religions: [],
-    castes: [],          // { id, name }
-    subcastes: [],       // ["sub1","sub2"]
+    castes: [], // { id, name }
+    subcastes: [], // ["sub1","sub2"]
     complexions: [],
     motherTongues: [],
     residencyStatus: [],
@@ -46,6 +46,7 @@ export default function EditPartnerPreference() {
   });
 
   const navigate = useNavigate();
+  const params = useParams();
 
   const ageOptions = Array.from({ length: 48 }, (_, i) => 18 + i);
 
@@ -57,7 +58,6 @@ export default function EditPartnerPreference() {
     }
   }
 
-
   const normalizeHeight = (value) => {
     if (!value) return "";
 
@@ -68,35 +68,83 @@ export default function EditPartnerPreference() {
       .trim();
   };
 
-
   // Load existing values
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) return;
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) return;
 
-    setForm({
-      ConfirmEmail: data.ConfirmEmail || "",
-      Looking: data.Looking || "",
-      PE_FromAge: data.PE_FromAge || "",
-      PE_ToAge: data.PE_ToAge || "",
-      PE_from_Height: normalizeHeight(data.PE_from_Height),
-      PE_to_Height: normalizeHeight(data.PE_to_Height),
-      PE_Complexion: data.PE_Complexion || "",
-      PE_MotherTongue: data.PE_MotherTongue || "",
-      PE_Religion: data.PE_Religion || "",
-      PE_Caste: data.PE_Caste || "",
-      PE_subcaste: data.PE_subcaste || "",
-      PE_Education: data.PE_Education || "",
-      PE_Occupation: data.PE_Occupation || "",
-      PE_Residentstatus: data.PE_Residentstatus || "",
-      PE_Countrylivingin: data.PE_Countrylivingin || "",
-      PE_Country: data.PE_Country || "",
-      PE_State: data.PE_State || "",
-      PE_City: data.PE_City || "",
-      PartnerExpectations:
-        data.PartnerExpectations || data.PartnerExpectations_new || "",
-    });
-  }, []);
+  //   setForm({
+  //     ConfirmEmail: data.ConfirmEmail || "",
+  //     Looking: data.Looking || "",
+  //     PE_FromAge: data.PE_FromAge || "",
+  //     PE_ToAge: data.PE_ToAge || "",
+  //     PE_from_Height: normalizeHeight(data.PE_from_Height),
+  //     PE_to_Height: normalizeHeight(data.PE_to_Height),
+  //     PE_Complexion: data.PE_Complexion || "",
+  //     PE_MotherTongue: data.PE_MotherTongue || "",
+  //     PE_Religion: data.PE_Religion || "",
+  //     PE_Caste: data.PE_Caste || "",
+  //     PE_subcaste: data.PE_subcaste || "",
+  //     PE_Education: data.PE_Education || "",
+  //     PE_Occupation: data.PE_Occupation || "",
+  //     PE_Residentstatus: data.PE_Residentstatus || "",
+  //     PE_Countrylivingin: data.PE_Countrylivingin || "",
+  //     PE_Country: data.PE_Country || "",
+  //     PE_State: data.PE_State || "",
+  //     PE_City: data.PE_City || "",
+  //     PartnerExpectations:
+  //       data.PartnerExpectations || data.PartnerExpectations_new || "",
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      let data;
+
+      /* 🟣 ADMIN MODE */
+      if (adminMode && params.matriId) {
+        const res = await axios.get(
+          `${API_BASE}admin/profile/${params.matriId}`,
+        );
+
+        if (res.data.success) {
+          data = res.data.user;
+        }
+      } else {
+        /* 🟢 USER MODE */
+        data = JSON.parse(localStorage.getItem("userData"));
+      }
+
+      if (!data) return;
+
+      setForm({
+        ConfirmEmail: data.ConfirmEmail || "",
+        MatriID: data.MatriID || "",
+
+        Looking: data.Looking || "",
+        PE_FromAge: data.PE_FromAge || "",
+        PE_ToAge: data.PE_ToAge || "",
+        PE_from_Height: normalizeHeight(data.PE_from_Height),
+        PE_to_Height: normalizeHeight(data.PE_to_Height),
+        PE_Complexion: data.PE_Complexion || "",
+        PE_MotherTongue: data.PE_MotherTongue || "",
+        PE_Religion: data.PE_Religion || "",
+        PE_Caste: data.PE_Caste || "",
+        PE_subcaste: data.PE_subcaste || "",
+        PE_Education: data.PE_Education || "",
+        PE_Occupation: data.PE_Occupation || "",
+        PE_Residentstatus: data.PE_Residentstatus || "",
+        PE_Countrylivingin: data.PE_Countrylivingin || "",
+        PE_Country: data.PE_Country || "",
+        PE_State: data.PE_State || "",
+        PE_City: data.PE_City || "",
+        PartnerExpectations:
+          data.PartnerExpectations || data.PartnerExpectations_new || "",
+      });
+    };
+
+    loadData();
+  }, [adminMode, params.matriId]);
 
   // Load default dropdowns
   useEffect(() => {
@@ -200,12 +248,20 @@ export default function EditPartnerPreference() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.put(`${API_BASE}auth/update/partner`, form);
+      const payload = adminMode ? { ...form, matriId: form.MatriID } : form;
+
+      const res = await axios.put(`${API_BASE}auth/update/partner`, payload);
 
       if (res.data.success) {
         alert("Partner preferences updated successfully!");
-        navigate("/profile");
+
+        if (adminMode) {
+          navigate(`/admin/profile/${form.MatriID}`);
+        } else {
+          navigate("/profile");
+        }
       } else {
         alert("Update failed");
       }
@@ -213,6 +269,63 @@ export default function EditPartnerPreference() {
       console.error(err);
       alert("Server error");
     }
+  };
+
+  /* -----------------------------
+   TEXT RESTRICTIONS CONFIG
+------------------------------*/
+  const MAX_EXPECT_LENGTH = 68;
+
+  const RESTRICTED_WORDS = [
+    "phone",
+    "mobile",
+    "contact",
+    "call",
+    "whatsapp",
+    "email",
+    "mail",
+    "instagram",
+    "facebook",
+    "fb",
+    "number",
+    "no.",
+    "dm",
+    "reach me",
+  ];
+
+  /* Phone + email regex */
+  const PHONE_REGEX = /\d{10,}/;
+  const EMAIL_REGEX = /\S+@\S+\.\S+/;
+
+  const [expectError, setExpectError] = useState("");
+
+  /* -----------------------------
+   HANDLE CHANGE
+------------------------------*/
+  const handleExpectationChange = (value) => {
+    // Length limit
+    if (value.length > MAX_EXPECT_LENGTH) return;
+
+    const lower = value.toLowerCase();
+
+    // Word block
+    const foundWord = RESTRICTED_WORDS.find((w) => lower.includes(w));
+
+    if (foundWord) {
+      setExpectError(`"${foundWord}" is not allowed`);
+    }
+    // Phone block
+    else if (PHONE_REGEX.test(value)) {
+      setExpectError("Phone numbers are not allowed");
+    }
+    // Email block
+    else if (EMAIL_REGEX.test(value)) {
+      setExpectError("Email IDs are not allowed");
+    } else {
+      setExpectError("");
+    }
+
+    updateField("PartnerExpectations", value);
   };
 
   return (
@@ -245,7 +358,7 @@ export default function EditPartnerPreference() {
                         updated = [...form.Looking.split(","), value];
                       } else {
                         updated = form.Looking.split(",").filter(
-                          (v) => v !== value
+                          (v) => v !== value,
                         );
                       }
 
@@ -502,14 +615,24 @@ export default function EditPartnerPreference() {
           {/* EXPECTATIONS */}
           <div className="md:col-span-2">
             <label className="font-semibold">Partner Expectations</label>
+
             <textarea
               rows="4"
               className="w-full border p-3 rounded-lg"
               value={form.PartnerExpectations}
-              onChange={(e) =>
-                updateField("PartnerExpectations", e.target.value)
-              }
+              onChange={(e) => handleExpectationChange(e.target.value)}
+              maxLength={MAX_EXPECT_LENGTH}
             />
+
+            {/* Counter */}
+            <div className="text-xs text-gray-500 mt-1">
+              {form.PartnerExpectations?.length || 0} /{MAX_EXPECT_LENGTH}
+            </div>
+
+            {/* Error */}
+            {expectError && (
+              <div className="text-red-600 text-sm mt-1">{expectError}</div>
+            )}
           </div>
 
           {/* BUTTON */}

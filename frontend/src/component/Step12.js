@@ -1,6 +1,3 @@
-
-
-
 import axios from "axios";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -42,11 +39,6 @@ export default function Step12({ prevStep, formData ,setUser }) {
         fd.append(key, val);
       };
 
-      // const add = (key, value) => {
-      //   if (value !== undefined && value !== null) {
-      //     formData.append(key, value);
-      //   }
-      // };
 
       console.log("FINAL FORM DATA", f.fatherPoorvegam, f.motherPoorvegam);
       /* ------------------------------------------------
@@ -231,7 +223,12 @@ export default function Step12({ prevStep, formData ,setUser }) {
 
       // Always save the plan for admin-created users
       add("plan", f.plan || "basic");
-      add("paymentDone", "1"); // Admin bypasses payment
+      add("paymentDone", "1"); 
+      // add(
+      //   "paymentDone",
+      //   localStorage.getItem("paymentDone") === "1" ? "1" : "0",
+      // );
+
 
       /* ------------------------------------------------
          FILE UPLOAD — HOROSCOPE FILE (correct Multer field)
@@ -280,11 +277,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
         throw new Error("Auto login failed");
       }
 
-      // setTimeout(() => {
-      //   navigate("/login", {
-      //     state: { refreshOnce: true },
-      //   });
-      // }, 2000);
+
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
       setError(

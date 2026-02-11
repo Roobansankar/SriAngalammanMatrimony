@@ -323,61 +323,181 @@ const storage = multer.diskStorage({
 
 const upload1 = multer({ storage });
 
+// router.put("/update/photo1", upload1.single("photo1"), async (req, res) => {
+//   try {
+//     const { ConfirmEmail } = req.body;
+
+//     if (!ConfirmEmail) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Email required" });
+//     }
+
+//     const fileName = req.file?.filename;
+
+//     if (!fileName) {
+//       return res.status(400).json({ success: false, message: "Image missing" });
+//     }
+
+//     const conn = db.promise();
+
+//     // 🔹 Only update Photo1 – DO NOT change Photo1Approve
+//     await conn.query(
+//       `
+//       UPDATE register SET 
+//         Photo1 = ?,
+//         Photo1Approve = "Yes"
+//       WHERE ConfirmEmail = ?
+//       `,
+//       [fileName, ConfirmEmail]
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Photo1 updated successfully",
+//     });
+//   } catch (err) {
+//     console.error("update/photo1 error:", err);
+//     return res.status(500).json({ success: false, message: "Server error" });
+//   }
+// });
+
+// router.put("/update/about", async (req, res) => {
+//   try {
+//     const { email, aboutus } = req.body;
+
+//     if (!email) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Email is required" });
+//     }
+
+//     const conn = db.promise();
+
+//     const [result] = await conn.query(
+//       "UPDATE register SET aboutus = ? WHERE ConfirmEmail = ?",
+//       [aboutus, email]
+//     );
+
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     return res.json({
+//       success: true,
+//       message: "About Me updated successfully",
+//     });
+//   } catch (err) {
+//     console.error("update/about error:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
 router.put("/update/photo1", upload1.single("photo1"), async (req, res) => {
   try {
-    const { ConfirmEmail } = req.body;
+    const { ConfirmEmail, matriId } = req.body;
 
-    if (!ConfirmEmail) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email required" });
+    // ❌ No identifier
+    if (!ConfirmEmail && !matriId) {
+      return res.status(400).json({
+        success: false,
+        message: "Email or MatriID required",
+      });
     }
 
     const fileName = req.file?.filename;
 
     if (!fileName) {
-      return res.status(400).json({ success: false, message: "Image missing" });
+      return res.status(400).json({
+        success: false,
+        message: "Image missing",
+      });
     }
 
     const conn = db.promise();
 
-    // 🔹 Only update Photo1 – DO NOT change Photo1Approve
-    await conn.query(
-      `
-      UPDATE register SET 
-        Photo1 = ?,
-        Photo1Approve = "Yes"
-      WHERE ConfirmEmail = ?
-      `,
-      [fileName, ConfirmEmail]
-    );
+    let query = "";
+    let value = "";
+
+    /* -----------------------------
+         🟢 USER UPDATE
+      ----------------------------- */
+    if (ConfirmEmail) {
+      query = `
+          UPDATE register SET 
+            Photo1 = ?,
+            Photo1Approve = "Yes"
+          WHERE ConfirmEmail = ?
+        `;
+      value = ConfirmEmail;
+    } else if (matriId) {
+
+    /* -----------------------------
+         🟣 ADMIN UPDATE
+      ----------------------------- */
+      query = `
+          UPDATE register SET 
+            Photo1 = ?,
+            Photo1Approve = "Yes"
+          WHERE MatriID = ?
+        `;
+      value = matriId;
+    }
+
+    await conn.query(query, [fileName, value]);
 
     return res.json({
       success: true,
-      message: "Photo1 updated successfully",
+      message: "Photo updated successfully",
     });
   } catch (err) {
     console.error("update/photo1 error:", err);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
 router.put("/update/about", async (req, res) => {
   try {
-    const { email, aboutus } = req.body;
+    const { email, matriId, aboutus } = req.body;
 
-    if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email is required" });
+    // ❌ No identifier sent
+    if (!email && !matriId) {
+      return res.status(400).json({
+        success: false,
+        message: "Email or MatriID is required",
+      });
     }
 
     const conn = db.promise();
 
-    const [result] = await conn.query(
-      "UPDATE register SET aboutus = ? WHERE ConfirmEmail = ?",
-      [aboutus, email]
-    );
+    let query = "";
+    let values = [];
+
+    /* -----------------------------------
+       🟢 USER UPDATE (by email)
+    ----------------------------------- */
+    if (email) {
+      query = "UPDATE register SET aboutus = ? WHERE ConfirmEmail = ?";
+      values = [aboutus, email];
+    } else if (matriId) {
+
+    /* -----------------------------------
+       🟣 ADMIN UPDATE (by MatriID)
+    ----------------------------------- */
+      query = "UPDATE register SET aboutus = ? WHERE MatriID = ?";
+      values = [aboutus, matriId];
+    }
+
+    const [result] = await conn.query(query, values);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -399,18 +519,79 @@ router.put("/update/about", async (req, res) => {
   }
 });
 
+// router.put("/update/basic", async (req, res) => {
+//   try {
+//     const data = req.body;
+
+//     const email = data.ConfirmEmail || data.email;
+//     if (!email)
+//       return res.status(400).json({ success: false, message: "Email missing" });
+
+//     // WHITELIST: ONLY update allowed basic fields
+//     const allowed = {
+//       Name: data.Name,
+//       // MatriID: data.MatriID,
+//       Profilecreatedby: data.Profilecreatedby,
+//       Gender: data.Gender,
+//       DOB: data.DOB,
+//       Maritalstatus: data.Maritalstatus,
+//       Religion: data.Religion,
+//       Caste: data.Caste,
+//       Subcaste: data.Subcaste || data.sub_caste,
+//       Mobile: data.Mobile,
+//     };
+
+//     // Build SQL
+//     const fields = Object.keys(allowed);
+//     const values = Object.values(allowed);
+
+//     const setQuery = fields.map((f) => `${f} = ?`).join(", ");
+
+//     const conn = db.promise();
+//     const [result] = await conn.query(
+//       `UPDATE register SET ${setQuery} WHERE ConfirmEmail = ?`,
+//       [...values, email]
+//     );
+
+//     if (result.affectedRows === 0) {
+//       return res.json({ success: false, message: "User not found" });
+//     }
+
+//     res.json({ success: true, message: "Basic details updated" });
+//   } catch (err) {
+//     console.error("update/basic error:", err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// });
+
+
+
+
+// --------------------------------------------------
+// UPDATE HOROSCOPE
+// --------------------------------------------------
+
+
 router.put("/update/basic", async (req, res) => {
   try {
     const data = req.body;
 
     const email = data.ConfirmEmail || data.email;
-    if (!email)
-      return res.status(400).json({ success: false, message: "Email missing" });
+    const matriId = data.MatriID || data.matriId;
 
-    // WHITELIST: ONLY update allowed basic fields
+    // ❌ No identifier
+    if (!email && !matriId) {
+      return res.status(400).json({
+        success: false,
+        message: "Email or MatriID required",
+      });
+    }
+
+    /* -----------------------------------------
+       WHITELIST FIELDS (same as your code)
+    ----------------------------------------- */
     const allowed = {
       Name: data.Name,
-      // MatriID: data.MatriID,
       Profilecreatedby: data.Profilecreatedby,
       Gender: data.Gender,
       DOB: data.DOB,
@@ -421,35 +602,55 @@ router.put("/update/basic", async (req, res) => {
       Mobile: data.Mobile,
     };
 
-    // Build SQL
     const fields = Object.keys(allowed);
     const values = Object.values(allowed);
 
     const setQuery = fields.map((f) => `${f} = ?`).join(", ");
 
     const conn = db.promise();
+
+    /* -----------------------------------------
+       🟢 USER UPDATE
+    ----------------------------------------- */
+    let whereQuery = "";
+    let identifier = "";
+
+    if (email) {
+      whereQuery = "ConfirmEmail = ?";
+      identifier = email;
+    } else if (matriId) {
+
+    /* -----------------------------------------
+       🟣 ADMIN UPDATE
+    ----------------------------------------- */
+      whereQuery = "MatriID = ?";
+      identifier = matriId;
+    }
+
     const [result] = await conn.query(
-      `UPDATE register SET ${setQuery} WHERE ConfirmEmail = ?`,
-      [...values, email]
+      `UPDATE register SET ${setQuery} WHERE ${whereQuery}`,
+      [...values, identifier],
     );
 
     if (result.affectedRows === 0) {
-      return res.json({ success: false, message: "User not found" });
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    res.json({ success: true, message: "Basic details updated" });
+    res.json({
+      success: true,
+      message: "Basic details updated",
+    });
   } catch (err) {
     console.error("update/basic error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
-
-
-
-
-// --------------------------------------------------
-// UPDATE HOROSCOPE
-// --------------------------------------------------
 
 /* ----------------------------------
    MULTER CONFIG
@@ -458,9 +659,34 @@ router.put("/update/basic", async (req, res) => {
 /* ----------------------------------
    SAFE ARRAY PARSER
 ---------------------------------- */
+// function safeToJSONArray(value) {
+//   if (!value || value === "null" || value === "") {
+//     return JSON.stringify([]);
+//   }
+
+//   try {
+//     const parsed = JSON.parse(value);
+//     if (Array.isArray(parsed)) {
+//       return JSON.stringify(parsed);
+//     }
+//   } catch (e) {}
+
+//   return JSON.stringify(
+//     String(value)
+//       .split(",")
+//       .map((x) => x.trim())
+//       .filter(Boolean)
+//   );
+// }
+
 function safeToJSONArray(value) {
   if (!value || value === "null" || value === "") {
     return JSON.stringify([]);
+  }
+
+  // If already array
+  if (Array.isArray(value)) {
+    return JSON.stringify(value);
   }
 
   try {
@@ -474,14 +700,187 @@ function safeToJSONArray(value) {
     String(value)
       .split(",")
       .map((x) => x.trim())
-      .filter(Boolean)
+      .filter(Boolean),
   );
 }
+
 
 /* ----------------------------------
    UPDATE HOROSCOPE
 ---------------------------------- */
 
+
+
+// router.put(
+//   "/update/horoscope",
+//   upload.single("horoscope"),
+//   async (req, res) => {
+//     try {
+//       const {
+//         ConfirmEmail,
+//         Moonsign,
+//         Star,
+//         Lagnam,
+//         Gothram,
+//          Shani,
+//   ShaniPlace,
+//         Manglik,
+//         Horosmatch,
+//         parigarasevai,
+//         Sevai,
+//         Raghu,
+//         Keethu,
+//         POB,
+//         POC,
+//         TOB,
+//         Kuladeivam,
+//         ThesaiPlanet,
+//         ThesaiYears,
+//         ThesaiMonths,
+//         ThesaiDays,
+//         Kootam,
+//         Sutham,
+//       } = req.body;
+
+//       if (!ConfirmEmail) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Email missing",
+//         });
+//       }
+
+   
+
+//       let uploadedFileName = null;
+
+//       if (req.file) {
+//         uploadedFileName = req.file.filename; // already in kundli
+//       }
+
+//       /* ----------------------------------
+//          RASI + NAVAMSA
+//       ---------------------------------- */
+//       const rasi = {};
+//       const navamsa = {};
+
+//       for (let i = 1; i <= 12; i++) {
+//         rasi[`g${i}`] = safeToJSONArray(req.body[`g${i}`]);
+//         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
+//       }
+
+//       /* ----------------------------------
+//          SQL QUERY
+//       ---------------------------------- */
+//       const updateQuery = `
+//         UPDATE register SET
+//           Moonsign=?, Star=?,  Lagnam=?, Gothram=?, Shani=?,
+//   ShaniPlace=?, Manglik=?,
+//           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?,
+//           POB=?, POC=?, TOB=?, Kuladeivam=?, Sutham=?,
+//           ThesaiPlanet=?, ThesaiYears=?, ThesaiMonths=?, ThesaiDays=?, Kootam=?,
+//           ${uploadedFileName ? "horosother=?," : ""}
+//           g1=?, g2=?, g3=?, g4=?, g5=?, g6=?,
+//           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
+//           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
+//           a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
+//         WHERE TRIM(ConfirmEmail) = TRIM(?) COLLATE utf8mb4_general_ci
+
+//       `;
+
+// const fixInt = (v) =>
+//   v === "" || v === null || v === undefined ? 0 : Number(v);
+
+//       /* ----------------------------------
+//          PARAMS (ORDER MATTERS)
+//       ---------------------------------- */
+//      const params = [
+//        Moonsign || "",
+//        Star || "",
+//        Lagnam || "",
+//        Gothram || "",
+//         Shani || "",
+//   Shani ? ShaniPlace || "" : "",
+//        Manglik || "",
+//        Horosmatch || "",
+//        fixInt(parigarasevai),
+//        fixInt(Sevai),
+//        fixInt(Raghu),
+//        fixInt(Keethu),
+//        POB || "",
+//        POC || "",
+//        TOB || "",
+//        Kuladeivam || "",
+//        Sutham || "",
+//        ThesaiPlanet || "",
+//        fixInt(ThesaiYears), // ✅ FIX
+//        fixInt(ThesaiMonths), // ✅ FIX
+//        fixInt(ThesaiDays), // ✅ FIX
+//        Kootam || "",
+//      ];
+
+
+//       if (uploadedFileName) {
+//         params.push(uploadedFileName);
+//       }
+
+//       params.push(
+//         rasi.g1,
+//         rasi.g2,
+//         rasi.g3,
+//         rasi.g4,
+//         rasi.g5,
+//         rasi.g6,
+//         rasi.g7,
+//         rasi.g8,
+//         rasi.g9,
+//         rasi.g10,
+//         rasi.g11,
+//         rasi.g12,
+//         navamsa.a1,
+//         navamsa.a2,
+//         navamsa.a3,
+//         navamsa.a4,
+//         navamsa.a5,
+//         navamsa.a6,
+//         navamsa.a7,
+//         navamsa.a8,
+//         navamsa.a9,
+//         navamsa.a10,
+//         navamsa.a11,
+//         navamsa.a12,
+//         ConfirmEmail
+//       );
+
+//       /* ----------------------------------
+//          EXECUTE
+//       ---------------------------------- */
+//       const conn = db.promise();
+//       // await conn.query(updateQuery, params);
+//       const [result] = await conn.query(updateQuery, params);
+
+// if (result.affectedRows === 0) {
+//   return res.status(400).json({
+//     success: false,
+//     message: "No record updated. Email mismatch.",
+//   });
+// }
+// console.log("Uploaded horoscope filename:", uploadedFileName);
+// console.log("Updating horoscope for:", ConfirmEmail);
+
+
+//       return res.json({
+//         success: true,
+//         message: "Horoscope updated successfully",
+//       });
+//     } catch (err) {
+//       console.error("update/horoscope error:", err);
+//       return res.status(500).json({
+//         success: false,
+//         message: err.message || "Server error",
+//       });
+//     }
+//   }
+// );
 
 
 router.put(
@@ -491,12 +890,13 @@ router.put(
     try {
       const {
         ConfirmEmail,
+        matriId, // 🆕 admin support
         Moonsign,
         Star,
         Lagnam,
         Gothram,
-         Shani,
-  ShaniPlace,
+        Shani,
+        ShaniPlace,
         Manglik,
         Horosmatch,
         parigarasevai,
@@ -515,39 +915,24 @@ router.put(
         Sutham,
       } = req.body;
 
-      if (!ConfirmEmail) {
+      /* ------------------------------
+         IDENTIFIER CHECK
+      ------------------------------ */
+      if (!ConfirmEmail && !matriId) {
         return res.status(400).json({
           success: false,
-          message: "Email missing",
+          message: "Email or MatriID required",
         });
       }
 
-      /* ----------------------------------
-         FILE UPLOAD
-      ---------------------------------- */
-      // let uploadedFileName = null;
-
-      // if (req.file) {
-      //   if (!fs.existsSync("kundli")) {
-      //     fs.mkdirSync("kundli", { recursive: true });
-      //   }
-
-      //   const ext = req.file.originalname.split(".").pop().toLowerCase();
-      //   uploadedFileName = `horoscope_${Date.now()}.${ext}`;
-
-      //   fs.renameSync(req.file.path, `kundli/${uploadedFileName}`);
-      // }
-
-
       let uploadedFileName = null;
-
       if (req.file) {
-        uploadedFileName = req.file.filename; // already in kundli
+        uploadedFileName = req.file.filename;
       }
 
-      /* ----------------------------------
+      /* ------------------------------
          RASI + NAVAMSA
-      ---------------------------------- */
+      ------------------------------ */
       const rasi = {};
       const navamsa = {};
 
@@ -556,13 +941,16 @@ router.put(
         navamsa[`a${i}`] = safeToJSONArray(req.body[`a${i}`]);
       }
 
-      /* ----------------------------------
-         SQL QUERY
-      ---------------------------------- */
+      const fixInt = (v) =>
+        v === "" || v === null || v === undefined ? 0 : Number(v);
+
+      /* ------------------------------
+         SQL
+      ------------------------------ */
       const updateQuery = `
         UPDATE register SET
-          Moonsign=?, Star=?,  Lagnam=?, Gothram=?, Shani=?,
-  ShaniPlace=?, Manglik=?,
+          Moonsign=?, Star=?, Lagnam=?, Gothram=?, 
+          Shani=?, ShaniPlace=?, Manglik=?,
           Horosmatch=?, parigarasevai=?, Sevai=?, Raghu=?, Keethu=?,
           POB=?, POC=?, TOB=?, Kuladeivam=?, Sutham=?,
           ThesaiPlanet=?, ThesaiYears=?, ThesaiMonths=?, ThesaiDays=?, Kootam=?,
@@ -571,41 +959,33 @@ router.put(
           g7=?, g8=?, g9=?, g10=?, g11=?, g12=?,
           a1=?, a2=?, a3=?, a4=?, a5=?, a6=?,
           a7=?, a8=?, a9=?, a10=?, a11=?, a12=?
-        WHERE TRIM(ConfirmEmail) = TRIM(?) COLLATE utf8mb4_general_ci
-
+        WHERE ${ConfirmEmail ? "TRIM(ConfirmEmail)=TRIM(?)" : "MatriID=?"}
       `;
 
-const fixInt = (v) =>
-  v === "" || v === null || v === undefined ? 0 : Number(v);
-
-      /* ----------------------------------
-         PARAMS (ORDER MATTERS)
-      ---------------------------------- */
-     const params = [
-       Moonsign || "",
-       Star || "",
-       Lagnam || "",
-       Gothram || "",
+      const params = [
+        Moonsign || "",
+        Star || "",
+        Lagnam || "",
+        Gothram || "",
         Shani || "",
-  Shani ? ShaniPlace || "" : "",
-       Manglik || "",
-       Horosmatch || "",
-       fixInt(parigarasevai),
-       fixInt(Sevai),
-       fixInt(Raghu),
-       fixInt(Keethu),
-       POB || "",
-       POC || "",
-       TOB || "",
-       Kuladeivam || "",
-       Sutham || "",
-       ThesaiPlanet || "",
-       fixInt(ThesaiYears), // ✅ FIX
-       fixInt(ThesaiMonths), // ✅ FIX
-       fixInt(ThesaiDays), // ✅ FIX
-       Kootam || "",
-     ];
-
+        Shani ? ShaniPlace || "" : "",
+        Manglik || "",
+        Horosmatch || "",
+        fixInt(parigarasevai),
+        fixInt(Sevai),
+        fixInt(Raghu),
+        fixInt(Keethu),
+        POB || "",
+        POC || "",
+        TOB || "",
+        Kuladeivam || "",
+        Sutham || "",
+        ThesaiPlanet || "",
+        fixInt(ThesaiYears),
+        fixInt(ThesaiMonths),
+        fixInt(ThesaiDays),
+        Kootam || "",
+      ];
 
       if (uploadedFileName) {
         params.push(uploadedFileName);
@@ -636,25 +1016,18 @@ const fixInt = (v) =>
         navamsa.a10,
         navamsa.a11,
         navamsa.a12,
-        ConfirmEmail
+        ConfirmEmail || matriId, // 🆕 identifier
       );
 
-      /* ----------------------------------
-         EXECUTE
-      ---------------------------------- */
       const conn = db.promise();
-      // await conn.query(updateQuery, params);
       const [result] = await conn.query(updateQuery, params);
 
-if (result.affectedRows === 0) {
-  return res.status(400).json({
-    success: false,
-    message: "No record updated. Email mismatch.",
-  });
-}
-console.log("Uploaded horoscope filename:", uploadedFileName);
-console.log("Updating horoscope for:", ConfirmEmail);
-
+      if (result.affectedRows === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "No record updated",
+        });
+      }
 
       return res.json({
         success: true,
@@ -667,16 +1040,90 @@ console.log("Updating horoscope for:", ConfirmEmail);
         message: err.message || "Server error",
       });
     }
-  }
+  },
 );
 
 
+// router.put("/update/contact", async (req, res) => {
+//   try {
+//     const {
+//       ConfirmEmail,
+//       Country,
+//       State,
+//       Dist,
+//       City,
+//       Pincode,
+//       Residencystatus,
+//       Address,
+//       Phone,
+//       Mobile,
+//       Mobile2,
+//       calling_time,
+//       POC,
+//     } = req.body;
+
+//     if (!ConfirmEmail) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email is required",
+//       });
+//     }
+
+//     const conn = db.promise();
+
+//     await conn.query(
+//       `
+//       UPDATE register SET 
+//         Country = ?, 
+//         State = ?, 
+//         Dist = ?, 
+//         City = ?, 
+//         Pincode = ?, 
+//         Residencystatus = ?, 
+//         Address = ?, 
+//         Phone = ?, 
+//         Mobile = ?, 
+//         Mobile2 = ?, 
+//         calling_time = ?, 
+//         POC = ?
+//       WHERE ConfirmEmail = ?
+//     `,
+//       [
+//         Country,
+//         State,
+//         Dist,
+//         City,
+//         Pincode,
+//         Residencystatus,
+//         Address,
+//         Phone,
+//         Mobile,
+//         Mobile2,
+//         calling_time,
+//         POC,
+//         ConfirmEmail,
+//       ]
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Contact details updated successfully",
+//     });
+//   } catch (err) {
+//     console.error("update/contact error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
 
 
 router.put("/update/contact", async (req, res) => {
   try {
     const {
       ConfirmEmail,
+      matriId, // 🆕 admin support
       Country,
       State,
       Dist,
@@ -691,15 +1138,35 @@ router.put("/update/contact", async (req, res) => {
       POC,
     } = req.body;
 
-    if (!ConfirmEmail) {
+    /* -----------------------------
+       IDENTIFIER CHECK
+    ----------------------------- */
+    if (!ConfirmEmail && !matriId) {
       return res.status(400).json({
         success: false,
-        message: "Email is required",
+        message: "Email or MatriID required",
       });
     }
 
     const conn = db.promise();
 
+    /* -----------------------------
+       WHERE CONDITION
+    ----------------------------- */
+    let whereQuery = "";
+    let identifier = "";
+
+    if (ConfirmEmail) {
+      whereQuery = "ConfirmEmail = ?";
+      identifier = ConfirmEmail;
+    } else {
+      whereQuery = "MatriID = ?";
+      identifier = matriId;
+    }
+
+    /* -----------------------------
+       UPDATE QUERY
+    ----------------------------- */
     await conn.query(
       `
       UPDATE register SET 
@@ -715,23 +1182,23 @@ router.put("/update/contact", async (req, res) => {
         Mobile2 = ?, 
         calling_time = ?, 
         POC = ?
-      WHERE ConfirmEmail = ?
+      WHERE ${whereQuery}
     `,
       [
-        Country,
-        State,
-        Dist,
-        City,
-        Pincode,
-        Residencystatus,
-        Address,
-        Phone,
-        Mobile,
-        Mobile2,
-        calling_time,
-        POC,
-        ConfirmEmail,
-      ]
+        Country || "",
+        State || "",
+        Dist || "",
+        City || "",
+        Pincode || "",
+        Residencystatus || "",
+        Address || "",
+        Phone || "",
+        Mobile || "",
+        Mobile2 || "",
+        calling_time || "",
+        POC || "",
+        identifier,
+      ],
     );
 
     return res.json({
@@ -747,14 +1214,179 @@ router.put("/update/contact", async (req, res) => {
   }
 });
 
+// router.put("/update/education", async (req, res) => {
+//   try {
+//     const {
+//       ConfirmEmail,
+//       Education,
+//       EducationDetails,
+//       Occupation,
+//       occu_details,
+//       Employedin,
+//       Annualincome,
+//       anyotherincome,
+//       income_in,
+//       working_hours,
+//       workinglocation,
+//       workin,
+//     } = req.body;
+
+//     if (!ConfirmEmail) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email missing",
+//       });
+//     }
+
+//     const conn = db.promise();
+
+//     await conn.query(
+//       `
+//       UPDATE register SET 
+//         Education = ?, 
+//         EducationDetails = ?, 
+//         Occupation = ?, 
+//         occu_details = ?, 
+//         Employedin = ?, 
+//         Annualincome = ?, 
+//         anyotherincome = ?, 
+//         income_in = ?, 
+//         working_hours = ?, 
+//         workinglocation = ?, 
+//         workin = ?
+//       WHERE ConfirmEmail = ?
+//     `,
+//       [
+//         Education,
+//         EducationDetails,
+//         Occupation,
+//         occu_details,
+//         Employedin,
+//         Annualincome,
+//         anyotherincome,
+//         income_in,
+//         working_hours,
+//         workinglocation,
+//         workin,
+//         ConfirmEmail,
+//       ]
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Education details updated successfully",
+//     });
+//   } catch (err) {
+//     console.error("update/education error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
+// router.put("/update/education", async (req, res) => {
+//   try {
+//     const {
+//       ConfirmEmail,
+//       matriId, // 🆕 admin support
+//       Education,
+//       EducationDetails,
+//       Occupation,
+//       occu_details,
+//       Employedin,
+//       Annualincome,
+//       anyotherincome,
+//       income_in,
+//       working_hours,
+//       workinglocation,
+//       workin,
+//     } = req.body;
+
+//     /* -----------------------------
+//        IDENTIFIER CHECK
+//     ----------------------------- */
+//     if (!ConfirmEmail && !matriId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email or MatriID required",
+//       });
+//     }
+
+//     const conn = db.promise();
+
+//     /* -----------------------------
+//        WHERE CONDITION
+//     ----------------------------- */
+//     let whereQuery = "";
+//     let identifier = "";
+
+//     if (ConfirmEmail) {
+//       whereQuery = "ConfirmEmail = ?";
+//       identifier = ConfirmEmail;
+//     } else {
+//       whereQuery = "MatriID = ?";
+//       identifier = matriId;
+//     }
+
+//     /* -----------------------------
+//        UPDATE QUERY
+//     ----------------------------- */
+//     await conn.query(
+//       `
+//       UPDATE register SET 
+//         Education = ?, 
+//         EducationDetails = ?, 
+//         Occupation = ?, 
+//         occu_details = ?, 
+//         Employedin = ?, 
+//         Annualincome = ?, 
+//         anyotherincome = ?, 
+//         income_in = ?, 
+//         working_hours = ?, 
+//         workinglocation = ?, 
+//         workin = ?
+//       WHERE ${whereQuery}
+//       `,
+//       [
+//         Education || "",
+//         EducationDetails || "",
+//         Occupation || "",
+//         occu_details || "",
+//         Employedin || "",
+//         Annualincome || "",
+//         anyotherincome || "",
+//         income_in || "",
+//         working_hours || "",
+//         workinglocation || "",
+//         workin || "",
+//         identifier,
+//       ],
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Education details updated successfully",
+//     });
+//   } catch (err) {
+//     console.error("update/education error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
+
 router.put("/update/education", async (req, res) => {
   try {
     const {
       ConfirmEmail,
+      matriId,
       Education,
       EducationDetails,
       Occupation,
-      occu_details,
+      occu_details, // coming from frontend
       Employedin,
       Annualincome,
       anyotherincome,
@@ -764,14 +1396,25 @@ router.put("/update/education", async (req, res) => {
       workin,
     } = req.body;
 
-    if (!ConfirmEmail) {
+    if (!ConfirmEmail && !matriId) {
       return res.status(400).json({
         success: false,
-        message: "Email missing",
+        message: "Email or MatriID required",
       });
     }
 
     const conn = db.promise();
+
+    let whereQuery = "";
+    let identifier = "";
+
+    if (ConfirmEmail) {
+      whereQuery = "ConfirmEmail = ?";
+      identifier = ConfirmEmail;
+    } else {
+      whereQuery = "MatriID = ?";
+      identifier = matriId;
+    }
 
     await conn.query(
       `
@@ -779,7 +1422,7 @@ router.put("/update/education", async (req, res) => {
         Education = ?, 
         EducationDetails = ?, 
         Occupation = ?, 
-        occu_details = ?, 
+        OccupationDetails = ?,   -- ✅ FIXED COLUMN NAME
         Employedin = ?, 
         Annualincome = ?, 
         anyotherincome = ?, 
@@ -787,22 +1430,22 @@ router.put("/update/education", async (req, res) => {
         working_hours = ?, 
         workinglocation = ?, 
         workin = ?
-      WHERE ConfirmEmail = ?
-    `,
+      WHERE ${whereQuery}
+      `,
       [
-        Education,
-        EducationDetails,
-        Occupation,
-        occu_details,
-        Employedin,
-        Annualincome,
-        anyotherincome,
-        income_in,
-        working_hours,
-        workinglocation,
-        workin,
-        ConfirmEmail,
-      ]
+        Education || "",
+        EducationDetails || "",
+        Occupation || "",
+        occu_details || "", // frontend value → DB column
+        Employedin || "",
+        Annualincome || "",
+        anyotherincome || "",
+        income_in || "",
+        working_hours || "",
+        workinglocation || "",
+        workin || "",
+        identifier,
+      ],
     );
 
     return res.json({
@@ -818,10 +1461,100 @@ router.put("/update/education", async (req, res) => {
   }
 });
 
+
+// router.put("/update/lifestyle", async (req, res) => {
+//   try {
+//     const {
+//       ConfirmEmail,
+//       Height,
+//       HeightText,
+//       Weight,
+//       BloodGroup,
+//       Complexion,
+//       Bodytype,
+//       Diet,
+//       Smoke,
+//       Drink,
+//       spe_cases,
+//       Hobbies,
+//       Interests,
+//       passport,
+//       medicalhistory,
+//       familymedicalhistory,
+//       anyotherincome,
+//     } = req.body;
+
+//     if (!ConfirmEmail) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email is required",
+//       });
+//     }
+
+//     const conn = db.promise();
+
+//     await conn.query(
+//       `
+//       UPDATE register SET 
+//         height = ?,
+//         HeightText = ?, 
+//         Weight = ?,
+//         BloodGroup = ?,
+//         Complexion = ?,
+//         Bodytype = ?,
+//         Diet = ?,
+//         Smoke = ?,
+//         Drink = ?,
+//         spe_cases = ?,
+//         Hobbies = ?,
+//         Interests = ?,
+//         passport = ?,
+//         medicalhistory = ?,
+//         familymedicalhistory = ?,
+//         anyotherincome = ?
+//       WHERE ConfirmEmail = ?
+//       `,
+//       [
+//         Height,
+//         HeightText,
+//         Weight,
+//         BloodGroup,
+//         Complexion,
+//         Bodytype,
+//         Diet,
+//         Smoke,
+//         Drink,
+//         spe_cases,
+//         Hobbies,
+//         Interests,
+//         passport,
+//         medicalhistory,
+//         familymedicalhistory,
+//         anyotherincome,
+//         ConfirmEmail,
+//       ]
+//     );
+
+//     res.json({
+//       success: true,
+//       message: "Lifestyle details updated",
+//     });
+//   } catch (err) {
+//     console.error("update/lifestyle error:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
+
 router.put("/update/lifestyle", async (req, res) => {
   try {
     const {
       ConfirmEmail,
+      matriId, // 🆕 Admin support
+
       Height,
       HeightText,
       Weight,
@@ -840,19 +1573,39 @@ router.put("/update/lifestyle", async (req, res) => {
       anyotherincome,
     } = req.body;
 
-    if (!ConfirmEmail) {
+    /* -----------------------------
+       IDENTIFIER CHECK
+    ----------------------------- */
+    if (!ConfirmEmail && !matriId) {
       return res.status(400).json({
         success: false,
-        message: "Email is required",
+        message: "Email or MatriID required",
       });
     }
 
     const conn = db.promise();
 
+    /* -----------------------------
+       WHERE CONDITION
+    ----------------------------- */
+    let whereQuery = "";
+    let identifier = "";
+
+    if (ConfirmEmail) {
+      whereQuery = "ConfirmEmail = ?";
+      identifier = ConfirmEmail;
+    } else {
+      whereQuery = "MatriID = ?";
+      identifier = matriId;
+    }
+
+    /* -----------------------------
+       UPDATE QUERY
+    ----------------------------- */
     await conn.query(
       `
       UPDATE register SET 
-        height = ?,
+        Height = ?,
         HeightText = ?, 
         Weight = ?,
         BloodGroup = ?,
@@ -868,27 +1621,27 @@ router.put("/update/lifestyle", async (req, res) => {
         medicalhistory = ?,
         familymedicalhistory = ?,
         anyotherincome = ?
-      WHERE ConfirmEmail = ?
+      WHERE ${whereQuery}
       `,
       [
-        Height,
-        HeightText,
-        Weight,
-        BloodGroup,
-        Complexion,
-        Bodytype,
-        Diet,
-        Smoke,
-        Drink,
-        spe_cases,
-        Hobbies,
-        Interests,
-        passport,
-        medicalhistory,
-        familymedicalhistory,
-        anyotherincome,
-        ConfirmEmail,
-      ]
+        Height || "",
+        HeightText || "",
+        Weight || "",
+        BloodGroup || "",
+        Complexion || "",
+        Bodytype || "",
+        Diet || "",
+        Smoke || "",
+        Drink || "",
+        spe_cases || "",
+        Hobbies || "",
+        Interests || "",
+        passport || "",
+        medicalhistory || "",
+        familymedicalhistory || "",
+        anyotherincome || "",
+        identifier,
+      ],
     );
 
     res.json({
@@ -903,10 +1656,105 @@ router.put("/update/lifestyle", async (req, res) => {
     });
   }
 });
+
+
+// router.put("/update/family", async (req, res) => {
+//   try {
+//     const {
+//       ConfirmEmail,
+//       Familyvalues,
+//       FamilyType,
+//       FamilyStatus,
+//       noofbrothers,
+//       noofsisters,
+//       noyubrothers,
+//       noyusisters,
+//       Fathername,
+//       Fathersoccupation,
+//       FatherPoorvegam, // ✅ NEW
+//       Mothersname,
+//       Mothersoccupation,
+//       MotherPoorvegam, // ✅ NEW
+//       family_wealth,
+//       mother_tounge,
+//       familymedicalhistory,
+//       FamilyDetails,
+//     } = req.body;
+
+//     // ✅ Validation
+//     if (!ConfirmEmail) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email required",
+//       });
+//     }
+
+//     const conn = db.promise();
+
+//     // ✅ SQL Update
+//     await conn.query(
+//       `
+//       UPDATE register SET
+//         Familyvalues = ?,
+//         FamilyType = ?,
+//         FamilyStatus = ?,
+//         noofbrothers = ?,
+//         noofsisters = ?,
+//         noyubrothers = ?,
+//         noyusisters = ?,
+//         Fathername = ?,
+//         Fathersoccupation = ?,
+//         FatherPoorvegam = ?,      -- ✅
+//         Mothersname = ?,
+//         Mothersoccupation = ?,
+//         MotherPoorvegam = ?,      -- ✅
+//         family_wealth = ?,
+//         mother_tounge = ?,
+//         familymedicalhistory = ?,
+//         FamilyDetails = ?
+//       WHERE ConfirmEmail = ?
+//       `,
+//       [
+//         Familyvalues,
+//         FamilyType,
+//         FamilyStatus,
+//         noofbrothers,
+//         noofsisters,
+//         noyubrothers,
+//         noyusisters,
+//         Fathername,
+//         Fathersoccupation,
+//         FatherPoorvegam, // ✅
+//         Mothersname,
+//         Mothersoccupation,
+//         MotherPoorvegam, // ✅
+//         family_wealth,
+//         mother_tounge,
+//         familymedicalhistory,
+//         FamilyDetails,
+//         ConfirmEmail,
+//       ]
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Family details updated successfully",
+//     });
+//   } catch (err) {
+//     console.error("update/family error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
 router.put("/update/family", async (req, res) => {
   try {
     const {
       ConfirmEmail,
+      matriId, // 🆕 Admin support
+
       Familyvalues,
       FamilyType,
       FamilyStatus,
@@ -916,27 +1764,45 @@ router.put("/update/family", async (req, res) => {
       noyusisters,
       Fathername,
       Fathersoccupation,
-      FatherPoorvegam, // ✅ NEW
+      FatherPoorvegam,
       Mothersname,
       Mothersoccupation,
-      MotherPoorvegam, // ✅ NEW
+      MotherPoorvegam,
       family_wealth,
       mother_tounge,
       familymedicalhistory,
       FamilyDetails,
     } = req.body;
 
-    // ✅ Validation
-    if (!ConfirmEmail) {
+    /* -----------------------------
+       IDENTIFIER CHECK
+    ----------------------------- */
+    if (!ConfirmEmail && !matriId) {
       return res.status(400).json({
         success: false,
-        message: "Email required",
+        message: "Email or MatriID required",
       });
     }
 
     const conn = db.promise();
 
-    // ✅ SQL Update
+    /* -----------------------------
+       WHERE CONDITION
+    ----------------------------- */
+    let whereQuery = "";
+    let identifier = "";
+
+    if (ConfirmEmail) {
+      whereQuery = "ConfirmEmail = ?";
+      identifier = ConfirmEmail;
+    } else {
+      whereQuery = "MatriID = ?";
+      identifier = matriId;
+    }
+
+    /* -----------------------------
+       UPDATE QUERY
+    ----------------------------- */
     await conn.query(
       `
       UPDATE register SET
@@ -949,36 +1815,36 @@ router.put("/update/family", async (req, res) => {
         noyusisters = ?,
         Fathername = ?,
         Fathersoccupation = ?,
-        FatherPoorvegam = ?,      -- ✅
+        FatherPoorvegam = ?,
         Mothersname = ?,
         Mothersoccupation = ?,
-        MotherPoorvegam = ?,      -- ✅
+        MotherPoorvegam = ?,
         family_wealth = ?,
         mother_tounge = ?,
         familymedicalhistory = ?,
         FamilyDetails = ?
-      WHERE ConfirmEmail = ?
+      WHERE ${whereQuery}
       `,
       [
-        Familyvalues,
-        FamilyType,
-        FamilyStatus,
-        noofbrothers,
-        noofsisters,
-        noyubrothers,
-        noyusisters,
-        Fathername,
-        Fathersoccupation,
-        FatherPoorvegam, // ✅
-        Mothersname,
-        Mothersoccupation,
-        MotherPoorvegam, // ✅
-        family_wealth,
-        mother_tounge,
-        familymedicalhistory,
-        FamilyDetails,
-        ConfirmEmail,
-      ]
+        Familyvalues || "",
+        FamilyType || "",
+        FamilyStatus || "",
+        noofbrothers || "",
+        noofsisters || "",
+        noyubrothers || "",
+        noyusisters || "",
+        Fathername || "",
+        Fathersoccupation || "",
+        FatherPoorvegam || "",
+        Mothersname || "",
+        Mothersoccupation || "",
+        MotherPoorvegam || "",
+        family_wealth || "",
+        mother_tounge || "",
+        familymedicalhistory || "",
+        FamilyDetails || "",
+        identifier,
+      ],
     );
 
     return res.json({
@@ -994,11 +1860,104 @@ router.put("/update/family", async (req, res) => {
   }
 });
 
+// router.put("/update/partner", async (req, res) => {
+//   try {
+//     const {
+//       ConfirmEmail,
+//       Looking,
+//       PE_FromAge,
+//       PE_ToAge,
+//       PE_from_Height,
+//       PE_to_Height,
+//       PE_Complexion,
+//       PE_MotherTongue,
+//       PE_Religion,
+//       PE_Caste,
+//       PE_subcaste,
+//       PE_Education,
+//       PE_Occupation,
+//       PE_Residentstatus,
+//       PE_Country,
+//       PE_Countrylivingin,
+//       PE_State,
+//       PE_City,
+//       PartnerExpectations,
+//     } = req.body;
+
+//     if (!ConfirmEmail)
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email required",
+//       });
+
+//     const conn = db.promise();
+
+//     await conn.query(
+//       `
+//       UPDATE register SET 
+//         Looking = ?, 
+//         PE_FromAge = ?, 
+//         PE_ToAge = ?, 
+//         PE_from_Height = ?, 
+//         PE_to_Height = ?, 
+//         PE_Complexion = ?, 
+//         PE_MotherTongue = ?, 
+//         PE_Religion = ?, 
+//         PE_Caste = ?, 
+//         PE_subcaste = ?, 
+//         PE_Education = ?, 
+//         PE_Occupation = ?, 
+//         PE_Residentstatus = ?, 
+//         PE_Country = ?, 
+//         PE_Countrylivingin = ?, 
+//         PE_State = ?, 
+//         PE_City = ?, 
+//         PartnerExpectations = ?
+//       WHERE ConfirmEmail = ?
+//       `,
+//       [
+//         Looking,
+//         PE_FromAge,
+//         PE_ToAge,
+//         PE_from_Height,
+//         PE_to_Height,
+//         PE_Complexion,
+//         PE_MotherTongue,
+//         PE_Religion,
+//         PE_Caste,
+//         PE_subcaste,
+//         PE_Education,
+//         PE_Occupation,
+//         PE_Residentstatus,
+//         PE_Country,
+//         PE_Countrylivingin,
+//         PE_State,
+//         PE_City,
+//         PartnerExpectations,
+//         ConfirmEmail,
+//       ]
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Partner preferences updated",
+//     });
+//   } catch (err) {
+//     console.error("update/partner error:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
 
 router.put("/update/partner", async (req, res) => {
   try {
     const {
       ConfirmEmail,
+      matriId, // 🆕 Admin support
+
       Looking,
       PE_FromAge,
       PE_ToAge,
@@ -1019,14 +1978,35 @@ router.put("/update/partner", async (req, res) => {
       PartnerExpectations,
     } = req.body;
 
-    if (!ConfirmEmail)
+    /* -----------------------------
+       IDENTIFIER CHECK
+    ----------------------------- */
+    if (!ConfirmEmail && !matriId) {
       return res.status(400).json({
         success: false,
-        message: "Email required",
+        message: "Email or MatriID required",
       });
+    }
 
     const conn = db.promise();
 
+    /* -----------------------------
+       WHERE CONDITION
+    ----------------------------- */
+    let whereQuery = "";
+    let identifier = "";
+
+    if (ConfirmEmail) {
+      whereQuery = "ConfirmEmail = ?";
+      identifier = ConfirmEmail;
+    } else {
+      whereQuery = "MatriID = ?";
+      identifier = matriId;
+    }
+
+    /* -----------------------------
+       UPDATE QUERY
+    ----------------------------- */
     await conn.query(
       `
       UPDATE register SET 
@@ -1048,29 +2028,29 @@ router.put("/update/partner", async (req, res) => {
         PE_State = ?, 
         PE_City = ?, 
         PartnerExpectations = ?
-      WHERE ConfirmEmail = ?
+      WHERE ${whereQuery}
       `,
       [
-        Looking,
-        PE_FromAge,
-        PE_ToAge,
-        PE_from_Height,
-        PE_to_Height,
-        PE_Complexion,
-        PE_MotherTongue,
-        PE_Religion,
-        PE_Caste,
-        PE_subcaste,
-        PE_Education,
-        PE_Occupation,
-        PE_Residentstatus,
-        PE_Country,
-        PE_Countrylivingin,
-        PE_State,
-        PE_City,
-        PartnerExpectations,
-        ConfirmEmail,
-      ]
+        Looking || "",
+        PE_FromAge || "",
+        PE_ToAge || "",
+        PE_from_Height || "",
+        PE_to_Height || "",
+        PE_Complexion || "",
+        PE_MotherTongue || "",
+        PE_Religion || "",
+        PE_Caste || "",
+        PE_subcaste || "",
+        PE_Education || "",
+        PE_Occupation || "",
+        PE_Residentstatus || "",
+        PE_Country || "",
+        PE_Countrylivingin || "",
+        PE_State || "",
+        PE_City || "",
+        PartnerExpectations || "",
+        identifier,
+      ],
     );
 
     return res.json({
@@ -1085,8 +2065,6 @@ router.put("/update/partner", async (req, res) => {
     });
   }
 });
-
-
 
 
 

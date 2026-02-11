@@ -82,6 +82,7 @@ import PremiumMembers from "./AdminDashboard/PremiumMembers";
 import UserPasswords from "./AdminDashboard/UserPasswords";
 import LoggedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
+import PaymentSuccess from "./component/PaymentSuccess";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -101,8 +102,7 @@ function AppContent({ user, setUser }) {
   const hideLayout = location.pathname.startsWith("/admin");
 
   return (
-    
-     <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <ScrollToTop />
       {!hideLayout && <Header user={user} setUser={setUser} />}
 
@@ -143,6 +143,42 @@ function AppContent({ user, setUser }) {
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />
             <Route path="contact-messages" element={<ContactMessages />} />
+            <Route
+              path="edit/about/:matriId"
+              element={<EditAbout adminMode />}
+            />
+            <Route
+              path="edit/basic/:matriId"
+              element={<BasicEdit adminMode />}
+            />
+            <Route
+              path="edit/photo/:matriId"
+              element={<EditPhoto adminMode />}
+            />
+            <Route
+              path="edit/horoscope/:matriId"
+              element={<EditHoroscope adminMode />}
+            />
+            <Route
+              path="edit/contact/:matriId"
+              element={<EditContact adminMode />}
+            />
+            <Route
+              path="edit/education/:matriId"
+              element={<EditEducation adminMode />}
+            />
+            <Route
+              path="edit/lifestyle/:matriId"
+              element={<EditLifestyle adminMode />}
+            />
+            <Route
+              path="edit/family/:matriId"
+              element={<EditFamily adminMode />}
+            />
+            <Route
+              path="edit/partner/:matriId"
+              element={<EditPartnerPreference adminMode />}
+            />
           </Route>
 
           {/* Public routes */}
@@ -165,7 +201,11 @@ function AppContent({ user, setUser }) {
           <Route path="/success-story" element={<SuccessStories />} />
           <Route path="/login" element={<LoginPage setUser={setUser} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/pending-verification" element={<PendingVerification />} />
+          <Route
+            path="/pending-verification"
+            element={<PendingVerification />}
+          />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
 
           <Route path="/register/*" element={<MultiStepForm />} />
 
@@ -350,8 +390,6 @@ function AppContent({ user, setUser }) {
             }
           />
 
-         
-
           <Route
             path="/regularsearch-results/:page?"
             element={
@@ -463,8 +501,7 @@ function AppContent({ user, setUser }) {
       </main>
 
       {!hideLayout && <Footer />}
-      </div>
-
+    </div>
   );
 }
 

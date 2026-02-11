@@ -2304,7 +2304,7 @@ const downloadAsPDF = async () => {
                           இதர குறிப்புகள்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "770px" }}
+                            style={{ minWidth: "900px" }}
                           >
                             {isEditing ? (
                               <input
@@ -2549,7 +2549,7 @@ const downloadAsPDF = async () => {
     <div
       className="display-placeholder"
       style={{ 
-        minWidth: "520px",  // Changed from 420px to 520px
+        minWidth: "420px",  // Changed from 420px to 520px
         wordWrap: "break-word",
         whiteSpace: "normal"
       }}
@@ -3031,7 +3031,7 @@ const downloadAsPDF = async () => {
                   இதர குறிப்புகள்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "770px" }}
+                    style={{ minWidth: "900px" }}
                   >
                     <span className="display-data">
                       {currentData.other_notes}

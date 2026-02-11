@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
@@ -40,15 +40,14 @@ function safeParseArray(value) {
 const generateNumbers = (start, end) =>
   Array.from({ length: end - start + 1 }, (_, i) => i + start);
 
-export default function EditHoroscope() {
+export default function EditHoroscope({ adminMode = false }) {
   const navigate = useNavigate();
-
+  const params = useParams();
   const [form, setForm] = useState({
     ConfirmEmail: "",
     moonSignId: "",
     Moonsign: "",
     Star: "",
-    lagnamId: "",
     Lagnam: "",
     Gothram: "",
     Shani: "",
@@ -75,8 +74,7 @@ export default function EditHoroscope() {
     Sutham: "",
   });
 
-  const [rasi, setRasi] = useState({});
-  const [navamsa, setNavamsa] = useState({});
+
   const [options, setOptions] = useState({
     moonSigns: [],
     nakshatras: [],
@@ -84,31 +82,44 @@ export default function EditHoroscope() {
     mangliks: [],
     horoscopeMatches: [],
     shani: [],
+    lagnams: [],
   });
   const [preview, setPreview] = useState(null);
   const [customGothra, setCustomGothra] = useState("");
   const [customSutham, setCustomSutham] = useState("");
 
 
-  // LOAD DROPDOWN OPTIONS
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [moon, goth, mang, match,shani] = await Promise.all([
-          fetch(API_BASE + "moon-sign").then((r) => r.json()),
-          fetch(API_BASE + "gothra").then((r) => r.json()),
-          fetch(API_BASE + "manglik").then((r) => r.json()),
-          fetch(API_BASE + "horoscope-match").then((r) => r.json()),
-          fetch(API_BASE + "shani").then((r) => r.json()),
-        ]);
+        const [moonRes, gothRes, mangRes, matchRes, shaniRes, lagnamRes] =
+          await Promise.all([
+            fetch(API_BASE + "moon-sign"),
+            fetch(API_BASE + "gothra"),
+            fetch(API_BASE + "manglik"),
+            fetch(API_BASE + "horoscope-match"),
+            fetch(API_BASE + "shani"),
+            fetch(API_BASE + "lagnam"), // new
+          ]);
+
+        const moon = await moonRes.json();
+        const goth = await gothRes.json();
+        const mang = await mangRes.json();
+        const match = await matchRes.json();
+        const shani = await shaniRes.json();
+        const lagnam = await lagnamRes.json();
+
+        console.log("Lagnams:", lagnam);
 
         setOptions({
-          moonSigns: moon,
+          moonSigns: moon || [],
           nakshatras: [],
-          gothras: goth.map((x) => x.Gothra),
-          mangliks: mang.map((x) => x.type),
-          horoscopeMatches: match.map((x) => x.type),
-          shani: shani.map((x) => x.type),
+          gothras: goth.map((x) => x.Gothra) || [],
+          mangliks: mang.map((x) => x.type) || [],
+          horoscopeMatches: match.map((x) => x.type) || [],
+          shani: shani.map((x) => x.type) || [],
+          // lagnams: lagnam.map((x) => x.Lagnam) || [],
+          lagnams: lagnam.map((x) => x.name) || [],
         });
       } catch (err) {
         console.error("Dropdown error:", err);
@@ -117,6 +128,7 @@ export default function EditHoroscope() {
 
     loadOptions();
   }, []);
+
 
   // FETCH NAKSHATRA WHEN MOON SIGN CHANGES
   useEffect(() => {
@@ -142,160 +154,193 @@ export default function EditHoroscope() {
     fetchNakshatra();
   }, [form.moonSignId]);
 
-  // LOAD SAVED USER DATA
-useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("userData"));
-  if (!user) return;
-
-  // Parse TOB
-  let hour = "",
-    minute = "",
-    second = "",
-    ampm = "AM";
-
-  if (user.TOB) {
-    const timeMatch = user.TOB.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
-    if (timeMatch) {
-      hour = String(Number(timeMatch[1])); // ✅ FIX
-      minute = timeMatch[2];
-      second = timeMatch[3];
-      ampm = timeMatch[4].toUpperCase();
-    }
-  }
-
-  // ✅ Handle Gothra properly
-  let gothraValue = user.Gothram || "";
-  let gothraSelect = gothraValue;
-  let gothraCustom = "";
-
-  if (options.gothras.length && !options.gothras.includes(gothraValue)) {
-    gothraSelect = "OTHER";
-    gothraCustom = gothraValue;
-  }
-
-  setForm((prev) => ({
-    ...prev,
-    ConfirmEmail: user.ConfirmEmail || "",
-    moonSignId: user.moonSignId || "",
-  
-    Star: user.Star || "",
-    lagnamId: user.lagnamId || "",
-  
-    Gothram: gothraSelect,
-    Shani: user.Shani || "",
-  ShaniPlace: user.ShaniPlace || "",
-    Manglik: user.Manglik || "",
-    Horosmatch: user.Horosmatch || "",
-    parigarasevai: user.parigarasevai || "",
-    Sevai: user.Sevai || "",
-    Raghu: user.Raghu || "",
-    Keethu: user.Keethu || "",
-    POB: user.POB || "",
-    POC: user.POC || "",
-    birthHour: hour,
-    birthMinute: minute,
-    birthSecond: second,
-    ampm,
-    Kuladeivam: user.Kuladeivam || "",
-    ThesaiPlanet: user.ThesaiPlanet || "",
-    ThesaiYears: user.ThesaiYears || "",
-    ThesaiMonths: user.ThesaiMonths || "",
-    ThesaiDays: user.ThesaiDays || "",
-    Kootam: user.Kootam || "",
-  }));
-
-  setCustomGothra(gothraCustom);
-
-  // Rasi
-  let r = {};
-  for (let i = 1; i <= 12; i++) {
-    r[`g${i}`] = safeParseArray(user[`g${i}`]);
-  }
-  setRasi(r);
-
-  // Navamsa
-  let n = {};
-  for (let i = 1; i <= 12; i++) {
-    n[`a${i}`] = safeParseArray(user[`a${i}`]);
-  }
-  setNavamsa(n);
 
 
-
-
-  if (user.HoroscopeURL) {
-    setPreview(user.HoroscopeURL);
-  }
-
-
-  // ---------- SUTHAM (Yes / No / Others) ----------
-  let suthamValue = user.Sutham || "";
-
-  if (!["Yes", "No", "Others"].includes(suthamValue)) {
-    suthamValue = ""; // fallback safety
-  }
-
-  setForm((prev) => ({
-    ...prev,
-    Sutham: suthamValue,
-  }));
-}, [options.gothras]);
 
 useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("userData"));
-  if (!user || !options.moonSigns.length) return;
+  const loadData = async () => {
+    let user;
 
-  const selectedLagnam = options.moonSigns.find(
-    (m) => String(m.ID) === String(user.lagnamId)
-  );
-
-  setForm((prev) => ({
-    ...prev,
-    lagnamId: selectedLagnam?.ID || "",
-    Lagnam: selectedLagnam?.Moon_Sign || "",
-  }));
-}, [options.moonSigns]);
-
-
-
-  // CHECKBOX TOGGLE
-  const toggleBox = (type, key, value) => {
-    const state =
-      type === "rasi"
-        ? { map: rasi, set: setRasi }
-        : { map: navamsa, set: setNavamsa };
-    let arr = [...state.map[key]];
-
-    if (value === "லக்") {
-      Object.keys(state.map).forEach((k) => {
-        if (k !== key) {
-          state.map[k] = state.map[k].filter((x) => x !== "லக்");
-        }
-      });
+    if (adminMode && params.matriId) {
+      const res = await axios.get(`${API_BASE}admin/profile/${params.matriId}`);
+      user = res.data.user;
+    } else {
+      user = JSON.parse(localStorage.getItem("userData"));
     }
 
-    if (arr.includes(value)) arr = arr.filter((x) => x !== value);
-    else arr.push(value);
+    if (!user) return;
 
-    state.set({ ...state.map, [key]: arr });
-  };
+    /* -------------------------
+       PARSE TIME OF BIRTH
+    --------------------------*/
+    let hour = "",
+      minute = "",
+      second = "",
+      ampm = "AM";
 
+    if (user.TOB) {
+      const match = user.TOB.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
 
+      if (match) {
+        hour = String(Number(match[1]));
+        minute = match[2];
+        second = match[3];
+        ampm = match[4].toUpperCase();
+      }
+    }
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("userData"));
-    if (!user || !options.moonSigns.length) return;
-
-    const selectedLagnam = options.moonSigns.find(
-      (m) => String(m.ID) === String(user.lagnamId),
-    );
-
+    /* -------------------------
+       SET FORM
+    --------------------------*/
     setForm((prev) => ({
       ...prev,
-      lagnamId: selectedLagnam?.ID || "",
-      Lagnam: selectedLagnam?.Moon_Sign || "",
+      ConfirmEmail: user.ConfirmEmail || "",
+      MatriID: user.MatriID || "",
+
+      Moonsign: user.Moonsign || "",
+      Star: user.Star || "",
+      Lagnam: user.Lagnam || "",
+      Gothram: user.Gothram || "",
+
+      Shani: user.Shani || user.shani || "",
+      ShaniPlace: user.shaniplace || "",
+
+      Manglik: user.Manglik || "",
+      Horosmatch: user.Horosmatch || "",
+
+      parigarasevai: user.parigarasevai || "",
+      Sevai: user.Sevai || "",
+      Raghu: user.Raghu || "",
+      Keethu: user.Keethu || "",
+
+      POB: user.POB || "",
+      POC: user.POC || "",
+
+      birthHour: hour,
+      birthMinute: minute,
+      birthSecond: second,
+      ampm: ampm,
+
+      Kuladeivam: user.Kuladeivam || "",
+      Kootam: user.Kootam || "",
+      Sutham: user.Sutham || "",
+
+      ThesaiPlanet: user.ThesaiPlanet || "",
+      ThesaiYears: user.ThesaiYears || "",
+      ThesaiMonths: user.ThesaiMonths || "",
+      ThesaiDays: user.ThesaiDays || "",
     }));
-  }, [options.moonSigns]);
+
+    /* -------------------------
+       LOAD RASI + NAVAMSA
+    --------------------------*/
+    const rasiData = {};
+    const navamsaData = {};
+
+    for (let i = 1; i <= 12; i++) {
+      rasiData[`g${i}`] = safeParseArray(user[`g${i}`]);
+      navamsaData[`a${i}`] = safeParseArray(user[`a${i}`]);
+    }
+
+    setRasi(rasiData);
+    setNavamsa(navamsaData);
+  };
+
+  loadData();
+}, [adminMode, params.matriId]);
+
+ 
+//  const toggleBox = (type, key, value) => {
+//    const state =
+//      type === "rasi"
+//        ? { map: rasi, set: setRasi }
+//        : { map: navamsa, set: setNavamsa };
+
+//    // SAFE ARRAY
+//    let arr = [...(state.map[key] || [])];
+
+//    // Only one Lagna allowed
+//    if (value === "லக்") {
+//      const updated = { ...state.map };
+
+//      Object.keys(updated).forEach((k) => {
+//        if (k !== key) {
+//          updated[k] = (updated[k] || []).filter((x) => x !== "லக்");
+//        }
+//      });
+
+//      state.set(updated);
+//    }
+
+//    if (arr.includes(value)) {
+//      arr = arr.filter((x) => x !== value);
+//    } else {
+//      arr.push(value);
+//    }
+
+//    state.set({
+//      ...state.map,
+//      [key]: arr,
+//    });
+//  };
+
+const toggleBox = (type, key, value) => {
+  const state =
+    type === "rasi"
+      ? { map: rasi, set: setRasi }
+      : { map: navamsa, set: setNavamsa };
+
+  const updated = { ...state.map };
+
+  // Ensure array exists
+  if (!updated[key]) {
+    updated[key] = [];
+  }
+
+  /* -------------------------
+     SINGLE LAGNA RULE
+  --------------------------*/
+  if (value === "லக்") {
+    // Remove Lagna from all boxes
+    Object.keys(updated).forEach((k) => {
+      updated[k] = (updated[k] || []).filter(
+        (planet) => planet !== "லக்"
+      );
+    });
+
+    // Add Lagna only to current box
+    updated[key].push("லக்");
+
+    state.set(updated);
+    return;
+  }
+
+  /* -------------------------
+     NORMAL PLANET TOGGLE
+  --------------------------*/
+  if (updated[key].includes(value)) {
+    updated[key] = updated[key].filter((x) => x !== value);
+  } else {
+    updated[key].push(value);
+  }
+
+  state.set(updated);
+};
+
+
+
+const emptyBoxes = {};
+for (let i = 1; i <= 12; i++) {
+  emptyBoxes[`g${i}`] = [];
+}
+
+const emptyNavamsa = {};
+for (let i = 1; i <= 12; i++) {
+  emptyNavamsa[`a${i}`] = [];
+}
+
+const [rasi, setRasi] = useState(emptyBoxes);
+const [navamsa, setNavamsa] = useState(emptyNavamsa);
 
 
   const handleSubmit = async (e) => {
@@ -310,8 +355,14 @@ useEffect(() => {
       .toString()
       .padStart(2, "0")}:${second.toString().padStart(2, "0")} ${form.ampm}`;
 
+      if (adminMode) {
+        fd.append("matriId", params.matriId);
+      } else {
+        fd.append("ConfirmEmail", form.ConfirmEmail);
+      }
+
     // Add all form fields
-    fd.append("ConfirmEmail", form.ConfirmEmail);
+    // fd.append("ConfirmEmail", form.ConfirmEmail);
     fd.append("Moonsign", form.Moonsign);
     fd.append("Star", form.Star);
     fd.append("Lagnam", form.Lagnam || "");
@@ -321,7 +372,9 @@ useEffect(() => {
 
     fd.append("Gothram", finalGothra || "");
 fd.append("Shani", form.Shani || "");
-fd.append("ShaniPlace", form.Shani ? form.ShaniPlace || "" : "");
+// fd.append("ShaniPlace", form.Shani ? form.ShaniPlace || "" : "");
+fd.append("ShaniPlace", form.ShaniPlace || "");
+
 
     fd.append("Manglik", form.Manglik || "");
     fd.append("Horosmatch", form.Horosmatch || "");
@@ -370,8 +423,9 @@ fd.append("Sutham", form.Sutham || "");
         Lagnam: form.Lagnam,
         TOB: TOB,
         Gothram: finalGothra,
-        Shani: form.Shani,
-  ShaniPlace: form.Shani ? form.ShaniPlace : "",
+        shani: form.Shani,
+        shaniplace: form.ShaniPlace,
+
         Manglik: form.Manglik,
         Horosmatch: form.Horosmatch,
         parigarasevai: form.parigarasevai,
@@ -398,7 +452,13 @@ fd.append("Sutham", form.Sutham || "");
       localStorage.setItem("userData", JSON.stringify(updatedUser));
 
       alert("Horoscope Updated Successfully");
-      navigate("/profile");
+      // navigate("/profile");
+      if (adminMode) {
+        navigate(`/admin/profile/${params.matriId}`);
+      } else {
+        navigate("/profile");
+      }
+
     } catch (err) {
       console.error(err);
       alert("Update failed");
@@ -407,17 +467,39 @@ fd.append("Sutham", form.Sutham || "");
 
 
 
- useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("userData"));
-  if (!user || !options.nakshatras.length) return;
 
-  if (options.nakshatras.includes(user.Star)) {
-    setForm((prev) => ({
-      ...prev,
-      Star: user.Star,
-    }));
-  }
+
+
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("userData"));
+  if (!user) return;
+
+  setForm((prev) => ({
+    ...prev,
+    Star: user.Star || "",
+  }));
 }, [options.nakshatras]);
+
+
+
+
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("userData"));
+  if (!user || !options.moonSigns.length) return;
+
+  const selectedMoon = options.moonSigns.find(
+    (m) => m.Moon_Sign === user.Moonsign
+  );
+
+  setForm((prev) => ({
+    ...prev,
+    moonSignId: selectedMoon?.ID || "",
+    Moonsign: selectedMoon?.Moon_Sign || "",
+  }));
+}, [options.moonSigns]);
+
+
+
 
 
   
@@ -489,23 +571,20 @@ fd.append("Sutham", form.Sutham || "");
             </label>
 
             <select
-              value={form.lagnamId || ""}
-              onChange={(e) => {
-                const selected = options.moonSigns.find(
-                  (m) => m.ID == e.target.value,
-                );
+              value={form.Lagnam || ""}
+              onChange={(e) =>
                 setForm({
                   ...form,
-                  lagnamId: selected?.ID || "",
-                  Lagnam: selected?.Moon_Sign || "",
-                });
-              }}
+                  Lagnam: e.target.value,
+                })
+              }
               className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
             >
               <option value="">Select Lagnam</option>
-              {options.moonSigns.map((m) => (
-                <option key={m.ID} value={m.ID}>
-                  {m.Moon_Sign}
+
+              {options.lagnams.map((l) => (
+                <option key={l} value={l}>
+                  {l}
                 </option>
               ))}
             </select>
@@ -549,27 +628,25 @@ fd.append("Sutham", form.Sutham || "");
             )}
           </div>
 
-
           {/* Shani */}
-<Drop
-  label="Shani"
-  field="Shani"
-  options={options.shani || []}
-  form={form}
-  setForm={setForm}
-/>
+          <Drop
+            label="Shani"
+            field="Shani"
+            options={options.shani || []}
+            form={form}
+            setForm={setForm}
+          />
 
-{/* Place of Shani – show only if Shani selected */}
-{form.Shani && (
-  <Input
-    label="Place of Shani"
-    field="ShaniPlace"
-    form={form}
-    setForm={setForm}
-    placeholder="Enter Place of Shani"
-  />
-)}
-
+          {/* Place of Shani – show only if Shani selected */}
+          {form.Shani && (
+            <Input
+              label="Place of Shani"
+              field="ShaniPlace"
+              form={form}
+              setForm={setForm}
+              placeholder="Enter Place of Shani"
+            />
+          )}
 
           {/* Sutham */}
           <div className="w-full flex flex-col">

@@ -4,12 +4,12 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
 
-export default function EditEducation() {
+export default function EditEducation({ adminMode = false }) {
   const [form, setForm] = useState({
     ConfirmEmail: "",
     Education: "",
@@ -31,29 +31,70 @@ export default function EditEducation() {
   const [workingHoursList, setWorkingHoursList] = useState([]);
 
   const navigate = useNavigate();
-
+  const params = useParams();
   // -------------------------------------------------------
   // 1️⃣ Load user saved data
   // -------------------------------------------------------
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) return;
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) return;
 
-    setForm({
-      ConfirmEmail: data.ConfirmEmail || "",
-      Education: data.Education || "",
-      EducationDetails: data.EducationDetails || "",
-      Occupation: data.Occupation || "",
-      occu_details: data.occu_details || "",
-      Employedin: data.Employedin || "",
-      Annualincome: data.Annualincome || "",
-      anyotherincome: data.anyotherincome || "",
-      income_in: data.income_in || "",
-      working_hours: data.working_hours || "",
-      workinglocation: data.workinglocation || "",
-      workin: data.workin || "",
-    });
-  }, []);
+  //   setForm({
+  //     ConfirmEmail: data.ConfirmEmail || "",
+  //     Education: data.Education || "",
+  //     EducationDetails: data.EducationDetails || "",
+  //     Occupation: data.Occupation || "",
+  //     occu_details: data.occu_details || "",
+  //     Employedin: data.Employedin || "",
+  //     Annualincome: data.Annualincome || "",
+  //     anyotherincome: data.anyotherincome || "",
+  //     income_in: data.income_in || "",
+  //     working_hours: data.working_hours || "",
+  //     workinglocation: data.workinglocation || "",
+  //     workin: data.workin || "",
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      let data;
+
+      /* 🟣 ADMIN MODE */
+      if (adminMode && params.matriId) {
+        const res = await axios.get(
+          `${API_BASE}admin/profile/${params.matriId}`,
+        );
+
+        if (res.data.success) {
+          data = res.data.user;
+        }
+      } else {
+        /* 🟢 USER MODE */
+        data = JSON.parse(localStorage.getItem("userData"));
+      }
+
+      if (!data) return;
+
+      setForm({
+        ConfirmEmail: data.ConfirmEmail || "",
+        MatriID: data.MatriID || "",
+        Education: data.Education || "",
+        EducationDetails: data.EducationDetails || "",
+        Occupation: data.Occupation || "",
+        // occu_details: data.occu_details || "",
+        occu_details: data.OccupationDetails || "",
+        Employedin: data.Employedin || "",
+        Annualincome: data.Annualincome || "",
+        anyotherincome: data.anyotherincome || "",
+        income_in: data.income_in || "",
+        working_hours: data.working_hours || "",
+        workinglocation: data.workinglocation || "",
+        workin: data.workin || "",
+      });
+    };
+
+    loadData();
+  }, [adminMode, params.matriId]);
 
   // -------------------------------------------------------
   // 2️⃣ Load dropdowns from backend (educations / occupations / employed / working hours)
@@ -61,12 +102,7 @@ export default function EditEducation() {
   useEffect(() => {
     async function fetchDropdowns() {
       try {
-        const [
-          eduRes,
-          occRes,
-          empRes,
-          hoursRes,
-        ] = await Promise.all([
+        const [eduRes, occRes, empRes, hoursRes] = await Promise.all([
           axios.get(`${API_BASE}educations`),
           axios.get(`${API_BASE}occupations`),
           axios.get(`${API_BASE}employed-in`),
@@ -92,21 +128,22 @@ export default function EditEducation() {
     setForm({ ...form, [key]: value });
   };
 
-  // -------------------------------------------------------
-  // Submit form
-  // -------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.put(
-        `${API_BASE}auth/update/education`,
-        form
-      );
+      const payload = adminMode ? { ...form, matriId: form.MatriID } : form;
+
+      const res = await axios.put(`${API_BASE}auth/update/education`, payload);
 
       if (res.data.success) {
         alert("Education & Professional details updated!");
-        navigate("/profile");
+
+        if (adminMode) {
+          navigate(`/admin/profile/${form.MatriID}`);
+        } else {
+          navigate("/profile");
+        }
       } else {
         alert("Update failed!");
       }
@@ -115,6 +152,91 @@ export default function EditEducation() {
       alert("Server error");
     }
   };
+
+  /* --------------------------------
+   TEXT RESTRICTION CONFIG
+---------------------------------*/
+  const MAX_EDU_LENGTH = 28;
+  const MAX_OCCU_LENGTH = 24;
+
+  const BLOCK_WORDS = [
+    "phone",
+    "mobile",
+    "contact",
+    "call",
+    "whatsapp",
+    "email",
+    "mail",
+    "instagram",
+    "facebook",
+    "fb",
+    "number",
+    "dm",
+    "reach me",
+    "http",
+    "www",
+  ];
+
+  const PHONE_REGEX = /\d{10,}/;
+  const EMAIL_REGEX = /\S+@\S+\.\S+/;
+
+  const [eduError, setEduError] = useState("");
+  const [occuError, setOccuError] = useState("");
+
+  /* --------------------------------
+   EDUCATION DETAILS CHANGE
+---------------------------------*/
+ const handleEduDetailsChange = (value) => {
+   let trimmedValue = value;
+
+   // Hard trim if pasted longer text
+   if (value.length > MAX_EDU_LENGTH) {
+     trimmedValue = value.slice(0, MAX_EDU_LENGTH);
+   }
+
+   const lower = trimmedValue.toLowerCase();
+   const found = BLOCK_WORDS.find((w) => lower.includes(w));
+
+   if (found) {
+     setEduError(`"${found}" is not allowed`);
+   } else if (PHONE_REGEX.test(trimmedValue)) {
+     setEduError("Phone numbers not allowed");
+   } else if (EMAIL_REGEX.test(trimmedValue)) {
+     setEduError("Email IDs not allowed");
+   } else {
+     setEduError("");
+   }
+
+   updateField("EducationDetails", trimmedValue);
+ };
+
+
+  /* --------------------------------
+   OCCUPATION DETAILS CHANGE
+---------------------------------*/
+const handleOccuDetailsChange = (value) => {
+  let trimmedValue = value;
+
+  if (value.length > MAX_OCCU_LENGTH) {
+    trimmedValue = value.slice(0, MAX_OCCU_LENGTH);
+  }
+
+  const lower = trimmedValue.toLowerCase();
+  const found = BLOCK_WORDS.find((w) => lower.includes(w));
+
+  if (found) {
+    setOccuError(`"${found}" is not allowed`);
+  } else if (PHONE_REGEX.test(trimmedValue)) {
+    setOccuError("Phone numbers not allowed");
+  } else if (EMAIL_REGEX.test(trimmedValue)) {
+    setOccuError("Email IDs not allowed");
+  } else {
+    setOccuError("");
+  }
+
+  updateField("occu_details", trimmedValue);
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-[#FFF4E0] font-display">
@@ -151,12 +273,28 @@ export default function EditEducation() {
             <label className="text-sm font-semibold text-gray-700">
               Education Details
             </label>
-            <textarea
+            {/* <textarea
               rows="3"
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 resize-none focus:ring-2 focus:ring-pink-500"
               value={form.EducationDetails}
               onChange={(e) => updateField("EducationDetails", e.target.value)}
+            /> */}
+
+            <textarea
+              rows="3"
+              maxLength={MAX_EDU_LENGTH}
+              className="w-full border border-gray-300 p-3 rounded-lg mt-1 resize-none focus:ring-2 focus:ring-pink-500"
+              value={form.EducationDetails}
+              onChange={(e) => handleEduDetailsChange(e.target.value)}
             />
+
+            <div className="text-xs text-gray-500 mt-1">
+              {form.EducationDetails?.length || 0} /{MAX_EDU_LENGTH}
+            </div>
+
+            {eduError && (
+              <div className="text-red-600 text-sm mt-1">{eduError}</div>
+            )}
           </div>
 
           {/* Occupation */}
@@ -183,12 +321,27 @@ export default function EditEducation() {
             <label className="text-sm font-semibold text-gray-700">
               Occupation Details
             </label>
-            <textarea
+            {/* <textarea
               rows="3"
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 resize-none focus:ring-2 focus:ring-pink-500"
               value={form.occu_details}
               onChange={(e) => updateField("occu_details", e.target.value)}
+            /> */}
+            <textarea
+              rows="3"
+              maxLength={MAX_OCCU_LENGTH}
+              className="w-full border border-gray-300 p-3 rounded-lg mt-1 resize-none focus:ring-2 focus:ring-pink-500"
+              value={form.occu_details}
+              onChange={(e) => handleOccuDetailsChange(e.target.value)}
             />
+
+            <div className="text-xs text-gray-500 mt-1">
+              {form.occu_details?.length || 0} /{MAX_OCCU_LENGTH}
+            </div>
+
+            {occuError && (
+              <div className="text-red-600 text-sm mt-1">{occuError}</div>
+            )}
           </div>
 
           {/* Employed In */}

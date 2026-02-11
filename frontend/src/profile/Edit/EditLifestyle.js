@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
 
-export default function EditLifestyle() {
+export default function EditLifestyle({ adminMode = false }) {
   const [options, setOptions] = useState({
     bloodGroups: [],
     complexions: [],
@@ -39,6 +39,7 @@ export default function EditLifestyle() {
   });
 
   const navigate = useNavigate();
+  const params = useParams();
 
   const updateField = (k, v) => setForm((prev) => ({ ...prev, [k]: v }));
 
@@ -70,38 +71,92 @@ export default function EditLifestyle() {
   // ================================
   // LOAD USER DATA
   // ================================
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) return;
+
+  //   let heightCode = "";
+  //   if (data.HeightText) {
+  //     const match = heightOptions.find((h) => h.label === data.HeightText);
+  //     if (match) heightCode = match.value;
+  //   }
+
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     ConfirmEmail: data.ConfirmEmail || "",
+  //     Height: heightCode,
+  //     HeightText: data.HeightText || "",
+  //     Weight: data.Weight || "",
+  //     BloodGroup: data.BloodGroup || "",
+  //     Complexion: data.Complexion || "",
+  //     Bodytype: data.Bodytype || "",
+  //     Diet: data.Diet || "",
+  //     Smoke: data.Smoke || "",
+  //     Drink: data.Drink || "",
+  //     spe_cases: data.spe_cases || "",
+  //     Hobbies: data.Hobbies || "",
+  //     Interests: data.Interests || "",
+  //     passport: data.passport || "",
+  //     medicalhistory: data.medicalhistory || "",
+  //     familymedicalhistory: data.familymedicalhistory || "",
+  //     anyotherincome: data.anyotherincome || "",
+  //   }));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) return;
+    const loadData = async () => {
+      let data;
 
-    let heightCode = "";
-    if (data.HeightText) {
-      const match = heightOptions.find((h) => h.label === data.HeightText);
-      if (match) heightCode = match.value;
-    }
+      /* 🟣 ADMIN MODE */
+      if (adminMode && params.matriId) {
+        const res = await axios.get(
+          `${API_BASE}admin/profile/${params.matriId}`,
+        );
 
-    setForm((prev) => ({
-      ...prev,
-      ConfirmEmail: data.ConfirmEmail || "",
-      Height: heightCode,
-      HeightText: data.HeightText || "",
-      Weight: data.Weight || "",
-      BloodGroup: data.BloodGroup || "",
-      Complexion: data.Complexion || "",
-      Bodytype: data.Bodytype || "",
-      Diet: data.Diet || "",
-      Smoke: data.Smoke || "",
-      Drink: data.Drink || "",
-      spe_cases: data.spe_cases || "",
-      Hobbies: data.Hobbies || "",
-      Interests: data.Interests || "",
-      passport: data.passport || "",
-      medicalhistory: data.medicalhistory || "",
-      familymedicalhistory: data.familymedicalhistory || "",
-      anyotherincome: data.anyotherincome || "",
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+        if (res.data.success) {
+          data = res.data.user;
+        }
+      } else {
+
+      /* 🟢 USER MODE */
+        data = JSON.parse(localStorage.getItem("userData"));
+      }
+
+      if (!data) return;
+
+      let heightCode = "";
+      if (data.HeightText) {
+        const match = heightOptions.find((h) => h.label === data.HeightText);
+        if (match) heightCode = match.value;
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        ConfirmEmail: data.ConfirmEmail || "",
+        MatriID: data.MatriID || "",
+        Height: heightCode,
+        HeightText: data.HeightText || "",
+        Weight: data.Weight || "",
+        BloodGroup: data.BloodGroup || "",
+        Complexion: data.Complexion || "",
+        Bodytype: data.Bodytype || "",
+        Diet: data.Diet || "",
+        Smoke: data.Smoke || "",
+        Drink: data.Drink || "",
+        spe_cases: data.spe_cases || "",
+        Hobbies: data.Hobbies || "",
+        Interests: data.Interests || "",
+        passport: data.passport || "",
+        medicalhistory: data.medicalhistory || "",
+        familymedicalhistory: data.familymedicalhistory || "",
+        anyotherincome: data.anyotherincome || "",
+      }));
+    };
+
+    loadData();
+  }, [adminMode, params.matriId]);
+
 
   // ================================
   // LOAD DROPDOWNS
@@ -150,17 +205,38 @@ export default function EditLifestyle() {
   // ================================
   // SUBMIT
   // ================================
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await axios.put(`${API_BASE}auth/update/lifestyle`, form);
+
+  //     if (res.data.success) {
+  //       alert("Lifestyle updated");
+  //       navigate("/profile");
+  //     } else {
+  //       alert("Failed");
+  //     }
+  //   } catch {
+  //     alert("Server error");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.put(
-        `${API_BASE}auth/update/lifestyle`,
-        form
-      );
+      const payload = adminMode ? { ...form, matriId: form.MatriID } : form;
+
+      const res = await axios.put(`${API_BASE}auth/update/lifestyle`, payload);
 
       if (res.data.success) {
         alert("Lifestyle updated");
-        navigate("/profile");
+
+        if (adminMode) {
+          navigate(`/admin/profile/${form.MatriID}`);
+        } else {
+          navigate("/profile");
+        }
       } else {
         alert("Failed");
       }
@@ -183,60 +259,34 @@ export default function EditLifestyle() {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          {/* HEIGHT */}
-          {/* <div>
+          {/* HEIGHT (Type or Select) */}
+          <div>
             <label className="text-sm font-semibold text-gray-700">
               Height
             </label>
-            <select
+
+            <input
+              type="text"
+              list="heightOptions"
               className="w-full border p-3 rounded-lg"
-              value={form.Height}
+              placeholder="e.g. 5Ft 6 inch, 170 cm, 6Ft"
+              value={form.HeightText}
               onChange={(e) => {
-                const val = e.target.value;
-                updateField("Height", val);
+                const text = e.target.value;
+                updateField("HeightText", text);
 
-                const selected = heightOptions.find((h) => h.value === val);
-                updateField("HeightText", selected?.label || "");
+                // auto sync Height code if matched
+                const matched = heightOptions.find((h) => h.label === text);
+                updateField("Height", matched?.value || "");
               }}
-            >
-              <option value="">Select Height</option>
+            />
+
+            <datalist id="heightOptions">
               {heightOptions.map((h) => (
-                <option key={h.value} value={h.value}>
-                  {h.label}
-                </option>
+                <option key={h.value} value={h.label} />
               ))}
-            </select>
-          </div> */}
-
-          {/* HEIGHT (Type or Select) */}
-<div>
-  <label className="text-sm font-semibold text-gray-700">
-    Height
-  </label>
-
-  <input
-    type="text"
-    list="heightOptions"
-    className="w-full border p-3 rounded-lg"
-    placeholder="e.g. 5Ft 6 inch, 170 cm, 6Ft"
-    value={form.HeightText}
-    onChange={(e) => {
-      const text = e.target.value;
-      updateField("HeightText", text);
-
-      // auto sync Height code if matched
-      const matched = heightOptions.find((h) => h.label === text);
-      updateField("Height", matched?.value || "");
-    }}
-  />
-
-  <datalist id="heightOptions">
-    {heightOptions.map((h) => (
-      <option key={h.value} value={h.label} />
-    ))}
-  </datalist>
-</div>
-
+            </datalist>
+          </div>
 
           {/* WEIGHT */}
           <div>
@@ -386,7 +436,7 @@ export default function EditLifestyle() {
               onChange={(e) => {
                 const selected = Array.from(
                   e.target.selectedOptions,
-                  (opt) => opt.value
+                  (opt) => opt.value,
                 );
                 updateField("Hobbies", selected.join(","));
               }}
@@ -409,7 +459,7 @@ export default function EditLifestyle() {
               onChange={(e) => {
                 const selected = Array.from(
                   e.target.selectedOptions,
-                  (opt) => opt.value
+                  (opt) => opt.value,
                 );
                 updateField("Interests", selected.join(","));
               }}

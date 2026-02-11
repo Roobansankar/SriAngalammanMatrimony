@@ -5,124 +5,151 @@ import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
 
-export default function ProfilePage({ setUser: setAppUser }) {
+// export default function ProfilePage({ setUser: setAppUser }) {
+export default function ProfilePage({
+  setUser: setAppUser,
+  adminMode = false,
+  adminMatriId = null,
+}) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [showHoroscope, setShowHoroscope] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  const hasValue = (v) => {
+    if (v === null || v === undefined) return false;
+    if (typeof v === "string" && v.trim() === "") return false;
+    if (v === "-" || v === "null") return false;
+    return true;
+  };
 
+  const profileFields = [
+    // 🟢 Basic Details
+    user?.Name,
+    user?.DOB,
+    user?.Gender,
+    user?.Religion,
+    user?.Caste,
+    user?.Maritalstatus,
+    user?.Profilecreatedby,
 
- const hasValue = (v) => {
-   if (v === null || v === undefined) return false;
-   if (typeof v === "string" && v.trim() === "") return false;
-   if (v === "-" || v === "null") return false;
-   return true;
- };
+    // 🟢 Contact Details
+    user?.Mobile,
+    user?.Country,
+    user?.State,
+    user?.City,
 
-const profileFields = [
-  // 🟢 Basic Details
-  user?.Name,
-  user?.DOB,
-  user?.Gender,
-  user?.Religion,
-  user?.Caste,
-  user?.Maritalstatus,
-  user?.Profilecreatedby,
+    // 🟢 Education & Professional
+    user?.Education,
+    user?.Occupation,
+    user?.Annualincome,
 
-  // 🟢 Contact Details
-  user?.Mobile,
-  user?.Country,
-  user?.State,
-  user?.City,
+    // 🟢 Basic & Lifestyle
+    user?.HeightText,
+    user?.Diet,
 
-  // 🟢 Education & Professional
-  user?.Education,
-  user?.Occupation,
-  user?.Annualincome,
+    // 🟢 Family
+    user?.Fathername,
+    user?.Mothersname,
 
-  // 🟢 Basic & Lifestyle
-  user?.HeightText,
-  user?.Diet,
+    // 🟢 Partner Preference
+    user?.PE_FromAge,
+    user?.PE_ToAge,
+    user?.PE_Religion,
 
-  // 🟢 Family
-  user?.Fathername,
-  user?.Mothersname,
-
-  // 🟢 Partner Preference
-  user?.PE_FromAge,
-  user?.PE_ToAge,
-  user?.PE_Religion,
-
-  // 🟢 Photo
-  user?.PhotoURL,
-];
-
-
-
-
+    // 🟢 Photo
+    // user?.PhotoURL,
+    user?.Photo1 || user?.PhotoURL,
+  ];
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+
+
   useEffect(() => {
-    const email = localStorage.getItem("loggedInEmail");
-    if (!email) {
-      navigate("/login");
-      return;
-    }
-
-
-
-
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
-          params: { email },
-        });
+        let res;
+
+        // 🟣 ADMIN MODE
+        if (adminMode && adminMatriId) {
+          res = await axios.get(
+            `${process.env.REACT_APP_API_BASE || ""}/api/admin/profile/${adminMatriId}`,
+          );
+        }
+
+        // 🟢 USER MODE
+        else {
+          const email = localStorage.getItem("loggedInEmail");
+
+          if (!email) {
+            navigate("/login");
+            return;
+          }
+
+          res = await axios.get(
+            `${process.env.REACT_APP_API_BASE || ""}/api/auth/user`,
+            {
+              params: { email },
+            },
+          );
+        }
 
         if (res.data?.success) {
           setUser(res.data.user);
-          if (typeof setAppUser === "function") setAppUser(res.data.user);
+
+          if (typeof setAppUser === "function") {
+            setAppUser(res.data.user);
+          }
+
           localStorage.setItem("userData", JSON.stringify(res.data.user));
         } else {
-          localStorage.removeItem("loggedInEmail");
-          navigate("/login");
+          if (!adminMode) {
+            localStorage.removeItem("loggedInEmail");
+            navigate("/login");
+          }
         }
       } catch (err) {
         console.error("fetch user error", err);
-        localStorage.removeItem("loggedInEmail");
-        navigate("/login");
+
+        if (!adminMode) {
+          localStorage.removeItem("loggedInEmail");
+          navigate("/login");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [navigate, setAppUser]);
+  }, [adminMode, adminMatriId, navigate, setAppUser]);
+
 
   const refreshUser = async () => {
-  try {
-    const email = localStorage.getItem("loggedInEmail");
-    if (!email) return;
+    try {
+      const email = localStorage.getItem("loggedInEmail");
+      if (!email) return;
 
-    const res = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/auth/user`, {
-      params: { email },
-    });
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_BASE || ""}/api/auth/user`,
+        {
+          params: { email },
+        },
+      );
 
-    if (res.data?.success) {
-      setUser(res.data.user);
-      if (typeof setAppUser === "function") {
-        setAppUser(res.data.user);
+      if (res.data?.success) {
+        setUser(res.data.user);
+        if (typeof setAppUser === "function") {
+          setAppUser(res.data.user);
+        }
       }
+    } catch (err) {
+      console.error("refreshUser error", err);
     }
-  } catch (err) {
-    console.error("refreshUser error", err);
-  }
-};
-
+  };
 
   // if (loading) return <div className="p-8">Loading...</div>;
   if (loading)
@@ -274,40 +301,55 @@ const profileFields = [
     .join(":")
     .concat(tob.ap ? ` ${tob.ap}` : "");
 
+  // const getSafeProfilePhoto = (u) => {
+  //   const photo = u?.PhotoURL?.trim();
 
-    const getSafeProfilePhoto = (u) => {
-  const photo = u?.PhotoURL?.trim();
+  //   // ❌ invalid or backend default values
+  //   if (
+  //     !photo ||
+  //     photo === "null" ||
+  //     photo === "undefined" ||
+  //     photo.includes("no-photo") ||
+  //     photo.includes("nophoto")
+  //   ) {
+  //     return noPhoto;
+  //   }
 
-  // ❌ invalid or backend default values
-  if (
-    !photo ||
-    photo === "null" ||
-    photo === "undefined" ||
-    photo.includes("no-photo") ||
-    photo.includes("nophoto")
-  ) {
-    return noPhoto;
-  }
+  //   return photo;
+  // };
 
-  return photo;
-};
+  const getSafeProfilePhoto = (u) => {
+    // Prefer Photo1 first
+    const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
 
+    if (
+      !photo ||
+      photo === "null" ||
+      photo === "undefined" ||
+      photo.includes("no-photo") ||
+      photo.includes("nophoto")
+    ) {
+      return noPhoto;
+    }
 
-const filledCount = profileFields.filter(hasValue).length;
-const totalCount = profileFields.length;
+    // If already full URL → return
+    if (photo.startsWith("http")) return photo;
 
-const completionPercentage = Math.round((filledCount / totalCount) * 100);
+    // Otherwise build gallery path
+    return `${process.env.REACT_APP_API_BASE || ""}/gallery/${photo}`;
+  };
 
+  const filledCount = profileFields.filter(hasValue).length;
+  const totalCount = profileFields.length;
 
+  const completionPercentage = Math.round((filledCount / totalCount) * 100);
 
-const safeValue = (v) => {
-  if (v === null || v === undefined) return "-";
-  if (typeof v === "string" && v.trim() === "") return "-";
-  if (v === "-" || v === "null" || v === "undefined") return "-";
-  return v;
-};
-
-
+  const safeValue = (v) => {
+    if (v === null || v === undefined) return "-";
+    if (typeof v === "string" && v.trim() === "") return "-";
+    if (v === "-" || v === "null" || v === "undefined") return "-";
+    return v;
+  };
 
   return (
     <div
@@ -324,16 +366,7 @@ const safeValue = (v) => {
             <div
               className="w-full min-h-[220px] bg-gradient-to-r from-pink-400 to-purple-500 flex flex-col justify-end"
               data-alt="Profile banner"
-            >
-              {/* <button
-                className="absolute top-4 right-4 flex items-center justify-center size-8 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors p-2"
-                aria-label="Edit banner"
-              >
-                <span className="material-symbols-outlined text-base">
-                  edit
-                </span>
-              </button> */}
-            </div>
+            ></div>
 
             {/* Avatar (overlap) */}
             <div className="absolute -bottom-16 left-8">
@@ -352,7 +385,14 @@ const safeValue = (v) => {
                 />
 
                 {/* blob store   base 64 */}
-                <Link to="/edit/photo">
+                {/* <Link to="/edit/photo"> */}
+                <Link
+                  to={
+                    adminMode
+                      ? `/admin/edit/photo/${user.MatriID}`
+                      : "/edit/photo"
+                  }
+                >
                   <button
                     className="absolute bottom-1 right-1 flex items-center justify-center size-8 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors p-2"
                     aria-label="Change photo"
@@ -428,9 +468,23 @@ const safeValue = (v) => {
             </div>
           </div>
 
-          <section className="bg-white rounded-xl p-6 mt-2">
-            {/* <h2 className="text-xl font-bold mb-4">My Photos</h2> */}
+          {/* <section className="bg-white rounded-xl p-6 mt-2">
+   
 
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {["image1", "image2", "image3", "image4"].map((slot) => (
+                <GalleryBox
+                  key={slot}
+                  slot={slot}
+                  image={user?.[slot]}
+                  matriId={user.MatriID}
+                  refreshUser={refreshUser}
+                />
+              ))}
+            </div>
+          </section> */}
+
+          <section className="bg-white rounded-xl p-6 mt-2">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {["image1", "image2", "image3", "image4"].map((slot) => (
                 <GalleryBox
@@ -455,7 +509,12 @@ const safeValue = (v) => {
               About Me
             </h2>
 
-            <Link to="/edit/about">
+            {/* <Link to="/edit/about"> */}
+            <Link
+              to={
+                adminMode ? `/admin/edit/about/${user.MatriID}` : "/edit/about"
+              }
+            >
               <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                 <PencilSquareIcon className="w-5 h-5" />
                 Edit
@@ -476,7 +535,14 @@ const safeValue = (v) => {
             {/* Header inside card */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Basic Details</h2>
-              <Link to="/edit/basic">
+              {/* <Link to="/edit/basic"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/basic/${user.MatriID}`
+                    : "/edit/basic"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -522,7 +588,14 @@ const safeValue = (v) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Horoscope Details</h2>
-              <Link to="/edit/horoscope">
+              {/* <Link to="/edit/horoscope"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/horoscope/${user.MatriID}`
+                    : "/edit/horoscope"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -615,7 +688,14 @@ const safeValue = (v) => {
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Contact Details</h2>
 
-              <Link to="/edit/contact">
+              {/* <Link to="/edit/contact"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/contact/${user.MatriID}`
+                    : "/edit/contact"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -653,7 +733,14 @@ const safeValue = (v) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Education & Professional</h2>
-              <Link to="/edit/education">
+              {/* <Link to="/edit/education"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/education/${user.MatriID}`
+                    : "/edit/education"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -689,7 +776,7 @@ const safeValue = (v) => {
               <div>
                 <div className="text-sm text-gray-500">Occupation Details</div>
                 <div className="font-medium">
-                  {user.occu_details || user.OccupationDetails || "-"}
+                  {user.OccupationDetails || user.OccupationDetails || "-"}
                 </div>
               </div>
 
@@ -738,7 +825,14 @@ const safeValue = (v) => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Basic & Lifestyle</h2>
-              <Link to="/edit/lifestyle">
+              {/* <Link to="/edit/lifestyle"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/lifestyle/${user.MatriID}`
+                    : "/edit/lifestyle"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -773,7 +867,14 @@ const safeValue = (v) => {
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Family Details</h2>
-              <Link to="/edit/family">
+              {/* <Link to="/edit/family"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/family/${user.MatriID}`
+                    : "/edit/family"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -845,7 +946,14 @@ const safeValue = (v) => {
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Partner Preference</h2>
-              <Link to="/edit/partner">
+              {/* <Link to="/edit/partner"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/partner/${user.MatriID}`
+                    : "/edit/partner"
+                }
+              >
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -958,7 +1066,6 @@ const safeValue = (v) => {
       )}
 
       {/* Horoscope Viewer Modal */}
-      {/* Horoscope Viewer Modal */}
       {showHoroscope && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-xl shadow-lg relative flex flex-col">
@@ -1060,7 +1167,9 @@ function Cell({ value }) {
 }
 
 
+
 function GalleryBox({ slot, image, matriId, refreshUser }) {
+
   const uploadPhoto = async (file) => {
     try {
       if (!file) return;
@@ -1069,8 +1178,10 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
       formData.append("matriId", matriId);
       formData.append(slot, file);
 
-      // ❌ DO NOT set multipart headers manually
-      await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/gallery/upload`, formData);
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE || ""}/api/gallery/upload`,
+        formData
+      );
 
       refreshUser();
     } catch (err) {
@@ -1081,10 +1192,13 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
 
   const deletePhoto = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_API_BASE || ""}/api/gallery/delete`, {
-        matriId,
-        slot,
-      });
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE || ""}/api/gallery/delete`,
+        {
+          matriId,
+          slot,
+        }
+      );
 
       refreshUser();
     } catch (err) {
@@ -1094,18 +1208,19 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
   };
 
   return (
-    <div className="relative border rounded-lg overflow-hidden group bg-white">
+    <div className="relative border rounded-xl overflow-hidden group bg-white shadow-sm hover:shadow-md transition">
+
       {/* IMAGE / PLACEHOLDER */}
       {image ? (
         <img
           src={`${process.env.REACT_APP_API_BASE || ""}/gallery/${image}`}
           alt={slot}
-          className="w-full h-40 object-cover"
+          className="w-full aspect-[3/4] object-cover object-top"
         />
       ) : (
-        <label className="flex flex-col items-center justify-center h-40 bg-gray-100 cursor-pointer text-gray-600 hover:bg-gray-200">
-          <span className="text-xl">➕</span>
-          <span className="text-sm">Add Photo</span>
+        <label className="flex flex-col items-center justify-center aspect-[3/4] bg-gray-100 cursor-pointer text-gray-600 hover:bg-gray-200 transition">
+          <span className="text-2xl">➕</span>
+          <span className="text-sm mt-1">Add Photo</span>
           <input
             type="file"
             hidden
@@ -1117,9 +1232,10 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
 
       {/* ACTION BUTTONS */}
       {image && (
-        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
+
           {/* UPDATE */}
-          <label className="bg-black/60 text-white px-2 py-1 rounded cursor-pointer">
+          <label className="bg-black/70 text-white px-2 py-1 rounded-md cursor-pointer text-sm">
             ✏️
             <input
               type="file"
@@ -1132,7 +1248,7 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
           {/* DELETE */}
           <button
             onClick={deletePhoto}
-            className="bg-red-600 text-white px-2 py-1 rounded"
+            className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md text-sm"
           >
             🗑️
           </button>
@@ -1141,3 +1257,5 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
     </div>
   );
 }
+
+

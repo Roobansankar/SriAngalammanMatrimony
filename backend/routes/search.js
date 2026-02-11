@@ -415,6 +415,7 @@ router.get("/moon-sign", (req, res) => {
 
 
 
+
 // GET /api/nakshatra/:moonSignId
 router.get("/nakshatra/:moonSignId", (req, res) => {
   const { moonSignId } = req.params;
@@ -437,6 +438,25 @@ router.get("/nakshatra/:moonSignId", (req, res) => {
     res.json(results);
   });
 });
+
+
+
+// router.get("/lagnam", (req, res) => {
+//   db.query("SELECT ID, Lagnam FROM lagnam ORDER BY Lagnam", (err, results) => {
+//     if (err) return res.status(500).json({ error: err.message });
+//     res.json(results);
+//   });
+// });
+
+
+router.get("/lagnam", (req, res) => {
+  db.query("SELECT id, name FROM lagnam ORDER BY name", (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+
 
 // GET /api/gothra
 router.get("/gothra", (req, res) => {

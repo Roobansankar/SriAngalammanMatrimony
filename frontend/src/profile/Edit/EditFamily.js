@@ -1,14 +1,11 @@
-
-
-
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { API } from "../../config/api";
 
 const API_BASE = API + "/";
 
-export default function EditFamily() {
+export default function EditFamily({ adminMode = false }) {
   const [options, setOptions] = useState({
     familyValues: [],
     familyTypes: [],
@@ -21,56 +18,135 @@ export default function EditFamily() {
     familyWealth: [],
   });
 
-const [form, setForm] = useState({
-  ConfirmEmail: "",
-  Familyvalues: "",
-  FamilyType: "",
-  FamilyStatus: "",
-  mother_tounge: "",
-  noofbrothers: "",
-  noyubrothers: "",
-  noofsisters: "",
-  noyusisters: "",
-  Fathername: "",
-  Fathersoccupation: "",
-  FatherPoorvegam: "", // ✅ ADD
-  Mothersname: "",
-  Mothersoccupation: "",
-  MotherPoorvegam: "", // ✅ ADD
-  family_wealth: "",
-  FamilyDetails: "",
-  familymedicalhistory: "",
-});
-
+  const [form, setForm] = useState({
+    ConfirmEmail: "",
+    Familyvalues: "",
+    FamilyType: "",
+    FamilyStatus: "",
+    mother_tounge: "",
+    noofbrothers: "",
+    noyubrothers: "",
+    noofsisters: "",
+    noyusisters: "",
+    Fathername: "",
+    Fathersoccupation: "",
+    FatherPoorvegam: "", // ✅ ADD
+    Mothersname: "",
+    Mothersoccupation: "",
+    MotherPoorvegam: "", // ✅ ADD
+    family_wealth: "",
+    FamilyDetails: "",
+    familymedicalhistory: "",
+  });
 
   const navigate = useNavigate();
+   const params = useParams();
+
+
+   const MAX_LENGTH = 42;
+
+   const RESTRICTED_WORDS = [
+     "phone",
+     "mobile",
+     "whatsapp",
+     "email",
+     "contact",
+     "number",
+   ];
+
+   const [error, setError] = useState("");
+
+   const handleFamilyChange = (value) => {
+     // Length check
+     if (value.length > MAX_LENGTH) return;
+
+     // Restricted word check
+     const lower = value.toLowerCase();
+
+     const found = RESTRICTED_WORDS.find((word) => lower.includes(word));
+
+     if (found) {
+       setError(`"${found}" is not allowed`);
+     } else {
+       setError("");
+     }
+
+     updateField("FamilyDetails", value);
+   };
+
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) return;
+
+  //   setForm({
+  //     ConfirmEmail: data.ConfirmEmail || "",
+  //     Familyvalues: data.Familyvalues || "",
+  //     FamilyType: data.FamilyType || "",
+  //     FamilyStatus: data.FamilyStatus || "",
+  //     mother_tounge: data.mother_tounge || data.Language || "",
+  //     noofbrothers: data.noofbrothers || "",
+  //     noyubrothers: data.noyubrothers || data.nbm || "",
+  //     noofsisters: data.noofsisters || "",
+  //     noyusisters: data.noyusisters || data.nsm || "",
+  //     Fathername: data.Fathername || "",
+  //     Fathersoccupation: data.Fathersoccupation || "",
+  //     FatherPoorvegam: data.FatherPoorvegam || "", // ✅ ADD
+  //     Mothersname: data.Mothersname || "",
+  //     Mothersoccupation: data.Mothersoccupation || "",
+  //     MotherPoorvegam: data.MotherPoorvegam || "", // ✅ ADD
+  //     family_wealth: data.family_wealth || "",
+  //     FamilyDetails: data.FamilyDetails || data.FamilyDetails_new || "",
+  //     familymedicalhistory: data.familymedicalhistory || "",
+  //   });
+  // }, []);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) return;
+    const loadData = async () => {
+      let data;
 
-   setForm({
-     ConfirmEmail: data.ConfirmEmail || "",
-     Familyvalues: data.Familyvalues || "",
-     FamilyType: data.FamilyType || "",
-     FamilyStatus: data.FamilyStatus || "",
-     mother_tounge: data.mother_tounge || data.Language || "",
-     noofbrothers: data.noofbrothers || "",
-     noyubrothers: data.noyubrothers || data.nbm || "",
-     noofsisters: data.noofsisters || "",
-     noyusisters: data.noyusisters || data.nsm || "",
-     Fathername: data.Fathername || "",
-     Fathersoccupation: data.Fathersoccupation || "",
-     FatherPoorvegam: data.FatherPoorvegam || "", // ✅ ADD
-     Mothersname: data.Mothersname || "",
-     Mothersoccupation: data.Mothersoccupation || "",
-     MotherPoorvegam: data.MotherPoorvegam || "", // ✅ ADD
-     family_wealth: data.family_wealth || "",
-     FamilyDetails: data.FamilyDetails || data.FamilyDetails_new || "",
-     familymedicalhistory: data.familymedicalhistory || "",
-   });
+      /* 🟣 ADMIN MODE */
+      if (adminMode && params.matriId) {
+        const res = await axios.get(
+          `${API_BASE}admin/profile/${params.matriId}`,
+        );
 
-  }, []);
+        if (res.data.success) {
+          data = res.data.user;
+        }
+      } else {
+
+      /* 🟢 USER MODE */
+        data = JSON.parse(localStorage.getItem("userData"));
+      }
+
+      if (!data) return;
+
+      setForm({
+        ConfirmEmail: data.ConfirmEmail || "",
+        MatriID: data.MatriID || "",
+
+        Familyvalues: data.Familyvalues || "",
+        FamilyType: data.FamilyType || "",
+        FamilyStatus: data.FamilyStatus || "",
+        mother_tounge: data.mother_tounge || data.Language || "",
+        noofbrothers: data.noofbrothers || "",
+        noyubrothers: data.noyubrothers || data.nbm || "",
+        noofsisters: data.noofsisters || "",
+        noyusisters: data.noyusisters || data.nsm || "",
+        Fathername: data.Fathername || "",
+        Fathersoccupation: data.Fathersoccupation || "",
+        FatherPoorvegam: data.FatherPoorvegam || "",
+        Mothersname: data.Mothersname || "",
+        Mothersoccupation: data.Mothersoccupation || "",
+        MotherPoorvegam: data.MotherPoorvegam || "",
+        family_wealth: data.family_wealth || "",
+        FamilyDetails: data.FamilyDetails || data.FamilyDetails_new || "",
+        familymedicalhistory: data.familymedicalhistory || "",
+      });
+    };
+
+    loadData();
+  }, [adminMode, params.matriId]);
 
   useEffect(() => {
     async function loadOptions() {
@@ -110,15 +186,40 @@ const [form, setForm] = useState({
     setForm({ ...form, [key]: value });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const res = await axios.put(`${API_BASE}auth/update/family`, form);
+
+  //     if (res.data.success) {
+  //       alert("Family details updated successfully!");
+  //       navigate("/profile");
+  //     } else {
+  //       alert("Update failed");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Server error");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.put(`${API_BASE}auth/update/family`, form);
+      const payload = adminMode ? { ...form, matriId: form.MatriID } : form;
+
+      const res = await axios.put(`${API_BASE}auth/update/family`, payload);
 
       if (res.data.success) {
         alert("Family details updated successfully!");
-        navigate("/profile");
+
+        if (adminMode) {
+          navigate(`/admin/profile/${form.MatriID}`);
+        } else {
+          navigate("/profile");
+        }
       } else {
         alert("Update failed");
       }
@@ -349,7 +450,7 @@ const [form, setForm] = useState({
               onChange={(e) => {
                 const selected = Array.from(
                   e.target.selectedOptions,
-                  (opt) => opt.value
+                  (opt) => opt.value,
                 );
                 updateField("family_wealth", selected.join(",")); // stored as string
               }}
@@ -376,7 +477,7 @@ const [form, setForm] = useState({
           </div>
 
           {/* ABOUT FAMILY */}
-          <div className="md:col-span-2">
+          {/* <div className="md:col-span-2">
             <label className="font-semibold">About Family</label>
             <textarea
               rows="3"
@@ -384,6 +485,26 @@ const [form, setForm] = useState({
               value={form.FamilyDetails}
               onChange={(e) => updateField("FamilyDetails", e.target.value)}
             />
+          </div> */}
+
+          <div className="md:col-span-2">
+            <label className="font-semibold">About Family</label>
+
+            <textarea
+              rows="3"
+              className="w-full border p-3 rounded-lg"
+              value={form.FamilyDetails}
+              onChange={(e) => handleFamilyChange(e.target.value)}
+              maxLength={MAX_LENGTH}
+            />
+
+            {/* Character count */}
+            <div className="text-xs text-gray-500 mt-1">
+              {form.FamilyDetails?.length || 0} / {MAX_LENGTH}
+            </div>
+
+            {/* Error */}
+            {error && <div className="text-red-600 text-sm mt-1">{error}</div>}
           </div>
 
           {/* SAVE BUTTON */}
