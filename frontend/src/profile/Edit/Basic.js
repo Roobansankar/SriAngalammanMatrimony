@@ -77,7 +77,8 @@ useEffect(() => {
       
       if (adminMode && params.matriId) {
         const res = await axios.get(
-          `${process.env.REACT_APP_API_BASE}/api/admin/profile/${params.matriId}`,
+          // `${process.env.REACT_APP_API_BASE}/api/admin/profile/${params.matriId}`,
+          `${API_BASE}admin/profile/${params.matriId}`,
         );
 
         if (res.data.success) {
@@ -219,31 +220,15 @@ useEffect(() => {
   };
 
   // -------------------------------------------------------
-  // SAVE
-  // -------------------------------------------------------
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     await axios.put(
-  //       `${process.env.REACT_APP_API_BASE || ""}/api/auth/update/basic`,
-  //       form,
-  //     );
-  //     alert("Basic details updated!");
-  //     navigate("/profile");
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Update failed");
-  //   }
-  // };
 
  const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
     await axios.put(
-      `${process.env.REACT_APP_API_BASE}/api/auth/update/basic`,
-      form
+      // `${process.env.REACT_APP_API_BASE}/api/auth/update/basic`,
+      `${API_BASE}auth/update/basic`,
+      form,
     );
 
     alert("Basic details updated!");
@@ -253,7 +238,8 @@ useEffect(() => {
     ------------------------- */
     if (!adminMode) {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_BASE}/api/auth/my-profile/${form.ConfirmEmail}`
+        // `${process.env.REACT_APP_API_BASE}/api/auth/my-profile/${form.ConfirmEmail}`
+        `${API_BASE}auth/my-profile/${form.ConfirmEmail}`,
       );
 
       if (res.data.success) {
