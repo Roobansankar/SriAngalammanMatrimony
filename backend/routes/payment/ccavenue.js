@@ -896,8 +896,11 @@ console.log("MID:", MERCHANT_ID);
 
 /* ================= CCA URL ================= */
 
+// const CCAVENUE_URL =
+//   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+
 const CCAVENUE_URL =
-  "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+  "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
 /* ================= ENCRYPT ================= */
 
