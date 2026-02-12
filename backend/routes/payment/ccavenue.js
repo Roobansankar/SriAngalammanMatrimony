@@ -884,9 +884,12 @@ const router = express.Router();
 
 /* ================= ENV CONFIG ================= */
 
-const MERCHANT_ID = process.env.CCA_MERCHANT_ID;
-const ACCESS_CODE = process.env.CCA_ACCESS_CODE;
-const WORKING_KEY = process.env.CCA_WORKING_KEY;
+// const MERCHANT_ID = process.env.CCA_MERCHANT_ID;
+// const ACCESS_CODE = process.env.CCA_ACCESS_CODE;
+// const WORKING_KEY = process.env.CCA_WORKING_KEY;
+const MERCHANT_ID = "4417415";
+const ACCESS_CODE = "AVPV86ML93BN46VPNB";
+const WORKING_KEY = "8A6F30AFBA81C3842F00E1F7B14E0C7B";
 const BASE_URL = process.env.BASE_URL;
 
 console.log("MID:", MERCHANT_ID);
