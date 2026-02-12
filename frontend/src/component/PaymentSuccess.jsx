@@ -1,22 +1,30 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function PaymentSuccess() {
+  const [params] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // mark payment success
-    localStorage.setItem("paymentDone", "1");
+    const token = params.get("token");
+    const matriId = params.get("matriId");
 
-    // 🔥 GO TO FINAL STEP EXPLICITLY
-    navigate("/register/step/7", { replace: true });
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+
+    if (matriId) {
+      localStorage.setItem("matriId", matriId);
+    }
+
+    // redirect to profile
+    navigate("/profile");
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-xl font-bold text-green-600">
-        ✅ Payment Successful, completing registration…
-      </h1>
+    <div className="text-center mt-20">
+      <h2 className="text-2xl font-bold">Payment Successful 🎉</h2>
+      <p>Logging you in...</p>
     </div>
   );
 }

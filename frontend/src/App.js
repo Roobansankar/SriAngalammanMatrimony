@@ -83,6 +83,7 @@ import UserPasswords from "./AdminDashboard/UserPasswords";
 import LoggedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
 import PaymentSuccess from "./component/PaymentSuccess";
+import PaymentFailed from "./component/PaymentFailed";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -206,6 +207,9 @@ function AppContent({ user, setUser }) {
             element={<PendingVerification />}
           />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+
+         
+          <Route path="/payment-failed" element={<PaymentFailed />} />
 
           <Route path="/register/*" element={<MultiStepForm />} />
 

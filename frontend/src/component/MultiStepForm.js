@@ -251,12 +251,12 @@ import Step6 from "./Step6";
 import Step8 from "./Step8";
 import Step9 from "./Step9";
 
-import Step12 from "./Step12";
-import Step11PlanSelect from "./Step11PlanSelect";
-// import Step11Payment from "./Step11Payment";
+// import Step12 from "./Step12";
+
+import Step11Payment from "./Step11Payment";
 
 const STORAGE_KEY = "multiStepRegistration_form_v1";
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 6;
 
 export default function MultiStepForm() {
   const navigate = useNavigate();
@@ -408,7 +408,7 @@ export default function MultiStepForm() {
           <Route
             path="step/6"
             element={
-              <Step11PlanSelect
+              <Step11Payment
                 nextStep={nextStepFactory(7)}
                 prevStep={prevStepFactory(5)}
                 formData={formData}
@@ -418,7 +418,7 @@ export default function MultiStepForm() {
           />
 
           {/* Step 7 – Final */}
-          <Route
+          {/* <Route
             path="step/7"
             element={
               <Step12
@@ -426,7 +426,7 @@ export default function MultiStepForm() {
                 formData={formData}
               />
             }
-          />
+          /> */}
 
           <Route path="*" element={<Navigate to="step/1" replace />} />
         </Routes>

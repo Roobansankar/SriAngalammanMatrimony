@@ -47,6 +47,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
       add("matriId", f.matriId);
       add("fname", f.fname);
       add("lname", f.lname);
+      
       add("email", f.email);
       add("password", f.password);
       add("profileBy", f.profileBy);
@@ -224,11 +225,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
       // Always save the plan for admin-created users
       add("plan", f.plan || "basic");
       add("paymentDone", "1"); 
-      // add(
-      //   "paymentDone",
-      //   localStorage.getItem("paymentDone") === "1" ? "1" : "0",
-      // );
-
+      
 
       /* ------------------------------------------------
          FILE UPLOAD — HOROSCOPE FILE (correct Multer field)
