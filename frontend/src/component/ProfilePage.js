@@ -1,7 +1,7 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { Link, useNavigate,  useSearchParams } from "react-router-dom";
+import { useEffect, useState, useSearchParams } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
 
@@ -23,16 +23,6 @@ export default function ProfilePage({
     if (v === "-" || v === "null") return false;
     return true;
   };
-
-  const [params] = useSearchParams();
-
-  useEffect(() => {
-    const token = params.get("token");
-
-    if (token) {
-      localStorage.setItem("token", token);
-    }
-  }, []);
 
   const profileFields = [
     // 🟢 Basic Details
