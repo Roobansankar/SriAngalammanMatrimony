@@ -639,14 +639,246 @@
 
 
 
+// import express from "express";
+// import crypto from "crypto";
+// import qs from "querystring";
+// import db from "../../config/db.js";
+
+// import dotenv from "dotenv";
+// dotenv.config();
+
+
+// const router = express.Router();
+
+// /* ================= ENV CONFIG ================= */
+
+// const MERCHANT_ID = process.env.CCA_MERCHANT_ID;
+// const ACCESS_CODE = process.env.CCA_ACCESS_CODE;
+// const WORKING_KEY = process.env.CCA_WORKING_KEY;
+
+// console.log("MID:", MERCHANT_ID);
+
+// const CCAVENUE_URL =
+//   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+
+// const BASE_URL = process.env.BASE_URL;
+
+// /* ================= ENCRYPT ================= */
+
+// function encrypt(text) {
+//   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+//   const iv = Buffer.alloc(16, 0);
+
+//   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
+
+//   let encrypted = cipher.update(text, "utf8", "hex");
+//   encrypted += cipher.final("hex");
+
+//   return encrypted;
+// }
+
+// /* ================= DECRYPT ================= */
+
+// function decrypt(encText) {
+//   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+//   const iv = Buffer.alloc(16, 0);
+
+//   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
+
+//   let decrypted = decipher.update(encText, "hex", "utf8");
+//   decrypted += decipher.final("utf8");
+
+//   return decrypted;
+// }
+
+// /* ================= INIT PAYMENT ================= */
+
+// // router.post("/ccavenue-init", async (req, res) => {
+// //   try {
+// //     const { plan, email } = req.body;
+
+// //     if (!plan || !email) {
+// //       return res.status(400).json({ message: "Missing plan or email" });
+// //     }
+
+// //     const orderId = "ORD" + Date.now();
+// //     const amount = plan === "premium" ? "10.00" : "5.00";
+
+// //     /* Save Pending Order */
+// //     await db.query(
+// //       `INSERT INTO payments 
+// //        (order_id, email, plan, amount, status) 
+// //        VALUES (?, ?, ?, ?, ?)`,
+// //       [orderId, email, plan, amount, "Pending"],
+// //     );
+
+// //     const payload = {
+// //       merchant_id: MERCHANT_ID,
+// //       order_id: orderId,
+// //       currency: "INR",
+// //       amount,
+// //       redirect_url: `${BASE_URL}/api/payment/ccavenue-success`,
+// //       cancel_url: `${BASE_URL}/api/payment/ccavenue-cancel`,
+// //       language: "EN",
+// //       billing_email: email,
+// //     };
+
+// //     const encRequest = encrypt(qs.stringify(payload));
+
+// //     res.json({
+// //       ccUrl: CCAVENUE_URL,
+// //       encRequest,
+// //       accessCode: ACCESS_CODE,
+// //     });
+// //   } catch (err) {
+// //     console.error("Payment Init Error:", err);
+// //     res.status(500).json({ message: "Payment init failed" });
+// //   }
+// // });
+
+// router.post("/ccavenue-init", async (req, res) => {
+//   try {
+//     console.log("BODY:", req.body);
+
+//     const { plan, email } = req.body;
+
+//     console.log("ENV CHECK:", {
+//       MERCHANT_ID,
+//       ACCESS_CODE,
+//       WORKING_KEY,
+//       BASE_URL,
+//     });
+
+//     const orderId = "ORD" + Date.now();
+//     const amount = plan === "premium" ? "10.00" : "5.00";
+
+//     console.log("Inserting DB...");
+
+//     await db.query(
+//       `INSERT INTO payments 
+//        (order_id, email, plan, amount, status) 
+//        VALUES (?, ?, ?, ?, ?)`,
+//       [orderId, email, plan, amount, "Pending"],
+//     );
+
+//     console.log("DB Inserted ✅");
+
+//     const payload = {
+//       merchant_id: MERCHANT_ID,
+//       order_id: orderId,
+//       currency: "INR",
+//       amount,
+//       redirect_url: `${BASE_URL}/api/payment/ccavenue-success`,
+//       cancel_url: `${BASE_URL}/api/payment/ccavenue-cancel`,
+//       language: "EN",
+//       billing_email: email,
+//     };
+
+//     console.log("Payload:", payload);
+
+//     const encRequest = encrypt(qs.stringify(payload));
+
+//     res.json({
+//       ccUrl:
+//         "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction",
+//       encRequest,
+//       accessCode: ACCESS_CODE,
+//     });
+//   } catch (err) {
+//     console.error("Payment Init Error FULL:", err);
+//     res.status(500).json({
+//       message: "Payment init failed",
+//       error: err.message,
+//     });
+//   }
+// });
+
+// /* ================= SUCCESS CALLBACK ================= */
+
+// router.post(
+//   "/ccavenue-success",
+//   express.urlencoded({ extended: false }),
+//   async (req, res) => {
+//     try {
+//       const decrypted = decrypt(req.body.encResp);
+//       const data = qs.parse(decrypted);
+
+//       console.log("CCAvenue Response:", data);
+
+//       const orderId = data.order_id;
+
+//       if (!orderId) {
+//         return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//       }
+
+//       if (data.order_status === "Success") {
+//         await db.query(
+//           "UPDATE payments SET status = 'Success' WHERE order_id = ?",
+//           [orderId],
+//         );
+
+//         return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
+//       }
+
+//       await db.query(
+//         "UPDATE payments SET status = 'Failed' WHERE order_id = ?",
+//         [orderId],
+//       );
+
+//       return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//     } catch (err) {
+//       console.error("Success Callback Error:", err);
+//       return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//     }
+//   },
+// );
+
+// /* ================= VERIFY PAYMENT ================= */
+
+// router.get("/verify", async (req, res) => {
+//   try {
+//     const { email } = req.query;
+
+//     const [rows] = await db.query(
+//       `SELECT * FROM payments
+//        WHERE email = ?
+//        AND status = 'Success'
+//        ORDER BY id DESC
+//        LIMIT 1`,
+//       [email],
+//     );
+
+//     if (rows.length === 0) {
+//       return res.json({ valid: false });
+//     }
+
+//     res.json({
+//       valid: true,
+//       plan: rows[0].plan,
+//     });
+//   } catch (err) {
+//     console.error("Verify Error:", err);
+//     res.status(500).json({ valid: false });
+//   }
+// });
+
+// /* ================= CANCEL ================= */
+// /* Supports GET + POST */
+
+// router.all("/ccavenue-cancel", (req, res) => {
+//   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+// });
+
+// export default router;
+
+
 import express from "express";
 import crypto from "crypto";
 import qs from "querystring";
 import db from "../../config/db.js";
-
 import dotenv from "dotenv";
-dotenv.config();
 
+dotenv.config();
 
 const router = express.Router();
 
@@ -655,13 +887,14 @@ const router = express.Router();
 const MERCHANT_ID = process.env.CCA_MERCHANT_ID;
 const ACCESS_CODE = process.env.CCA_ACCESS_CODE;
 const WORKING_KEY = process.env.CCA_WORKING_KEY;
+const BASE_URL = process.env.BASE_URL;
 
 console.log("MID:", MERCHANT_ID);
 
+/* ================= CCA URL ================= */
+
 const CCAVENUE_URL =
   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
-
-const BASE_URL = process.env.BASE_URL;
 
 /* ================= ENCRYPT ================= */
 
@@ -693,54 +926,15 @@ function decrypt(encText) {
 
 /* ================= INIT PAYMENT ================= */
 
-// router.post("/ccavenue-init", async (req, res) => {
-//   try {
-//     const { plan, email } = req.body;
-
-//     if (!plan || !email) {
-//       return res.status(400).json({ message: "Missing plan or email" });
-//     }
-
-//     const orderId = "ORD" + Date.now();
-//     const amount = plan === "premium" ? "10.00" : "5.00";
-
-//     /* Save Pending Order */
-//     await db.query(
-//       `INSERT INTO payments 
-//        (order_id, email, plan, amount, status) 
-//        VALUES (?, ?, ?, ?, ?)`,
-//       [orderId, email, plan, amount, "Pending"],
-//     );
-
-//     const payload = {
-//       merchant_id: MERCHANT_ID,
-//       order_id: orderId,
-//       currency: "INR",
-//       amount,
-//       redirect_url: `${BASE_URL}/api/payment/ccavenue-success`,
-//       cancel_url: `${BASE_URL}/api/payment/ccavenue-cancel`,
-//       language: "EN",
-//       billing_email: email,
-//     };
-
-//     const encRequest = encrypt(qs.stringify(payload));
-
-//     res.json({
-//       ccUrl: CCAVENUE_URL,
-//       encRequest,
-//       accessCode: ACCESS_CODE,
-//     });
-//   } catch (err) {
-//     console.error("Payment Init Error:", err);
-//     res.status(500).json({ message: "Payment init failed" });
-//   }
-// });
-
 router.post("/ccavenue-init", async (req, res) => {
   try {
     console.log("BODY:", req.body);
 
     const { plan, email } = req.body;
+
+    if (!plan || !email) {
+      return res.status(400).json({ message: "Missing plan or email" });
+    }
 
     console.log("ENV CHECK:", {
       MERCHANT_ID,
@@ -754,9 +948,10 @@ router.post("/ccavenue-init", async (req, res) => {
 
     console.log("Inserting DB...");
 
-    await db.query(
-      `INSERT INTO payments 
-       (order_id, email, plan, amount, status) 
+    /* ✅ FIXED — PROMISE QUERY */
+    await db.promise().query(
+      `INSERT INTO payments
+       (order_id, email, plan, amount, status)
        VALUES (?, ?, ?, ?, ?)`,
       [orderId, email, plan, amount, "Pending"],
     );
@@ -779,8 +974,7 @@ router.post("/ccavenue-init", async (req, res) => {
     const encRequest = encrypt(qs.stringify(payload));
 
     res.json({
-      ccUrl:
-        "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction",
+      ccUrl: CCAVENUE_URL,
       encRequest,
       accessCode: ACCESS_CODE,
     });
@@ -812,22 +1006,27 @@ router.post(
       }
 
       if (data.order_status === "Success") {
-        await db.query(
-          "UPDATE payments SET status = 'Success' WHERE order_id = ?",
-          [orderId],
-        );
+        /* ✅ FIXED */
+        await db
+          .promise()
+          .query("UPDATE payments SET status='Success' WHERE order_id=?", [
+            orderId,
+          ]);
 
         return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
       }
 
-      await db.query(
-        "UPDATE payments SET status = 'Failed' WHERE order_id = ?",
-        [orderId],
-      );
+      /* FAILED */
+      await db
+        .promise()
+        .query("UPDATE payments SET status='Failed' WHERE order_id=?", [
+          orderId,
+        ]);
 
       return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     } catch (err) {
       console.error("Success Callback Error:", err);
+
       return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     }
   },
@@ -839,17 +1038,19 @@ router.get("/verify", async (req, res) => {
   try {
     const { email } = req.query;
 
-    const [rows] = await db.query(
+    const [rows] = await db.promise().query(
       `SELECT * FROM payments
-       WHERE email = ?
-       AND status = 'Success'
-       ORDER BY id DESC
-       LIMIT 1`,
+         WHERE email=?
+         AND status='Success'
+         ORDER BY id DESC
+         LIMIT 1`,
       [email],
     );
 
     if (rows.length === 0) {
-      return res.json({ valid: false });
+      return res.json({
+        valid: false,
+      });
     }
 
     res.json({
@@ -858,12 +1059,14 @@ router.get("/verify", async (req, res) => {
     });
   } catch (err) {
     console.error("Verify Error:", err);
-    res.status(500).json({ valid: false });
+
+    res.status(500).json({
+      valid: false,
+    });
   }
 });
 
 /* ================= CANCEL ================= */
-/* Supports GET + POST */
 
 router.all("/ccavenue-cancel", (req, res) => {
   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
