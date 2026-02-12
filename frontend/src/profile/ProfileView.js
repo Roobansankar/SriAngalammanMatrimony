@@ -709,7 +709,7 @@ const heightMatch = (minH, maxH, actual) => {
           </div>
 
           {/* -------- PHOTO GALLERY -------- */}
-          {Array.isArray(user.gallery) && user.gallery.length > 0 && (
+          {/* {Array.isArray(user.gallery) && user.gallery.length > 0 && (
             <section className="bg-white dark:bg-[#221019] rounded-xl p-6 mt-12">
               <h2 className="text-xl font-bold mb-4">Photos</h2>
 
@@ -723,6 +723,28 @@ const heightMatch = (minH, maxH, actual) => {
                       src={img}
                       alt={`Gallery ${index + 1}`}
                       className="w-full h-40 object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )} */}
+
+          {/* -------- PHOTO GALLERY -------- */}
+          {Array.isArray(user.gallery) && user.gallery.length > 0 && (
+            <section className="bg-white dark:bg-[#221019] rounded-xl p-6 mt-12">
+              <h2 className="text-xl font-bold mb-4">Photos</h2>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {user.gallery.map((img, index) => (
+                  <div
+                    key={index}
+                    className="relative border rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition group"
+                  >
+                    <img
+                      src={img}
+                      alt={`Gallery ${index + 1}`}
+                      className="w-full aspect-[3/4] object-cover object-top transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
                 ))}
@@ -784,8 +806,8 @@ const heightMatch = (minH, maxH, actual) => {
                       {interest?.status === "accepted"
                         ? "Interest Accepted"
                         : interest?.status === "pending"
-                        ? "Interest Sent"
-                        : "Send Interest"}
+                          ? "Interest Sent"
+                          : "Send Interest"}
                     </button>
 
                     {blockedByMe ? (
@@ -863,8 +885,6 @@ const heightMatch = (minH, maxH, actual) => {
                 value={showDash(user.MatriID || user.matid)}
               />
 
-             
-
               <InfoRow
                 label="Profile Created By"
                 value={showDash(user.Profilecreatedby)}
@@ -934,7 +954,7 @@ const heightMatch = (minH, maxH, actual) => {
                 value={user.Moonsign || user.moonsign || "-"}
               />
               <InfoRow label="Star" value={user.Star || user.star || "-"} />
-              <InfoRow label="Lagnam" value={user.Lagnam || "-"}/>
+              <InfoRow label="Lagnam" value={user.Lagnam || "-"} />
               <InfoRow label="Gothra" value={user.Gothram || "-"} />
               <InfoRow label="Mangalik" value={user.Manglik || "-"} />
 
@@ -954,8 +974,8 @@ const heightMatch = (minH, maxH, actual) => {
               <InfoRow label="Sevai" value={user.Sevai || "-"} />
               <InfoRow label="Raghu" value={user.Raghu || "-"} />
               <InfoRow label="Keethu" value={user.Keethu || "-"} />
-             <InfoRow label="Sutham" value={user.Sutham || "-"} />
- 
+              <InfoRow label="Sutham" value={user.Sutham || "-"} />
+
               <InfoRow
                 label="Place of Birth"
                 value={
@@ -1006,19 +1026,18 @@ const heightMatch = (minH, maxH, actual) => {
                 </div> */}
 
                 <div className="mt-2">
-  {user.HoroscopeURL ? (
-    <img
-      src={user.HoroscopeURL}
-      alt="Horoscope"
-      className="w-full max-w-[300px] object-contain rounded border border-gray-200 dark:border-gray-700"
-    />
-  ) : (
-    <div className="text-gray-400 dark:text-gray-500">
-      No horoscope uploaded
-    </div>
-  )}
-</div>
-
+                  {user.HoroscopeURL ? (
+                    <img
+                      src={user.HoroscopeURL}
+                      alt="Horoscope"
+                      className="w-full max-w-[300px] object-contain rounded border border-gray-200 dark:border-gray-700"
+                    />
+                  ) : (
+                    <div className="text-gray-400 dark:text-gray-500">
+                      No horoscope uploaded
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
