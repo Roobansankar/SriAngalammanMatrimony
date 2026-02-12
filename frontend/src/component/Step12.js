@@ -39,7 +39,6 @@ export default function Step12({ prevStep, formData ,setUser }) {
         fd.append(key, val);
       };
 
-
       console.log("FINAL FORM DATA", f.fatherPoorvegam, f.motherPoorvegam);
       /* ------------------------------------------------
          STEP 1 — BASIC DETAILS
@@ -47,7 +46,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
       add("matriId", f.matriId);
       add("fname", f.fname);
       add("lname", f.lname);
-      
+
       add("email", f.email);
       add("password", f.password);
       add("profileBy", f.profileBy);
@@ -140,11 +139,11 @@ export default function Step12({ prevStep, formData ,setUser }) {
 
       add(
         "hobbies",
-        Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies
+        Array.isArray(f.hobbies) ? f.hobbies.join(",") : f.hobbies,
       );
       add(
         "interests",
-        Array.isArray(f.interests) ? f.interests.join(",") : f.interests
+        Array.isArray(f.interests) ? f.interests.join(",") : f.interests,
       );
 
       add("otherHobbies", f.otherHobbies);
@@ -180,7 +179,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
         "familyWealth",
         Array.isArray(f.familyWealth)
           ? f.familyWealth.join(",")
-          : f.familyWealth
+          : f.familyWealth,
       );
       add("familyDescription", f.familyDescription);
       add("familyMedicalHistory", f.familyMedicalHistory);
@@ -199,7 +198,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
         "partner_maritalStatus",
         Array.isArray(f.maritalStatus)
           ? f.maritalStatus.join(",")
-          : f.maritalStatus
+          : f.maritalStatus,
       );
       add("partner_ageFrom", f.ageFrom);
       add("partner_ageTo", f.ageTo);
@@ -223,9 +222,30 @@ export default function Step12({ prevStep, formData ,setUser }) {
       ------------------------------------------------ */
 
       // Always save the plan for admin-created users
-      add("plan", f.plan || "basic");
-      add("paymentDone", "1"); 
-      
+      // add("plan", f.plan || "basic");
+      // add("paymentDone", "1");
+
+      /* ------------------------------------------------
+   STEP 11 — SECURE PAYMENT VERIFICATION
+------------------------------------------------ */
+
+     /* ================= VERIFY PAYMENT ================= */
+
+const verifyRes = await axios.get(
+  "/api/payment/verify",
+  { params: { email: f.email } }
+);
+
+if (!verifyRes.data.valid) {
+  alert("Payment not verified.");
+  navigate("/register/step/6");
+  return;
+}
+
+/* Add verified plan */
+add("plan", verifyRes.data.plan);
+add("paymentDone", "1");
+
 
       /* ------------------------------------------------
          FILE UPLOAD — HOROSCOPE FILE (correct Multer field)
@@ -241,7 +261,7 @@ export default function Step12({ prevStep, formData ,setUser }) {
       ------------------------------------------------ */
       const res = await axios.post(
         `${process.env.REACT_APP_API_BASE || ""}/api/register/complete`,
-        fd
+        fd,
       );
 
       localStorage.removeItem("multiStepRegistration_form_v1");
@@ -255,14 +275,14 @@ export default function Step12({ prevStep, formData ,setUser }) {
         {
           email: f.email,
           password: f.password,
-        }
+        },
       );
 
       if (loginRes.data?.success) {
         localStorage.setItem("loggedInEmail", f.email);
         localStorage.setItem(
           "userData",
-          JSON.stringify(loginRes.data.user || {})
+          JSON.stringify(loginRes.data.user || {}),
         );
 
         if (setUser) {
@@ -273,8 +293,6 @@ export default function Step12({ prevStep, formData ,setUser }) {
       } else {
         throw new Error("Auto login failed");
       }
-
-
     } catch (err) {
       console.error("❌ Submit Error:", err?.response?.data || err);
       setError(

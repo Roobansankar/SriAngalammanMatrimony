@@ -267,12 +267,236 @@
 
 
 
-import axios from "axios";
-import { useState } from "react";
+// import axios from "axios";
+// import { useState } from "react";
 
-export default function Step11Payment({ formData }) {
-  const [plan, setPlan] = useState(formData.plan || null);
+// export default function Step11Payment({ formData }) {
+//   const [plan, setPlan] = useState(formData.plan || null);
+//   const [loading, setLoading] = useState(false);
+
+//   const handlePayment = async () => {
+//     if (!plan) {
+//       alert("Please select a plan");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       const res = await axios.post(
+//         "https://www.sriangalammanmatrimony.com/api/payment/ccavenue-init",
+//         {
+//           plan,
+//           email: formData.email,
+//         },
+//       );
+
+//       const form = document.createElement("form");
+//       form.method = "POST";
+//       form.action = res.data.ccUrl;
+
+//       form.innerHTML = `
+//         <input type="hidden" name="encRequest" value="${res.data.encRequest}" />
+//         <input type="hidden" name="access_code" value="${res.data.accessCode}" />
+//       `;
+
+//       localStorage.setItem("paidPlan", plan);
+
+//       document.body.appendChild(form);
+//       form.submit();
+//     } catch (err) {
+//       console.error(err);
+//       alert("Payment init failed");
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="max-w-lg mx-auto mt-10 bg-white p-8 rounded-xl shadow text-center">
+//       <h2 className="text-xl font-bold mb-6">Choose Your Plan</h2>
+
+//       <div className="grid grid-cols-2 gap-4 mb-6">
+//         <div
+//           onClick={() => setPlan("basic")}
+//           className={`p-5 border rounded-lg cursor-pointer ${
+//             plan === "basic" && "border-rose-500 bg-rose-50"
+//           }`}
+//         >
+//           <h3>Basic</h3>
+//           <p>₹5</p>
+//         </div>
+
+//         <div
+//           onClick={() => setPlan("premium")}
+//           className={`p-5 border rounded-lg cursor-pointer ${
+//             plan === "premium" && "border-rose-500 bg-rose-50"
+//           }`}
+//         >
+//           <h3>Premium</h3>
+//           <p>₹10</p>
+//         </div>
+//       </div>
+
+//       <button
+//         onClick={handlePayment}
+//         disabled={loading}
+//         className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded"
+//       >
+//         {loading ? "Redirecting..." : "Pay Now"}
+//       </button>
+//     </div>
+//   );
+// }
+
+
+// import axios from "axios";
+// import { useState, useEffect } from "react";
+// import { useLocation, useNavigate } from "react-router-dom";
+
+// export default function Step11Payment({ formData }) {
+//   const [plan, setPlan] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [message, setMessage] = useState("");
+
+//   const location = useLocation();
+//   const navigate = useNavigate();
+
+//   /* ================= CHECK PAYMENT RESULT ================= */
+
+//   useEffect(() => {
+//     const params = new URLSearchParams(location.search);
+//     const paymentStatus = params.get("payment");
+
+//     if (paymentStatus === "success") {
+//       setMessage("Payment Successful ✅ Redirecting...");
+
+//       setTimeout(() => {
+//         navigate("/register/step/7");
+//       }, 1500);
+//     }
+
+//     if (paymentStatus === "failed") {
+//       setMessage("Payment Failed ❌ Please try again.");
+//     }
+//   }, [location.search, navigate]);
+
+//   /* ================= HANDLE PAYMENT ================= */
+
+//   const handlePayment = async () => {
+//     if (!plan) {
+//       alert("Please select a plan");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       const res = await axios.post(
+//         "https://www.sriangalammanmatrimony.com/api/payment/ccavenue-init",
+//         {
+//           plan,
+//           email: formData.email,
+//         },
+//       );
+
+//       const form = document.createElement("form");
+//       form.method = "POST";
+//       form.action = res.data.ccUrl;
+
+//       form.innerHTML = `
+//         <input type="hidden" name="encRequest" value="${res.data.encRequest}" />
+//         <input type="hidden" name="access_code" value="${res.data.accessCode}" />
+//       `;
+
+      
+
+//       document.body.appendChild(form);
+//       form.submit();
+//     } catch (err) {
+//       alert("Payment init failed");
+//       setLoading(false);
+//     }
+//   };
+
+//   /* ================= UI ================= */
+
+//   return (
+//     <div className="max-w-lg mx-auto mt-10 bg-white p-8 rounded-xl shadow text-center">
+//       <h2 className="text-xl font-bold mb-6">Choose Your Plan</h2>
+
+//       {message && (
+//         <div className="mb-4 text-sm font-semibold text-rose-600">
+//           {message}
+//         </div>
+//       )}
+
+//       <div className="grid grid-cols-2 gap-4 mb-6">
+//         <div
+//           onClick={() => setPlan("basic")}
+//           className={`p-5 border rounded-lg cursor-pointer ${
+//             plan === "basic" ? "border-rose-500 bg-rose-50" : ""
+//           }`}
+//         >
+//           <h3>Basic</h3>
+//           <p>₹5</p>
+//         </div>
+
+//         <div
+//           onClick={() => setPlan("premium")}
+//           className={`p-5 border rounded-lg cursor-pointer ${
+//             plan === "premium" ? "border-rose-500 bg-rose-50" : ""
+//           }`}
+//         >
+//           <h3>Premium</h3>
+//           <p>₹10</p>
+//         </div>
+//       </div>
+
+//       <button
+//         onClick={handlePayment}
+//         disabled={loading}
+//         className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded"
+//       >
+//         {loading ? "Redirecting..." : "Pay Now"}
+//       </button>
+//     </div>
+//   );
+// }
+
+
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+export default function Step11Payment({ formData, setFormData }) {
+  const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  /* ================= CHECK PAYMENT RESULT ================= */
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get("payment");
+
+    if (status === "success") {
+      setMessage("Payment Successful ✅ Redirecting...");
+
+      setTimeout(() => {
+        navigate("/register/step/7");
+      }, 1500);
+    }
+
+    if (status === "failed") {
+      setMessage("Payment Failed ❌ Please try again.");
+      setLoading(false);
+    }
+  }, [location.search, navigate]);
+
+  /* ================= HANDLE PAYMENT ================= */
 
   const handlePayment = async () => {
     if (!plan) {
@@ -283,14 +507,22 @@ export default function Step11Payment({ formData }) {
     try {
       setLoading(true);
 
+      /* Save plan in global formData */
+      setFormData((prev) => ({ ...prev, plan }));
+
+      // const res = await axios.post("/api/payment/ccavenue-init", {
+      //   plan,
+      //   email: formData.email,
+      // });
+
       const res = await axios.post(
-        "https://www.sriangalammanmatrimony.com/api/payment/ccavenue-init",
-        {
-          plan,
-          email: formData.email,
-          formData: JSON.stringify(formData),
-        },
-      );
+  `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
+  {
+    plan,
+    email: formData.email,
+  }
+);
+
 
       const form = document.createElement("form");
       form.method = "POST";
@@ -310,15 +542,23 @@ export default function Step11Payment({ formData }) {
     }
   };
 
+  /* ================= UI ================= */
+
   return (
     <div className="max-w-lg mx-auto mt-10 bg-white p-8 rounded-xl shadow text-center">
       <h2 className="text-xl font-bold mb-6">Choose Your Plan</h2>
+
+      {message && (
+        <div className="mb-4 text-sm font-semibold text-rose-600">
+          {message}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div
           onClick={() => setPlan("basic")}
           className={`p-5 border rounded-lg cursor-pointer ${
-            plan === "basic" && "border-rose-500 bg-rose-50"
+            plan === "basic" ? "border-rose-500 bg-rose-50" : ""
           }`}
         >
           <h3>Basic</h3>
@@ -328,7 +568,7 @@ export default function Step11Payment({ formData }) {
         <div
           onClick={() => setPlan("premium")}
           className={`p-5 border rounded-lg cursor-pointer ${
-            plan === "premium" && "border-rose-500 bg-rose-50"
+            plan === "premium" ? "border-rose-500 bg-rose-50" : ""
           }`}
         >
           <h3>Premium</h3>
