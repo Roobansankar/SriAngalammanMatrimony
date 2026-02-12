@@ -27,6 +27,12 @@ const HOST = "0.0.0.0";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+
+const BASE_URL = process.env.BASE_URL;
+console.log("BASE_URL:", BASE_URL);
+
+
 /* DB quick health check */
 // `db` is a mysql2 connection pool created in `./config/db.js`.
 // Run a single lightweight query at startup and log the result.
