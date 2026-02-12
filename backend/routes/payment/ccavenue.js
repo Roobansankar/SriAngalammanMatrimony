@@ -902,6 +902,8 @@ console.log("MID:", MERCHANT_ID);
 const CCAVENUE_URL =
   "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
+  console.log("Returning URL:", CCAVENUE_URL);
+
 /* ================= ENCRYPT ================= */
 
 function encrypt(text) {
