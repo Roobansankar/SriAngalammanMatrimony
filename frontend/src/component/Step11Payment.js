@@ -498,48 +498,6 @@ export default function Step11Payment({ formData, setFormData }) {
 
   /* ================= HANDLE PAYMENT ================= */
 
-//   const handlePayment = async () => {
-//     if (!plan) {
-//       alert("Please select a plan");
-//       return;
-//     }
-
-//     try {
-//       setLoading(true);
-
-//       /* Save plan in global formData */
-//       setFormData((prev) => ({ ...prev, plan }));
-
-   
-
-//       const res = await axios.post(
-//   `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
-//   {
-//     plan,
-//     email: formData.email,
-//   }
-// );
-
-
-//       const form = document.createElement("form");
-//       form.method = "POST";
-//       form.action = res.data.ccUrl;
-//         console.log(res.data.ccUrl);
-
-//       form.innerHTML = `
-//         <input type="hidden" name="encRequest" value="${res.data.encRequest}" />
-//         <input type="hidden" name="access_code" value="${res.data.accessCode}" />
-//       `;
-
-//       document.body.appendChild(form);
-//       form.submit();
-//     } catch (err) {
-//       console.error(err);
-//       alert("Payment init failed");
-//       setLoading(false);
-//     }
-//   };
-
 
 const handlePayment = async () => {
   if (!plan) {

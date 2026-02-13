@@ -884,9 +884,7 @@ const router = express.Router();
 
 /* ================= ENV CONFIG ================= */
 
-// const MERCHANT_ID = process.env.CCA_MERCHANT_ID;
-// const ACCESS_CODE = process.env.CCA_ACCESS_CODE;
-// const WORKING_KEY = process.env.CCA_WORKING_KEY;
+
 const MERCHANT_ID = "4417415";
 const ACCESS_CODE = "AVPV86ML93BN46VPNB";
 const WORKING_KEY = "8A6F30AFBA81C3842F00E1F7B14E0C7B";
@@ -896,13 +894,13 @@ console.log("MID:", MERCHANT_ID);
 
 /* ================= CCA URL ================= */
 
-// const CCAVENUE_URL =
-//   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
-
 const CCAVENUE_URL =
-  "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+  "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+
 
   console.log("Returning URL:", CCAVENUE_URL);
+
+  
 
 /* ================= ENCRYPT ================= */
 
@@ -981,11 +979,22 @@ router.post("/ccavenue-init", async (req, res) => {
 
     const encRequest = encrypt(qs.stringify(payload));
 
+    // res.json({
+    //   ccUrl: CCAVENUE_URL,
+    //   encRequest,
+    //   accessCode: ACCESS_CODE,
+    // });
+    // console.log("ENC REQUEST:", encRequest);
+
+    console.log("ENC REQUEST:", encRequest);
+
     res.json({
       ccUrl: CCAVENUE_URL,
       encRequest,
       accessCode: ACCESS_CODE,
     });
+
+
   } catch (err) {
     console.error("Payment Init Error FULL:", err);
     res.status(500).json({
