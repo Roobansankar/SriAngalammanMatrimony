@@ -888,7 +888,7 @@ const router = express.Router();
 const MERCHANT_ID = "4417415";
 const ACCESS_CODE = "AVPV86ML93BN46VPNB";
 const WORKING_KEY = "8A6F30AFBA81C3842F00E1F7B14E0C7B";
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = "https://www.sriangalammanmatrimony.com";
 
 console.log("MID:", MERCHANT_ID);
 

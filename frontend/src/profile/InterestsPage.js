@@ -32,7 +32,7 @@ export default function InterestsPage() {
   // helper to fetch sender profile (used to show contact after accepted)
   const fetchProfileSummary = async (matriid) => {
     try {
-      const res = await axios.get(`${API}/api/auth/searchByMatriID`, {
+      const res = await axios.get(`${API}/auth/searchByMatriID`, {
         params: { matriid },
       });
       if (res.data?.success && res.data.user) return res.data.user;
@@ -227,7 +227,7 @@ export default function InterestsPage() {
     if (!interestId || !["accepted", "rejected"].includes(action)) return;
     setBusyMap((b) => ({ ...b, [interestId]: true }));
     try {
-      const res = await axios.post(`${API}/api/auth/interest/respond`, {
+      const res = await axios.post(`${API}/auth/interest/respond`, {
         interestId,
         action,
       });
@@ -276,7 +276,7 @@ export default function InterestsPage() {
     if (!chatRequestId || !["accepted", "rejected"].includes(action)) return;
     setChatBusyMap((b) => ({ ...b, [chatRequestId]: true }));
     try {
-      const res = await axios.post(`${API}/api/chat/respond`, {
+      const res = await axios.post(`${API}/chat/respond`, {
         id: chatRequestId,
         status: action,
       });
