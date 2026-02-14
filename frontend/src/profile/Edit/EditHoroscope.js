@@ -303,9 +303,7 @@ const toggleBox = (type, key, value) => {
   if (value === "லக்") {
     // Remove Lagna from all boxes
     Object.keys(updated).forEach((k) => {
-      updated[k] = (updated[k] || []).filter(
-        (planet) => planet !== "லக்"
-      );
+      updated[k] = (updated[k] || []).filter((planet) => planet !== "லக்");
     });
 
     // Add Lagna only to current box
