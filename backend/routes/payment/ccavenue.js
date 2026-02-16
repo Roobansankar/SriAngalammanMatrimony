@@ -906,13 +906,18 @@ const CCAVENUE_URL =
 
 /* ================= ENCRYPT ================= */
 
+/* ================= ENCRYPT ================= */
+
 function encrypt(plainText) {
   const iv = Buffer.alloc(16, 0);
 
+  // Working key hex → binary
+  const key = Buffer.from(WORKING_KEY, "hex");
+
   const cipher = crypto.createCipheriv(
     "aes-128-cbc",
-    Buffer.from(WORKING_KEY, "utf8"), // FIX
-    iv,
+    key,
+    iv
   );
 
   let encrypted = cipher.update(plainText, "utf8", "hex");
@@ -921,13 +926,17 @@ function encrypt(plainText) {
   return encrypted;
 }
 
+/* ================= DECRYPT ================= */
+
 function decrypt(encText) {
   const iv = Buffer.alloc(16, 0);
 
+  const key = Buffer.from(WORKING_KEY, "hex");
+
   const decipher = crypto.createDecipheriv(
     "aes-128-cbc",
-    Buffer.from(WORKING_KEY, "utf8"), // FIX
-    iv,
+    key,
+    iv
   );
 
   let decrypted = decipher.update(encText, "hex", "utf8");
@@ -935,6 +944,8 @@ function decrypt(encText) {
 
   return decrypted;
 }
+
+console.log(Buffer.from(WORKING_KEY, "hex").length);
 
 
 
