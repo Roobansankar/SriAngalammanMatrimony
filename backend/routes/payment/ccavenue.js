@@ -453,7 +453,9 @@ const ACCESS_CODE = "AVPV86ML93BN46VPNB";
 const WORKING_KEY = "8D5201FF07BB00FF435BE2C64E38CF32";
 
 /* ⚠️ IMPORTANT — Must match CCAvenue store URL exactly (no www if not registered) */
-const BASE_URL = "https://sriangalammanmatrimony.com";
+// const BASE_URL = "https://sriangalammanmatrimony.com";
+const BASE_URL = "https://www.sriangalammanmatrimony.com";
+
 
 const CCAVENUE_URL =
   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
