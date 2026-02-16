@@ -908,12 +908,11 @@ const CCAVENUE_URL =
 
 function encrypt(plainText) {
   const iv = Buffer.alloc(16, 0);
-  const key = Buffer.from(WORKING_KEY, "hex");
 
   const cipher = crypto.createCipheriv(
     "aes-128-cbc",
-    key,
-    iv
+    Buffer.from(WORKING_KEY, "utf8"), // FIX
+    iv,
   );
 
   let encrypted = cipher.update(plainText, "utf8", "hex");
@@ -922,16 +921,13 @@ function encrypt(plainText) {
   return encrypted;
 }
 
-/* ================= DECRYPT ================= */
-
 function decrypt(encText) {
   const iv = Buffer.alloc(16, 0);
-  const key = Buffer.from(WORKING_KEY, "hex");
 
   const decipher = crypto.createDecipheriv(
     "aes-128-cbc",
-    key,
-    iv
+    Buffer.from(WORKING_KEY, "utf8"), // FIX
+    iv,
   );
 
   let decrypted = decipher.update(encText, "hex", "utf8");
@@ -939,6 +935,7 @@ function decrypt(encText) {
 
   return decrypted;
 }
+
 
 
 /* ================= INIT PAYMENT ================= */
@@ -989,6 +986,8 @@ router.post("/ccavenue-init", async (req, res) => {
     console.log("Payload:", payload);
 
     const encRequest = encrypt(qs.stringify(payload));
+    console.log("Payload String:", qs.stringify(payload));
+
 
     // res.json({
     //   ccUrl: CCAVENUE_URL,
