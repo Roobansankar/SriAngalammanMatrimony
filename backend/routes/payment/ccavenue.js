@@ -263,7 +263,9 @@ const CCAVENUE_URL =
 
 function encrypt(plainText) {
   const iv = Buffer.alloc(16, 0);
-  const key = Buffer.from(WORKING_KEY, "hex");
+
+  // Official key derivation
+  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
 
@@ -273,11 +275,10 @@ function encrypt(plainText) {
   return encrypted;
 }
 
-/* ================= DECRYPT ================= */
-
 function decrypt(encText) {
   const iv = Buffer.alloc(16, 0);
-  const key = Buffer.from(WORKING_KEY, "hex");
+
+  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
 
@@ -286,6 +287,7 @@ function decrypt(encText) {
 
   return decrypted;
 }
+
 
 /* ================= INIT PAYMENT ================= */
 
