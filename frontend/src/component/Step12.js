@@ -221,8 +221,8 @@ export default function Step12({ prevStep, formData ,setUser }) {
       ------------------------------------------------ */
 
       // Always save the plan for admin-created users
-      add("plan", f.plan || "basic");
-      add("paymentDone", "1");
+      // add("plan", f.plan || "basic");
+      // add("paymentDone", "1");
 
       /* ------------------------------------------------
    STEP 11 — SECURE PAYMENT VERIFICATION
@@ -230,20 +230,20 @@ export default function Step12({ prevStep, formData ,setUser }) {
 
      /* ================= VERIFY PAYMENT ================= */
 
-// const verifyRes = await axios.get(
-//   "/api/payment/verify",
-//   { params: { email: f.email } }
-// );
+const verifyRes = await axios.get(
+  "/api/payment/verify",
+  { params: { email: f.email } }
+);
 
-// if (!verifyRes.data.valid) {
-//   alert("Payment not verified.");
-//   navigate("/register/step/6");
-//   return;
-// }
+if (!verifyRes.data.valid) {
+  alert("Payment not verified.");
+  navigate("/register/step/6");
+  return;
+}
 
-// /* Add verified plan */
-// add("plan", verifyRes.data.plan);
-// add("paymentDone", "1");
+/* Add verified plan */
+add("plan", verifyRes.data.plan);
+add("paymentDone", "1");
 
 
       /* ------------------------------------------------

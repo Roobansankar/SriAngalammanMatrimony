@@ -904,13 +904,19 @@ const CCAVENUE_URL =
 
 /* ================= ENCRYPT ================= */
 
-function encrypt(text) {
-  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+/* ================= ENCRYPT ================= */
+
+function encrypt(plainText) {
   const iv = Buffer.alloc(16, 0);
+  const key = Buffer.from(WORKING_KEY, "hex");
 
-  const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
+  const cipher = crypto.createCipheriv(
+    "aes-128-cbc",
+    key,
+    iv
+  );
 
-  let encrypted = cipher.update(text, "utf8", "hex");
+  let encrypted = cipher.update(plainText, "utf8", "hex");
   encrypted += cipher.final("hex");
 
   return encrypted;
@@ -919,16 +925,21 @@ function encrypt(text) {
 /* ================= DECRYPT ================= */
 
 function decrypt(encText) {
-  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
   const iv = Buffer.alloc(16, 0);
+  const key = Buffer.from(WORKING_KEY, "hex");
 
-  const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
+  const decipher = crypto.createDecipheriv(
+    "aes-128-cbc",
+    key,
+    iv
+  );
 
   let decrypted = decipher.update(encText, "hex", "utf8");
   decrypted += decipher.final("utf8");
 
   return decrypted;
 }
+
 
 /* ================= INIT PAYMENT ================= */
 
