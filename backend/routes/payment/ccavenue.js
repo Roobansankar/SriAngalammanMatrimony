@@ -241,6 +241,204 @@
 // export default router;
 
 
+// import express from "express";
+// import crypto from "crypto";
+// import qs from "querystring";
+// import db from "../../config/db.js";
+
+// const router = express.Router();
+
+// /* ================= CONFIG ================= */
+
+// const MERCHANT_ID = "4417415";
+// const ACCESS_CODE = "AVPV86ML93BN46VPNB";
+// const WORKING_KEY = "8A6F30AFBA81C3842F00E1F7B14E0C7B";
+
+
+// const BASE_URL = "https://sriangalammanmatrimony.com";
+
+
+// const CCAVENUE_URL =
+//   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+
+// /* ================= ENCRYPT ================= */
+
+// function encrypt(plainText) {
+//   const iv = Buffer.alloc(16, 0);
+
+//   // Official key derivation
+//   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+
+//   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
+
+//   let encrypted = cipher.update(plainText, "utf8", "hex");
+//   encrypted += cipher.final("hex");
+
+//   return encrypted;
+// }
+
+// function decrypt(encText) {
+//   const iv = Buffer.alloc(16, 0);
+
+//   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+
+//   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
+
+//   let decrypted = decipher.update(encText, "hex", "utf8");
+//   decrypted += decipher.final("utf8");
+
+//   return decrypted;
+// }
+
+
+// /* ================= INIT PAYMENT ================= */
+
+// router.post("/ccavenue-init", async (req, res) => {
+//   try {
+//     console.log("BODY:", req.body);
+
+//     const { plan, email } = req.body;
+
+//     if (!plan || !email) {
+//       return res.status(400).json({
+//         message: "Missing plan or email",
+//       });
+//     }
+
+//     const orderId = "ORD" + Date.now();
+//     const amount = plan === "premium" ? "10.00" : "5.00";
+
+//     /* ===== Save Pending Payment ===== */
+
+//     await db.promise().query(
+//       `INSERT INTO payments
+//        (order_id, email, plan, amount, status)
+//        VALUES (?, ?, ?, ?, ?)`,
+//       [orderId, email, plan, amount, "Pending"],
+//     );
+
+//     console.log("DB Inserted ✅");
+
+//     /* ===== RAW PAYLOAD STRING (IMPORTANT) ===== */
+
+//     const payloadString =
+//       `merchant_id=${MERCHANT_ID}` +
+//       `&order_id=${orderId}` +
+//       `&currency=INR` +
+//       `&amount=${amount}` +
+//       `&redirect_url=${BASE_URL}/api/payment/ccavenue-success` +
+//       `&cancel_url=${BASE_URL}/api/payment/ccavenue-cancel` +
+//       `&language=EN` +
+//       `&billing_email=${email}`;
+
+//     console.log("Payload String:", payloadString);
+
+//     /* ===== ENCRYPT ===== */
+
+//     const encRequest = encrypt(payloadString);
+
+//     console.log("ENC REQUEST:", encRequest);
+
+//     /* ===== SEND TO FRONTEND ===== */
+
+//     res.json({
+//       ccUrl: CCAVENUE_URL,
+//       encRequest,
+//       accessCode: ACCESS_CODE,
+//     });
+//   } catch (err) {
+//     console.error("Payment Init Error:", err);
+
+//     res.status(500).json({
+//       message: "Payment init failed",
+//       error: err.message,
+//     });
+//   }
+// });
+
+// /* ================= SUCCESS CALLBACK ================= */
+
+// router.post(
+//   "/ccavenue-success",
+//   express.urlencoded({ extended: false }),
+//   async (req, res) => {
+//     try {
+//       const decrypted = decrypt(req.body.encResp);
+//       const data = qs.parse(decrypted);
+
+//       console.log("CCAvenue Response:", data);
+
+//       const orderId = data.order_id;
+
+//       if (!orderId) {
+//         return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//       }
+
+//       if (data.order_status === "Success") {
+//         await db
+//           .promise()
+//           .query("UPDATE payments SET status='Success' WHERE order_id=?", [
+//             orderId,
+//           ]);
+
+//         return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
+//       }
+
+//       await db
+//         .promise()
+//         .query("UPDATE payments SET status='Failed' WHERE order_id=?", [
+//           orderId,
+//         ]);
+
+//       return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//     } catch (err) {
+//       console.error("Success Callback Error:", err);
+
+//       return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//     }
+//   },
+// );
+
+// /* ================= VERIFY ================= */
+
+// router.get("/verify", async (req, res) => {
+//   try {
+//     const { email } = req.query;
+
+//     const [rows] = await db.promise().query(
+//       `SELECT * FROM payments
+//        WHERE email=?
+//        AND status='Success'
+//        ORDER BY id DESC
+//        LIMIT 1`,
+//       [email],
+//     );
+
+//     if (rows.length === 0) {
+//       return res.json({ valid: false });
+//     }
+
+//     res.json({
+//       valid: true,
+//       plan: rows[0].plan,
+//     });
+//   } catch (err) {
+//     console.error("Verify Error:", err);
+
+//     res.status(500).json({ valid: false });
+//   }
+// });
+
+// /* ================= CANCEL ================= */
+
+// router.all("/ccavenue-cancel", (req, res) => {
+//   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+// });
+
+// export default router;
+
+
+
 import express from "express";
 import crypto from "crypto";
 import qs from "querystring";
@@ -248,23 +446,20 @@ import db from "../../config/db.js";
 
 const router = express.Router();
 
-/* ================= CONFIG ================= */
+/* CONFIG */
 
 const MERCHANT_ID = "4417415";
 const ACCESS_CODE = "AVPV86ML93BN46VPNB";
 const WORKING_KEY = "8A6F30AFBA81C3842F00E1F7B14E0C7B";
-
 const BASE_URL = "https://www.sriangalammanmatrimony.com";
 
 const CCAVENUE_URL =
   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
-/* ================= ENCRYPT ================= */
+/* ENCRYPT */
 
 function encrypt(plainText) {
   const iv = Buffer.alloc(16, 0);
-
-  // Official key derivation
   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
@@ -275,9 +470,10 @@ function encrypt(plainText) {
   return encrypted;
 }
 
+/* DECRYPT */
+
 function decrypt(encText) {
   const iv = Buffer.alloc(16, 0);
-
   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
@@ -288,38 +484,24 @@ function decrypt(encText) {
   return decrypted;
 }
 
-
-/* ================= INIT PAYMENT ================= */
+/* INIT PAYMENT */
 
 router.post("/ccavenue-init", async (req, res) => {
   try {
-    console.log("BODY:", req.body);
-
     const { plan, email } = req.body;
-
-    if (!plan || !email) {
-      return res.status(400).json({
-        message: "Missing plan or email",
-      });
-    }
 
     const orderId = "ORD" + Date.now();
     const amount = plan === "premium" ? "10.00" : "5.00";
 
-    /* ===== Save Pending Payment ===== */
-
+    /* Save pending */
     await db.promise().query(
-      `INSERT INTO payments
-       (order_id, email, plan, amount, status)
-       VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO payments (order_id,email,plan,amount,status)
+       VALUES (?,?,?,?,?)`,
       [orderId, email, plan, amount, "Pending"],
     );
 
-    console.log("DB Inserted ✅");
-
-    /* ===== RAW PAYLOAD STRING (IMPORTANT) ===== */
-
-    const payloadString =
+    /* RAW PAYLOAD STRING (IMPORTANT) */
+    const payload =
       `merchant_id=${MERCHANT_ID}` +
       `&order_id=${orderId}` +
       `&currency=INR` +
@@ -329,15 +511,7 @@ router.post("/ccavenue-init", async (req, res) => {
       `&language=EN` +
       `&billing_email=${email}`;
 
-    console.log("Payload String:", payloadString);
-
-    /* ===== ENCRYPT ===== */
-
-    const encRequest = encrypt(payloadString);
-
-    console.log("ENC REQUEST:", encRequest);
-
-    /* ===== SEND TO FRONTEND ===== */
+    const encRequest = encrypt(payload);
 
     res.json({
       ccUrl: CCAVENUE_URL,
@@ -345,16 +519,11 @@ router.post("/ccavenue-init", async (req, res) => {
       accessCode: ACCESS_CODE,
     });
   } catch (err) {
-    console.error("Payment Init Error:", err);
-
-    res.status(500).json({
-      message: "Payment init failed",
-      error: err.message,
-    });
+    res.status(500).json({ message: "Payment init failed" });
   }
 });
 
-/* ================= SUCCESS CALLBACK ================= */
+/* SUCCESS */
 
 router.post(
   "/ccavenue-success",
@@ -364,13 +533,7 @@ router.post(
       const decrypted = decrypt(req.body.encResp);
       const data = qs.parse(decrypted);
 
-      console.log("CCAvenue Response:", data);
-
       const orderId = data.order_id;
-
-      if (!orderId) {
-        return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
-      }
 
       if (data.order_status === "Success") {
         await db
@@ -388,46 +551,14 @@ router.post(
           orderId,
         ]);
 
-      return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
-    } catch (err) {
-      console.error("Success Callback Error:", err);
-
-      return res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+      res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+    } catch {
+      res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     }
   },
 );
 
-/* ================= VERIFY ================= */
-
-router.get("/verify", async (req, res) => {
-  try {
-    const { email } = req.query;
-
-    const [rows] = await db.promise().query(
-      `SELECT * FROM payments
-       WHERE email=?
-       AND status='Success'
-       ORDER BY id DESC
-       LIMIT 1`,
-      [email],
-    );
-
-    if (rows.length === 0) {
-      return res.json({ valid: false });
-    }
-
-    res.json({
-      valid: true,
-      plan: rows[0].plan,
-    });
-  } catch (err) {
-    console.error("Verify Error:", err);
-
-    res.status(500).json({ valid: false });
-  }
-});
-
-/* ================= CANCEL ================= */
+/* CANCEL */
 
 router.all("/ccavenue-cancel", (req, res) => {
   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
