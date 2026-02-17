@@ -595,7 +595,6 @@
 
 // export default router;
 
-
 import express from "express";
 import crypto from "crypto";
 import qs from "querystring";
@@ -603,52 +602,61 @@ import db from "../../config/db.js";
 
 const router = express.Router();
 
-/* ================= LIVE CONFIG ================= */
+/* =========================================================
+   🔐 LIVE CREDENTIALS (HARDCODE — CCAvenue instruction)
+========================================================= */
 
 const MERCHANT_ID = "4417415";
 const ACCESS_CODE = "AVPV86ML93BN46VPNB";
 const WORKING_KEY = "8D5201FF07BB00FF435BE2C64E38CF32";
 
+/* ⚠️ MUST match CCAvenue registered domain */
 const BASE_URL = "https://sriangalammanmatrimony.com";
 
+/* LIVE PAYMENT URL */
 const CCAVENUE_URL =
   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
-/* ================= ENCRYPT (OFFICIAL LOGIC) ================= */
+/* =========================================================
+   🔐 ENCRYPTION — OFFICIAL CCAvenue AES-128 LOGIC
+========================================================= */
 
-function encrypt(plainText, workingKey) {
-  const m = crypto.createHash("md5");
-  m.update(workingKey);
-  const key = m.digest(); // 16 bytes
-
+function encrypt(plainText) {
   const iv = Buffer.alloc(16, 0);
+
+  /* MD5 hash → 16 byte key */
+  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
 
   let encrypted = cipher.update(plainText, "utf8", "hex");
+
   encrypted += cipher.final("hex");
 
   return encrypted;
 }
 
-/* ================= DECRYPT ================= */
+/* =========================================================
+   🔓 DECRYPT
+========================================================= */
 
-function decrypt(encText, workingKey) {
-  const m = crypto.createHash("md5");
-  m.update(workingKey);
-  const key = m.digest();
-
+function decrypt(encText) {
   const iv = Buffer.alloc(16, 0);
+
+  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
 
   let decrypted = decipher.update(encText, "hex", "utf8");
+
   decrypted += decipher.final("utf8");
 
   return decrypted;
 }
 
-/* ================= INIT PAYMENT ================= */
+/* =========================================================
+   💳 INIT PAYMENT
+========================================================= */
 
 router.post("/ccavenue-init", async (req, res) => {
   try {
@@ -660,10 +668,11 @@ router.post("/ccavenue-init", async (req, res) => {
       });
     }
 
+    /* Generate Order */
     const orderId = "ORD" + Date.now();
     const amount = plan === "premium" ? "10.00" : "5.00";
 
-    /* Save pending order */
+    /* Save Pending Order */
     await db.promise().query(
       `INSERT INTO payments
        (order_id,email,plan,amount,status)
@@ -671,7 +680,12 @@ router.post("/ccavenue-init", async (req, res) => {
       [orderId, email, plan, amount, "Pending"],
     );
 
-    /* RAW STRING — NO qs.stringify */
+    console.log("DB Inserted ✅");
+
+    /* =====================================================
+       ⚠️ RAW PAYLOAD STRING (NO qs.stringify)
+    ===================================================== */
+
     const payload =
       "merchant_id=" +
       MERCHANT_ID +
@@ -692,17 +706,19 @@ router.post("/ccavenue-init", async (req, res) => {
 
     console.log("Payload:", payload);
 
-    const encRequest = encrypt(payload, WORKING_KEY);
+    /* Encrypt */
+    const encRequest = encrypt(payload);
 
     console.log("ENC REQUEST:", encRequest);
 
+    /* Send to frontend */
     res.json({
       ccUrl: CCAVENUE_URL,
       encRequest,
       accessCode: ACCESS_CODE,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Payment Init Error:", err);
 
     res.status(500).json({
       message: "Payment init failed",
@@ -711,23 +727,28 @@ router.post("/ccavenue-init", async (req, res) => {
   }
 });
 
-/* ================= SUCCESS ================= */
+/* =========================================================
+   ✅ SUCCESS CALLBACK
+========================================================= */
 
 router.post(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
     try {
-      const decrypted = decrypt(req.body.encResp, WORKING_KEY);
+      const decrypted = decrypt(req.body.encResp);
+
       const data = qs.parse(decrypted);
 
       console.log("CCA Response:", data);
+
+      const orderId = data.order_id;
 
       if (data.order_status === "Success") {
         await db
           .promise()
           .query("UPDATE payments SET status='Success' WHERE order_id=?", [
-            data.order_id,
+            orderId,
           ]);
 
         return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
@@ -736,18 +757,21 @@ router.post(
       await db
         .promise()
         .query("UPDATE payments SET status='Failed' WHERE order_id=?", [
-          data.order_id,
+          orderId,
         ]);
 
       res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     } catch (err) {
-      console.error(err);
+      console.error("Success Callback Error:", err);
+
       res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     }
   },
 );
 
-/* ================= CANCEL ================= */
+/* =========================================================
+   ❌ CANCEL CALLBACK
+========================================================= */
 
 router.all("/ccavenue-cancel", (req, res) => {
   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
