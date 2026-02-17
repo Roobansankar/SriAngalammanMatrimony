@@ -137,6 +137,10 @@ export default function AdminPayments() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Date Filtering States
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -156,18 +160,68 @@ export default function AdminPayments() {
     }
   };
 
+  /* ================= FILTER LOGIC ================= */
   useEffect(() => {
-    const s = search.toLowerCase();
-    const f = payments.filter(
-      (p) =>
-        p.MatriID?.toLowerCase().includes(s) ||
-        p.Name?.toLowerCase().includes(s) ||
-        p.order_id?.toLowerCase().includes(s),
-    );
-    setFiltered(f);
-  }, [search, payments]);
+    let result = [...payments];
 
-  // Helper to style status badges
+    // 1. Search Filter
+    if (search) {
+      const s = search.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.MatriID?.toLowerCase().includes(s) ||
+          p.Name?.toLowerCase().includes(s) ||
+          p.order_id?.toLowerCase().includes(s),
+      );
+    }
+
+    // 2. Date Range Filter
+    if (startDate) {
+      result = result.filter(
+        (p) => new Date(p.created_at) >= new Date(startDate),
+      );
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59); // Include the whole end day
+      result = result.filter((p) => new Date(p.created_at) <= end);
+    }
+
+    setFiltered(result);
+  }, [search, payments, startDate, endDate]);
+
+  /* ================= CALCULATIONS ================= */
+  const totalSuccessAmount = filtered
+    .filter((p) => p.status === "Success")
+    .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+  /* ================= DATE HELPERS ================= */
+  const formatDate = (dateString) => {
+    const d = new Date(dateString);
+    return d.toLocaleDateString("en-GB"); // Returns DD/MM/YYYY
+  };
+
+  const setQuickFilter = (type) => {
+    const now = new Date();
+    if (type === "today") {
+      const today = now.toISOString().split("T")[0];
+      setStartDate(today);
+      setEndDate(today);
+    } else if (type === "month") {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+        .toISOString()
+        .split("T")[0];
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+        .toISOString()
+        .split("T")[0];
+      setStartDate(firstDay);
+      setEndDate(lastDay);
+    } else {
+      setStartDate("");
+      setEndDate("");
+    }
+  };
+
   const getStatusStyle = (status) => {
     switch (status) {
       case "Success":
@@ -182,19 +236,94 @@ export default function AdminPayments() {
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-          <h2 className="text-3xl font-extrabold text-gray-800">
-            Payment Transactions
-          </h2>
+        {/* HEADER & TOTAL CARD */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
+          <div>
+            <h2 className="text-3xl font-extrabold text-gray-800">
+              Admin Dashboard
+            </h2>
+            <p className="text-gray-500">
+              Manage and track all member payments
+            </p>
+          </div>
 
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search Name, ID, or Order..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full md:w-80 pl-4 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white shadow-sm transition-all"
-            />
+          <div className="bg-white border-l-4 border-green-500 shadow-sm p-4 rounded-lg w-full lg:w-72">
+            <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">
+              Total Success Revenue
+            </p>
+            <p className="text-2xl font-black text-gray-900">
+              ₹{totalSuccessAmount.toLocaleString()}
+            </p>
+            <p className="text-xs text-green-600 mt-1">
+              Based on current filters
+            </p>
+          </div>
+        </div>
+
+        {/* FILTERS SECTION */}
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 space-y-4">
+          <div className="flex flex-wrap gap-4 items-end">
+            {/* Search */}
+            <div className="flex-1 min-w-[250px]">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
+                Search Records
+              </label>
+              <input
+                type="text"
+                placeholder="Name, ID, or Order..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            {/* Date From */}
+            <div className="w-full sm:w-auto">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
+                From
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            {/* Date To */}
+            <div className="w-full sm:w-auto">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
+                To
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Quick Filter Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setQuickFilter("today")}
+              className="px-3 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded font-bold transition"
+            >
+              TODAY
+            </button>
+            <button
+              onClick={() => setQuickFilter("month")}
+              className="px-3 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded font-bold transition"
+            >
+              THIS MONTH
+            </button>
+            <button
+              onClick={() => setQuickFilter("all")}
+              className="px-3 py-1 text-xs bg-red-50 text-red-600 hover:bg-red-100 rounded font-bold transition"
+            >
+              RESET
+            </button>
           </div>
         </div>
 
@@ -204,30 +333,30 @@ export default function AdminPayments() {
           </div>
         ) : (
           <>
-            {/* DESKTOP TABLE VIEW (Visible on md and up) */}
+            {/* DESKTOP TABLE */}
             <div className="hidden md:block overflow-hidden bg-white rounded-xl shadow-md border border-gray-200">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-800 text-white">
                   <tr>
-                    <th className="p-4 font-semibold uppercase text-sm">
+                    <th className="p-4 font-semibold uppercase text-xs">
                       S.No
                     </th>
-                    <th className="p-4 font-semibold uppercase text-sm">
+                    <th className="p-4 font-semibold uppercase text-xs">
                       Order ID
                     </th>
-                    <th className="p-4 font-semibold uppercase text-sm">
-                      Member
+                    <th className="p-4 font-semibold uppercase text-xs">
+                      Member Details
                     </th>
-                    <th className="p-4 font-semibold uppercase text-sm">
+                    <th className="p-4 font-semibold uppercase text-xs">
                       Plan
                     </th>
-                    <th className="p-4 font-semibold uppercase text-sm">
+                    <th className="p-4 font-semibold uppercase text-xs">
                       Amount
                     </th>
-                    <th className="p-4 font-semibold uppercase text-sm">
+                    <th className="p-4 font-semibold uppercase text-xs">
                       Status
                     </th>
-                    <th className="p-4 font-semibold uppercase text-sm">
+                    <th className="p-4 font-semibold uppercase text-xs text-right">
                       Date
                     </th>
                   </tr>
@@ -239,7 +368,7 @@ export default function AdminPayments() {
                         colSpan="7"
                         className="p-10 text-center text-gray-500"
                       >
-                        No records found
+                        No matching records found
                       </td>
                     </tr>
                   ) : (
@@ -248,21 +377,21 @@ export default function AdminPayments() {
                         key={p.order_id || i}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="p-4 text-gray-600 font-medium">
+                        <td className="p-4 text-gray-400 font-medium">
                           {i + 1}
                         </td>
-                        <td className="p-4 text-sm font-mono text-blue-600">
+                        <td className="p-4 text-xs font-mono text-blue-600">
                           {p.order_id}
                         </td>
                         <td className="p-4">
-                          <div className="font-bold text-gray-800">
+                          <div className="font-bold text-gray-800 leading-none">
                             {p.Name || "N/A"}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">
                             {p.MatriID || "No ID"}
                           </div>
                         </td>
-                        <td className="p-4 capitalize text-gray-700">
+                        <td className="p-4 capitalize text-sm text-gray-700 font-semibold">
                           {p.plan}
                         </td>
                         <td className="p-4 font-bold text-gray-900">
@@ -270,13 +399,13 @@ export default function AdminPayments() {
                         </td>
                         <td className="p-4">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyle(p.status)}`}
+                            className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase ${getStatusStyle(p.status)}`}
                           >
                             {p.status}
                           </span>
                         </td>
-                        <td className="p-4 text-sm text-gray-500">
-                          {new Date(p.created_at).toLocaleDateString()}
+                        <td className="p-4 text-sm text-gray-600 font-medium text-right">
+                          {formatDate(p.created_at)}
                         </td>
                       </tr>
                     ))
@@ -285,27 +414,27 @@ export default function AdminPayments() {
               </table>
             </div>
 
-            {/* MOBILE CARD VIEW (Visible on small screens) */}
+            {/* MOBILE CARD VIEW */}
             <div className="md:hidden space-y-4">
               {filtered.map((p, i) => (
                 <div
                   key={p.order_id || i}
                   className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative"
                 >
-                  <div className="absolute top-4 right-4 text-xs font-bold text-gray-300">
+                  <div className="absolute top-4 right-4 text-[10px] font-bold text-gray-300">
                     #{i + 1}
                   </div>
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <h3 className="font-bold text-lg text-gray-800">
+                      <h3 className="font-bold text-lg text-gray-800 leading-tight">
                         {p.Name || "Unknown"}
                       </h3>
-                      <p className="text-sm text-blue-600 font-mono">
+                      <p className="text-xs text-blue-600 font-mono">
                         {p.order_id}
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyle(p.status)}`}
+                      className={`px-2 py-1 rounded-full text-[10px] font-bold border uppercase ${getStatusStyle(p.status)}`}
                     >
                       {p.status}
                     </span>
@@ -313,33 +442,24 @@ export default function AdminPayments() {
 
                   <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100">
                     <div>
-                      <p className="text-xs text-gray-500 uppercase">Plan</p>
-                      <p className="font-medium capitalize">{p.plan}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase">Amount</p>
-                      <p className="font-bold text-green-600">₹{p.amount}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase">MatriID</p>
-                      <p className="font-medium text-gray-700">
-                        {p.MatriID || "-"}
+                      <p className="text-[10px] text-gray-400 uppercase font-bold">
+                        Plan / Amount
+                      </p>
+                      <p className="text-sm font-bold text-gray-700 capitalize">
+                        {p.plan} - ₹{p.amount}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase">Date</p>
-                      <p className="font-medium text-gray-700 text-sm">
-                        {new Date(p.created_at).toLocaleDateString()}
+                    <div className="text-right">
+                      <p className="text-[10px] text-gray-400 uppercase font-bold">
+                        Paid On
+                      </p>
+                      <p className="text-sm font-medium text-gray-700">
+                        {formatDate(p.created_at)}
                       </p>
                     </div>
                   </div>
                 </div>
               ))}
-              {filtered.length === 0 && (
-                <p className="text-center py-10 text-gray-500">
-                  No records found
-                </p>
-              )}
             </div>
           </>
         )}
