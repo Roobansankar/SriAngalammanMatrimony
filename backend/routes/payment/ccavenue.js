@@ -439,6 +439,163 @@
 
 
 
+// import express from "express";
+// import crypto from "crypto";
+// import qs from "querystring";
+// import db from "../../config/db.js";
+
+// const router = express.Router();
+
+// /* ================= LIVE CONFIG ================= */
+
+// const MERCHANT_ID = "4417415";
+// const ACCESS_CODE = "AVPV86ML93BN46VPNB";
+// const WORKING_KEY = "8D5201FF07BB00FF435BE2C64E38CF32";
+
+// /* ⚠️ IMPORTANT — Must match CCAvenue store URL exactly (no www if not registered) */
+// // const BASE_URL = "https://sriangalammanmatrimony.com";
+// const BASE_URL = "https://www.sriangalammanmatrimony.com";
+
+
+// const CCAVENUE_URL =
+//   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+
+// /* ================= ENCRYPT ================= */
+
+// function encrypt(plainText) {
+//   const iv = Buffer.alloc(16, 0);
+
+//   /* Official key derivation */
+//   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+
+//   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
+
+//   let encrypted = cipher.update(plainText, "utf8", "hex");
+
+//   encrypted += cipher.final("hex");
+
+//   return encrypted;
+// }
+
+// /* ================= DECRYPT ================= */
+
+// function decrypt(encText) {
+//   const iv = Buffer.alloc(16, 0);
+
+//   const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+
+//   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
+
+//   let decrypted = decipher.update(encText, "hex", "utf8");
+
+//   decrypted += decipher.final("utf8");
+
+//   return decrypted;
+// }
+
+// /* ================= INIT PAYMENT ================= */
+
+// router.post("/ccavenue-init", async (req, res) => {
+//   try {
+//     const { plan, email } = req.body;
+
+//     if (!plan || !email) {
+//       return res.status(400).json({
+//         message: "Missing plan or email",
+//       });
+//     }
+
+//     const orderId = "ORD" + Date.now();
+//     const amount = plan === "premium" ? "10.00" : "5.00";
+
+//     /* Save pending order */
+//     await db.promise().query(
+//       `INSERT INTO payments
+//        (order_id,email,plan,amount,status)
+//        VALUES (?,?,?,?,?)`,
+//       [orderId, email, plan, amount, "Pending"],
+//     );
+
+//     /* RAW payload string — DO NOT qs.stringify */
+//     const payload =
+//       `merchant_id=${MERCHANT_ID}` +
+//       `&order_id=${orderId}` +
+//       `&currency=INR` +
+//       `&amount=${amount}` +
+//       `&redirect_url=${BASE_URL}/api/payment/ccavenue-success` +
+//       `&cancel_url=${BASE_URL}/api/payment/ccavenue-cancel` +
+//       `&language=EN` +
+//       `&billing_email=${email}`;
+
+//     console.log("Payload:", payload);
+
+//     const encRequest = encrypt(payload);
+
+//     console.log("ENC REQUEST:", encRequest);
+
+//     res.json({
+//       ccUrl: CCAVENUE_URL,
+//       encRequest,
+//       accessCode: ACCESS_CODE,
+//     });
+//   } catch (err) {
+//     console.error(err);
+
+//     res.status(500).json({
+//       message: "Payment init failed",
+//     });
+//   }
+// });
+
+// /* ================= SUCCESS CALLBACK ================= */
+
+// router.post(
+//   "/ccavenue-success",
+//   express.urlencoded({ extended: false }),
+//   async (req, res) => {
+//     try {
+//       const decrypted = decrypt(req.body.encResp);
+
+//       const data = qs.parse(decrypted);
+
+//       console.log("CCA Response:", data);
+
+//       const orderId = data.order_id;
+
+//       if (data.order_status === "Success") {
+//         await db
+//           .promise()
+//           .query("UPDATE payments SET status='Success' WHERE order_id=?", [
+//             orderId,
+//           ]);
+
+//         return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
+//       }
+
+//       await db
+//         .promise()
+//         .query("UPDATE payments SET status='Failed' WHERE order_id=?", [
+//           orderId,
+//         ]);
+
+//       res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//     } catch (err) {
+//       console.error(err);
+
+//       res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+//     }
+//   },
+// );
+
+// /* ================= CANCEL ================= */
+
+// router.all("/ccavenue-cancel", (req, res) => {
+//   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+// });
+
+// export default router;
+
+
 import express from "express";
 import crypto from "crypto";
 import qs from "querystring";
@@ -452,26 +609,23 @@ const MERCHANT_ID = "4417415";
 const ACCESS_CODE = "AVPV86ML93BN46VPNB";
 const WORKING_KEY = "8D5201FF07BB00FF435BE2C64E38CF32";
 
-/* ⚠️ IMPORTANT — Must match CCAvenue store URL exactly (no www if not registered) */
-// const BASE_URL = "https://sriangalammanmatrimony.com";
-const BASE_URL = "https://www.sriangalammanmatrimony.com";
-
+const BASE_URL = "https://sriangalammanmatrimony.com";
 
 const CCAVENUE_URL =
   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
-/* ================= ENCRYPT ================= */
+/* ================= ENCRYPT (OFFICIAL LOGIC) ================= */
 
-function encrypt(plainText) {
+function encrypt(plainText, workingKey) {
+  const m = crypto.createHash("md5");
+  m.update(workingKey);
+  const key = m.digest(); // 16 bytes
+
   const iv = Buffer.alloc(16, 0);
-
-  /* Official key derivation */
-  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
 
   const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
 
   let encrypted = cipher.update(plainText, "utf8", "hex");
-
   encrypted += cipher.final("hex");
 
   return encrypted;
@@ -479,15 +633,16 @@ function encrypt(plainText) {
 
 /* ================= DECRYPT ================= */
 
-function decrypt(encText) {
-  const iv = Buffer.alloc(16, 0);
+function decrypt(encText, workingKey) {
+  const m = crypto.createHash("md5");
+  m.update(workingKey);
+  const key = m.digest();
 
-  const key = crypto.createHash("md5").update(WORKING_KEY).digest();
+  const iv = Buffer.alloc(16, 0);
 
   const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
 
   let decrypted = decipher.update(encText, "hex", "utf8");
-
   decrypted += decipher.final("utf8");
 
   return decrypted;
@@ -516,20 +671,28 @@ router.post("/ccavenue-init", async (req, res) => {
       [orderId, email, plan, amount, "Pending"],
     );
 
-    /* RAW payload string — DO NOT qs.stringify */
+    /* RAW STRING — NO qs.stringify */
     const payload =
-      `merchant_id=${MERCHANT_ID}` +
-      `&order_id=${orderId}` +
-      `&currency=INR` +
-      `&amount=${amount}` +
-      `&redirect_url=${BASE_URL}/api/payment/ccavenue-success` +
-      `&cancel_url=${BASE_URL}/api/payment/ccavenue-cancel` +
-      `&language=EN` +
-      `&billing_email=${email}`;
+      "merchant_id=" +
+      MERCHANT_ID +
+      "&order_id=" +
+      orderId +
+      "&currency=INR" +
+      "&amount=" +
+      amount +
+      "&redirect_url=" +
+      BASE_URL +
+      "/api/payment/ccavenue-success" +
+      "&cancel_url=" +
+      BASE_URL +
+      "/api/payment/ccavenue-cancel" +
+      "&language=EN" +
+      "&billing_email=" +
+      email;
 
     console.log("Payload:", payload);
 
-    const encRequest = encrypt(payload);
+    const encRequest = encrypt(payload, WORKING_KEY);
 
     console.log("ENC REQUEST:", encRequest);
 
@@ -543,30 +706,28 @@ router.post("/ccavenue-init", async (req, res) => {
 
     res.status(500).json({
       message: "Payment init failed",
+      error: err.message,
     });
   }
 });
 
-/* ================= SUCCESS CALLBACK ================= */
+/* ================= SUCCESS ================= */
 
 router.post(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
     try {
-      const decrypted = decrypt(req.body.encResp);
-
+      const decrypted = decrypt(req.body.encResp, WORKING_KEY);
       const data = qs.parse(decrypted);
 
       console.log("CCA Response:", data);
-
-      const orderId = data.order_id;
 
       if (data.order_status === "Success") {
         await db
           .promise()
           .query("UPDATE payments SET status='Success' WHERE order_id=?", [
-            orderId,
+            data.order_id,
           ]);
 
         return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
@@ -575,13 +736,12 @@ router.post(
       await db
         .promise()
         .query("UPDATE payments SET status='Failed' WHERE order_id=?", [
-          orderId,
+          data.order_id,
         ]);
 
       res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     } catch (err) {
       console.error(err);
-
       res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
     }
   },
