@@ -84,6 +84,7 @@ import LoggedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
 import PaymentSuccess from "./component/PaymentSuccess";
 import PaymentFailed from "./component/PaymentFailed";
+import AdminPayments from "./AdminDashboard/AdminPayments";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -143,6 +144,8 @@ function AppContent({ user, setUser }) {
             <Route path="manage-staff" element={<ManageStaff />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />
+            <Route path="payments" element={<AdminPayments />} />
+
             <Route path="contact-messages" element={<ContactMessages />} />
             <Route
               path="edit/about/:matriId"
@@ -208,7 +211,6 @@ function AppContent({ user, setUser }) {
           />
           <Route path="/payment-success" element={<PaymentSuccess />} />
 
-         
           <Route path="/payment-failed" element={<PaymentFailed />} />
 
           <Route path="/register/*" element={<MultiStepForm />} />

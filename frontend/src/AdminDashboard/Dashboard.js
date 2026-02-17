@@ -349,18 +349,43 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 const navLinks = [
   { name: "Dashboard", path: "/admin/homedashboard", icon: LayoutDashboard },
   { name: "New Users", path: "/admin/new-users", icon: UserCheck },
+  { name: "Payments", path: "/admin/payments", icon: CreditCard },
   { name: "Add Users", path: "/admin/add-users", icon: UserCircle },
   { name: "All Members", path: "/admin/all-members", icon: Users },
-  { name: "Plan Management", path: "/admin/plan-management", icon: CreditCard, adminOnly: true },
+  {
+    name: "Plan Management",
+    path: "/admin/plan-management",
+    icon: CreditCard,
+    adminOnly: true,
+  },
   { name: "Manage Members", path: "/admin/manage-members", icon: UserCog },
   { name: "Member BioData", path: "/admin/member-biodata", icon: FileText },
   { name: "Featured Profiles", path: "/admin/featured-profiles", icon: Users },
-  { name: "Premium Members", path: "/admin/premium-members", icon: Crown, adminOnly: true },
-  { name: "User Passwords", path: "/admin/user-passwords", icon: KeyRound, adminOnly: true },
-  { name: "Manage Staff", path: "/admin/manage-staff", icon: Shield, adminOnly: true },
+  {
+    name: "Premium Members",
+    path: "/admin/premium-members",
+    icon: Crown,
+    adminOnly: true,
+  },
+  {
+    name: "User Passwords",
+    path: "/admin/user-passwords",
+    icon: KeyRound,
+    adminOnly: true,
+  },
+  {
+    name: "Manage Staff",
+    path: "/admin/manage-staff",
+    icon: Shield,
+    adminOnly: true,
+  },
   { name: "Add Religion/Caste", path: "/admin/master-data", icon: BookOpen },
   { name: "Add City/State/Country", path: "/admin/location-data", icon: Globe },
-  { name: "Contact Messages", path: "/admin/contact-messages", icon: MessageSquare },
+  {
+    name: "Contact Messages",
+    path: "/admin/contact-messages",
+    icon: MessageSquare,
+  },
 ];
 
 export default function DashboardLayout() {
