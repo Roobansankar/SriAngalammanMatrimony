@@ -681,7 +681,7 @@ router.post("/ccavenue-init", async (req, res) => {
 
     /* Generate Order */
     const orderId = "ORD" + Date.now();
-    const amount = plan === "premium" ? "10.00" : "5.00";
+    const amount = plan === "premium" ? "2.00" : "1.00";
 
     /* Save Pending Order */
     await db.promise().query(

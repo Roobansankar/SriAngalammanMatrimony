@@ -570,7 +570,7 @@ const handlePayment = async () => {
           }`}
         >
           <h3>Basic</h3>
-          <p>₹5</p>
+          <p>₹1</p>
         </div>
 
         <div
@@ -580,7 +580,7 @@ const handlePayment = async () => {
           }`}
         >
           <h3>Premium</h3>
-          <p>₹10</p>
+          <p>₹2</p>
         </div>
       </div>
 
