@@ -780,9 +780,54 @@ router.post(
   },
 );
 
+
+
+/* =========================================================
+   🔎 VERIFY PAYMENT
+========================================================= */
+
+router.get("/verify", async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.json({ valid: false });
+    }
+
+    const [rows] = await db.promise().query(
+      `SELECT *
+       FROM payments
+       WHERE email = ?
+       AND status = 'Success'
+       ORDER BY id DESC
+       LIMIT 1`,
+      [email]
+    );
+
+    if (rows.length === 0) {
+      return res.json({ valid: false });
+    }
+
+    res.json({
+      valid: true,
+      plan: rows[0].plan,
+    });
+
+  } catch (err) {
+    console.error("Verify Error:", err);
+
+    res.status(500).json({
+      valid: false,
+    });
+  }
+});
+
+
+
 /* =========================================================
    ❌ CANCEL CALLBACK
 ========================================================= */
+
 
 router.all("/ccavenue-cancel", (req, res) => {
   res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
