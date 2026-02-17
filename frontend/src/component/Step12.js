@@ -230,10 +230,14 @@ export default function Step12({ prevStep, formData ,setUser }) {
 
      /* ================= VERIFY PAYMENT ================= */
 
-const verifyRes = await axios.get(
-  "/api/payment/verify",
-  { params: { email: f.email } }
-);
+// const verifyRes = await axios.get(
+//   "/api/payment/verify",
+//   { params: { email: f.email } }
+// );
+const verifyRes = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`, {
+  params: { email: f.email },
+});
+
 
 if (!verifyRes.data.valid) {
   alert("Payment not verified.");
