@@ -239,12 +239,10 @@ export default function AdminPayments() {
         {/* HEADER & TOTAL CARD */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
           <div>
-            <h2 className="text-3xl font-extrabold text-gray-800">
-              Admin Dashboard
-            </h2>
-            <p className="text-gray-500">
+          
+            <h2 className="text-gray-500">
               Manage and track all member payments
-            </p>
+            </h2>
           </div>
 
           <div className="bg-white border-l-4 border-green-500 shadow-sm p-4 rounded-lg w-full lg:w-72">
