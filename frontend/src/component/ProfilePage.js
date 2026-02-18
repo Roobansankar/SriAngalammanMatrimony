@@ -301,23 +301,6 @@ export default function ProfilePage({
     .join(":")
     .concat(tob.ap ? ` ${tob.ap}` : "");
 
-  // const getSafeProfilePhoto = (u) => {
-  //   const photo = u?.PhotoURL?.trim();
-
-  //   // ❌ invalid or backend default values
-  //   if (
-  //     !photo ||
-  //     photo === "null" ||
-  //     photo === "undefined" ||
-  //     photo.includes("no-photo") ||
-  //     photo.includes("nophoto")
-  //   ) {
-  //     return noPhoto;
-  //   }
-
-  //   return photo;
-  // };
-
   const getSafeProfilePhoto = (u) => {
     // Prefer Photo1 first
     const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
@@ -467,22 +450,6 @@ export default function ProfilePage({
               </div>
             </div>
           </div>
-
-          {/* <section className="bg-white rounded-xl p-6 mt-2">
-   
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {["image1", "image2", "image3", "image4"].map((slot) => (
-                <GalleryBox
-                  key={slot}
-                  slot={slot}
-                  image={user?.[slot]}
-                  matriId={user.MatriID}
-                  refreshUser={refreshUser}
-                />
-              ))}
-            </div>
-          </section> */}
 
           <section className="bg-white rounded-xl p-6 mt-2">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

@@ -8,6 +8,7 @@ export default function EditAbout({ adminMode = false }) {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const params = useParams();
+  const API_BASE = (process.env.REACT_APP_API_BASE || "").replace(/\/$/, "");
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("userData"));
@@ -47,7 +48,7 @@ export default function EditAbout({ adminMode = false }) {
       // 🟣 ADMIN MODE
       if (adminMode) {
         res = await axios.put(
-          `${process.env.REACT_APP_API_BASE}/api/auth/update/about`,
+          `${API_BASE}/api/auth/update/about`,
           {
             matriId: params.matriId,
             aboutus: about,
@@ -58,7 +59,7 @@ export default function EditAbout({ adminMode = false }) {
       // 🟢 USER MODE
       else {
         res = await axios.put(
-          `${process.env.REACT_APP_API_BASE}/api/auth/update/about`,
+          `${API_BASE}/api/auth/update/about`,
           {
             email,
             aboutus: about,
@@ -78,7 +79,7 @@ export default function EditAbout({ adminMode = false }) {
       }
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      alert(err?.response?.data?.message || "Server error");
     }
   };
 
