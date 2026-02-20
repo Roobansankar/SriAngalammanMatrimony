@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Step12({ prevStep, formData ,setUser }) {
@@ -9,6 +9,8 @@ export default function Step12({ prevStep, formData ,setUser }) {
   const [submitted, setSubmitted] = useState(false);
   const [matriId, setMatriId] = useState("");
   const [error, setError] = useState("");
+
+  
 
   const validateAdminSubmit = () => {
     if (!formData.fname || !formData.gender || !formData.mobile) {
