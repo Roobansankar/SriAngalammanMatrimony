@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
 
-// export default function ProfilePage({ setUser: setAppUser }) {
+
 export default function ProfilePage({
   setUser: setAppUser,
   adminMode = false,
@@ -67,8 +67,6 @@ export default function ProfilePage({
     window.scrollTo(0, 0);
   }, []);
 
-
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -126,7 +124,6 @@ export default function ProfilePage({
 
     fetchUser();
   }, [adminMode, adminMatriId, navigate, setAppUser]);
-
 
   const refreshUser = async () => {
     try {
@@ -301,27 +298,53 @@ export default function ProfilePage({
     .join(":")
     .concat(tob.ap ? ` ${tob.ap}` : "");
 
+  // const getSafeProfilePhoto = (u) => {
+  //   // Prefer Photo1 first
+  //   const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
+
+  //   if (
+  //     !photo ||
+  //     photo === "null" ||
+  //     photo === "undefined" ||
+  //     photo.includes("no-photo") ||
+  //     photo.includes("nophoto")
+  //   ) {
+  //     return noPhoto;
+  //   }
+
+  //   // If already full URL → return
+  //   if (photo.startsWith("http")) return photo;
+
+  //   // Otherwise build gallery path
+  //   return `${process.env.REACT_APP_API_BASE || ""}/gallery/${photo}`;
+
+  // };
+
+  // Add this fallback near your imports
+  const API_BASE = (
+    process.env.REACT_APP_API_BASE || "http://localhost:5000"
+  ).replace(/\/$/, "");
+
+  // Updated robust helper function
   const getSafeProfilePhoto = (u) => {
-    // Prefer Photo1 first
     const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
 
+    // Check for empty or default values
     if (
       !photo ||
       photo === "null" ||
       photo === "undefined" ||
-      photo.includes("no-photo") ||
       photo.includes("nophoto")
     ) {
-      return noPhoto;
+      return noPhoto; // This is your imported local image
     }
 
-    // If already full URL → return
+    // If already a full URL (external link), return it
     if (photo.startsWith("http")) return photo;
 
-    // Otherwise build gallery path
-    return `${process.env.REACT_APP_API_BASE || ""}/gallery/${photo}`;
+    // Otherwise, construct the full backend path
+    return `${API_BASE}/gallery/${photo}`;
   };
-
   const filledCount = profileFields.filter(hasValue).length;
   const totalCount = profileFields.length;
 
@@ -352,23 +375,22 @@ export default function ProfilePage({
             ></div>
 
             {/* Avatar (overlap) */}
+            {/* Avatar (overlap) */}
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
                 <div
                   onClick={() => setPreviewOpen(true)}
-                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark cursor-pointer hover:scale-105 transition-transform"
+                  className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark cursor-pointer hover:scale-105 transition-transform bg-gray-200"
                   style={{
-                    width: 128,
-                    height: 128,
-                    // backgroundImage: `url(${user?.PhotoURL || "/nophoto.jpg"})`,
-                    backgroundImage: `url(${getSafeProfilePhoto(user)})`,
-
+                    width: "128px",
+                    height: "128px",
+                    // ✅ Added quotes inside the url() function
+                    backgroundImage: `url("${getSafeProfilePhoto(user)}")`,
                     backgroundPosition: "top center",
                   }}
                 />
 
-                {/* blob store   base 64 */}
-                {/* <Link to="/edit/photo"> */}
+                {/* Edit Button */}
                 <Link
                   to={
                     adminMode
@@ -376,10 +398,7 @@ export default function ProfilePage({
                       : "/edit/photo"
                   }
                 >
-                  <button
-                    className="absolute bottom-1 right-1 flex items-center justify-center size-8 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors p-2"
-                    aria-label="Change photo"
-                  >
+                  <button className="absolute bottom-1 right-1 flex items-center justify-center size-8 rounded-full bg-black/50 text-white hover:bg-black/70 p-2">
                     <span className="material-symbols-outlined text-base">
                       photo_camera
                     </span>
@@ -389,7 +408,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          {/* Header content: name, id, actions */}
+        
           {/* Header + Profile Completion */}
           <div className="pt-20 px-8 pb-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">

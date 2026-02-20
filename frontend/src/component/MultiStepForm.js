@@ -278,28 +278,14 @@ export default function MultiStepForm() {
     }
   });
 
-  // const getSerializableData = (data) => {
-  //   const clone = {};
-  //   for (const key of Object.keys(data)) {
-  //     const val = data[key];
-  //     if (key === "password" || key === "otp") continue;
-  //     if (val instanceof File || val instanceof Blob) continue;
-  //     if (typeof val === "function") continue;
-  //     if (val && typeof val === "object" && val.nodeType) continue;
-  //     clone[key] = val;
-  //   }
-  //   return clone;
-  // };
-
+ 
   const getSerializableData = (data) => {
     const clone = {};
 
     for (const key of Object.keys(data)) {
       const val = data[key];
 
-      // ❌ REMOVE THIS LINE
-      // if (key === "password" || key === "otp") continue;
-
+     
       if (val instanceof File || val instanceof Blob) continue;
       if (typeof val === "function") continue;
       if (val && typeof val === "object" && val.nodeType) continue;

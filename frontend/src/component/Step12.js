@@ -21,6 +21,16 @@ export default function Step12({ prevStep, formData ,setUser }) {
     return null;
   };
 
+  useEffect(() => {
+    if (!formData?.mobile) {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        console.log("Rehydrated in Step12:", parsed);
+      }
+    }
+  }, []);
+
   const handleSubmit = async () => {
     const err = validateAdminSubmit();
     if (err) {

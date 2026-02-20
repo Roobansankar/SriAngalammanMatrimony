@@ -488,6 +488,13 @@ export default function Step11Payment({ formData, setFormData }) {
       setMessage("Payment Successful ✅ Redirecting...");
 
       setTimeout(() => {
+        // navigate("/register/step/7");
+        const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+        if (raw) {
+          setFormData(JSON.parse(raw));
+        }
+
         navigate("/register/step/7");
       }, 1500);
     }
@@ -501,6 +508,57 @@ export default function Step11Payment({ formData, setFormData }) {
   /* ================= HANDLE PAYMENT ================= */
 
 
+// const handlePayment = async () => {
+//   if (!plan) {
+//     alert("Please select a plan");
+//     return;
+//   }
+
+//   try {
+//     setLoading(true);
+
+//     /* Save plan */
+//     setFormData((prev) => ({ ...prev, plan }));
+
+//     const res = await axios.post(
+//       `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
+//       {
+//         plan,
+//         email: formData.email,
+//       },
+//     );
+
+//     console.log("CCA URL:", res.data.ccUrl);
+
+//     /* Create form */
+//     const form = document.createElement("form");
+//     form.method = "POST";
+//     form.action = res.data.ccUrl;
+
+//     /* encRequest */
+//     const encInput = document.createElement("input");
+//     encInput.type = "hidden";
+//     encInput.name = "encRequest";
+//     encInput.value = res.data.encRequest;
+
+//     /* access_code */
+//     const accessInput = document.createElement("input");
+//     accessInput.type = "hidden";
+//     accessInput.name = "access_code";
+//     accessInput.value = res.data.accessCode;
+
+//     form.appendChild(encInput);
+//     form.appendChild(accessInput);
+
+//     document.body.appendChild(form);
+//     form.submit();
+//   } catch (err) {
+//     console.error(err);
+//     alert("Payment init failed");
+//     setLoading(false);
+//   }
+// };
+
 const handlePayment = async () => {
   if (!plan) {
     alert("Please select a plan");
@@ -510,8 +568,16 @@ const handlePayment = async () => {
   try {
     setLoading(true);
 
-    /* Save plan */
-    setFormData((prev) => ({ ...prev, plan }));
+    /* ✅ Merge plan with full form data */
+    const updatedData = { ...formData, plan };
+
+    /* ✅ Save again to localStorage BEFORE redirect */
+    localStorage.setItem(
+      "multiStepRegistration_form_v1",
+      JSON.stringify(updatedData),
+    );
+
+    setFormData(updatedData);
 
     const res = await axios.post(
       `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
@@ -521,20 +587,16 @@ const handlePayment = async () => {
       },
     );
 
-    console.log("CCA URL:", res.data.ccUrl);
-
-    /* Create form */
+    /* Redirect form submit */
     const form = document.createElement("form");
     form.method = "POST";
     form.action = res.data.ccUrl;
 
-    /* encRequest */
     const encInput = document.createElement("input");
     encInput.type = "hidden";
     encInput.name = "encRequest";
     encInput.value = res.data.encRequest;
 
-    /* access_code */
     const accessInput = document.createElement("input");
     accessInput.type = "hidden";
     accessInput.name = "access_code";
@@ -551,7 +613,6 @@ const handlePayment = async () => {
     setLoading(false);
   }
 };
-
   /* ================= UI ================= */
 
   return (

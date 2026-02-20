@@ -18,27 +18,6 @@ export default function EditAbout({ adminMode = false }) {
     }
   }, []);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const res = await axios.put(`${process.env.REACT_APP_API_BASE || ""}/api/auth/update/about`, {
-  //       email,
-  //       aboutus: about,
-  //     });
-
-  //     if (res.data.success) {
-  //       alert("About Me updated successfully!");
-  //       navigate("/profile");
-  //     } else {
-  //       alert("Update failed");
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Server error");
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
