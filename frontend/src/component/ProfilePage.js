@@ -308,23 +308,44 @@ export default function ProfilePage({
   ).replace(/\/$/, "");
 
   // Updated robust helper function
-  const getSafeProfilePhoto = (u) => {
-    const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
+  // const getSafeProfilePhoto = (u) => {
+  //   const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
 
-    // Check for empty or default values
-    if (
-      !photo ||
-      photo === "null" ||
-      photo === "undefined" ||
-      photo.includes("nophoto")
-    ) {
-      return noPhoto; // This is your imported local image
+  //   // Check for empty or default values
+  //   if (
+  //     !photo ||
+  //     photo === "null" ||
+  //     photo === "undefined" ||
+  //     photo.includes("nophoto")
+  //   ) {
+  //     return noPhoto; // This is your imported local image
+  //   }
+
+  //   // If already a full URL (external link), return it
+  //   if (photo.startsWith("http")) return photo;
+
+  //   // Otherwise, construct the full backend path
+  //   return `${API_BASE}/gallery/${photo}`;
+  // };
+
+  const getSafeProfilePhoto = (u) => {
+    const photo = u?.PhotoURL || u?.Photo1 || u?.photo1 || "";
+
+    if (!photo || photo === "null" || photo === "undefined") {
+      return noPhoto;
     }
 
-    // If already a full URL (external link), return it
-    if (photo.startsWith("http")) return photo;
+    // If already full URL → return directly
+    if (photo.startsWith("http")) {
+      return photo;
+    }
 
-    // Otherwise, construct the full backend path
+    // If starts with /gallery → prepend only base
+    if (photo.startsWith("/")) {
+      return `${API_BASE}${photo}`;
+    }
+
+    // Otherwise assume it's filename
     return `${API_BASE}/gallery/${photo}`;
   };
   const filledCount = profileFields.filter(hasValue).length;
@@ -366,7 +387,8 @@ export default function ProfilePage({
                     width: "128px",
                     height: "128px",
                     // ✅ Added quotes inside the url() function
-                    backgroundImage: `url("${getSafeProfilePhoto(user)}")`,
+                    // backgroundImage: `url("${getSafeProfilePhoto(user)}")`,
+                    backgroundImage: `url(${getSafeProfilePhoto(user)})`,
                     backgroundPosition: "top center",
                   }}
                 />
