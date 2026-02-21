@@ -480,31 +480,6 @@ export default function Step11Payment({ formData, setFormData }) {
 
   /* ================= CHECK PAYMENT RESULT ================= */
 
-  // useEffect(() => {
-  //   const params = new URLSearchParams(location.search);
-  //   const status = params.get("payment");
-
-  //   if (status === "success") {
-  //     setMessage("Payment Successful ✅ Redirecting...");
-
-  //     setTimeout(() => {
-  //       // navigate("/register/step/7");
-  //       const raw = localStorage.getItem("multiStepRegistration_form_v1");
-
-  //       if (raw) {
-  //         setFormData(JSON.parse(raw));
-  //       }
-
-  //       navigate("/register/step/7");
-  //     }, 1500);
-  //   }
-
-  //   if (status === "failed") {
-  //     setMessage("Payment Failed ❌ Please try again.");
-  //     setLoading(false);
-  //   }
-  // }, [location.search, navigate]);
-
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
