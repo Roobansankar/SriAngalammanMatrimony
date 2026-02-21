@@ -480,84 +480,61 @@ export default function Step11Payment({ formData, setFormData }) {
 
   /* ================= CHECK PAYMENT RESULT ================= */
 
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const status = params.get("payment");
+
+  //   if (status === "success") {
+  //     setMessage("Payment Successful ✅ Redirecting...");
+
+  //     setTimeout(() => {
+  //       // navigate("/register/step/7");
+  //       const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+  //       if (raw) {
+  //         setFormData(JSON.parse(raw));
+  //       }
+
+  //       navigate("/register/step/7");
+  //     }, 1500);
+  //   }
+
+  //   if (status === "failed") {
+  //     setMessage("Payment Failed ❌ Please try again.");
+  //     setLoading(false);
+  //   }
+  // }, [location.search, navigate]);
+
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const status = params.get("payment");
 
+    if (!status) return;
+
     if (status === "success") {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setFormData(parsed);
+      }
+
       setMessage("Payment Successful ✅ Redirecting...");
 
       setTimeout(() => {
-        // navigate("/register/step/7");
-        const raw = localStorage.getItem("multiStepRegistration_form_v1");
-
-        if (raw) {
-          setFormData(JSON.parse(raw));
-        }
-
-        navigate("/register/step/7");
-      }, 1500);
+        navigate("/register/step/7", { replace: true });
+      }, 1000);
     }
 
     if (status === "failed") {
       setMessage("Payment Failed ❌ Please try again.");
       setLoading(false);
     }
-  }, [location.search, navigate]);
+  }, [location.search, navigate, setFormData]);
 
   /* ================= HANDLE PAYMENT ================= */
 
-
-// const handlePayment = async () => {
-//   if (!plan) {
-//     alert("Please select a plan");
-//     return;
-//   }
-
-//   try {
-//     setLoading(true);
-
-//     /* Save plan */
-//     setFormData((prev) => ({ ...prev, plan }));
-
-//     const res = await axios.post(
-//       `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
-//       {
-//         plan,
-//         email: formData.email,
-//       },
-//     );
-
-//     console.log("CCA URL:", res.data.ccUrl);
-
-//     /* Create form */
-//     const form = document.createElement("form");
-//     form.method = "POST";
-//     form.action = res.data.ccUrl;
-
-//     /* encRequest */
-//     const encInput = document.createElement("input");
-//     encInput.type = "hidden";
-//     encInput.name = "encRequest";
-//     encInput.value = res.data.encRequest;
-
-//     /* access_code */
-//     const accessInput = document.createElement("input");
-//     accessInput.type = "hidden";
-//     accessInput.name = "access_code";
-//     accessInput.value = res.data.accessCode;
-
-//     form.appendChild(encInput);
-//     form.appendChild(accessInput);
-
-//     document.body.appendChild(form);
-//     form.submit();
-//   } catch (err) {
-//     console.error(err);
-//     alert("Payment init failed");
-//     setLoading(false);
-//   }
-// };
 
 const handlePayment = async () => {
   if (!plan) {
@@ -647,10 +624,18 @@ const handlePayment = async () => {
         </div>
       </div>
 
-      <button
+      {/* <button
         onClick={handlePayment}
         disabled={loading}
         className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded"
+      >
+        {loading ? "Redirecting..." : "Pay Now"}
+      </button> */}
+
+      <button
+        onClick={handlePayment}
+        disabled={loading || plan === null}
+        className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded disabled:opacity-50"
       >
         {loading ? "Redirecting..." : "Pay Now"}
       </button>

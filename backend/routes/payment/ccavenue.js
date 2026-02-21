@@ -166,7 +166,8 @@ router.post(
             orderId,
           ]);
 
-        return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
+        // return res.redirect(`${BASE_URL}/register/step/6?payment=success`);
+        return res.redirect(303, `${BASE_URL}/register/step/6?payment=success`);
       }
 
       await db
@@ -175,7 +176,8 @@ router.post(
           orderId,
         ]);
 
-      res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+      // res.redirect(`${BASE_URL}/register/step/6?payment=failed`);
+      res.redirect(303, `${BASE_URL}/register/step/6?payment=failed`);
     } catch (err) {
       console.error("Success Callback Error:", err);
 

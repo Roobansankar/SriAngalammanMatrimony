@@ -242,6 +242,8 @@
 // }
 
 
+
+
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
@@ -336,9 +338,7 @@ export default function MultiStepForm() {
           <span className="text-sm font-semibold text-rose-700">
             Step {currentStep} of {TOTAL_STEPS}
           </span>
-          <span className="text-sm text-gray-600">
-            Registration Progress
-          </span>
+          <span className="text-sm text-gray-600">Registration Progress</span>
         </div>
 
         <div className="w-full bg-rose-200 rounded-full h-2">
@@ -356,7 +356,9 @@ export default function MultiStepForm() {
           {/* Step 1 */}
           <Route
             path="step/1"
-            element={<Step1 nextStep={nextStepFactory(2)} formData={formData} />}
+            element={
+              <Step1 nextStep={nextStepFactory(2)} formData={formData} />
+            }
           />
 
           {/* Step 2 */}
@@ -408,7 +410,6 @@ export default function MultiStepForm() {
           />
 
           {/* Step 6 – Payment */}
-        
 
           <Route
             path="step/6"
@@ -429,6 +430,7 @@ export default function MultiStepForm() {
               <Step12
                 prevStep={prevStepFactory(6)}
                 formData={formData}
+                setFormData={setFormData}
               />
             }
           />

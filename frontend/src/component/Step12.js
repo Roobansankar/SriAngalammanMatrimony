@@ -3,17 +3,35 @@ import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Step12({ prevStep, formData ,setUser }) {
+// export default function Step12({ prevStep, formData ,setUser }) {
+export default function Step12({ prevStep, formData, setFormData, setUser }) {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [matriId, setMatriId] = useState("");
   const [error, setError] = useState("");
 
-  
+  /* ================= RESTORE FORM DATA AFTER PAYMENT REDIRECT ================= */
+
+  useEffect(() => {
+    if (!formData?.mobile) {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+      if (raw) {
+        const parsed = JSON.parse(raw);
+
+        console.log("Restored FormData in Step12:", parsed);
+
+        if (setFormData) {
+          setFormData(parsed);
+        }
+      }
+    }
+  }, [formData, setFormData]);
 
   const validateAdminSubmit = () => {
-    if (!formData.fname || !formData.gender || !formData.mobile) {
+    // if (!formData.fname || !formData.gender || !formData.mobile) {
+    if (!formData?.fname || !formData?.gender || !formData?.mobile) {
       return "Basic details missing";
     }
 
@@ -240,27 +258,28 @@ export default function Step12({ prevStep, formData ,setUser }) {
    STEP 11 — SECURE PAYMENT VERIFICATION
 ------------------------------------------------ */
 
-     /* ================= VERIFY PAYMENT ================= */
+      /* ================= VERIFY PAYMENT ================= */
 
-// const verifyRes = await axios.get(
-//   "/api/payment/verify",
-//   { params: { email: f.email } }
-// );
-const verifyRes = await axios.get(`${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`, {
-  params: { email: f.email },
-});
+      // const verifyRes = await axios.get(
+      //   "/api/payment/verify",
+      //   { params: { email: f.email } }
+      // );
+      const verifyRes = await axios.get(
+        `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
+        {
+          params: { email: f.email },
+        },
+      );
 
+      if (!verifyRes.data.valid) {
+        alert("Payment not verified.");
+        navigate("/register/step/6");
+        return;
+      }
 
-if (!verifyRes.data.valid) {
-  alert("Payment not verified.");
-  navigate("/register/step/6");
-  return;
-}
-
-/* Add verified plan */
-add("plan", verifyRes.data.plan);
-add("paymentDone", "1");
-
+      /* Add verified plan */
+      add("plan", verifyRes.data.plan);
+      add("paymentDone", "1");
 
       /* ------------------------------------------------
          FILE UPLOAD — HOROSCOPE FILE (correct Multer field)
@@ -314,15 +333,12 @@ add("paymentDone", "1");
         err?.response?.data?.sql ||
           err?.response?.data?.message ||
           err?.message ||
-          "Something went wrong. Please try again."
+          "Something went wrong. Please try again.",
       );
     } finally {
       setSubmitting(false);
     }
   };
-
-
-  
 
   /* ------------------------------------------------
      SUCCESS SCREEN
