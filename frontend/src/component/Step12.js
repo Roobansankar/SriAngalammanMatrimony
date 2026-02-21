@@ -11,6 +11,21 @@ export default function Step12({ prevStep, formData, setFormData, setUser }) {
   const [matriId, setMatriId] = useState("");
   const [error, setError] = useState("");
 
+
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const handleBack = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.addEventListener("popstate", handleBack);
+
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, []);
+
   /* ================= RESTORE FORM DATA AFTER PAYMENT REDIRECT ================= */
 
   useEffect(() => {

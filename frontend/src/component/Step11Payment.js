@@ -479,92 +479,123 @@ export default function Step11Payment({ formData, setFormData }) {
   const navigate = useNavigate();
 
   /* ================= CHECK PAYMENT RESULT ================= */
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const status = params.get("payment");
 
+  if (!status) return;
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const status = params.get("payment");
+  if (status === "success") {
+    const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-    if (!status) return;
-
-    if (status === "success") {
-      const raw = localStorage.getItem("multiStepRegistration_form_v1");
-
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setFormData(parsed);
-      }
-
-      setMessage("Payment Successful ✅ Redirecting...");
-
-      setTimeout(() => {
-        navigate("/register/step/7", { replace: true });
-      }, 1000);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      setFormData(parsed);
     }
 
-    if (status === "failed") {
-      setMessage("Payment Failed ❌ Please try again.");
-      setLoading(false);
-    }
-  }, [location.search, navigate, setFormData]);
+    setMessage("Payment Successful ✅ Redirecting...");
 
-  /* ================= HANDLE PAYMENT ================= */
+    /* 🔥 REPLACE HISTORY COMPLETELY */
+    window.history.replaceState(null, "", "/register/step/7");
 
-
-const handlePayment = async () => {
-  if (!plan) {
-    alert("Please select a plan");
-    return;
+    setTimeout(() => {
+      navigate("/register/step/7", { replace: true });
+    }, 500);
   }
 
-  try {
-    setLoading(true);
-
-    /* ✅ Merge plan with full form data */
-    const updatedData = { ...formData, plan };
-
-    /* ✅ Save again to localStorage BEFORE redirect */
-    localStorage.setItem(
-      "multiStepRegistration_form_v1",
-      JSON.stringify(updatedData),
-    );
-
-    setFormData(updatedData);
-
-    const res = await axios.post(
-      `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
-      {
-        plan,
-        email: formData.email,
-      },
-    );
-
-    /* Redirect form submit */
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = res.data.ccUrl;
-
-    const encInput = document.createElement("input");
-    encInput.type = "hidden";
-    encInput.name = "encRequest";
-    encInput.value = res.data.encRequest;
-
-    const accessInput = document.createElement("input");
-    accessInput.type = "hidden";
-    accessInput.name = "access_code";
-    accessInput.value = res.data.accessCode;
-
-    form.appendChild(encInput);
-    form.appendChild(accessInput);
-
-    document.body.appendChild(form);
-    form.submit();
-  } catch (err) {
-    console.error(err);
-    alert("Payment init failed");
+  if (status === "failed") {
+    setMessage("Payment Failed ❌ Please try again.");
     setLoading(false);
   }
-};
+}, [location.search, navigate, setFormData]);
+  /* ================= HANDLE PAYMENT ================= */
+
+  /* ================= CHECK IF PAYMENT ALREADY DONE ================= */
+
+  useEffect(() => {
+    async function checkPayment() {
+      if (!formData?.email) return;
+
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
+          {
+            params: { email: formData.email },
+          },
+        );
+
+        if (res.data.valid) {
+          setMessage("Payment already completed ✅ Redirecting...");
+
+          setTimeout(() => {
+            navigate("/register/step/7", { replace: true });
+          }, 1000);
+        }
+      } catch (err) {
+        console.error("Payment check failed", err);
+      }
+    }
+
+    checkPayment();
+  }, [formData?.email, navigate]);
+
+  const handlePayment = async () => {
+    if (!plan) {
+      alert("Please select a plan");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      /* ✅ Merge plan with full form data */
+      const updatedData = { ...formData, plan };
+
+      /* ✅ Save again to localStorage BEFORE redirect */
+      localStorage.setItem(
+        "multiStepRegistration_form_v1",
+        JSON.stringify(updatedData),
+      );
+
+      setFormData(updatedData);
+
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
+        {
+          plan,
+          email: formData.email,
+        },
+      );
+
+      /* Redirect form submit */
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = res.data.ccUrl;
+
+      const encInput = document.createElement("input");
+      encInput.type = "hidden";
+      encInput.name = "encRequest";
+      encInput.value = res.data.encRequest;
+
+      const accessInput = document.createElement("input");
+      accessInput.type = "hidden";
+      accessInput.name = "access_code";
+      accessInput.value = res.data.accessCode;
+
+      form.appendChild(encInput);
+      form.appendChild(accessInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (err) {
+      if (err.response?.data?.message) {
+        alert(err.response.data.message);
+      } else {
+        alert("Payment init failed");
+      }
+      setLoading(false);
+    }
+  };
   /* ================= UI ================= */
 
   return (
@@ -609,7 +640,7 @@ const handlePayment = async () => {
 
       <button
         onClick={handlePayment}
-        disabled={loading || plan === null}
+        disabled={loading || plan === null || message.includes("already")}
         className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded disabled:opacity-50"
       >
         {loading ? "Redirecting..." : "Pay Now"}
