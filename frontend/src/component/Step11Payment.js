@@ -524,13 +524,12 @@ useEffect(() => {
           },
         );
 
-        if (res.data.valid) {
-          setMessage("Payment already completed ✅ Redirecting...");
-
-          setTimeout(() => {
-            navigate("/register/step/7", { replace: true });
-          }, 1000);
-        }
+     if (res.data.valid) {
+       setMessage("Payment already completed ✅ Redirecting...");
+       navigate("/register/step/7", { replace: true });
+     } else if (res.data.pending) {
+       setMessage("Payment already initiated ⏳ Continue payment");
+     }
       } catch (err) {
         console.error("Payment check failed", err);
       }
@@ -640,7 +639,8 @@ useEffect(() => {
 
       <button
         onClick={handlePayment}
-        disabled={loading || plan === null || message.includes("already")}
+        // disabled={loading || plan === null || message.includes("already")}
+        disabled={loading || plan === null || message.includes("completed")}
         className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded disabled:opacity-50"
       >
         {loading ? "Redirecting..." : "Pay Now"}

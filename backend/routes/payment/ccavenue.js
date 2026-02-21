@@ -102,17 +102,44 @@ router.post("/ccavenue-init", async (req, res) => {
 
     const [pending] = await db.promise().query(
       `SELECT * FROM payments
-       WHERE email=? AND status='Pending'
+      WHERE email=? 
+AND status='Pending'
+AND created_at > NOW() - INTERVAL 30 MINUTE
        LIMIT 1`,
       [email],
     );
 
-    if (pending.length > 0) {
-      return res.status(400).json({
-        message: "Payment already initiated",
-      });
-    }
+   if (pending.length > 0) {
+     /* Reuse same order instead of blocking */
+     const orderId = pending[0].order_id;
+     const amount = pending[0].amount;
 
+     const payload =
+       "merchant_id=" +
+       MERCHANT_ID +
+       "&order_id=" +
+       orderId +
+       "&currency=INR" +
+       "&amount=" +
+       amount +
+       "&redirect_url=" +
+       BASE_URL +
+       "/api/payment/ccavenue-success" +
+       "&cancel_url=" +
+       BASE_URL +
+       "/api/payment/ccavenue-cancel" +
+       "&language=EN" +
+       "&billing_email=" +
+       email;
+
+     const encRequest = encrypt(payload);
+
+     return res.json({
+       ccUrl: CCAVENUE_URL,
+       encRequest,
+       accessCode: ACCESS_CODE,
+     });
+   }
     /* ================= CREATE NEW ORDER ================= */
 
     const orderId = "ORD" + Date.now();
@@ -235,25 +262,43 @@ router.get("/verify", async (req, res) => {
       return res.json({ valid: false });
     }
 
-    const [rows] = await db.promise().query(
-      `SELECT *
-       FROM payments
-       WHERE email = ?
-       AND status = 'Success'
+    /* ---------- SUCCESS ---------- */
+    const [success] = await db.promise().query(
+      `SELECT * FROM payments
+       WHERE email=? AND status='Success'
        ORDER BY id DESC
        LIMIT 1`,
-      [email]
+      [email],
     );
 
-    if (rows.length === 0) {
-      return res.json({ valid: false });
+    if (success.length > 0) {
+      return res.json({
+        valid: true,
+        plan: success[0].plan,
+      });
     }
 
-    res.json({
-      valid: true,
-      plan: rows[0].plan,
-    });
+    /* ---------- PENDING ---------- */
+    const [pending] = await db.promise().query(
+      `SELECT * FROM payments
+       WHERE email=? AND status='Pending'
+       ORDER BY id DESC
+       LIMIT 1`,
+      [email],
+    );
 
+    if (pending.length > 0) {
+      return res.json({
+        valid: false,
+        pending: true,
+      });
+    }
+
+    /* ---------- NONE ---------- */
+    return res.json({
+      valid: false,
+      pending: false,
+    });
   } catch (err) {
     console.error("Verify Error:", err);
 
