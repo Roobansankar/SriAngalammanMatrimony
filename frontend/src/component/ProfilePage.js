@@ -4,7 +4,9 @@ import { useEffect, useState, useSearchParams } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
-
+const API_BASE = (
+  process.env.REACT_APP_API_BASE || "https://sriangalammanmatrimony.com/"
+).replace(/\/$/, "");
 
 export default function ProfilePage({
   setUser: setAppUser,
@@ -298,27 +300,7 @@ export default function ProfilePage({
     .join(":")
     .concat(tob.ap ? ` ${tob.ap}` : "");
 
-  // const getSafeProfilePhoto = (u) => {
-  //   // Prefer Photo1 first
-  //   const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
-
-  //   if (
-  //     !photo ||
-  //     photo === "null" ||
-  //     photo === "undefined" ||
-  //     photo.includes("no-photo") ||
-  //     photo.includes("nophoto")
-  //   ) {
-  //     return noPhoto;
-  //   }
-
-  //   // If already full URL → return
-  //   if (photo.startsWith("http")) return photo;
-
-  //   // Otherwise build gallery path
-  //   return `${process.env.REACT_APP_API_BASE || ""}/gallery/${photo}`;
-
-  // };
+  
 
   // Add this fallback near your imports
   const API_BASE = (
@@ -375,7 +357,6 @@ export default function ProfilePage({
             ></div>
 
             {/* Avatar (overlap) */}
-            {/* Avatar (overlap) */}
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
                 <div
@@ -408,7 +389,6 @@ export default function ProfilePage({
             </div>
           </div>
 
-        
           {/* Header + Profile Completion */}
           <div className="pt-20 px-8 pb-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -473,12 +453,21 @@ export default function ProfilePage({
           <section className="bg-white rounded-xl p-6 mt-2">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {["image1", "image2", "image3", "image4"].map((slot) => (
+                // <GalleryBox
+                //   key={slot}
+                //   slot={slot}
+                //   image={user?.[slot]}
+                //   matriId={user.MatriID}
+                //   refreshUser={refreshUser}
+                // />
+
                 <GalleryBox
                   key={slot}
                   slot={slot}
                   image={user?.[slot]}
                   matriId={user.MatriID}
                   refreshUser={refreshUser}
+                  apiBase={API_BASE}
                 />
               ))}
             </div>
@@ -1154,8 +1143,8 @@ function Cell({ value }) {
 
 
 
-function GalleryBox({ slot, image, matriId, refreshUser }) {
-
+// function GalleryBox({ slot, image, matriId, refreshUser }) {
+function GalleryBox({ slot, image, matriId, refreshUser, apiBase }) {
   const uploadPhoto = async (file) => {
     try {
       if (!file) return;
@@ -1166,7 +1155,7 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
 
       await axios.post(
         `${process.env.REACT_APP_API_BASE || ""}/api/gallery/upload`,
-        formData
+        formData,
       );
 
       refreshUser();
@@ -1183,7 +1172,7 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
         {
           matriId,
           slot,
-        }
+        },
       );
 
       refreshUser();
@@ -1195,11 +1184,12 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
 
   return (
     <div className="relative border rounded-xl overflow-hidden group bg-white shadow-sm hover:shadow-md transition">
-
       {/* IMAGE / PLACEHOLDER */}
       {image ? (
         <img
-          src={`${process.env.REACT_APP_API_BASE || ""}/gallery/${image}`}
+          // src={`${process.env.REACT_APP_API_BASE || ""}/gallery/${image}`}
+          // src={`${API_BASE}/gallery/${image}`}
+          src={`${apiBase}/gallery/${image}`}
           alt={slot}
           className="w-full aspect-[3/4] object-cover object-top"
         />
@@ -1219,7 +1209,6 @@ function GalleryBox({ slot, image, matriId, refreshUser }) {
       {/* ACTION BUTTONS */}
       {image && (
         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
-
           {/* UPDATE */}
           <label className="bg-black/70 text-white px-2 py-1 rounded-md cursor-pointer text-sm">
             ✏️
