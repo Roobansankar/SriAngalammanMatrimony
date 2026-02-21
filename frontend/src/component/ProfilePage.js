@@ -4,10 +4,9 @@ import { useEffect, useState, useSearchParams } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
-// const API_BASE = (
-//   process.env.REACT_APP_API_BASE || "http://localhost:5000"
-// ).replace(/\/$/, "");
-const API_BASE = process.env.REACT_APP_API_BASE.replace(/\/$/, "");
+const API_BASE = (
+  process.env.REACT_APP_API_BASE || "http://localhost:5000"
+).replace(/\/$/, "");
 
 export default function ProfilePage({
   setUser: setAppUser,
@@ -303,7 +302,10 @@ export default function ProfilePage({
 
   
 
-
+  // Add this fallback near your imports
+  const API_BASE = (
+    process.env.REACT_APP_API_BASE || "http://localhost:5000"
+  ).replace(/\/$/, "");
 
   // Updated robust helper function
   const getSafeProfilePhoto = (u) => {
@@ -1187,7 +1189,7 @@ function GalleryBox({ slot, image, matriId, refreshUser, apiBase }) {
         <img
           // src={`${process.env.REACT_APP_API_BASE || ""}/gallery/${image}`}
           // src={`${API_BASE}/gallery/${image}`}
-          src={`${API_BASE}/gallery/${image}`}
+          src={`${apiBase}/gallery/${image}`}
           alt={slot}
           className="w-full aspect-[3/4] object-cover object-top"
         />
