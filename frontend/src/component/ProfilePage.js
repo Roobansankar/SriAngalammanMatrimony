@@ -779,7 +779,7 @@ export default function ProfilePage({
 
               {/* Annual Income */}
               <div>
-                <div className="text-sm text-gray-500">Annual Income</div>
+                <div className="text-sm text-gray-500">Monthly Income</div>
                 <div className="font-medium">
                   {user.Annualincome
                     ? `${user.income_in || "Rs"} ${user.Annualincome}`

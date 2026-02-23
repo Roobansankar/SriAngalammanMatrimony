@@ -366,7 +366,7 @@ const handleOccuDetailsChange = (value) => {
           {/* Annual Income */}
           <div>
             <label className="text-sm font-semibold text-gray-700">
-              Annual Income
+              Monthly Income
             </label>
             <input
               type="text"
