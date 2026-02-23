@@ -214,10 +214,11 @@ router.post(
           "Cache-Control": "no-store, no-cache, must-revalidate, private",
         });
 
-        return res.redirect(
-          303,
-          `${BASE_URL}/register/step/6?payment=success`
-        );
+        // return res.redirect(
+        //   303,
+        //   `${BASE_URL}/register/step/6?payment=success`
+        // );
+        return res.redirect(303, `${BASE_URL}/payment-result?status=success`);
       }
 
       /* ---------- FAILED (PUT IT HERE) ---------- */
@@ -231,10 +232,12 @@ router.post(
         "Cache-Control": "no-store, no-cache, must-revalidate, private",
       });
 
-      return res.redirect(
-        303,
-        `${BASE_URL}/register/step/6?payment=failed`
-      );
+      // return res.redirect(
+      //   303,
+      //   `${BASE_URL}/register/step/6?payment=failed`
+      // );
+
+      return res.redirect(303, `${BASE_URL}/payment-result?status=failed`);
 
     } catch (err) {
       console.error("Success Callback Error:", err);
@@ -243,10 +246,11 @@ router.post(
         "Cache-Control": "no-store, no-cache, must-revalidate, private",
       });
 
-      return res.redirect(
-        303,
-        `${BASE_URL}/register/step/6?payment=failed`
-      );
+      // return res.redirect(
+      //   303,
+      //   `${BASE_URL}/register/step/6?payment=failed`
+      // );
+      return res.redirect(303, `${BASE_URL}/payment-result?status=failed`);
     }
   }
 );

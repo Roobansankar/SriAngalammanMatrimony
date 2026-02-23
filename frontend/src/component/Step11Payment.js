@@ -496,7 +496,8 @@ useEffect(() => {
     setMessage("Payment Successful ✅ Redirecting...");
 
     /* 🔥 REPLACE HISTORY COMPLETELY */
-    window.history.replaceState(null, "", "/register/step/7");
+    // window.history.replaceState(null, "", "/register/step/7");
+    navigate("/register/step/7", { replace: true });
 
     setTimeout(() => {
       navigate("/register/step/7", { replace: true });
@@ -512,32 +513,7 @@ useEffect(() => {
 
   /* ================= CHECK IF PAYMENT ALREADY DONE ================= */
 
-  // useEffect(() => {
-  //   async function checkPayment() {
-  //     if (!formData?.email) return;
-
-  //     try {
-  //       const res = await axios.get(
-  //         `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
-  //         {
-  //           params: { email: formData.email },
-  //         },
-  //       );
-
-  //    if (res.data.valid) {
-  //      setMessage("Payment already completed ✅ Redirecting...");
-  //      navigate("/register/step/7", { replace: true });
-  //    } else if (res.data.pending) {
-  //      setMessage("Payment already initiated ⏳ Continue payment");
-  //    }
-  //     } catch (err) {
-  //       console.error("Payment check failed", err);
-  //     }
-  //   }
-
-  //   checkPayment();
-  // }, [formData?.email, navigate]);
-
+ 
 
   useEffect(() => {
   async function checkPayment() {
@@ -554,10 +530,7 @@ useEffect(() => {
         }
       );
 
-      // if (res.data.valid) {
-      //   setMessage("Payment already completed ✅ Redirecting...");
-      //   navigate("/register/step/7", { replace: true });
-      // }
+     
       if (res.data.valid && formData?.plan) {
         navigate("/register/step/7", { replace: true });
 }
@@ -661,13 +634,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* <button
-        onClick={handlePayment}
-        disabled={loading}
-        className="px-6 py-2 bg-gradient-to-r from-pink-600 to-yellow-500 text-white rounded"
-      >
-        {loading ? "Redirecting..." : "Pay Now"}
-      </button> */}
+     
 
       <button
         onClick={handlePayment}

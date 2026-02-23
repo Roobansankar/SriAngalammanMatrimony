@@ -85,6 +85,7 @@ import { connectSocket } from "./socket";
 import PaymentSuccess from "./component/PaymentSuccess";
 import PaymentFailed from "./component/PaymentFailed";
 import AdminPayments from "./AdminDashboard/AdminPayments";
+import PaymentResult from "./component/PaymentResult";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -214,6 +215,8 @@ function AppContent({ user, setUser }) {
           <Route path="/payment-failed" element={<PaymentFailed />} />
 
           <Route path="/register/*" element={<MultiStepForm />} />
+
+          <Route path="/payment-result" element={<PaymentResult />} /> 
 
           {/* Protected routes */}
           <Route
