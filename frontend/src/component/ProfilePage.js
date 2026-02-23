@@ -303,49 +303,51 @@ export default function ProfilePage({
   
 
   // Add this fallback near your imports
-  const API_BASE = (
-    process.env.REACT_APP_API_BASE || "http://localhost:5000"
-  ).replace(/\/$/, "");
+  // const API_BASE = (
+  //   process.env.REACT_APP_API_BASE || "http://localhost:5000"
+  // ).replace(/\/$/, "");
 
-  // Updated robust helper function
+ 
   // const getSafeProfilePhoto = (u) => {
-  //   const photo = u?.Photo1 || u?.PhotoURL || u?.photo1 || "";
+  //   const photo = u?.PhotoURL || u?.Photo1 || u?.photo1 || "";
 
-  //   // Check for empty or default values
-  //   if (
-  //     !photo ||
-  //     photo === "null" ||
-  //     photo === "undefined" ||
-  //     photo.includes("nophoto")
-  //   ) {
-  //     return noPhoto; // This is your imported local image
+  //   if (!photo || photo === "null" || photo === "undefined") {
+  //     return noPhoto;
   //   }
 
-  //   // If already a full URL (external link), return it
-  //   if (photo.startsWith("http")) return photo;
+  //   // If already full URL → return directly
+  //   if (photo.startsWith("http")) {
+  //     return photo;
+  //   }
 
-  //   // Otherwise, construct the full backend path
+  //   // If starts with /gallery → prepend only base
+  //   if (photo.startsWith("/")) {
+  //     return `${API_BASE}${photo}`;
+  //   }
+
+  //   // Otherwise assume it's filename
   //   return `${API_BASE}/gallery/${photo}`;
   // };
-
   const getSafeProfilePhoto = (u) => {
-    const photo = u?.PhotoURL || u?.Photo1 || u?.photo1 || "";
+    const photo = u?.PhotoURL || u?.Photo1 || u?.photo1;
 
-    if (!photo || photo === "null" || photo === "undefined") {
+    if (
+      !photo ||
+      photo === "null" ||
+      photo === "undefined" ||
+      photo.trim() === ""
+    ) {
       return noPhoto;
     }
 
-    // If already full URL → return directly
     if (photo.startsWith("http")) {
       return photo;
     }
 
-    // If starts with /gallery → prepend only base
     if (photo.startsWith("/")) {
       return `${API_BASE}${photo}`;
     }
 
-    // Otherwise assume it's filename
     return `${API_BASE}/gallery/${photo}`;
   };
   const filledCount = profileFields.filter(hasValue).length;
@@ -380,7 +382,7 @@ export default function ProfilePage({
             {/* Avatar (overlap) */}
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
-                <div
+                {/* <div
                   onClick={() => setPreviewOpen(true)}
                   className="bg-no-repeat bg-cover rounded-full border-4 border-card-light dark:border-card-dark cursor-pointer hover:scale-105 transition-transform bg-gray-200"
                   style={{
@@ -388,9 +390,16 @@ export default function ProfilePage({
                     height: "128px",
                     // ✅ Added quotes inside the url() function
                     // backgroundImage: `url("${getSafeProfilePhoto(user)}")`,
-                    backgroundImage: `url(${getSafeProfilePhoto(user)})`,
+                    // backgroundImage: `url(${getSafeProfilePhoto(user)})`,
+                    backgroundImage: `url("${getSafeProfilePhoto(user)}")`,
                     backgroundPosition: "top center",
                   }}
+                /> */}
+                <img
+                  src={getSafeProfilePhoto(user)}
+                  onClick={() => setPreviewOpen(true)}
+                  alt="Profile"
+                  className="w-32 h-32 rounded-full border-4 border-white object-cover cursor-pointer hover:scale-105 transition"
                 />
 
                 {/* Edit Button */}
@@ -475,14 +484,6 @@ export default function ProfilePage({
           <section className="bg-white rounded-xl p-6 mt-2">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {["image1", "image2", "image3", "image4"].map((slot) => (
-                // <GalleryBox
-                //   key={slot}
-                //   slot={slot}
-                //   image={user?.[slot]}
-                //   matriId={user.MatriID}
-                //   refreshUser={refreshUser}
-                // />
-
                 <GalleryBox
                   key={slot}
                   slot={slot}
@@ -1211,7 +1212,10 @@ function GalleryBox({ slot, image, matriId, refreshUser, apiBase }) {
         <img
           // src={`${process.env.REACT_APP_API_BASE || ""}/gallery/${image}`}
           // src={`${API_BASE}/gallery/${image}`}
-          src={`${apiBase}/gallery/${image}`}
+          // src={`${apiBase}/gallery/${image}`}
+          src={
+            image?.startsWith("http") ? image : `${apiBase}/gallery/${image}`
+          }
           alt={slot}
           className="w-full aspect-[3/4] object-cover object-top"
         />
