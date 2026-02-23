@@ -512,31 +512,63 @@ useEffect(() => {
 
   /* ================= CHECK IF PAYMENT ALREADY DONE ================= */
 
+  // useEffect(() => {
+  //   async function checkPayment() {
+  //     if (!formData?.email) return;
+
+  //     try {
+  //       const res = await axios.get(
+  //         `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
+  //         {
+  //           params: { email: formData.email },
+  //         },
+  //       );
+
+  //    if (res.data.valid) {
+  //      setMessage("Payment already completed ✅ Redirecting...");
+  //      navigate("/register/step/7", { replace: true });
+  //    } else if (res.data.pending) {
+  //      setMessage("Payment already initiated ⏳ Continue payment");
+  //    }
+  //     } catch (err) {
+  //       console.error("Payment check failed", err);
+  //     }
+  //   }
+
+  //   checkPayment();
+  // }, [formData?.email, navigate]);
+
+
   useEffect(() => {
-    async function checkPayment() {
-      if (!formData?.email) return;
+  async function checkPayment() {
+    if (!formData?.email) return;
 
-      try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
-          {
-            params: { email: formData.email },
-          },
-        );
+    // 🔥 DO NOT SKIP if no plan selected
+    if (!formData?.plan) return;
 
-     if (res.data.valid) {
-       setMessage("Payment already completed ✅ Redirecting...");
-       navigate("/register/step/7", { replace: true });
-     } else if (res.data.pending) {
-       setMessage("Payment already initiated ⏳ Continue payment");
-     }
-      } catch (err) {
-        console.error("Payment check failed", err);
-      }
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
+        {
+          params: { email: formData.email },
+        }
+      );
+
+      // if (res.data.valid) {
+      //   setMessage("Payment already completed ✅ Redirecting...");
+      //   navigate("/register/step/7", { replace: true });
+      // }
+      if (res.data.valid && formData?.plan) {
+        navigate("/register/step/7", { replace: true });
+}
+    } catch (err) {
+      console.error(err);
     }
+  }
 
-    checkPayment();
-  }, [formData?.email, navigate]);
+  checkPayment();
+}, [formData?.email, formData?.plan, navigate]);
+
 
   const handlePayment = async () => {
     if (!plan) {

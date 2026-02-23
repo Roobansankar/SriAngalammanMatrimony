@@ -424,7 +424,7 @@ export default function MultiStepForm() {
           />
 
           {/* Step 7 – Final */}
-          <Route
+          {/* <Route
             path="step/7"
             element={
               <Step12
@@ -432,6 +432,21 @@ export default function MultiStepForm() {
                 formData={formData}
                 setFormData={setFormData}
               />
+            }
+          /> */}
+
+          <Route
+            path="step/7"
+            element={
+              formData?.plan ? (
+                <Step12
+                  prevStep={prevStepFactory(6)}
+                  formData={formData}
+                  setFormData={setFormData}
+                />
+              ) : (
+                <Navigate to="/register/step/6" replace />
+              )
             }
           />
 

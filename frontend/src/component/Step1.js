@@ -1,5 +1,3 @@
-
-
 import axios from "axios";
 import { CheckCircle, Loader2, MailCheck, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -393,6 +391,7 @@ export default function Step1({ nextStep, formData = {} }) {
   };
 
   const handleNext = () => {
+    localStorage.removeItem("payment_status");
     const validationError = validateFullForm();
     if (validationError) {
       alert(validationError);
