@@ -478,37 +478,51 @@ export default function Step11Payment({ formData, setFormData }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  /* ================= CHECK PAYMENT RESULT ================= */
-useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  const status = params.get("payment");
 
-  if (!status) return;
 
-  if (status === "success") {
+  useEffect(() => {
     const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
     if (raw) {
       const parsed = JSON.parse(raw);
-      setFormData(parsed);
+
+      if (parsed.paymentDone) {
+        navigate("/register/step/7", { replace: true });
+      }
     }
+  }, []);
 
-    setMessage("Payment Successful ✅ Redirecting...");
+  /* ================= CHECK PAYMENT RESULT ================= */
+// useEffect(() => {
+//   const params = new URLSearchParams(location.search);
+//   const status = params.get("payment");
 
-    /* 🔥 REPLACE HISTORY COMPLETELY */
-    // window.history.replaceState(null, "", "/register/step/7");
-    navigate("/register/step/7", { replace: true });
+//   if (!status) return;
 
-    setTimeout(() => {
-      navigate("/register/step/7", { replace: true });
-    }, 500);
-  }
+//   if (status === "success") {
+//     const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-  if (status === "failed") {
-    setMessage("Payment Failed ❌ Please try again.");
-    setLoading(false);
-  }
-}, [location.search, navigate, setFormData]);
+//     if (raw) {
+//       const parsed = JSON.parse(raw);
+//       setFormData(parsed);
+//     }
+
+//     setMessage("Payment Successful ✅ Redirecting...");
+
+//     /* 🔥 REPLACE HISTORY COMPLETELY */
+//     // window.history.replaceState(null, "", "/register/step/7");
+//     navigate("/register/step/7", { replace: true });
+
+//     setTimeout(() => {
+//       navigate("/register/step/7", { replace: true });
+//     }, 500);
+//   }
+
+//   if (status === "failed") {
+//     setMessage("Payment Failed ❌ Please try again.");
+//     setLoading(false);
+//   }
+// }, [location.search, navigate, setFormData]);
   /* ================= HANDLE PAYMENT ================= */
 
   /* ================= CHECK IF PAYMENT ALREADY DONE ================= */
