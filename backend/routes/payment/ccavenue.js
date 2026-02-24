@@ -194,66 +194,117 @@ AND created_at > NOW() - INTERVAL 30 MINUTE
 
 /* ================= SUCCESS CALLBACK ================= */
 
-router.post(
+// router.post(
+//   "/ccavenue-success",
+//   express.urlencoded({ extended: false }),
+//   async (req, res) => {
+//     try {
+//       const decrypted = decrypt(req.body.encResp);
+//       const data = qs.parse(decrypted);
+//       const orderId = data.order_id;
+
+//       /* ---------- SUCCESS ---------- */
+//       if (data.order_status === "Success") {
+//         await db.promise().query(
+//           "UPDATE payments SET status='Success' WHERE order_id=?",
+//           [orderId]
+//         );
+
+//         res.set({
+//           "Cache-Control": "no-store, no-cache, must-revalidate, private",
+//         });
+
+//         // return res.redirect(
+//         //   303,
+//         //   `${BASE_URL}/register/step/6?payment=success`
+//         // );
+//         return res.redirect(303, `${BASE_URL}/payment-result?status=success`);
+//       }
+
+//       /* ---------- FAILED (PUT IT HERE) ---------- */
+
+//       await db.promise().query(
+//         "UPDATE payments SET status='Failed' WHERE order_id=?",
+//         [orderId]
+//       );
+
+//       res.set({
+//         "Cache-Control": "no-store, no-cache, must-revalidate, private",
+//       });
+
+//       // return res.redirect(
+//       //   303,
+//       //   `${BASE_URL}/register/step/6?payment=failed`
+//       // );
+
+//       return res.redirect(303, `${BASE_URL}/payment-result?status=failed`);
+
+//     } catch (err) {
+//       console.error("Success Callback Error:", err);
+
+//       res.set({
+//         "Cache-Control": "no-store, no-cache, must-revalidate, private",
+//       });
+
+//       // return res.redirect(
+//       //   303,
+//       //   `${BASE_URL}/register/step/6?payment=failed`
+//       // );
+//       return res.redirect(303, `${BASE_URL}/payment-result?status=failed`);
+//     }
+//   }
+// );
+
+
+router.all(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
     try {
-      const decrypted = decrypt(req.body.encResp);
+      const encResp =
+        req.body?.encResp ||
+        req.query?.encResp ||
+        req.body?.encresp ||
+        req.query?.encresp;
+
+      if (!encResp) {
+        console.error("❌ No encResp received");
+        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+      }
+
+      const decrypted = decrypt(encResp);
       const data = qs.parse(decrypted);
+
+      console.log("CCAvenue Response:", data);
+
       const orderId = data.order_id;
 
-      /* ---------- SUCCESS ---------- */
       if (data.order_status === "Success") {
-        await db.promise().query(
-          "UPDATE payments SET status='Success' WHERE order_id=?",
-          [orderId]
-        );
+        await db
+          .promise()
+          .query("UPDATE payments SET status='Success' WHERE order_id=?", [
+            orderId,
+          ]);
 
-        res.set({
-          "Cache-Control": "no-store, no-cache, must-revalidate, private",
-        });
-
-        // return res.redirect(
-        //   303,
-        //   `${BASE_URL}/register/step/6?payment=success`
-        // );
         return res.redirect(303, `${BASE_URL}/payment-result?status=success`);
       }
 
-      /* ---------- FAILED (PUT IT HERE) ---------- */
-
-      await db.promise().query(
-        "UPDATE payments SET status='Failed' WHERE order_id=?",
-        [orderId]
-      );
-
-      res.set({
-        "Cache-Control": "no-store, no-cache, must-revalidate, private",
-      });
-
-      // return res.redirect(
-      //   303,
-      //   `${BASE_URL}/register/step/6?payment=failed`
-      // );
+      await db
+        .promise()
+        .query("UPDATE payments SET status='Failed' WHERE order_id=?", [
+          orderId,
+        ]);
 
       return res.redirect(303, `${BASE_URL}/payment-result?status=failed`);
-
     } catch (err) {
-      console.error("Success Callback Error:", err);
+      console.error("Callback Error:", err);
 
-      res.set({
-        "Cache-Control": "no-store, no-cache, must-revalidate, private",
-      });
-
-      // return res.redirect(
-      //   303,
-      //   `${BASE_URL}/register/step/6?payment=failed`
-      // );
-      return res.redirect(303, `${BASE_URL}/payment-result?status=failed`);
+      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
     }
-  }
+  },
 );
+
+
 /* =========================================================
    🔎 VERIFY PAYMENT
 ========================================================= */

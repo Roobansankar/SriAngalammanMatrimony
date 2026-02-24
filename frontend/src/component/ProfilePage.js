@@ -1210,9 +1210,6 @@ function GalleryBox({ slot, image, matriId, refreshUser, apiBase }) {
       {/* IMAGE / PLACEHOLDER */}
       {image ? (
         <img
-          // src={`${process.env.REACT_APP_API_BASE || ""}/gallery/${image}`}
-          // src={`${API_BASE}/gallery/${image}`}
-          // src={`${apiBase}/gallery/${image}`}
           src={
             image?.startsWith("http") ? image : `${apiBase}/gallery/${image}`
           }
