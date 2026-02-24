@@ -60,7 +60,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 /* Static */
-const galleryDir = path.resolve("gallery");
+// const galleryDir = path.resolve("gallery");
+const galleryDir = path.join(__dirname, "gallery");
 const kundliDir = path.resolve("kundli");
 
 // Serve static files on both base and /api prefix
@@ -98,7 +99,7 @@ app.get("/api/db-debug", (req, res) => {
 });
 
 // Serve static files on both base and /api prefix
-app.use("/gallery", express.static(galleryDir));
+// app.use("/gallery", express.static(galleryDir));
 app.use("/kundli", express.static(kundliDir));
 app.use("/api/gallery", express.static(galleryDir));
 app.use("/api/kundli", express.static(kundliDir));
