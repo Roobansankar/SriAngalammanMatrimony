@@ -12,6 +12,44 @@ if (!fs.existsSync(galleryPath)) {
 }
 
 /* UPLOAD */
+// router.post(
+//   "/upload",
+//   galleryUpload.fields([
+//     { name: "image1", maxCount: 1 },
+//     { name: "image2", maxCount: 1 },
+//     { name: "image3", maxCount: 1 },
+//     { name: "image4", maxCount: 1 },
+//   ]),
+//   (req, res) => {
+//     const { matriId } = req.body;
+//     if (!matriId) return res.status(400).json({ success: false });
+
+//     const saveData = {};
+
+//     Object.keys(req.files || {}).forEach((field) => {
+//       const file = req.files[field][0];
+//       const ext = path.extname(file.originalname);
+//       const fileName = `${matriId}_${field}_${Date.now()}${ext}`;
+//       fs.writeFileSync(path.join(galleryPath, fileName), file.buffer);
+//       saveData[field] = fileName;
+//     });
+
+//     if (!Object.keys(saveData).length) {
+//       return res.status(400).json({ success: false, message: "No files" });
+//     }
+
+//     const setSQL = Object.keys(saveData)
+//       .map((k) => `${k}=?`)
+//       .join(",");
+
+//     db.query(
+//       `UPDATE register SET ${setSQL} WHERE MatriID=?`,
+//       [...Object.values(saveData), matriId],
+//       () => res.json({ success: true })
+//     );
+//   }
+// );
+
 router.post(
   "/upload",
   galleryUpload.fields([
@@ -21,33 +59,52 @@ router.post(
     { name: "image4", maxCount: 1 },
   ]),
   (req, res) => {
-    const { matriId } = req.body;
-    if (!matriId) return res.status(400).json({ success: false });
+    try {
+      const { matriId } = req.body;
+      if (!matriId)
+        return res.status(400).json({ success: false, message: "No MatriID" });
 
-    const saveData = {};
+      const saveData = {};
 
-    Object.keys(req.files || {}).forEach((field) => {
-      const file = req.files[field][0];
-      const ext = path.extname(file.originalname);
-      const fileName = `${matriId}_${field}_${Date.now()}${ext}`;
-      fs.writeFileSync(path.join(galleryPath, fileName), file.buffer);
-      saveData[field] = fileName;
-    });
+      Object.keys(req.files || {}).forEach((field) => {
+        const file = req.files[field][0];
+        const ext = path.extname(file.originalname);
+        const fileName = `${matriId}_${field}_${Date.now()}${ext}`;
 
-    if (!Object.keys(saveData).length) {
-      return res.status(400).json({ success: false, message: "No files" });
+        const fullPath = path.join(galleryPath, fileName);
+
+        console.log("Saving to:", fullPath); // 🔥 debug
+
+        fs.writeFileSync(fullPath, file.buffer);
+
+        saveData[field] = fileName;
+      });
+
+      if (!Object.keys(saveData).length) {
+        return res.status(400).json({ success: false, message: "No files" });
+      }
+
+      const setSQL = Object.keys(saveData)
+        .map((k) => `${k}=?`)
+        .join(",");
+
+      db.query(
+        `UPDATE register SET ${setSQL} WHERE MatriID=?`,
+        [...Object.values(saveData), matriId],
+        (err) => {
+          if (err) {
+            console.error("DB Error:", err);
+            return res.status(500).json({ success: false });
+          }
+
+          res.json({ success: true });
+        },
+      );
+    } catch (err) {
+      console.error("UPLOAD ERROR:", err); // 🔥 VERY IMPORTANT
+      res.status(500).json({ success: false, error: err.message });
     }
-
-    const setSQL = Object.keys(saveData)
-      .map((k) => `${k}=?`)
-      .join(",");
-
-    db.query(
-      `UPDATE register SET ${setSQL} WHERE MatriID=?`,
-      [...Object.values(saveData), matriId],
-      () => res.json({ success: true })
-    );
-  }
+  },
 );
 
 /* DELETE */

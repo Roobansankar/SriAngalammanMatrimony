@@ -328,26 +328,54 @@ export default function ProfilePage({
   //   // Otherwise assume it's filename
   //   return `${API_BASE}/gallery/${photo}`;
   // };
-  const getSafeProfilePhoto = (u) => {
-    const photo = u?.PhotoURL || u?.Photo1 || u?.photo1;
+  // const getSafeProfilePhoto = (u) => {
+  //   const photo = u?.PhotoURL || u?.Photo1 || u?.photo1;
 
+  //   if (
+  //     !photo ||
+  //     photo === "null" ||
+  //     photo === "undefined" ||
+  //     photo.trim() === ""
+  //   ) {
+  //     return noPhoto;
+  //   }
+
+  //   if (photo.startsWith("http")) {
+  //     return photo;
+  //   }
+
+  //   if (photo.startsWith("/")) {
+  //     return `${API_BASE}${photo}`;
+  //   }
+
+  //   return `${API_BASE}/gallery/${photo}`;
+  // };
+
+  const getSafeProfilePhoto = (u) => {
+    let photo = u?.PhotoURL || u?.Photo1 || u?.photo1;
+
+    // If empty OR default name from DB → use frontend image
     if (
       !photo ||
       photo === "null" ||
       photo === "undefined" ||
-      photo.trim() === ""
+      photo.trim() === "" ||
+      photo === "no-photo.jpg"
     ) {
-      return noPhoto;
+      return noPhoto; // frontend image only
     }
 
+    // If already full URL
     if (photo.startsWith("http")) {
       return photo;
     }
 
+    // If backend path starts with /
     if (photo.startsWith("/")) {
       return `${API_BASE}${photo}`;
     }
 
+    // Otherwise assume backend gallery file
     return `${API_BASE}/gallery/${photo}`;
   };
   const filledCount = profileFields.filter(hasValue).length;

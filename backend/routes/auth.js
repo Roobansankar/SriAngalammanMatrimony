@@ -104,34 +104,58 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// function makePhotoUrl1(photoFilename, photoApprove) {
+//   const hasPhoto =
+//     photoFilename &&
+//     photoFilename !== "no-photo.jpg" &&
+//     String(photoApprove).toLowerCase() === "yes";
+//   const file = hasPhoto ? photoFilename : FALLBACK;
+//   // ensure filename is encoded for URLs
+//   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+// }
+
 function makePhotoUrl1(photoFilename, photoApprove) {
   const hasPhoto =
     photoFilename &&
     photoFilename !== "no-photo.jpg" &&
     String(photoApprove).toLowerCase() === "yes";
-  const file = hasPhoto ? photoFilename : FALLBACK;
-  // ensure filename is encoded for URLs
-  return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+
+  if (!hasPhoto) {
+    return null; // 🔥 important
+  }
+
+  return `${BASE_URL}/gallery/${encodeURIComponent(photoFilename)}`;
 }
-
-
 
 
 // ----------------------------------------------
 // Helper: Build Photo URL
 // ----------------------------------------------
-function makePhotoUrl(photoFilename, photoApprove) {
-  const FALLBACK = "no-photo.jpg";
-  const GALLERY_PATH = "/gallery/";
+// function makePhotoUrl(photoFilename, photoApprove) {
+//   const FALLBACK = "no-photo.jpg";
+//   const GALLERY_PATH = "/gallery/";
 
+//   const hasPhoto =
+//     photoFilename &&
+//     photoFilename !== "no-photo.jpg" &&
+//     String(photoApprove).toLowerCase() === "yes";
+
+//   const file = hasPhoto ? photoFilename : FALLBACK;
+
+//   return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+// }
+
+function makePhotoUrl(photoFilename, photoApprove) {
   const hasPhoto =
     photoFilename &&
     photoFilename !== "no-photo.jpg" &&
     String(photoApprove).toLowerCase() === "yes";
 
-  const file = hasPhoto ? photoFilename : FALLBACK;
+  if (!hasPhoto) {
+    return null; 
+  }
 
-  return `${BASE_URL}${GALLERY_PATH}${encodeURIComponent(file)}`;
+  return `${BASE_URL}/gallery/${encodeURIComponent(photoFilename)}`;
 }
 
 // ----------------------------------------------
