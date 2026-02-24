@@ -4,9 +4,14 @@ import { useEffect, useState, useSearchParams } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
-const API_BASE = (
-  process.env.REACT_APP_API_BASE || "http://localhost:5000"
-).replace(/\/$/, "");
+// const API_BASE = (
+//   process.env.REACT_APP_API_BASE || "http://localhost:5000"
+// ).replace(/\/$/, "");
+
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : window.location.origin;
 
 export default function ProfilePage({
   setUser: setAppUser,
