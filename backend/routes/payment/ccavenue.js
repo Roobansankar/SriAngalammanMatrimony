@@ -415,6 +415,34 @@ function decrypt(encText) {
    💳 INIT PAYMENT
 ========================================================= */
 
+
+router.get("/admin/payments", async (req, res) => {
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT
+        p.order_id,
+        p.email,
+        p.plan,
+        p.amount,
+        p.status,
+        p.created_at,
+        r.MatriID,
+        r.Name
+      FROM payments p
+      LEFT JOIN register r
+        ON p.email = r.ConfirmEmail
+      ORDER BY p.id DESC
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json([]);
+  }
+});
+
+
+
 router.post("/ccavenue-init", async (req, res) => {
   try {
     const { plan, email } = req.body;
