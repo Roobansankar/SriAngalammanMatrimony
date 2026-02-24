@@ -544,6 +544,7 @@ useEffect(() => {
 
 
   const handlePayment = async () => {
+    
     if (!plan) {
       alert("Please select a plan");
       return;
@@ -570,7 +571,7 @@ useEffect(() => {
           email: formData.email,
         },
       );
-
+console.log("CCAvenue Response:", res.data);
       /* Redirect form submit */
       const form = document.createElement("form");
       form.method = "POST";
