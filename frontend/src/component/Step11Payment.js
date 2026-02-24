@@ -480,18 +480,52 @@ export default function Step11Payment({ formData, setFormData }) {
 
 
 
-  useEffect(() => {
-    const raw = localStorage.getItem("multiStepRegistration_form_v1");
+  // useEffect(() => {
+  //   const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-    if (raw) {
+  //   if (raw) {
+  //     const parsed = JSON.parse(raw);
+
+  //     if (parsed.paymentDone) {
+  //       navigate("/register/step/7", { replace: true });
+  //     }
+  //   }
+  // }, []);
+
+
+  useEffect(() => {
+    async function checkAlreadyPaid() {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+      if (!raw) return;
+
       const parsed = JSON.parse(raw);
 
-      if (parsed.paymentDone) {
-        navigate("/register/step/7", { replace: true });
+      if (!parsed.email) return;
+
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
+          { params: { email: parsed.email } },
+        );
+
+        if (res.data.valid) {
+          parsed.paymentDone = true;
+
+          localStorage.setItem(
+            "multiStepRegistration_form_v1",
+            JSON.stringify(parsed),
+          );
+
+          navigate("/register/step/7", { replace: true });
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
-  }, []);
 
+    checkAlreadyPaid();
+  }, []);
   /* ================= CHECK PAYMENT RESULT ================= */
 // useEffect(() => {
 //   const params = new URLSearchParams(location.search);
