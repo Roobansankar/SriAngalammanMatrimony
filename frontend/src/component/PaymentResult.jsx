@@ -175,82 +175,40 @@ import { useEffect } from "react";
 export default function PaymentResult() {
   const navigate = useNavigate();
   const location = useLocation();
+  
 
-    useEffect(() => {
-      let attempts = 0;
+  useEffect(() => {
+    async function finalize() {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-      async function checkPayment() {
-        const raw = localStorage.getItem("multiStepRegistration_form_v1");
-        if (!raw) {
-          navigate("/register/step/6");
-          return;
-        }
-
-        const parsed = JSON.parse(raw);
-
-        try {
-          const res = await axios.get("/api/payment/verify", {
-            params: { email: parsed.email },
-          });
-
-          if (res.data.valid) {
-            parsed.paymentDone = true;
-            parsed.plan = res.data.plan;
-
-            localStorage.setItem(
-              "multiStepRegistration_form_v1",
-              JSON.stringify(parsed),
-            );
-
-            navigate("/register/step/7", { replace: true });
-          } else {
-            if (attempts < 10) {
-              attempts++;
-              setTimeout(checkPayment, 2000);
-            } else {
-              navigate("/register/step/6");
-            }
-          }
-        } catch {
-          navigate("/register/step/6");
-        }
+      if (!raw) {
+        navigate("/register/step/6");
+        return;
       }
 
-      checkPayment();
-    }, [navigate]);
+      const parsed = JSON.parse(raw);
 
-//   useEffect(() => {
-//     async function finalize() {
-//       const raw = localStorage.getItem("multiStepRegistration_form_v1");
+      /* Retry verify until gateway updates DB */
+      const res = await axios.get("/api/payment/verify", {
+        params: { email: parsed.email },
+      });
 
-//       if (!raw) {
-//         navigate("/register/step/6");
-//         return;
-//       }
+      if (res.data.valid) {
+        parsed.paymentDone = true;
 
-//       const parsed = JSON.parse(raw);
+        localStorage.setItem(
+          "multiStepRegistration_form_v1",
+          JSON.stringify(parsed),
+        );
 
-//       /* Retry verify until gateway updates DB */
-//       const res = await axios.get("/api/payment/verify", {
-//         params: { email: parsed.email },
-//       });
+        navigate("/register/step/7", { replace: true });
+      } else {
+        setTimeout(finalize, 2000);
+      }
+    }
 
-//       if (res.data.valid) {
-//         parsed.paymentDone = true;
-
-//         localStorage.setItem(
-//           "multiStepRegistration_form_v1",
-//           JSON.stringify(parsed),
-//         );
-
-//         navigate("/register/step/7", { replace: true });
-//       } else {
-//         setTimeout(finalize, 2000);
-//       }
-//     }
-
-//     finalize();
-//   }, [navigate, location]);
+    finalize();
+  }, [navigate, location]);
 
   return <div>Processing Payment...</div>;
 }

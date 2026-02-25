@@ -535,11 +535,6 @@ router.all(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
-    res.set({
-      "Cache-Control": "no-store, no-cache, must-revalidate, private",
-      Pragma: "no-cache",
-      Expires: "0",
-    });
     try {
       const encResp =
         req.body?.encResp ||
@@ -557,7 +552,7 @@ router.all(
         return res.send(`
           <html>
             <script>
-              window.location.href = "/payment-result?status=failed";
+              window.location.replace("${BASE_URL}/payment-result?status=failed");
             </script>
           </html>
         `);
@@ -566,7 +561,7 @@ router.all(
       const decrypted = decrypt(encResp);
       const data = qs.parse(decrypted);
       const orderId = data.order_id;
-      const email = data.billing_email || data.merchant_param1 || "";
+const email = data.billing_email || data.merchant_param1 || "";
 
       console.log("CCAvenue Response:", data);
 
@@ -591,9 +586,9 @@ router.all(
         // 🔥 Always mark success even if already updated
         await db.promise().query(
           `
-   UPDATE payments 
-SET status='Success', updated_at=NOW() 
-WHERE order_id=?
+    UPDATE payments
+    SET status='Success'
+    WHERE order_id=?
   `,
           [orderId],
         );
@@ -616,9 +611,7 @@ WHERE order_id=?
         return res.send(`
     <html>
       <head>
-      <script>
-  window.location.href = "/payment-result?status=success";
-</script>
+        <meta http-equiv="refresh" content="0;url=${BASE_URL}/payment-result?status=success" />
       </head>
     </html>
   `);
@@ -632,7 +625,7 @@ WHERE order_id=?
       return res.send(`
         <html>
           <script>
-           window.location.href = "/payment-result?status=failed";
+            window.location.replace("${BASE_URL}/payment-result?status=failed");
           </script>
         </html>
       `);
@@ -642,7 +635,7 @@ WHERE order_id=?
       return res.send(`
         <html>
           <script>
-           window.location.href = "/payment-result?status=failed";
+            window.location.replace("${BASE_URL}/payment-result?status=failed");
           </script>
         </html>
       `);
@@ -662,7 +655,7 @@ router.all("/ccavenue-cancel", (req, res) => {
   res.send(`
     <html>
       <script>
-      window.location.href = "/payment-result?status=failed";
+        window.location.replace("${BASE_URL}/payment-result?status=failed");
       </script>
     </html>
   `);

@@ -701,79 +701,49 @@ export default function Step11Payment({ formData, setFormData }) {
      🔐 PROTECT PAID USER (Single effect only)
   -------------------------------------------------- */
 
-  // useEffect(() => {
-  //   async function verifyPayment() {
-  //     const raw = localStorage.getItem("multiStepRegistration_form_v1");
+  useEffect(() => {
+    async function verifyPayment() {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-  //     if (!raw) return;
+      if (!raw) return;
 
-  //     const parsed = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
 
-  //     if (!parsed.email) return;
+      if (!parsed.email) return;
 
-  //     try {
-  //       const res = await axios.get("/api/payment/verify", {
-  //         params: { email: parsed.email },
-  //       });
+      try {
+        const res = await axios.get("/api/payment/verify", {
+          params: { email: parsed.email },
+        });
 
-  //       if (res.data.valid) {
-  //         navigate("/register/step/7", { replace: true });
-  //       }
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
+        if (res.data.valid) {
+          navigate("/register/step/7", { replace: true });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-  //   verifyPayment();
-  // }, [navigate]);
-
-
-
+    verifyPayment();
+  }, [navigate]);
 
   /* --------------------------------------------------
      💳 HANDLE PAYMENT
   -------------------------------------------------- */
 
   const handlePayment = async () => {
-    // let emailToUse = formData?.email;
-    // const raw = localStorage.getItem("multiStepRegistration_form_v1");
-    // if (!raw) {
-    //   alert("Session expired");
-    //   navigate("/register/step/1");
-    //   return;
-    // }
-    // const parsed = JSON.parse(raw);
-    // const emailToUse = parsed.email;
+    let emailToUse = formData?.email;
 
-    // /* Restore email if lost */
-    // if (!emailToUse) {
-    //   const raw = localStorage.getItem("multiStepRegistration_form_v1");
+    /* Restore email if lost */
+    if (!emailToUse) {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-    //   if (raw) {
-    //     const parsed = JSON.parse(raw);
-    //     emailToUse = parsed.email;
-    //     setFormData(parsed);
-    //   }
-    // }
-
-
-     const raw = localStorage.getItem("multiStepRegistration_form_v1");
-
-     if (!raw) {
-       alert("Session expired. Please restart registration.");
-       navigate("/register/step/1");
-       return;
-     }
-
-     const parsed = JSON.parse(raw);
-
-     const emailToUse = parsed.email;
-
-     if (!emailToUse) {
-       alert("Email missing. Restart registration.");
-       navigate("/register/step/1");
-       return;
-     }
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        emailToUse = parsed.email;
+        setFormData(parsed);
+      }
+    }
 
     if (!plan) {
       alert("Please select a plan");
