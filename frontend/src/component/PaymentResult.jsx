@@ -176,38 +176,81 @@ export default function PaymentResult() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    async function finalize() {
-      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+    useEffect(() => {
+      let attempts = 0;
 
-      if (!raw) {
-        navigate("/register/step/6");
-        return;
+      async function checkPayment() {
+        const raw = localStorage.getItem("multiStepRegistration_form_v1");
+        if (!raw) {
+          navigate("/register/step/6");
+          return;
+        }
+
+        const parsed = JSON.parse(raw);
+
+        try {
+          const res = await axios.get("/api/payment/verify", {
+            params: { email: parsed.email },
+          });
+
+          if (res.data.valid) {
+            parsed.paymentDone = true;
+            parsed.plan = res.data.plan;
+
+            localStorage.setItem(
+              "multiStepRegistration_form_v1",
+              JSON.stringify(parsed),
+            );
+
+            navigate("/register/step/7", { replace: true });
+          } else {
+            if (attempts < 10) {
+              attempts++;
+              setTimeout(checkPayment, 2000);
+            } else {
+              navigate("/register/step/6");
+            }
+          }
+        } catch {
+          navigate("/register/step/6");
+        }
       }
 
-      const parsed = JSON.parse(raw);
+      checkPayment();
+    }, [navigate]);
 
-      /* Retry verify until gateway updates DB */
-      const res = await axios.get("/api/payment/verify", {
-        params: { email: parsed.email },
-      });
+//   useEffect(() => {
+//     async function finalize() {
+//       const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-      if (res.data.valid) {
-        parsed.paymentDone = true;
+//       if (!raw) {
+//         navigate("/register/step/6");
+//         return;
+//       }
 
-        localStorage.setItem(
-          "multiStepRegistration_form_v1",
-          JSON.stringify(parsed),
-        );
+//       const parsed = JSON.parse(raw);
 
-        navigate("/register/step/7", { replace: true });
-      } else {
-        setTimeout(finalize, 2000);
-      }
-    }
+//       /* Retry verify until gateway updates DB */
+//       const res = await axios.get("/api/payment/verify", {
+//         params: { email: parsed.email },
+//       });
 
-    finalize();
-  }, [navigate, location]);
+//       if (res.data.valid) {
+//         parsed.paymentDone = true;
+
+//         localStorage.setItem(
+//           "multiStepRegistration_form_v1",
+//           JSON.stringify(parsed),
+//         );
+
+//         navigate("/register/step/7", { replace: true });
+//       } else {
+//         setTimeout(finalize, 2000);
+//       }
+//     }
+
+//     finalize();
+//   }, [navigate, location]);
 
   return <div>Processing Payment...</div>;
 }

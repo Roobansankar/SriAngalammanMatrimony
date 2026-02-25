@@ -535,6 +535,11 @@ router.all(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
+    res.set({
+      "Cache-Control": "no-store, no-cache, must-revalidate, private",
+      Pragma: "no-cache",
+      Expires: "0",
+    });
     try {
       const encResp =
         req.body?.encResp ||
@@ -586,9 +591,9 @@ router.all(
         // 🔥 Always mark success even if already updated
         await db.promise().query(
           `
-    UPDATE payments
-    SET status='Success'
-    WHERE order_id=?
+   UPDATE payments 
+SET status='Success', updated_at=NOW() 
+WHERE order_id=?
   `,
           [orderId],
         );
