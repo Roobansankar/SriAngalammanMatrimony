@@ -158,6 +158,36 @@ function makePhotoUrl(photoFilename, photoApprove) {
   return `${BASE_URL}/gallery/${encodeURIComponent(photoFilename)}`;
 }
 
+
+router.get("/my-profile/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const conn = db.promise();
+    const [rows] = await conn.query(
+      "SELECT * FROM register WHERE ConfirmEmail = ?",
+      [email],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      user: rows[0],
+    });
+  } catch (err) {
+    console.error("my-profile error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
 // ----------------------------------------------
 // ⭐ GET USER DETAILS
 // GET /api/auth/user?email=...

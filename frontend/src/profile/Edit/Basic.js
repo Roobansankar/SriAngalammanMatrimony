@@ -36,44 +36,12 @@ export default function BasicEdit({ adminMode = false }) {
     profileByOptions: [],
   });
 
-  // -------------------------------------------------------
-  // 1️⃣ LOAD USER SAVED DATA
-  // -------------------------------------------------------
-  // useEffect(() => {
-  //   const data = JSON.parse(localStorage.getItem("userData"));
-  //   if (!data) return;
-
-  //   const cleanCaste = data.Caste?.split(",")[0]?.trim() || "";
-
-  //   setForm({
-  //     ConfirmEmail: data.ConfirmEmail || "",
-  //     Name: data.Name || "",
-  //     Profilecreatedby: data.Profilecreatedby || "",
-  //     Gender: data.Gender || "",
-  //     DOB: data.DOB ? data.DOB.split("T")[0] : "",
-  //     Maritalstatus: data.Maritalstatus || "",
-  //     Religion: data.Religion || "",
-  //     Caste: cleanCaste,
-  //     CasteID: "",
-  //     Subcaste: data.Subcaste || data.sub_caste || "",
-  //     Mobile: data.Mobile || "",
-  //   });
-  // }, []);
 useEffect(() => {
   const loadData = async () => {
     try {
       let data;
 
-      /* 🟣 ADMIN MODE */
-      // if (adminMode && params.matriId) {
-      //   const res = await axios.get(
-      //     `${process.env.REACT_APP_API_BASE}/api/auth/profile/${params.matriId}`,
-      //   );
 
-      //   if (res.data.success) {
-      //     data = res.data.user;
-      //   }
-      // } 
       
       if (adminMode && params.matriId) {
         const res = await axios.get(
