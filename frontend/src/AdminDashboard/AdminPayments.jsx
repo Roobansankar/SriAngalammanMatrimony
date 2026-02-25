@@ -1,133 +1,3 @@
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-
-// export default function AdminPayments() {
-//   const [payments, setPayments] = useState([]);
-//   const [filtered, setFiltered] = useState([]);
-//   const [search, setSearch] = useState("");
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     fetchPayments();
-//   }, []);
-
-//   /* ================= FETCH ================= */
-
-//   const fetchPayments = async () => {
-//     try {
-//       const res = await axios.get(
-//         `${process.env.REACT_APP_API_BASE || ""}/api/payment/admin/payments`,
-//       );
-
-//       setPayments(res.data);
-//       setFiltered(res.data);
-//     } catch (err) {
-//       console.error(err);
-//       alert("Failed to load payments");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   /* ================= SEARCH ================= */
-
-//   useEffect(() => {
-//     const s = search.toLowerCase();
-
-//     const f = payments.filter(
-//       (p) =>
-//         p.MatriID?.toLowerCase().includes(s) ||
-//         p.Name?.toLowerCase().includes(s),
-//     );
-
-//     setFiltered(f);
-//   }, [search, payments]);
-
-//   /* ================= UI ================= */
-
-//   return (
-//     <div className="p-6">
-//       <h2 className="text-2xl font-bold mb-6">Payment Details</h2>
-
-//       {/* 🔎 SEARCH */}
-//       <div className="mb-4">
-//         <input
-//           type="text"
-//           placeholder="Search by Name or MatriID..."
-//           value={search}
-//           onChange={(e) => setSearch(e.target.value)}
-//           className="border p-2 rounded w-full md:w-80"
-//         />
-//       </div>
-
-//       {loading ? (
-//         <p>Loading...</p>
-//       ) : (
-//         <div className="overflow-auto">
-//           <table className="w-full border border-gray-300">
-//             <thead className="bg-gray-100">
-//               <tr>
-//                 <th className="p-2 border">Order ID</th>
-//                 <th className="p-2 border">MatriID</th>
-//                 <th className="p-2 border">Name</th>
-//                 <th className="p-2 border">Email</th>
-//                 <th className="p-2 border">Plan</th>
-//                 <th className="p-2 border">Amount</th>
-//                 <th className="p-2 border">Status</th>
-//                 <th className="p-2 border">Created At</th>
-//               </tr>
-//             </thead>
-
-//             <tbody>
-//               {filtered.length === 0 ? (
-//                 <tr>
-//                   <td colSpan="8" className="p-4 text-center">
-//                     No payments found
-//                   </td>
-//                 </tr>
-//               ) : (
-//                 filtered.map((p, i) => (
-//                   <tr key={i} className="text-center">
-//                     <td className="p-2 border">{p.order_id}</td>
-
-//                     <td className="p-2 border">{p.MatriID || "-"}</td>
-
-//                     <td className="p-2 border">{p.Name || "-"}</td>
-
-//                     <td className="p-2 border">{p.email}</td>
-
-//                     <td className="p-2 border capitalize">{p.plan}</td>
-
-//                     <td className="p-2 border">₹{p.amount}</td>
-
-//                     <td className="p-2 border">
-//                       <span
-//                         className={`px-2 py-1 rounded text-white text-sm ${
-//                           p.status === "Success"
-//                             ? "bg-green-500"
-//                             : p.status === "Pending"
-//                               ? "bg-yellow-500"
-//                               : "bg-red-500"
-//                         }`}
-//                       >
-//                         {p.status}
-//                       </span>
-//                     </td>
-
-//                     <td className="p-2 border">
-//                       {new Date(p.created_at).toLocaleString()}
-//                     </td>
-//                   </tr>
-//                 ))
-//               )}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -144,7 +14,7 @@ export default function AdminPayments() {
   useEffect(() => {
     fetchPayments();
   }, []);
-
+     
   const fetchPayments = async () => {
     try {
       const res = await axios.get(
@@ -167,12 +37,13 @@ export default function AdminPayments() {
     // 1. Search Filter
     if (search) {
       const s = search.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.MatriID?.toLowerCase().includes(s) ||
-          p.Name?.toLowerCase().includes(s) ||
-          p.order_id?.toLowerCase().includes(s),
-      );
+result = result.filter(
+  (p) =>
+    p.MatriID?.toLowerCase().includes(s) ||
+    p.Name?.toLowerCase().includes(s) ||
+    p.order_id?.toLowerCase().includes(s) ||
+    p.email?.toLowerCase().includes(s),
+);
     }
 
     // 2. Date Range Filter
@@ -233,13 +104,51 @@ export default function AdminPayments() {
     }
   };
 
+  /* ================= DELETE ================= */
+  const deletePayment = async (orderId) => {
+    if (!window.confirm("Are you sure you want to delete this payment?"))
+      return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE || ""}/api/payment/admin/payments/${orderId}`,
+      );
+
+      fetchPayments(); // refresh list
+    } catch (err) {
+      alert("Delete failed");
+    }
+  };
+
+  /* ================= TOGGLE STATUS ================= */
+  /* ================= TOGGLE STATUS ================= */
+  const toggleStatus = async (orderId, currentStatus) => {
+    const newStatus = currentStatus === "Success" ? "Pending" : "Success";
+
+    const confirmChange = window.confirm(
+      `Are you sure you want to change status from ${currentStatus} to ${newStatus}?`,
+    );
+
+    if (!confirmChange) return;
+
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_API_BASE || ""}/api/payment/admin/payments/${orderId}/status`,
+        { status: newStatus },
+      );
+
+      fetchPayments(); // refresh
+    } catch (err) {
+      alert("Status update failed");
+    }
+  };
+
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* HEADER & TOTAL CARD */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
           <div>
-          
             <h2 className="text-gray-500">
               Manage and track all member payments
             </h2>
@@ -343,6 +252,9 @@ export default function AdminPayments() {
                       Order ID
                     </th>
                     <th className="p-4 font-semibold uppercase text-xs">
+                      Email
+                    </th>
+                    <th className="p-4 font-semibold uppercase text-xs">
                       Member Details
                     </th>
                     <th className="p-4 font-semibold uppercase text-xs">
@@ -357,13 +269,17 @@ export default function AdminPayments() {
                     <th className="p-4 font-semibold uppercase text-xs text-right">
                       Date
                     </th>
+
+                    <th className="p-4 font-semibold uppercase text-xs text-center">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filtered.length === 0 ? (
                     <tr>
                       <td
-                        colSpan="7"
+                        colSpan="8"
                         className="p-10 text-center text-gray-500"
                       >
                         No matching records found
@@ -381,6 +297,7 @@ export default function AdminPayments() {
                         <td className="p-4 text-xs font-mono text-blue-600">
                           {p.order_id}
                         </td>
+                        <td className="p-4 text-xs text-gray-600">{p.email}</td>
                         <td className="p-4">
                           <div className="font-bold text-gray-800 leading-none">
                             {p.Name || "N/A"}
@@ -404,6 +321,21 @@ export default function AdminPayments() {
                         </td>
                         <td className="p-4 text-sm text-gray-600 font-medium text-right">
                           {formatDate(p.created_at)}
+                        </td>
+                        <td className="p-4 text-center space-x-2">
+                          <button
+                            onClick={() => toggleStatus(p.order_id, p.status)}
+                            className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded font-bold hover:bg-blue-200 transition"
+                          >
+                            Toggle
+                          </button>
+
+                          <button
+                            onClick={() => deletePayment(p.order_id)}
+                            className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded font-bold hover:bg-red-200 transition"
+                          >
+                            Delete
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -430,6 +362,7 @@ export default function AdminPayments() {
                       <p className="text-xs text-blue-600 font-mono">
                         {p.order_id}
                       </p>
+                      <p className="text-xs text-gray-500">{p.email}</p>
                     </div>
                     <span
                       className={`px-2 py-1 rounded-full text-[10px] font-bold border uppercase ${getStatusStyle(p.status)}`}
@@ -455,6 +388,22 @@ export default function AdminPayments() {
                         {formatDate(p.created_at)}
                       </p>
                     </div>
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => toggleStatus(p.order_id, p.status)}
+                      className="flex-1 px-3 py-2 text-xs bg-blue-100 text-blue-700 rounded font-bold"
+                    >
+                      Toggle Status
+                    </button>
+
+                    <button
+                      onClick={() => deletePayment(p.order_id)}
+                      className="flex-1 px-3 py-2 text-xs bg-red-100 text-red-700 rounded font-bold"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}

@@ -657,4 +657,51 @@ router.get("/verify", async (req, res) => {
   }
 });
 
+
+/* =========================================================
+   🗑 DELETE PAYMENT
+========================================================= */
+
+router.delete("/admin/payments/:orderId", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    await db.promise().query(
+      "DELETE FROM payments WHERE order_id = ?",
+      [orderId]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Delete Error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
+/* =========================================================
+   🔄 TOGGLE STATUS (Pending ⇄ Success)
+========================================================= */
+
+router.put("/admin/payments/:orderId/status", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    if (!["Pending", "Success"].includes(status)) {
+      return res.status(400).json({ success: false });
+    }
+
+    await db.promise().query(
+      "UPDATE payments SET status=? WHERE order_id=?",
+      [status, orderId]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Status Update Error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
 export default router;
