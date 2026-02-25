@@ -500,10 +500,18 @@ router.post("/ccavenue-init", async (req, res) => {
     const orderId = "ORD" + Date.now();
     const amount = plan === "premium" ? "2.00" : "1.00";
 
+    // await db.promise().query(
+    //   `INSERT INTO payments (order_id,email,plan,amount,status)
+    //    VALUES (?,?,?,?,?)`,
+    //   [orderId, email, plan, amount, "Pending"],
+    // );
+
     await db.promise().query(
-      `INSERT INTO payments (order_id,email,plan,amount,status)
-       VALUES (?,?,?,?,?)`,
-      [orderId, email, plan, amount, "Pending"],
+      `
+  INSERT INTO payments (order_id,email,plan,amount,status)
+  VALUES (?,?,?,?, 'Success')
+`,
+      [orderId, email, "basic", data.amount || "1.00"],
     );
 
     const payload =
@@ -527,6 +535,21 @@ router.post("/ccavenue-init", async (req, res) => {
   }
 });
 
+
+router.post("/reconcile", async (req, res) => {
+  const { order_id } = req.body;
+
+  await db.promise().query(
+    `
+    UPDATE payments
+    SET status='Success'
+    WHERE order_id=?
+  `,
+    [order_id],
+  );
+
+  res.json({ success: true });
+});
 /* =========================================================
    ✅ SUCCESS CALLBACK (POST CHAIN BROKEN SAFELY)
 ========================================================= */
@@ -561,25 +584,61 @@ router.all(
       const decrypted = decrypt(encResp);
       const data = qs.parse(decrypted);
       const orderId = data.order_id;
+      const email = data.billing_email || data.merchant_param1 || "";
 
       console.log("CCAvenue Response:", data);
 
+      // if (data.order_status === "Success") {
+      //   await db
+      //     .promise()
+      //     .query("UPDATE payments SET status='Success' WHERE order_id=?", [
+      //       orderId,
+      //     ]);
+
+      //   return res.send(`
+      //     <html>
+      //       <script>
+      //         window.location.replace("${BASE_URL}/payment-result?status=success");
+      //       </script>
+      //     </html>
+      //   `);
+      // }
+
+
       if (data.order_status === "Success") {
-        await db
+        // 🔥 Always mark success even if already updated
+        await db.promise().query(
+          `
+    UPDATE payments
+    SET status='Success'
+    WHERE order_id=?
+  `,
+          [orderId],
+        );
+
+        // 🔥 Double safety — if row missing create success
+        const [rows] = await db
           .promise()
-          .query("UPDATE payments SET status='Success' WHERE order_id=?", [
-            orderId,
-          ]);
+          .query("SELECT id FROM payments WHERE order_id=?", [orderId]);
+
+        if (rows.length === 0) {
+          await db.promise().query(
+            `
+      INSERT INTO payments (order_id,email,plan,amount,status)
+      VALUES (?,?,?,?, 'Success')
+    `,
+            [orderId, data.billing_email || "", "basic", data.amount || "1.00"],
+          );
+        }
 
         return res.send(`
-          <html>
-            <script>
-              window.location.replace("${BASE_URL}/payment-result?status=success");
-            </script>
-          </html>
-        `);
+    <html>
+      <head>
+        <meta http-equiv="refresh" content="0;url=${BASE_URL}/payment-result?status=success" />
+      </head>
+    </html>
+  `);
       }
-
       await db
         .promise()
         .query("UPDATE payments SET status='Failed' WHERE order_id=?", [

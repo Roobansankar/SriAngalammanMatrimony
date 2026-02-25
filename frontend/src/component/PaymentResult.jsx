@@ -91,6 +91,84 @@
 //   return <div>Processing Payment...</div>;
 // }
 
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { useEffect } from "react";
+
+// export default function PaymentResult() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     const status = new URLSearchParams(location.search).get("status");
+
+//     const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+//     if (!raw) {
+//       navigate("/register/step/6", { replace: true });
+//       return;
+//     }
+
+//     const parsed = JSON.parse(raw);
+
+//     if (status === "success") {
+//       /* 🔥 FORCE SAVE PAYMENT STATE */
+//       parsed.paymentDone = true;
+
+//       localStorage.setItem(
+//         "multiStepRegistration_form_v1",
+//         JSON.stringify(parsed),
+//       );
+
+//       /* 🔥 GO DIRECT STEP 7 */
+//       navigate("/register/step/7", { replace: true });
+//     } else {
+//       navigate("/register/step/6?payment=failed", {
+//         replace: true,
+//       });
+//     }
+//   }, [location, navigate]);
+
+//   useEffect(() => {
+//   async function finalize() {
+//     const raw = localStorage.getItem(
+//       "multiStepRegistration_form_v1"
+//     );
+
+//     if (!raw) {
+//       navigate("/register/step/6");
+//       return;
+//     }
+
+//     const parsed = JSON.parse(raw);
+
+//     // 🔥 Verify directly from DB
+//     const res = await axios.get(
+//       "/api/payment/verify",
+//       { params: { email: parsed.email } }
+//     );
+
+//     if (res.data.valid) {
+//       parsed.paymentDone = true;
+
+//       localStorage.setItem(
+//         "multiStepRegistration_form_v1",
+//         JSON.stringify(parsed)
+//       );
+
+//       navigate("/register/step/7", { replace: true });
+//     } else {
+//       // wait 2 sec retry
+//       setTimeout(finalize, 2000);
+//     }
+//   }
+
+//   finalize();
+// }, []);
+
+//   return <div>Processing Payment...</div>;
+// }
+
+import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
@@ -99,34 +177,37 @@ export default function PaymentResult() {
   const location = useLocation();
 
   useEffect(() => {
-    const status = new URLSearchParams(location.search).get("status");
+    async function finalize() {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-    const raw = localStorage.getItem("multiStepRegistration_form_v1");
+      if (!raw) {
+        navigate("/register/step/6");
+        return;
+      }
 
-    if (!raw) {
-      navigate("/register/step/6", { replace: true });
-      return;
-    }
+      const parsed = JSON.parse(raw);
 
-    const parsed = JSON.parse(raw);
-
-    if (status === "success") {
-      /* 🔥 FORCE SAVE PAYMENT STATE */
-      parsed.paymentDone = true;
-
-      localStorage.setItem(
-        "multiStepRegistration_form_v1",
-        JSON.stringify(parsed),
-      );
-
-      /* 🔥 GO DIRECT STEP 7 */
-      navigate("/register/step/7", { replace: true });
-    } else {
-      navigate("/register/step/6?payment=failed", {
-        replace: true,
+      /* Retry verify until gateway updates DB */
+      const res = await axios.get("/api/payment/verify", {
+        params: { email: parsed.email },
       });
+
+      if (res.data.valid) {
+        parsed.paymentDone = true;
+
+        localStorage.setItem(
+          "multiStepRegistration_form_v1",
+          JSON.stringify(parsed),
+        );
+
+        navigate("/register/step/7", { replace: true });
+      } else {
+        setTimeout(finalize, 2000);
+      }
     }
-  }, [location, navigate]);
+
+    finalize();
+  }, [navigate, location]);
 
   return <div>Processing Payment...</div>;
 }
