@@ -241,111 +241,121 @@ result = result.filter(
         ) : (
           <>
             {/* DESKTOP TABLE */}
-            <div className="hidden md:block overflow-hidden bg-white rounded-xl shadow-md border border-gray-200">
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-gray-800 text-white">
-                  <tr>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      S.No
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      Order ID
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      Email
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      Member Details
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      Plan
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      Amount
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs">
-                      Status
-                    </th>
-                    <th className="p-4 font-semibold uppercase text-xs text-right">
-                      Date
-                    </th>
+            {/* <div className="hidden md:block overflow-hidden bg-white rounded-xl shadow-md border border-gray-200"> */}
+            <div className="hidden md:block bg-white rounded-xl shadow-md border border-gray-200">
+              <div className="max-h-[500px] overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-gray-800 text-white">
+                      <tr>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          S.No
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          Order ID
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          Email
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          Member Details
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          Plan
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          Amount
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
+                          Status
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs text-right">
+                          Date
+                        </th>
 
-                    <th className="p-4 font-semibold uppercase text-xs text-center">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filtered.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan="8"
-                        className="p-10 text-center text-gray-500"
-                      >
-                        No matching records found
-                      </td>
-                    </tr>
-                  ) : (
-                    filtered.map((p, i) => (
-                      <tr
-                        key={p.order_id || i}
-                        className="hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="p-4 text-gray-400 font-medium">
-                          {i + 1}
-                        </td>
-                        <td className="p-4 text-xs font-mono text-blue-600">
-                          {p.order_id}
-                        </td>
-                        <td className="p-4 text-xs text-gray-600">{p.email}</td>
-                        <td className="p-4">
-                          <div className="font-bold text-gray-800 leading-none">
-                            {p.Name || "N/A"}
-                          </div>
-                          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">
-                            {p.MatriID || "No ID"}
-                          </div>
-                        </td>
-                        <td className="p-4 capitalize text-sm text-gray-700 font-semibold">
-                          {p.plan}
-                        </td>
-                        <td className="p-4 font-bold text-gray-900">
-                          ₹{p.amount}
-                        </td>
-                        <td className="p-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase ${getStatusStyle(p.status)}`}
-                          >
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="p-4 text-sm text-gray-600 font-medium text-right">
-                          {formatDate(p.created_at)}
-                        </td>
-                        <td className="p-4 text-center space-x-2">
-                          <button
-                            onClick={() => toggleStatus(p.order_id, p.status)}
-                            className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded font-bold hover:bg-blue-200 transition"
-                          >
-                            Toggle
-                          </button>
-
-                          <button
-                            onClick={() => deletePayment(p.order_id)}
-                            className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded font-bold hover:bg-red-200 transition"
-                          >
-                            Delete
-                          </button>
-                        </td>
+                        <th className="p-4 font-semibold uppercase text-xs text-center">
+                          Actions
+                        </th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filtered.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan="8"
+                            className="p-10 text-center text-gray-500"
+                          >
+                            No matching records found
+                          </td>
+                        </tr>
+                      ) : (
+                        filtered.map((p, i) => (
+                          <tr
+                            key={p.order_id || i}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="p-4 text-gray-400 font-medium">
+                              {i + 1}
+                            </td>
+                            <td className="p-4 text-xs font-mono text-blue-600">
+                              {p.order_id}
+                            </td>
+                            <td className="p-4 text-xs text-gray-600">
+                              {p.email}
+                            </td>
+                            <td className="p-4">
+                              <div className="font-bold text-gray-800 leading-none">
+                                {p.Name || "N/A"}
+                              </div>
+                              <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">
+                                {p.MatriID || "No ID"}
+                              </div>
+                            </td>
+                            <td className="p-4 capitalize text-sm text-gray-700 font-semibold">
+                              {p.plan}
+                            </td>
+                            <td className="p-4 font-bold text-gray-900">
+                              ₹{p.amount}
+                            </td>
+                            <td className="p-4">
+                              <span
+                                className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase ${getStatusStyle(p.status)}`}
+                              >
+                                {p.status}
+                              </span>
+                            </td>
+                            <td className="p-4 text-sm text-gray-600 font-medium text-right">
+                              {formatDate(p.created_at)}
+                            </td>
+                            <td className="p-4 text-center space-x-2">
+                              <button
+                                onClick={() =>
+                                  toggleStatus(p.order_id, p.status)
+                                }
+                                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded font-bold hover:bg-blue-200 transition"
+                              >
+                                Toggle
+                              </button>
+
+                              <button
+                                onClick={() => deletePayment(p.order_id)}
+                                className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded font-bold hover:bg-red-200 transition"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
             {/* MOBILE CARD VIEW */}
-            <div className="md:hidden space-y-4">
+            {/* <div className="md:hidden space-y-4"> */}
+            <div className="md:hidden space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {filtered.map((p, i) => (
                 <div
                   key={p.order_id || i}
