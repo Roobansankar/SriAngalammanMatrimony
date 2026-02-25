@@ -144,8 +144,8 @@ result = result.filter(
   };
 
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 bg-gray-50 min-h-screen w-full overflow-x-hidden">
+      <div className="max-w-7xl mx-auto w-full">
         {/* HEADER & TOTAL CARD */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
           <div>
@@ -242,8 +242,9 @@ result = result.filter(
           <>
             {/* DESKTOP TABLE */}
             {/* <div className="hidden md:block overflow-hidden bg-white rounded-xl shadow-md border border-gray-200"> */}
-            <div className="hidden md:block bg-white rounded-xl shadow-md border border-gray-200">
-              <div className="max-h-[500px] overflow-y-auto">
+            {/* Added overflow-x-auto to handle horizontal table scroll on smaller desktops */}
+            <div className="hidden md:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+              <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                 <div className="max-h-[500px] overflow-y-auto">
                   <table className="w-full text-left border-collapse">
                     <thead className="bg-gray-800 text-white">
@@ -297,10 +298,13 @@ result = result.filter(
                             <td className="p-4 text-gray-400 font-medium">
                               {i + 1}
                             </td>
-                            <td className="p-4 text-xs font-mono text-blue-600">
+                            <td className="p-4 text-xs font-mono text-blue-600 break-all max-w-[150px]">
                               {p.order_id}
                             </td>
-                            <td className="p-4 text-xs text-gray-600">
+                            <td
+                              className="p-4 text-xs text-gray-600 truncate max-w-[200px]"
+                              title={p.email}
+                            >
                               {p.email}
                             </td>
                             <td className="p-4">
