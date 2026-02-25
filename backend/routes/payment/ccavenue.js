@@ -500,18 +500,10 @@ router.post("/ccavenue-init", async (req, res) => {
     const orderId = "ORD" + Date.now();
     const amount = plan === "premium" ? "2.00" : "1.00";
 
-    // await db.promise().query(
-    //   `INSERT INTO payments (order_id,email,plan,amount,status)
-    //    VALUES (?,?,?,?,?)`,
-    //   [orderId, email, plan, amount, "Pending"],
-    // );
-
     await db.promise().query(
-      `
-  INSERT INTO payments (order_id,email,plan,amount,status)
-  VALUES (?,?,?,?, 'Success')
-`,
-      [orderId, email, "basic", data.amount || "1.00"],
+      `INSERT INTO payments (order_id,email,plan,amount,status)
+       VALUES (?,?,?,?,?)`,
+      [orderId, email, plan, amount, "Pending"],
     );
 
     const payload =
@@ -535,21 +527,6 @@ router.post("/ccavenue-init", async (req, res) => {
   }
 });
 
-
-router.post("/reconcile", async (req, res) => {
-  const { order_id } = req.body;
-
-  await db.promise().query(
-    `
-    UPDATE payments
-    SET status='Success'
-    WHERE order_id=?
-  `,
-    [order_id],
-  );
-
-  res.json({ success: true });
-});
 /* =========================================================
    ✅ SUCCESS CALLBACK (POST CHAIN BROKEN SAFELY)
 ========================================================= */
