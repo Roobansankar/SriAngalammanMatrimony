@@ -557,7 +557,7 @@ router.all(
         return res.send(`
           <html>
             <script>
-              window.location.replace("${BASE_URL}/payment-result?status=failed");
+              window.location.href = "/payment-result?status=failed";
             </script>
           </html>
         `);
@@ -616,7 +616,9 @@ WHERE order_id=?
         return res.send(`
     <html>
       <head>
-        <meta http-equiv="refresh" content="0;url=${BASE_URL}/payment-result?status=success" />
+      <script>
+  window.location.href = "/payment-result?status=success";
+</script>
       </head>
     </html>
   `);
@@ -630,7 +632,7 @@ WHERE order_id=?
       return res.send(`
         <html>
           <script>
-            window.location.replace("${BASE_URL}/payment-result?status=failed");
+           window.location.href = "/payment-result?status=failed";
           </script>
         </html>
       `);
@@ -640,7 +642,7 @@ WHERE order_id=?
       return res.send(`
         <html>
           <script>
-            window.location.replace("${BASE_URL}/payment-result?status=failed");
+           window.location.href = "/payment-result?status=failed";
           </script>
         </html>
       `);
@@ -660,7 +662,7 @@ router.all("/ccavenue-cancel", (req, res) => {
   res.send(`
     <html>
       <script>
-        window.location.replace("${BASE_URL}/payment-result?status=failed");
+      window.location.href = "/payment-result?status=failed";
       </script>
     </html>
   `);

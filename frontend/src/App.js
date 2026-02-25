@@ -82,8 +82,7 @@ import PremiumMembers from "./AdminDashboard/PremiumMembers";
 import UserPasswords from "./AdminDashboard/UserPasswords";
 import LoggedSearchResults from "./profile/RegularSearchResults";
 import { connectSocket } from "./socket";
-import PaymentSuccess from "./component/PaymentSuccess";
-import PaymentFailed from "./component/PaymentFailed";
+
 import AdminPayments from "./AdminDashboard/AdminPayments";
 import PaymentResult from "./component/PaymentResult";
 // 👇 Scroll to top on each route change
@@ -210,9 +209,7 @@ function AppContent({ user, setUser }) {
             path="/pending-verification"
             element={<PendingVerification />}
           />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
 
-          <Route path="/payment-failed" element={<PaymentFailed />} />
 
           <Route path="/register/*" element={<MultiStepForm />} />
 
