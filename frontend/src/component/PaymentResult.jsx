@@ -54,6 +54,43 @@
 //   return <div>Processing Payment...</div>;
 // }
 
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { useEffect } from "react";
+
+// export default function PaymentResult() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     const status = new URLSearchParams(location.search).get("status");
+
+//     const raw = localStorage.getItem("multiStepRegistration_form_v1");
+
+//     if (raw) {
+//       const parsed = JSON.parse(raw);
+
+//       if (status === "success") {
+//         parsed.paymentDone = true;
+
+//         localStorage.setItem(
+//           "multiStepRegistration_form_v1",
+//           JSON.stringify(parsed),
+//         );
+
+//         navigate("/register/step/7", { replace: true });
+//       } else {
+//         navigate("/register/step/6?payment=failed", {
+//           replace: true,
+//         });
+//       }
+//     } else {
+//       navigate("/register/step/6");
+//     }
+//   }, [location, navigate]);
+
+//   return <div>Processing Payment...</div>;
+// }
+
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
@@ -66,25 +103,28 @@ export default function PaymentResult() {
 
     const raw = localStorage.getItem("multiStepRegistration_form_v1");
 
-    if (raw) {
-      const parsed = JSON.parse(raw);
+    if (!raw) {
+      navigate("/register/step/6", { replace: true });
+      return;
+    }
 
-      if (status === "success") {
-        parsed.paymentDone = true;
+    const parsed = JSON.parse(raw);
 
-        localStorage.setItem(
-          "multiStepRegistration_form_v1",
-          JSON.stringify(parsed),
-        );
+    if (status === "success") {
+      /* 🔥 FORCE SAVE PAYMENT STATE */
+      parsed.paymentDone = true;
 
-        navigate("/register/step/7", { replace: true });
-      } else {
-        navigate("/register/step/6?payment=failed", {
-          replace: true,
-        });
-      }
+      localStorage.setItem(
+        "multiStepRegistration_form_v1",
+        JSON.stringify(parsed),
+      );
+
+      /* 🔥 GO DIRECT STEP 7 */
+      navigate("/register/step/7", { replace: true });
     } else {
-      navigate("/register/step/6");
+      navigate("/register/step/6?payment=failed", {
+        replace: true,
+      });
     }
   }, [location, navigate]);
 

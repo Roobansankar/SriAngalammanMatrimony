@@ -479,18 +479,31 @@ export default function Step11Payment({ formData, setFormData }) {
   const navigate = useNavigate();
 
 
+useEffect(() => {
+  async function protectPaidUser() {
+    const raw = localStorage.getItem(
+      "multiStepRegistration_form_v1"
+    );
 
-  // useEffect(() => {
-  //   const raw = localStorage.getItem("multiStepRegistration_form_v1");
+    if (!raw) return;
 
-  //   if (raw) {
-  //     const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(raw);
 
-  //     if (parsed.paymentDone) {
-  //       navigate("/register/step/7", { replace: true });
-  //     }
-  //   }
-  // }, []);
+    if (!parsed.email) return;
+
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
+      { params: { email: parsed.email } }
+    );
+
+    if (res.data.valid) {
+      navigate("/register/step/7", { replace: true });
+    }
+  }
+
+  protectPaidUser();
+}, []);
+
 
 
   useEffect(() => {
@@ -526,40 +539,6 @@ export default function Step11Payment({ formData, setFormData }) {
 
     checkAlreadyPaid();
   }, []);
-  /* ================= CHECK PAYMENT RESULT ================= */
-// useEffect(() => {
-//   const params = new URLSearchParams(location.search);
-//   const status = params.get("payment");
-
-//   if (!status) return;
-
-//   if (status === "success") {
-//     const raw = localStorage.getItem("multiStepRegistration_form_v1");
-
-//     if (raw) {
-//       const parsed = JSON.parse(raw);
-//       setFormData(parsed);
-//     }
-
-//     setMessage("Payment Successful ✅ Redirecting...");
-
-//     /* 🔥 REPLACE HISTORY COMPLETELY */
-//     // window.history.replaceState(null, "", "/register/step/7");
-//     navigate("/register/step/7", { replace: true });
-
-//     setTimeout(() => {
-//       navigate("/register/step/7", { replace: true });
-//     }, 500);
-//   }
-
-//   if (status === "failed") {
-//     setMessage("Payment Failed ❌ Please try again.");
-//     setLoading(false);
-//   }
-// }, [location.search, navigate, setFormData]);
-  /* ================= HANDLE PAYMENT ================= */
-
-  /* ================= CHECK IF PAYMENT ALREADY DONE ================= */
 
  
 
@@ -591,20 +570,100 @@ export default function Step11Payment({ formData, setFormData }) {
 }, [formData?.email, formData?.plan, navigate]);
 
 
-  const handlePayment = async () => {
+  // const handlePayment = async () => {
     
+  //   if (!plan) {
+  //     alert("Please select a plan");
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+
+  //     /* ✅ Merge plan with full form data */
+  //     const updatedData = { ...formData, plan };
+
+  //     /* ✅ Save again to localStorage BEFORE redirect */
+  //     localStorage.setItem(
+  //       "multiStepRegistration_form_v1",
+  //       JSON.stringify(updatedData),
+  //     );
+
+  //     setFormData(updatedData);
+
+  //     const res = await axios.post(
+  //       `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
+  //       {
+  //         plan,
+  //         email: formData.email,
+  //       },
+  //     );
+  //      console.log("CCAvenue Response:", res.data);
+  //     /* Redirect form submit */
+  //     const form = document.createElement("form");
+  //     form.method = "POST";
+  //     form.action = res.data.ccUrl;
+
+  //     const encInput = document.createElement("input");
+  //     encInput.type = "hidden";
+  //     encInput.name = "encRequest";
+  //     encInput.value = res.data.encRequest;
+
+  //     const accessInput = document.createElement("input");
+  //     accessInput.type = "hidden";
+  //     accessInput.name = "access_code";
+  //     accessInput.value = res.data.accessCode;
+
+  //     form.appendChild(encInput);
+  //     form.appendChild(accessInput);
+
+  //     document.body.appendChild(form);
+  //     form.submit();
+  //   } catch (err) {
+  //     if (err.response?.data?.message) {
+  //       alert(err.response.data.message);
+  //     } else {
+  //       alert("Payment init failed");
+  //     }
+  //     setLoading(false);
+  //   }
+  // };
+  
+
+  const handlePayment = async () => {
+    let emailToUse = formData?.email;
+
+    // 🔥 If formData lost after refresh, restore from localStorage
+    if (!emailToUse) {
+      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        emailToUse = parsed.email;
+
+        // also restore full formData into state
+        setFormData(parsed);
+      }
+    }
+
     if (!plan) {
       alert("Please select a plan");
+      return;
+    }
+
+    if (!emailToUse) {
+      alert("Something went wrong. Please restart registration.");
       return;
     }
 
     try {
       setLoading(true);
 
-      /* ✅ Merge plan with full form data */
-      const updatedData = { ...formData, plan };
+      const updatedData = {
+        ...formData,
+        email: emailToUse,
+        plan,
+      };
 
-      /* ✅ Save again to localStorage BEFORE redirect */
       localStorage.setItem(
         "multiStepRegistration_form_v1",
         JSON.stringify(updatedData),
@@ -616,11 +675,10 @@ export default function Step11Payment({ formData, setFormData }) {
         `${process.env.REACT_APP_API_BASE || ""}/api/payment/ccavenue-init`,
         {
           plan,
-          email: formData.email,
+          email: emailToUse,
         },
       );
-console.log("CCAvenue Response:", res.data);
-      /* Redirect form submit */
+
       const form = document.createElement("form");
       form.method = "POST";
       form.action = res.data.ccUrl;
@@ -637,18 +695,14 @@ console.log("CCAvenue Response:", res.data);
 
       form.appendChild(encInput);
       form.appendChild(accessInput);
-
       document.body.appendChild(form);
       form.submit();
     } catch (err) {
-      if (err.response?.data?.message) {
-        alert(err.response.data.message);
-      } else {
-        alert("Payment init failed");
-      }
+      alert("Payment init failed");
       setLoading(false);
     }
   };
+  
   /* ================= UI ================= */
 
   return (
