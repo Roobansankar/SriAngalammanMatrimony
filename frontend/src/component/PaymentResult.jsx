@@ -220,8 +220,6 @@ export default function PaymentResult() {
   const navigate = useNavigate();
 
 
-
-
   useEffect(() => {
     window.history.replaceState(null, "", window.location.href);
   }, []);
@@ -243,7 +241,8 @@ export default function PaymentResult() {
 
       try {
         const res = await axios.get(
-          `${process.env.REACT_APP_API_BASE}/api/payment/verify`,
+          // `${process.env.REACT_APP_API_BASE}/api/payment/verify`,
+          `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
           { params: { email: parsed.email } },
         );
 

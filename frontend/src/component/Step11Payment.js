@@ -697,15 +697,7 @@ export default function Step11Payment({ formData, setFormData }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  /* --------------------------------------------------
-     🔐 PROTECT PAID USER (Single effect only)
-  -------------------------------------------------- */
-// useEffect(() => {
-//   window.history.pushState(null, "", window.location.href);
-//   window.onpopstate = function () {
-//     window.history.go(1);
-//   };
-// }, []);
+
 
 useEffect(() => {
   const blockBack = () => {

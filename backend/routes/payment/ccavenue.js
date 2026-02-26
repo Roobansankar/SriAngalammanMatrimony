@@ -533,119 +533,140 @@ router.post("/ccavenue-init", async (req, res) => {
 ========================================================= */
 
 
-// router.post(
+
+// function postBreakRedirect(status) {
+//   return `
+//   <html>
+//     <head>
+//       <meta charset="utf-8" />
+//       <title>Redirecting...</title>
+
+//       <script>
+//         // 🔥 Break POST history
+//         window.location.replace(
+//           "${BASE_URL}/payment-result?status=${status}"
+//         );
+//       </script>
+//     </head>
+
+//     <body>
+//       Redirecting…
+//     </body>
+//   </html>
+//   `;
+// }
+
+// router.all(
 //   "/ccavenue-success",
 //   express.urlencoded({ extended: false }),
 //   async (req, res) => {
 //     try {
-//       const encResp = req.body.encResp;
+//       /* 🔥 ADD CACHE CONTROL HERE */
+//       res.set({
+//         "Cache-Control": "no-store, no-cache, must-revalidate, private",
+//         Pragma: "no-cache",
+//         Expires: "0",
+//       });
+
+//       const encResp =
+//         req.body?.encResp ||
+//         req.query?.encResp ||
+//         req.body?.encresp ||
+//         req.query?.encresp;
 
 //       if (!encResp) {
-//         return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+//         return res.send(postBreakRedirect("failed"));
 //       }
 
 //       const decrypted = decrypt(encResp);
 //       const data = qs.parse(decrypted);
 
 //       const orderId = data.order_id;
+//       const status = data.order_status;
 
-//       console.log("CCAvenue Response:", data);
+//       if (status === "Success") {
+//         await db
+//           .promise()
+//           .query(`UPDATE payments SET status='Success' WHERE order_id=?`, [
+//             orderId,
+//           ]);
 
-//       if (data.order_status === "Success") {
-//         await db.promise().query(
-//           `UPDATE payments SET status='Success'
-//            WHERE order_id=?`,
-//           [orderId],
-//         );
-
-//         return res.redirect(`${BASE_URL}/payment-result?status=success`);
+//         return res.send(postBreakRedirect("success"));
 //       }
 
-//       await db.promise().query(
-//         `UPDATE payments SET status='Failed'
-//          WHERE order_id=?`,
-//         [orderId],
-//       );
+//       await db
+//         .promise()
+//         .query(`UPDATE payments SET status='Failed' WHERE order_id=?`, [
+//           orderId,
+//         ]);
 
-//       return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+//       return res.send(postBreakRedirect("failed"));
 //     } catch (err) {
-//       console.error("CCAvenue Error:", err);
-//       return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+//       return res.send(postBreakRedirect("failed"));
 //     }
 //   },
 // );
 
-function postBreakRedirect(status) {
-  return `
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <title>Redirecting...</title>
 
-      <script>
-        // 🔥 Break POST history
-        window.location.replace(
-          "${BASE_URL}/payment-result?status=${status}"
-        );
-      </script>
-    </head>
 
-    <body>
-      Redirecting…
-    </body>
-  </html>
-  `;
-}
 
-router.all(
+router.post(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
     try {
-      /* 🔥 ADD CACHE CONTROL HERE */
       res.set({
         "Cache-Control": "no-store, no-cache, must-revalidate, private",
         Pragma: "no-cache",
         Expires: "0",
       });
 
-      const encResp =
-        req.body?.encResp ||
-        req.query?.encResp ||
-        req.body?.encresp ||
-        req.query?.encresp;
+      const encResp = req.body.encResp;
 
       if (!encResp) {
-        return res.send(postBreakRedirect("failed"));
+        console.log("❌ No encResp received");
+        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
       }
 
       const decrypted = decrypt(encResp);
       const data = qs.parse(decrypted);
 
+      console.log("🔐 CCAvenue Response:", data);
+
       const orderId = data.order_id;
-      const status = data.order_status;
+      const orderStatus = data.order_status;
+      const trackingId = data.tracking_id;
 
-      if (status === "Success") {
-        await db
-          .promise()
-          .query(`UPDATE payments SET status='Success' WHERE order_id=?`, [
-            orderId,
-          ]);
-
-        return res.send(postBreakRedirect("success"));
+      if (!orderId) {
+        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
       }
 
-      await db
-        .promise()
-        .query(`UPDATE payments SET status='Failed' WHERE order_id=?`, [
-          orderId,
-        ]);
+      if (orderStatus === "Success") {
+        await db.promise().query(
+          `UPDATE payments 
+           SET status='Success'
+           WHERE order_id=?`,
+          [orderId]
+        );
 
-      return res.send(postBreakRedirect("failed"));
+        console.log("✅ Payment marked SUCCESS:", orderId);
+
+        return res.redirect(`${BASE_URL}/payment-result?status=success`);
+      }
+
+      await db.promise().query(
+        `UPDATE payments 
+         SET status='Failed'
+         WHERE order_id=?`,
+        [orderId]
+      );
+
+      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
     } catch (err) {
-      return res.send(postBreakRedirect("failed"));
+      console.error("❌ Callback Error:", err);
+      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
     }
-  },
+  }
 );
 
 /* =========================================================
@@ -673,6 +694,33 @@ router.all("/ccavenue-cancel", (req, res) => {
    🔎 VERIFY PAYMENT
 ========================================================= */
 
+// router.get("/verify", async (req, res) => {
+//   try {
+//     const { email } = req.query;
+
+//     if (!email) return res.json({ valid: false });
+
+//     const [rows] = await db.promise().query(
+//       `SELECT plan FROM payments
+//        WHERE email=? AND status='Success'
+//        ORDER BY id DESC LIMIT 1`,
+//       [email],
+//     );
+
+//     if (rows.length > 0) {
+//       return res.json({
+//         valid: true,
+//         plan: rows[0].plan,
+//       });
+//     }
+
+//     return res.json({ valid: false });
+//   } catch (err) {
+//     return res.json({ valid: false });
+//   }
+// });
+
+
 router.get("/verify", async (req, res) => {
   try {
     const { email } = req.query;
@@ -680,13 +728,13 @@ router.get("/verify", async (req, res) => {
     if (!email) return res.json({ valid: false });
 
     const [rows] = await db.promise().query(
-      `SELECT plan FROM payments
-       WHERE email=? AND status='Success'
+      `SELECT plan, status FROM payments
+       WHERE email=?
        ORDER BY id DESC LIMIT 1`,
       [email],
     );
 
-    if (rows.length > 0) {
+    if (rows.length > 0 && rows[0].status === "Success") {
       return res.json({
         valid: true,
         plan: rows[0].plan,
@@ -698,7 +746,6 @@ router.get("/verify", async (req, res) => {
     return res.json({ valid: false });
   }
 });
-
 
 /* =========================================================
    🗑 DELETE PAYMENT
