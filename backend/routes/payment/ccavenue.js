@@ -575,99 +575,75 @@ router.post("/ccavenue-init", async (req, res) => {
 //   },
 // );
 
+function postBreakRedirect(status) {
+  return `
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Redirecting...</title>
+
+      <script>
+        // 🔥 Break POST history
+        window.location.replace(
+          "${BASE_URL}/payment-result?status=${status}"
+        );
+      </script>
+    </head>
+
+    <body>
+      Redirecting…
+    </body>
+  </html>
+  `;
+}
+
 router.all(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
     try {
-      /* --------------------------------------------------
-         1️⃣ GET encResp FROM ALL POSSIBLE SOURCES
-      -------------------------------------------------- */
+      /* 🔥 ADD CACHE CONTROL HERE */
+      res.set({
+        "Cache-Control": "no-store, no-cache, must-revalidate, private",
+        Pragma: "no-cache",
+        Expires: "0",
+      });
 
       const encResp =
         req.body?.encResp ||
-        req.body?.encresp ||
         req.query?.encResp ||
+        req.body?.encresp ||
         req.query?.encresp;
 
       if (!encResp) {
-        console.error("❌ No encResp received");
-
-        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+        return res.send(postBreakRedirect("failed"));
       }
-
-      /* --------------------------------------------------
-         2️⃣ DECRYPT RESPONSE
-      -------------------------------------------------- */
 
       const decrypted = decrypt(encResp);
       const data = qs.parse(decrypted);
 
-      console.log("🔔 CCAvenue Callback:", data);
-
       const orderId = data.order_id;
-      const orderStatus = data.order_status;
-      const email = data.billing_email || data.merchant_param1 || "";
+      const status = data.order_status;
 
-      if (!orderId) {
-        console.error("❌ Missing order_id");
+      if (status === "Success") {
+        await db
+          .promise()
+          .query(`UPDATE payments SET status='Success' WHERE order_id=?`, [
+            orderId,
+          ]);
 
-        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+        return res.send(postBreakRedirect("success"));
       }
 
-      /* --------------------------------------------------
-         3️⃣ HANDLE SUCCESS
-      -------------------------------------------------- */
+      await db
+        .promise()
+        .query(`UPDATE payments SET status='Failed' WHERE order_id=?`, [
+          orderId,
+        ]);
 
-      if (orderStatus === "Success") {
-        console.log("✅ Payment Success:", orderId);
-
-        /* Update existing row */
-        const [updateResult] = await db.promise().query(
-          `UPDATE payments
-             SET status='Success'
-             WHERE order_id=?`,
-          [orderId],
-        );
-
-        /* --------------------------------------------------
-           3️⃣A — DOUBLE SAFETY INSERT
-           (If callback comes before insert commit)
-        -------------------------------------------------- */
-
-        if (updateResult.affectedRows === 0) {
-          console.warn("⚠️ Order not found, inserting success row");
-
-          await db.promise().query(
-            `INSERT INTO payments
-             (order_id,email,plan,amount,status)
-             VALUES (?,?,?,?, 'Success')`,
-            [orderId, email, "basic", data.amount || "1.00"],
-          );
-        }
-
-        /* Redirect to frontend */
-        return res.redirect(`${BASE_URL}/payment-result?status=success`);
-      }
-
-      /* --------------------------------------------------
-         4️⃣ HANDLE FAILURE
-      -------------------------------------------------- */
-
-      console.log("❌ Payment Failed:", orderId);
-
-      await db.promise().query(
-        `UPDATE payments
-         SET status='Failed'
-         WHERE order_id=?`,
-        [orderId],
-      );
-
-      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+      return res.send(postBreakRedirect("failed"));
     } catch (err) {
-      console.error("💥 CCAvenue Callback Error:", err);
-
-      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+      return res.send(postBreakRedirect("failed"));
     }
   },
 );

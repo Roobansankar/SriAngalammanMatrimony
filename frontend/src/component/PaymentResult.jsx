@@ -219,6 +219,13 @@ import { useEffect } from "react";
 export default function PaymentResult() {
   const navigate = useNavigate();
 
+
+
+
+  useEffect(() => {
+    window.history.replaceState(null, "", window.location.href);
+  }, []);
+
   useEffect(() => {
     let attempts = 0;
 
