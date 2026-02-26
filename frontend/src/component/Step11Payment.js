@@ -700,6 +700,26 @@ export default function Step11Payment({ formData, setFormData }) {
   /* --------------------------------------------------
      🔐 PROTECT PAID USER (Single effect only)
   -------------------------------------------------- */
+// useEffect(() => {
+//   window.history.pushState(null, "", window.location.href);
+//   window.onpopstate = function () {
+//     window.history.go(1);
+//   };
+// }, []);
+
+useEffect(() => {
+  const blockBack = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+
+  window.history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", blockBack);
+
+  return () => {
+    window.removeEventListener("popstate", blockBack);
+  };
+}, []);
+
 
   useEffect(() => {
     async function verifyPayment() {
