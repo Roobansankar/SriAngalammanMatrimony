@@ -4,9 +4,6 @@ import { useEffect, useState, useSearchParams } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
 
-// const API_BASE = (
-//   process.env.REACT_APP_API_BASE || "http://localhost:5000"
-// ).replace(/\/$/, "");
 
 const API_BASE =
   window.location.hostname === "localhost"
@@ -23,6 +20,18 @@ export default function ProfilePage({
   const navigate = useNavigate();
   const [showHoroscope, setShowHoroscope] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [certificateImage, setCertificateImage] = useState(null);
+
+
+useEffect(() => {
+  if (!user?.MatriID) return;
+
+  axios.get(`${API_BASE}/api/community/${user.MatriID}`).then((res) => {
+    if (res.data.success) {
+      setCertificateImage(res.data.image);
+    }
+  });
+}, [user]);
 
   const hasValue = (v) => {
     if (v === null || v === undefined) return false;
@@ -397,7 +406,7 @@ export default function ProfilePage({
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display"
+      className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display overflow-hidden"
       style={{
         backgroundImage: `url("https://static.vecteezy.com/system/resources/thumbnails/002/221/733/original/abstract-flowing-light-ombre-gradient-background-free-video.jpg")`,
       }}
@@ -558,9 +567,69 @@ export default function ProfilePage({
           </p>
         </section>
 
+        {/* Community Certificate Section */}
+        <section className="mb-6 relative mt-10">
+          <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            {/* Header with Edit button in corner */}
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-bold">Community Certificate</h2>
+               <Link
+              to={
+                adminMode ? `/admin/edit/community/${user.MatriID}` : "/edit/community"
+              }
+            >
+              {/* <Link to="/edit/community"> */}
+                <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                  <PencilSquareIcon className="w-5 h-5" />
+                  Edit
+                </button>
+              </Link>
+            </div>
+
+            {/* Content Area */}
+            <div className="grid grid-cols-1 gap-y-5">
+              <div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Certificate Status
+                </span>
+
+                <div className="flex items-center gap-4 mt-2">
+                  {certificateImage ? (
+                    <>
+                      <span className="font-medium text-green-600 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-base">
+                          check_circle
+                        </span>
+                        Uploaded
+                      </span>
+
+                      {/* View Button Styled like Horoscope */}
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `${API_BASE}/community_certificates/${certificateImage}`,
+                            "_blank",
+                          )
+                        }
+                        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded shadow hover:bg-blue-700 transition"
+                      >
+                        View Certificate
+                      </button>
+                    </>
+                  ) : (
+                    <div className="text-gray-400 dark:text-gray-500 italic">
+                      Community Certificate Not Uploaded
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Basic Details (two-column grid) */}
 
-        <section className="mb-6 relative">
+        <section className="mb-6 relative mt-10">
           {/* Card */}
           <div className="bg-white dark:bg-[#221019] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             {/* Header inside card */}

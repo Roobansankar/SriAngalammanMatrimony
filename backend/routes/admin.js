@@ -468,32 +468,283 @@ router.get("/recent-members", (req, res) => {
 });
 
 // All members with pagination
+// router.get("/all-members", (req, res) => {
+//   console.log("Admin: Fetching all-members...");
+  
+//   const page = parseInt(req.query.page) || 1;
+//   const limit = 10;
+//   const offset = (page - 1) * limit;
+//   const search = req.query.search || "";
+//   const gender = req.query.gender || "";
+
+//   let whereClause = "WHERE Status <> 'Banned'";
+//   const params = [];
+
+//   // Staff restriction: only show basic users
+//   // if (req.userRole === 'staff') {
+//   //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+//   // }
+
+//   if (gender) {
+//     whereClause += " AND Gender = ?";
+//     params.push(gender);
+//   }
+
+//   if (search) {
+//     whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
+//     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+//   }
+
+//   const countSQL = `SELECT COUNT(*) AS total FROM register ${whereClause}`;
+
+//   const dataSQL = `
+//     SELECT 
+//       MatriID,
+//       Name,
+//       Gender,
+//       ConfirmEmail AS Email,
+//       Mobile,
+//       DOB,
+//       TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+//       Regdate,
+//       Status,
+//       Lastlogin,
+//       Photo1,
+//       Photo1Approve,
+//       Plan
+//     FROM register
+//     ${whereClause}
+//     ORDER BY Regdate IS NULL, Regdate DESC
+//     LIMIT ?, ?
+//   `;
+
+//   db.query(countSQL, params, (err, countResult) => {
+//     if (err) {
+//        console.error("All Members Count SQL Error:", err);
+//        return res.status(500).json({ error: err });
+//     }
+
+//     const total = countResult[0].total;
+
+//     db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
+//       if (err2) {
+//          console.error("All Members Data SQL Error:", err2);
+//          return res.status(500).json({ error: err2 });
+//       }
+
+//       const results = rows.map((u) => {
+//         // Relative path
+//         const photo =
+//           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
+//             ? `/gallery/${u.Photo1}`
+//             : `/gallery/nophoto.jpg`;
+
+//         return { ...u, PhotoURL: photo };
+//       });
+
+//       res.json({
+//         success: true,
+//         total,
+//         page,
+//         per_page: limit,
+//         results,
+//       });
+//     });
+//   });
+// });
+
+// router.get("/all-members", (req, res) => {
+//   console.log("Admin: Fetching all-members...");
+
+//   const page = parseInt(req.query.page) || 1;
+//   const limit = 10;
+//   const offset = (page - 1) * limit;
+
+//   const search = req.query.search || "";
+//   const gender = req.query.gender || "";
+//   const month = req.query.month || "";
+//   const fromDate = req.query.fromDate || "";
+//   const toDate = req.query.toDate || "";
+
+//   let whereClause = "WHERE Status <> 'Banned'";
+//   const params = [];
+
+//   // Staff restriction (if needed later)
+//   // if (req.userRole === 'staff') {
+//   //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+//   // }
+
+//   // Gender filter
+//   if (gender) {
+//     whereClause += " AND Gender = ?";
+//     params.push(gender);
+//   }
+
+//   // Search filter
+//   if (search) {
+//     whereClause +=
+//       " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
+//     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+//   }
+
+//   // Month-wise filter (format: 2026-03)
+//   if (month) {
+//     whereClause += " AND DATE_FORMAT(Regdate, '%Y-%m') = ?";
+//     params.push(month);
+//   }
+
+//   // Date to Date filter
+//   if (fromDate && toDate) {
+//     whereClause += " AND DATE(Regdate) BETWEEN ? AND ?";
+//     params.push(fromDate, toDate);
+//   }
+
+//   const countSQL = `SELECT COUNT(*) AS total FROM register ${whereClause}`;
+
+//   const dataSQL = `
+//     SELECT 
+//       MatriID,
+//       Name,
+//       Gender,
+//       ConfirmEmail AS Email,
+//       Mobile,
+//       DOB,
+//       TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age,
+//       Regdate,
+//       Status,
+//       Lastlogin,
+//       Photo1,
+//       Photo1Approve,
+//       Plan
+//     FROM register
+//     ${whereClause}
+//     ORDER BY Regdate IS NULL, Regdate DESC
+//     LIMIT ?, ?
+//   `;
+
+//   db.query(countSQL, params, (err, countResult) => {
+//     if (err) {
+//       console.error("All Members Count SQL Error:", err);
+//       return res.status(500).json({ error: err });
+//     }
+
+//     const total = countResult[0].total;
+
+//     db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
+//       if (err2) {
+//         console.error("All Members Data SQL Error:", err2);
+//         return res.status(500).json({ error: err2 });
+//       }
+
+//       const results = rows.map((u) => {
+//         const photo =
+//           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
+//             ? `/gallery/${u.Photo1}`
+//             : `/gallery/nophoto.jpg`;
+
+//         return { ...u, PhotoURL: photo };
+//       });
+
+//       res.json({
+//         success: true,
+//         total,
+//         page,
+//         per_page: limit,
+//         results,
+//       });
+//     });
+//   });
+// });
+
+
 router.get("/all-members", (req, res) => {
   console.log("Admin: Fetching all-members...");
-  
+
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const offset = (page - 1) * limit;
+
   const search = req.query.search || "";
   const gender = req.query.gender || "";
+  const month = req.query.month || "";
+  const fromDate = req.query.fromDate || "";
+  const toDate = req.query.toDate || "";
+
+  // New query parameters
+  const plan = req.query.plan || "";
+  const maritalStatus = req.query.maritalStatus || "";
+  const occupation = req.query.occupation || "";
+  const dobFrom = req.query.dobFrom || "";
+  const dobTo = req.query.dobTo || "";
+
+  // DOB Year Range Filter
 
   let whereClause = "WHERE Status <> 'Banned'";
   const params = [];
 
-  // Staff restriction: only show basic users
-  // if (req.userRole === 'staff') {
-  //   whereClause += " AND (Plan IS NULL OR Plan = 'basic')";
+  // if (dobFrom && dobTo) {
+  //   whereClause += " AND YEAR(DOB) BETWEEN ? AND ?";
+  //   params.push(dobFrom, dobTo);
   // }
 
+  /* DOB Year Range Filter */
+
+  if (dobFrom) {
+    whereClause += " AND YEAR(DOB) >= ?";
+    params.push(parseInt(dobFrom));
+  }
+
+  if (dobTo) {
+    whereClause += " AND YEAR(DOB) <= ?";
+    params.push(parseInt(dobTo));
+  }
+
+  // Gender filter
   if (gender) {
     whereClause += " AND Gender = ?";
     params.push(gender);
   }
 
+  // Search filter (Name, ID, Email)
   if (search) {
-    whereClause += " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
+    whereClause +=
+      " AND (Name LIKE ? OR MatriID LIKE ? OR ConfirmEmail LIKE ?)";
     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
   }
+
+  // Month-wise filter (format: YYYY-MM)
+  if (month) {
+    whereClause += " AND DATE_FORMAT(Regdate, '%Y-%m') = ?";
+    params.push(month);
+  }
+
+  // Date to Date filter
+  if (fromDate && toDate) {
+    whereClause += " AND DATE(Regdate) BETWEEN ? AND ?";
+    params.push(fromDate, toDate);
+  }
+
+  // --- NEW FILTERS START ---
+
+  // Plan Filter (basic, premium)
+  if (plan) {
+    whereClause += " AND Plan = ?";
+    params.push(plan);
+  }
+
+  // Marital Status Filter (Unmarried, Remarriage)
+  if (maritalStatus) {
+    whereClause += " AND Maritalstatus = ?";
+    params.push(maritalStatus);
+  }
+
+  // Occupation Filter (Partial search for Doctor, Engineer, etc.)
+  if (occupation) {
+    whereClause += " AND Occupation LIKE ?";
+    params.push(`%${occupation}%`);
+  }
+
+  // --- NEW FILTERS END ---
 
   const countSQL = `SELECT COUNT(*) AS total FROM register ${whereClause}`;
 
@@ -511,7 +762,9 @@ router.get("/all-members", (req, res) => {
       Lastlogin,
       Photo1,
       Photo1Approve,
-      Plan
+      Plan,
+      Maritalstatus,
+      Occupation
     FROM register
     ${whereClause}
     ORDER BY Regdate IS NULL, Regdate DESC
@@ -520,20 +773,19 @@ router.get("/all-members", (req, res) => {
 
   db.query(countSQL, params, (err, countResult) => {
     if (err) {
-       console.error("All Members Count SQL Error:", err);
-       return res.status(500).json({ error: err });
+      console.error("All Members Count SQL Error:", err);
+      return res.status(500).json({ error: err });
     }
 
-    const total = countResult[0].total;
+    const total = countResult[0]?.total || 0;
 
     db.query(dataSQL, [...params, offset, limit], (err2, rows) => {
       if (err2) {
-         console.error("All Members Data SQL Error:", err2);
-         return res.status(500).json({ error: err2 });
+        console.error("All Members Data SQL Error:", err2);
+        return res.status(500).json({ error: err2 });
       }
 
       const results = rows.map((u) => {
-        // Relative path
         const photo =
           u.Photo1 && u.Photo1Approve?.toLowerCase() === "yes"
             ? `/gallery/${u.Photo1}`

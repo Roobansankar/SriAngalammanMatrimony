@@ -85,6 +85,7 @@ import { connectSocket } from "./socket";
 
 import AdminPayments from "./AdminDashboard/AdminPayments";
 import PaymentResult from "./component/PaymentResult";
+import EditCommunity from "./profile/Edit/EditCommunity";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -180,8 +181,12 @@ function AppContent({ user, setUser }) {
               element={<EditFamily adminMode />}
             />
             <Route
-              path="edit/partner/:matriId"
+              path="edit/partner/:matriId" 
               element={<EditPartnerPreference adminMode />}
+            />
+            <Route
+              path="edit/community/:matriId"
+              element={<EditCommunity adminMode />}
             />
           </Route>
 
@@ -210,10 +215,9 @@ function AppContent({ user, setUser }) {
             element={<PendingVerification />}
           />
 
-
           <Route path="/register/*" element={<MultiStepForm />} />
 
-          <Route path="/payment-result" element={<PaymentResult />} /> 
+          <Route path="/payment-result" element={<PaymentResult />} />
 
           {/* Protected routes */}
           <Route
@@ -257,6 +261,15 @@ function AppContent({ user, setUser }) {
             element={
               <PrivateRoute>
                 <BasicEdit />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/edit/community"
+            element={
+              <PrivateRoute>
+                <EditCommunity />
               </PrivateRoute>
             }
           />

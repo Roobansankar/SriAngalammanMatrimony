@@ -1271,6 +1271,9 @@ router.put("/update/contact", async (req, res) => {
   }
 });
 
+
+
+
 // router.put("/update/education", async (req, res) => {
 //   try {
 //     const {

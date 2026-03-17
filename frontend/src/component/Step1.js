@@ -9,6 +9,7 @@ import { API } from "../config/api";
 const API_BASE = API + "/";
 const REGISTER_API = `${API_BASE}register`;
 
+
 export default function Step1({ nextStep, formData = {} }) {
   const [optionsLoading, setOptionsLoading] = useState(true);
   const [options, setOptions] = useState({

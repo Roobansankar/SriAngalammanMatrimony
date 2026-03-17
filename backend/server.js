@@ -19,6 +19,7 @@ import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
 import contactRoutes from "./routes/contact.js";
+import communityRoutes from "./routes/community.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,6 +70,9 @@ app.use("/gallery", express.static(galleryDir));
 app.use("/kundli", express.static(kundliDir));
 app.use("/api/gallery", express.static(galleryDir));
 app.use("/api/kundli", express.static(kundliDir));
+app.use("/api/community", communityRoutes);
+
+app.use("/community_certificates", express.static("community_certificates"));
 
 // Debug 404s for gallery
 app.use("/gallery", (req, res) => {
