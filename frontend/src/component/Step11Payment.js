@@ -168,7 +168,7 @@ return (
         </p>
 
         <div
-          onClick={() => setPlan("old_basic")}
+          onClick={() => setPlan("basic")}
           className={`p-6 border rounded-lg cursor-pointer ${
             plan === "old_basic" ? "border-rose-500 bg-rose-50" : ""
           }`}
