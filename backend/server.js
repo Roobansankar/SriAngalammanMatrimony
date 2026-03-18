@@ -72,13 +72,7 @@ app.use("/api/gallery", express.static(galleryDir));
 app.use("/api/kundli", express.static(kundliDir));
 app.use("/api/community", communityRoutes);
 
-// app.use("/community_certificates", express.static("community_certificates"));
-
-const certificateDir = path.join(__dirname, "community_certificates");
-
-app.use("/community_certificates", express.static(certificateDir));
-
-console.log("📂 Certificate Dir:", certificateDir);
+app.use("/community_certificates", express.static("community_certificates"));
 
 // Debug 404s for gallery
 app.use("/gallery", (req, res) => {
