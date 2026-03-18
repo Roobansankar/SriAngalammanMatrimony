@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState, useSearchParams } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import noPhoto from "./nophoto.jpg";
-
+import { apiUrl } from "../config/api";
 
 const API_BASE =
   window.location.hostname === "localhost"
@@ -21,13 +21,13 @@ export default function ProfilePage({
   const [showHoroscope, setShowHoroscope] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [certificateImage, setCertificateImage] = useState(null);
+  const [certificateIaage, setCertificateImage] = useState(null);
 
 
 useEffect(() => {
   if (!user?.MatriID) return;
 
-  axios.get(`${API_BASE}/api/community/${user.MatriID}`).then((res) => {
+  axios.get(apiUrl(`/community/${user.MatriID}`)).then((res) => {
     if (res.data.success) {
       setCertificateImage(res.data.image);
     }

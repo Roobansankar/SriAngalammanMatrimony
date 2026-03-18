@@ -49,9 +49,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { API } from "../../config/api";
+// import { API } from "../../config/api";
+import { apiUrl } from "../../config/api";
 
-const API_BASE = API.replace(/\/$/, "");
+// const API_BASE = API.replace(/\/$/, "");
 
 export default function EditCommunity({ adminMode = false }) {
   const [file, setFile] = useState(null);
@@ -81,7 +82,9 @@ export default function EditCommunity({ adminMode = false }) {
       formData.append("matriId", matriId);
       formData.append("certificate", file);
 
-      const res = await axios.post(`${API_BASE}/community/upload`, formData);
+      // const res = await axios.post(`${API_BASE}/community/upload`, formData);
+      // const res = await axios.post(`${API_BASE}/api/community/upload`, formData);
+      const res = await axios.post(apiUrl("/community/upload"), formData);
 
       if (res.data.success) {
         alert("Community Certificate Updated Successfully!");
