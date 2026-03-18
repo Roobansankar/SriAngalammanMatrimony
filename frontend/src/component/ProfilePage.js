@@ -19,6 +19,7 @@ export default function ProfilePage({
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [showHoroscope, setShowHoroscope] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [certificateImage, setCertificateImage] = useState(null);
 
@@ -573,12 +574,14 @@ useEffect(() => {
             {/* Header with Edit button in corner */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold">Community Certificate</h2>
-               <Link
-              to={
-                adminMode ? `/admin/edit/community/${user.MatriID}` : "/edit/community"
-              }
-            >
-              {/* <Link to="/edit/community"> */}
+              <Link
+                to={
+                  adminMode
+                    ? `/admin/edit/community/${user.MatriID}`
+                    : "/edit/community"
+                }
+              >
+                {/* <Link to="/edit/community"> */}
                 <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                   <PencilSquareIcon className="w-5 h-5" />
                   Edit
@@ -604,13 +607,20 @@ useEffect(() => {
                       </span>
 
                       {/* View Button Styled like Horoscope */}
-                      <button
+                      {/* <button
                         onClick={() =>
                           window.open(
                             `${API_BASE}/community_certificates/${certificateImage}`,
                             "_blank",
                           )
                         }
+                        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded shadow hover:bg-blue-700 transition"
+                      >
+                        View Certificate
+                      </button> */}
+
+                      <button
+                        onClick={() => setShowCertificate(true)}
                         className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded shadow hover:bg-blue-700 transition"
                       >
                         View Certificate
@@ -1197,6 +1207,32 @@ useEffect(() => {
                   className="max-h-[80vh] w-auto object-contain rounded"
                 />
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCertificate && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-xl shadow-lg relative flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <h2 className="text-lg font-bold">Community Certificate</h2>
+              <button
+                className="text-gray-600 hover:text-black text-xl"
+                onClick={() => setShowCertificate(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* CONTENT */}
+            <div className="flex-1 overflow-auto p-4 flex justify-center items-center">
+              <img
+                src={`${API_BASE}/community_certificates/${certificateImage}`}
+                alt="Certificate"
+                className="max-h-[80vh] w-auto object-contain rounded"
+              />
             </div>
           </div>
         </div>
