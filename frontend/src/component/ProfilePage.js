@@ -21,7 +21,7 @@ export default function ProfilePage({
   const [showHoroscope, setShowHoroscope] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [certificateIaage, setCertificateImage] = useState(null);
+  const [certificateImage, setCertificateImage] = useState(null);
 
 
 useEffect(() => {
