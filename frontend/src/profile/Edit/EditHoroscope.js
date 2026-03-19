@@ -284,6 +284,47 @@ useEffect(() => {
 //    });
 //  };
 
+// const toggleBox = (type, key, value) => {
+//   const state =
+//     type === "rasi"
+//       ? { map: rasi, set: setRasi }
+//       : { map: navamsa, set: setNavamsa };
+
+//   const updated = { ...state.map };
+
+//   // Ensure array exists
+//   if (!updated[key]) {
+//     updated[key] = [];
+//   }
+
+//   /* -------------------------
+//      SINGLE LAGNA RULE
+//   --------------------------*/
+//   if (value === "லக்") {
+//     // Remove Lagna from all boxes
+//     Object.keys(updated).forEach((k) => {
+//       updated[k] = (updated[k] || []).filter((planet) => planet !== "லக்");
+//     });
+
+//     // Add Lagna only to current box
+//     updated[key].push("லக்");
+
+//     state.set(updated);
+//     return;
+//   }
+
+//   /* -------------------------
+//      NORMAL PLANET TOGGLE
+//   --------------------------*/
+//   if (updated[key].includes(value)) {
+//     updated[key] = updated[key].filter((x) => x !== value);
+//   } else {
+//     updated[key].push(value);
+//   }
+
+//   state.set(updated);
+// };
+
 const toggleBox = (type, key, value) => {
   const state =
     type === "rasi"
@@ -292,23 +333,27 @@ const toggleBox = (type, key, value) => {
 
   const updated = { ...state.map };
 
-  // Ensure array exists
-  if (!updated[key]) {
-    updated[key] = [];
-  }
+  if (!updated[key]) updated[key] = [];
 
   /* -------------------------
-     SINGLE LAGNA RULE
+     HANDLE LAGNA (லக்)
   --------------------------*/
   if (value === "லக்") {
-    // Remove Lagna from all boxes
+    const isSelected = updated[key].includes("லக்");
+
+    // 👉 If already selected → REMOVE (uncheck)
+    if (isSelected) {
+      updated[key] = updated[key].filter((p) => p !== "லக்");
+      state.set(updated);
+      return;
+    }
+
+    // 👉 Else → remove from all boxes and add here
     Object.keys(updated).forEach((k) => {
-      updated[k] = (updated[k] || []).filter((planet) => planet !== "லக்");
+      updated[k] = (updated[k] || []).filter((p) => p !== "லக்");
     });
 
-    // Add Lagna only to current box
     updated[key].push("லக்");
-
     state.set(updated);
     return;
   }
