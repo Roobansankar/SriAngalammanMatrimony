@@ -1,9 +1,9 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
-import { useEffect, useState, useSearchParams } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import noPhoto from "./nophoto.jpg";
 import { apiUrl } from "../config/api";
+import noPhoto from "./nophoto.jpg";
 
 const API_BASE =
   window.location.hostname === "localhost"
@@ -22,6 +22,8 @@ export default function ProfilePage({
   const [showCertificate, setShowCertificate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [certificateImage, setCertificateImage] = useState(null);
+  const [certificateLoading, setCertificateLoading] = useState(false);
+  const [certificateLoadError, setCertificateLoadError] = useState(false);
 
 
 useEffect(() => {
@@ -407,6 +409,10 @@ useEffect(() => {
     return v;
   };
 
+  const certificateViewUrl = certificateImage
+    ? apiUrl(`/community_certificates/${encodeURIComponent(certificateImage)}`)
+    : "";
+
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed p-6 font-display overflow-hidden"
@@ -622,7 +628,11 @@ useEffect(() => {
                       </button> */}
 
                       <button
-                        onClick={() => setShowCertificate(true)}
+                        onClick={() => {
+                          setCertificateLoadError(false);
+                          setCertificateLoading(true);
+                          setShowCertificate(true);
+                        }}
                         className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded shadow hover:bg-blue-700 transition"
                       >
                         View Certificate
@@ -1324,10 +1334,30 @@ useEffect(() => {
 
             {/* CONTENT */}
             <div className="flex-1 overflow-auto p-4 flex justify-center items-center">
+              {certificateLoading && !certificateLoadError && (
+                <div className="flex items-center gap-2 text-gray-600">
+                  <span className="inline-block h-5 w-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+                  Loading certificate...
+                </div>
+              )}
+
+              {certificateLoadError && (
+                <div className="text-red-600 text-sm font-medium">
+                  Unable to load certificate image. Please try uploading again.
+                </div>
+              )}
+
               <img
-                src={`${API_BASE}/community_certificates/${certificateImage}`}
+                src={certificateViewUrl}
                 alt="Certificate"
-                className="max-h-[80vh] w-auto object-contain rounded"
+                onLoad={() => setCertificateLoading(false)}
+                onError={() => {
+                  setCertificateLoading(false);
+                  setCertificateLoadError(true);
+                }}
+                className={`max-h-[80vh] w-auto object-contain rounded ${
+                  certificateLoading || certificateLoadError ? "hidden" : ""
+                }`}
               />
             </div>
           </div>

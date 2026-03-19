@@ -60,6 +60,7 @@ services:
       - ./backend/gallery:/app/gallery
       - ./backend/kundli:/app/kundli
       - ./backend/uploads:/app/uploads
+      - ./backend/community_certificates:/app/community_certificates
 
   frontend:
     build:

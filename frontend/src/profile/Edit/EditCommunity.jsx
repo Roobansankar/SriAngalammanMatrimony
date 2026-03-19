@@ -57,6 +57,7 @@ import { apiUrl } from "../../config/api";
 export default function EditCommunity({ adminMode = false }) {
   const [file, setFile] = useState(null);
   const [matriId, setMatriId] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -75,9 +76,11 @@ export default function EditCommunity({ adminMode = false }) {
   const handleUpload = async (e) => {
     e.preventDefault();
 
+    if (isUploading) return;
     if (!file) return alert("Please select an image");
 
     try {
+      setIsUploading(true);
       const formData = new FormData();
       formData.append("matriId", matriId);
       formData.append("certificate", file);
@@ -99,6 +102,8 @@ export default function EditCommunity({ adminMode = false }) {
     } catch (err) {
       console.error(err);
       alert("Upload failed");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -127,8 +132,23 @@ export default function EditCommunity({ adminMode = false }) {
             </p>
           </div>
 
-          <button className="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white text-lg rounded-lg font-semibold shadow-md transition-all">
-            Save Changes
+          <button
+            type="submit"
+            disabled={isUploading}
+            className={`w-full py-3 text-white text-lg rounded-lg font-semibold shadow-md transition-all flex items-center justify-center gap-2 ${
+              isUploading
+                ? "bg-pink-400 cursor-not-allowed"
+                : "bg-pink-600 hover:bg-pink-700"
+            }`}
+          >
+            {isUploading ? (
+              <>
+                <span className="inline-block h-5 w-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </form>
       </div>

@@ -11,6 +11,8 @@ import db from "./config/db.js";
 import adminRoutes from "./routes/admin.js";
 import authRoutes from "./routes/auth.js";
 import chatRoutes from "./routes/chat.js";
+import communityRoutes from "./routes/community.js";
+import contactRoutes from "./routes/contact.js";
 import forgotPasswordRoutes from "./routes/forgotPassword.js";
 import galleryRoutes from "./routes/gallery.js";
 import interestRoutes from "./routes/interest.js";
@@ -18,8 +20,6 @@ import paymentRoutes from "./routes/payment/index.js";
 import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
-import contactRoutes from "./routes/contact.js";
-import communityRoutes from "./routes/community.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -64,6 +64,7 @@ app.use(morgan("dev"));
 // const galleryDir = path.resolve("gallery");
 const galleryDir = path.join(__dirname, "gallery");
 const kundliDir = path.resolve("kundli");
+const communityCertificatesDir = path.join(__dirname, "community_certificates");
 
 // Serve static files on both base and /api prefix
 app.use("/gallery", express.static(galleryDir));
@@ -72,7 +73,8 @@ app.use("/api/gallery", express.static(galleryDir));
 app.use("/api/kundli", express.static(kundliDir));
 app.use("/api/community", communityRoutes);
 
-app.use("/community_certificates", express.static("community_certificates"));
+app.use("/community_certificates", express.static(communityCertificatesDir));
+app.use("/api/community_certificates", express.static(communityCertificatesDir));
 
 // Debug 404s for gallery
 app.use("/gallery", (req, res) => {
