@@ -36,17 +36,61 @@ useEffect(() => {
   });
 }, [user]);
 
+  // const hasValue = (v) => {
+  //   if (v === null || v === undefined) return false;
+  //   if (typeof v === "string" && v.trim() === "") return false;
+  //   if (v === "-" || v === "null") return false;
+  //   return true;
+  // };
+
+
   const hasValue = (v) => {
     if (v === null || v === undefined) return false;
+
+    if (typeof v === "boolean") return v; // ✅ add this
+
     if (typeof v === "string" && v.trim() === "") return false;
     if (v === "-" || v === "null") return false;
+
     return true;
   };
+
+
+
+  const rasi = [
+    user?.g1,
+    user?.g2,
+    user?.g3,
+    user?.g4,
+    user?.g5,
+    user?.g6,
+    user?.g7,
+    user?.g8,
+    user?.g9,
+    user?.g10,
+    user?.g11,
+    user?.g12,
+  ];
+
+  const navamsa = [
+    user?.a1,
+    user?.a2,
+    user?.a3,
+    user?.a4,
+    user?.a5,
+    user?.a6,
+    user?.a7,
+    user?.a8,
+    user?.a9,
+    user?.a10,
+    user?.a11,
+    user?.a12,
+  ];
 
   const profileFields = [
     // 🟢 Basic Details
     user?.Name,
-    user?.DOB,
+    // user?.DOB,
     user?.Gender,
     user?.Religion,
     user?.Caste,
@@ -64,10 +108,6 @@ useEffect(() => {
     user?.Occupation,
     user?.Annualincome,
 
-    // 🟢 Basic & Lifestyle
-    // user?.HeightText,
-    // user?.Diet,
-
     // 🟢 Family
     user?.Fathername,
     user?.Mothersname,
@@ -75,18 +115,53 @@ useEffect(() => {
     user?.MotherPoorvegam,
 
     // 🟢 Partner Preference
-    user?.PE_FromAge,
-    user?.PE_ToAge,
-    user?.PE_Religion,
+    // user?.PE_FromAge,
+    // user?.PE_ToAge,
+    // user?.PE_Religion,
 
     // 🟢 Photo
-    // user?.PhotoURL,
-    // user?.Photo1 || user?.PhotoURL,
+    user?.PhotoURL,
+    user?.Photo1 || user?.PhotoURL,
+
+    // certificateImage,
+
+    // 🟣 Horoscope Details
+    user?.Moonsign,
+    user?.Star,
+    user?.Lagnam,
+    user?.Gothram,
+    user?.Manglik,
+    // user?.Shani,
+    // user?.shaniplace,
+    user?.Kootam,
+    user?.Raghu,
+    user?.Keethu,
+    user?.POB,
+    user?.Kuladeivam,
+    user?.Sutham,
+
+    // 🟣 Thesai Details
+    user?.ThesaiPlanet,
+    user?.ThesaiYears,
+    user?.ThesaiMonths,
+    user?.ThesaiDays,
+
+    // 🟣 Horoscope Image
+    user?.HoroscopeURL,
+
+    // 🟣 Rasi (12 boxes → at least 1 filled = OK)
+    (rasi || []).some((v) => hasValue(v)),
+
+    // 🟣 Navamsa (12 boxes → at least 1 filled = OK)
+    (navamsa || []).some((v) => hasValue(v)),
   ];
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+
+  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -237,35 +312,7 @@ useEffect(() => {
 
   if (!user) return <div className="p-8">No user found</div>;
   // Prepare Rasi & Navamsa Data
-  const rasi = [
-    user.g1,
-    user.g2,
-    user.g3,
-    user.g4,
-    user.g5,
-    user.g6,
-    user.g7,
-    user.g8,
-    user.g9,
-    user.g10,
-    user.g11,
-    user.g12,
-  ];
-
-  const navamsa = [
-    user.a1,
-    user.a2,
-    user.a3,
-    user.a4,
-    user.a5,
-    user.a6,
-    user.a7,
-    user.a8,
-    user.a9,
-    user.a10,
-    user.a11,
-    user.a12,
-  ];
+  
 
   // eslint-disable-next-line no-unused-vars
   const primary = "#ec1380"; // inline primary color as requested
@@ -601,7 +648,7 @@ useEffect(() => {
             <div className="grid grid-cols-1 gap-y-5">
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Certificate Status
+                  <span style={{ color: "red" }}>* </span> Certificate Status
                 </span>
 
                 <div className="flex items-center gap-4 mt-2">
@@ -613,19 +660,6 @@ useEffect(() => {
                         </span>
                         Uploaded
                       </span>
-
-                      {/* View Button Styled like Horoscope */}
-                      {/* <button
-                        onClick={() =>
-                          window.open(
-                            `${API_BASE}/community_certificates/${certificateImage}`,
-                            "_blank",
-                          )
-                        }
-                        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded shadow hover:bg-blue-700 transition"
-                      >
-                        View Certificate
-                      </button> */}
 
                       <button
                         onClick={() => {
@@ -771,37 +805,119 @@ useEffect(() => {
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
               <InfoRow
-                label="Moon Sign"
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Moon sign
+                  </>
+                }
                 value={user.Moonsign || user.moonsign}
               />
-              <InfoRow label="Star" value={user.Star || user.star} />
-              <InfoRow label="Lagnam" value={user.Lagnam || "-"} />
-              <InfoRow label="Gothra" value={user.Gothram || "-"} />
-
-              <InfoRow label="Mangalik" value={user.Manglik || "-"} />
-              <InfoRow label="Shani" value={user.Shani || user.shani || "-"} />
               <InfoRow
-                label="Place of Shani"
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Star
+                  </>
+                }
+                value={user.Star || user.star}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Lagnam
+                  </>
+                }
+                value={user.Lagnam || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Gothram
+                  </>
+                }
+                value={user.Gothram || "-"}
+              />
+
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Manglik
+                  </>
+                }
+                value={user.Manglik || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Shani
+                  </>
+                }
+                value={user.Shani || user.shani || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Place of Shani
+                  </>
+                }
                 value={user.shaniplace || user.place || "-"}
               />
 
               <InfoRow label="Horoscope Match" value={user.Horosmatch || "-"} />
-              <InfoRow label="Kootam" value={user.Kootam || "-"} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Kootam
+                  </>
+                }
+                value={user.Kootam || "-"}
+              />
               <InfoRow
                 label="Parigarasevai"
                 value={user.parigarasevai || "-"}
               />
 
               <InfoRow label="Sevai" value={user.Sevai || "-"} />
-              <InfoRow label="Raghu" value={user.Raghu || "-"} />
-              <InfoRow label="Keethu" value={user.Keethu || "-"} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Raghu
+                  </>
+                }
+                value={user.Raghu || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Keethu
+                  </>
+                }
+                value={user.Keethu || "-"}
+              />
 
               <InfoRow
-                label="Place of Birth"
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Place of Birth
+                  </>
+                }
                 value={user.POB || user.PlaceOfBirth || user.place_of_birth}
               />
-              <InfoRow label="Kuladeivam" value={user.Kuladeivam || "-"} />
-              <InfoRow label="sutham" value={user.Sutham || "-"} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Kuladeivam
+                  </>
+                }
+                value={user.Kuladeivam || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Sutham
+                  </>
+                }
+                value={user.Sutham || "-"}
+              />
               <InfoRow
                 label="Country / Place"
                 value={user.POC || user.Country || user.country}
@@ -811,10 +927,38 @@ useEffect(() => {
               <InfoRow label="Time of Birth" value={timeOfBirth || "-"} />
 
               {/* Thesai Details */}
-              <InfoRow label="Thesai Planet" value={user.ThesaiPlanet || "-"} />
-              <InfoRow label="Thesai Years" value={user.ThesaiYears || "-"} />
-              <InfoRow label="Thesai Months" value={user.ThesaiMonths || "-"} />
-              <InfoRow label="Thesai Days" value={user.ThesaiDays || "-"} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Thesai Planet
+                  </>
+                }
+                value={user.ThesaiPlanet || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Thesai Years
+                  </>
+                }
+                value={user.ThesaiYears || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Thesai Months
+                  </>
+                }
+                value={user.ThesaiMonths || "-"}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Thesai Days
+                  </>
+                }
+                value={user.ThesaiDays || "-"}
+              />
 
               {/* RASI + NAVAMSA Charts */}
               <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-wrap justify-center gap-12 my-6">
@@ -825,7 +969,7 @@ useEffect(() => {
               {/* Horoscope Image */}
               <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-4">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Horoscope (Image)
+                  <span style={{ color: "red" }}>* </span> Horoscope (Image)
                 </span>
 
                 {user.HoroscopeURL ? (
@@ -1132,7 +1276,11 @@ useEffect(() => {
               />
               {/* ✅ NEW */}
               <InfoRow
-                label={<><span style={{ color: "red" }}>* </span>Mother Poorvegam</>}
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Mother Poorvegam
+                  </>
+                }
                 value={user.MotherPoorvegam || "-"}
               />
 
