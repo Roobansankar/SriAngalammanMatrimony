@@ -25,6 +25,7 @@ build/
 # Project Images
 gallery/
 kundli/
+community_certificates/
 
 # Temp sql files
 .sql
