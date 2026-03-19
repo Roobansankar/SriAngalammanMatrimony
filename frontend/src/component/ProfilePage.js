@@ -63,12 +63,14 @@ useEffect(() => {
     user?.Annualincome,
 
     // 🟢 Basic & Lifestyle
-    user?.HeightText,
-    user?.Diet,
+    // user?.HeightText,
+    // user?.Diet,
 
     // 🟢 Family
     user?.Fathername,
     user?.Mothersname,
+    user?.FatherPoorvegam,
+    user?.MotherPoorvegam,
 
     // 🟢 Partner Preference
     user?.PE_FromAge,
@@ -77,7 +79,7 @@ useEffect(() => {
 
     // 🟢 Photo
     // user?.PhotoURL,
-    user?.Photo1 || user?.PhotoURL,
+    // user?.Photo1 || user?.PhotoURL,
   ];
 
   useEffect(() => {
@@ -662,23 +664,66 @@ useEffect(() => {
 
             {/* 3-column grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
-              <InfoRow label="Name" value={user.Name} />
-              <InfoRow label="Matri ID" value={user.MatriID || user.matid} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Name
+                  </>
+                }
+                value={user.Name}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Matri ID
+                  </>
+                }
+                value={user.MatriID || user.matid}
+              />
               <InfoRow label="Email" value={user.ConfirmEmail || user.email} />
               <InfoRow
-                label="Profile Created By"
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Profile Created By
+                  </>
+                }
                 value={user.Profilecreatedby}
               />
-              <InfoRow label="Gender" value={user.Gender} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Gender
+                  </>
+                }
+                value={user.Gender}
+              />
               <InfoRow label="Date of Birth (Day)" value={dobParts.day} />
               <InfoRow label="Month" value={dobParts.month} />
               <InfoRow label="Year" value={dobParts.year} />
               <InfoRow
-                label="Marital Status"
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Martial Status
+                  </>
+                }
                 value={user.Maritalstatus || user.maritalstatus}
               />
-              <InfoRow label="Religion" value={user.Religion} />
-              <InfoRow label="Caste" value={user.Caste} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Religion
+                  </>
+                }
+                value={user.Religion}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Caste
+                  </>
+                }
+                value={user.Caste}
+              />
               <InfoRow
                 label="Subcaste"
                 value={user.Subcaste || user.sub_caste || "-"}
@@ -815,15 +860,43 @@ useEffect(() => {
 
             {/* 3-column grid layout */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
-              <InfoRow label="Country" value={user.Country} />
-              <InfoRow label="State" value={user.State} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Country
+                  </>
+                }
+                value={user.Country}
+              />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>State
+                  </>
+                }
+                value={user.State}
+              />
               <InfoRow label="District" value={user.Dist} />
-              <InfoRow label="City" value={user.City} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>City
+                  </>
+                }
+                value={user.City}
+              />
               <InfoRow label="Pincode" value={user.Pincode} />
               <InfoRow label="Residency Status" value={user.Residencystatus} />
               <InfoRow label="Address" value={user.Address} />
               <InfoRow label="Father Number" value={user.Phone} />
-              <InfoRow label="Mobile" value={user.Mobile} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Mobile
+                  </>
+                }
+                value={user.Mobile}
+              />
               <InfoRow
                 label="Mother Number"
                 value={user.Mobile2 || user.whatsapp}
@@ -863,7 +936,7 @@ useEffect(() => {
               {/* Education Qualification */}
               <div>
                 <div className="text-sm text-gray-500">
-                  Education Qualification
+                  <span className="text-red-500">*</span> Education
                 </div>
                 <div className="font-medium">{user.Education || "-"}</div>
               </div>
@@ -878,7 +951,7 @@ useEffect(() => {
 
               {/* Occupation */}
               <div>
-                <div className="text-sm text-gray-500">Occupation</div>
+                <span className="text-red-500">*</span> Occupation
                 <div className="font-medium">{user.Occupation || "-"}</div>
               </div>
 
@@ -892,7 +965,9 @@ useEffect(() => {
 
               {/* Annual Income */}
               <div>
-                <div className="text-sm text-gray-500">Monthly Income</div>
+                <div className="text-sm text-gray-500">
+                  <span className="text-red-500">*</span> Monthly Income
+                </div>
                 <div className="font-medium">
                   {user.Annualincome
                     ? `${user.income_in || "Rs"} ${user.Annualincome}`
@@ -998,7 +1073,10 @@ useEffect(() => {
               <InfoRow label="Family Status" value={user.FamilyStatus} />
 
               <InfoRow label="Number of Brothers" value={user.noofbrothers} />
-              <InfoRow label="Number of Sisters" value={user.noofsisters} />
+              <InfoRow
+                label="Number of Sisters"
+                value={user.noofsisters || "-"}
+              />
               <InfoRow
                 label="Brothers Married"
                 value={user.noyubrothers || user.nbm}
@@ -1008,25 +1086,43 @@ useEffect(() => {
                 value={user.noyusisters || user.nsm}
               />
 
-              <InfoRow label="Father Name" value={user.Fathername} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Father Name
+                  </>
+                }
+                value={user.Fathername}
+              />
               <InfoRow
                 label="Father Occupation"
                 value={user.Fathersoccupation}
               />
               {/* ✅ NEW */}
               <InfoRow
-                label="Father Poorvegam"
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Father Poorvegam
+                  </>
+                }
                 value={user.FatherPoorvegam || "-"}
               />
 
-              <InfoRow label="Mother Name" value={user.Mothersname} />
+              <InfoRow
+                label={
+                  <>
+                    <span style={{ color: "red" }}>* </span>Mother Name
+                  </>
+                }
+                value={user.Mothersname}
+              />
               <InfoRow
                 label="Mother Occupation"
                 value={user.Mothersoccupation}
               />
               {/* ✅ NEW */}
               <InfoRow
-                label="Mother Poorvegam"
+                label={<><span style={{ color: "red" }}>* </span>Mother Poorvegam</>}
                 value={user.MotherPoorvegam || "-"}
               />
 
