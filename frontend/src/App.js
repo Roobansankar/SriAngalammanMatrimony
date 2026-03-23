@@ -86,6 +86,8 @@ import { connectSocket } from "./socket";
 import AdminPayments from "./AdminDashboard/AdminPayments";
 import PaymentResult from "./component/PaymentResult";
 import EditCommunity from "./profile/Edit/EditCommunity";
+import DeleteAccount from "./component/DeleteAccount";
+
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -202,6 +204,9 @@ function AppContent({ user, setUser }) {
           <Route path="/report-misuse" element={<Report />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/search" element={<RegularSearch />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />  
+
+          
           <Route
             path="/results/:page?"
             // path="/regularsearch-results/:page?"
