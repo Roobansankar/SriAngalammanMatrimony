@@ -87,7 +87,7 @@ import AdminPayments from "./AdminDashboard/AdminPayments";
 import PaymentResult from "./component/PaymentResult";
 import EditCommunity from "./profile/Edit/EditCommunity";
 import DeleteAccount from "./component/DeleteAccount";
-
+import ChildSafetyPolicy from "./component/ChildSafetyPolicy";
 // 👇 Scroll to top on each route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -205,7 +205,7 @@ function AppContent({ user, setUser }) {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/search" element={<RegularSearch />} />
           <Route path="/delete-account" element={<DeleteAccount />} />  
-
+         <Route path="/child-safety" element={<ChildSafetyPolicy />} /> 
           
           <Route
             path="/results/:page?"
