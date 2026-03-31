@@ -445,7 +445,7 @@ router.get("/admin/payments", async (req, res) => {
 
 router.post("/ccavenue-init", async (req, res) => {
   try {
-    const { plan, email } = req.body;
+    const { plan, email,amount } = req.body;
 
     if (!plan || !email) {
       return res.status(400).json({ message: "Missing plan or email" });
@@ -499,19 +499,34 @@ router.post("/ccavenue-init", async (req, res) => {
     /* ✅ Create new order */
     // const orderId = "ORD" + Date.now();
     const orderId = "ORD" + Date.now() + Math.floor(Math.random() * 1000);
-    const amount = plan === "premium" ? "4500.00" : "2000.00";
+    // const amount = plan === "premium" ? "4500.00" : "2000.00";
 
-    await db.promise().query(
-      `INSERT INTO payments (order_id,email,plan,amount,status)
-       VALUES (?,?,?,?,?)`,
-      [orderId, email, plan, amount, "Pending"],
-    );
+
+    let validAmount = "0.00";
+
+    if (plan === "premium") validAmount = "4500.00";
+    else if (plan === "basic") {
+      if (amount == 500) validAmount = "500.00";
+      else validAmount = "2000.00";
+    }
+
+    if (parseFloat(amount) !== parseFloat(validAmount)) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    const finalAmount = parseFloat(amount).toFixed(2);
+
+  await db.promise().query(
+    `INSERT INTO payments (order_id,email,plan,amount,status)
+   VALUES (?,?,?,?,?)`,
+    [orderId, email, plan, finalAmount, "Pending"],
+  );
 
     const payload =
       `merchant_id=${MERCHANT_ID}` +
       `&order_id=${orderId}` +
       `&currency=INR` +
-      `&amount=${amount}` +
+      `&amount=${finalAmount}` +
       `&redirect_url=${BASE_URL}/api/payment/ccavenue-success` +
       `&cancel_url=${BASE_URL}/api/payment/ccavenue-cancel` +
       `&language=EN` +

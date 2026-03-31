@@ -94,9 +94,15 @@ useEffect(() => {
 
       setFormData(updatedData);
 
+      // const res = await axios.post("/api/payment/ccavenue-init", {
+      //   plan,
+      //   email: emailToUse,
+      // });
+
       const res = await axios.post("/api/payment/ccavenue-init", {
         plan,
         email: emailToUse,
+        amount: userType === "old" ? 500 : plan === "premium" ? 4500 : 2000,
       });
 
       /* Redirect to CCAvenue */
