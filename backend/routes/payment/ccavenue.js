@@ -499,7 +499,7 @@ router.post("/ccavenue-init", async (req, res) => {
     /* ✅ Create new order */
     // const orderId = "ORD" + Date.now();
     const orderId = "ORD" + Date.now() + Math.floor(Math.random() * 1000);
-    const amount = plan === "premium" ? "2.00" : "1.00";
+    const amount = plan === "premium" ? "4500.00" : "2000.00";
 
     await db.promise().query(
       `INSERT INTO payments (order_id,email,plan,amount,status)
