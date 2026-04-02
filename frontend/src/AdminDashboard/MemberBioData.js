@@ -586,13 +586,13 @@ export default function MemberBioData() {
         
           siblings_details: [
   user.noofbrothers > 0
-    ? `${user.noofbrothers} Brothers (${
+    ? `${user.noofbrothers} ${user.noofbrothers == 1 ? "Brother" : "Brothers"} (${
         user.noyubrothers > 0 ? `${user.noyubrothers} Married` : "No Married"
       })`
     : null,
 
   user.noofsisters > 0
-    ? `${user.noofsisters} Sisters (${
+    ? `${user.noofsisters} ${user.noofsisters == 1 ? "Sister" : "Sisters"} (${
         user.noyusisters > 0 ? `${user.noyusisters} Married` : "No Married"
       })`
     : null,
