@@ -1097,7 +1097,7 @@ const downloadAsPDF = async () => {
                     >
                       <img src={headerpic} alt="header" className="w-full" />
 
-                      <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
+                      <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-1 rounded-md text-lg font-bold">
                         MATRIID: {currentData.matriId}
                       </div>
                     </div>
