@@ -14,7 +14,7 @@ services:
       --innodb-default-row-format=DYNAMIC
       --innodb-strict-mode=OFF
     ports:
-      - "3306:3306" 
+      - "3307:3306" 
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-8220}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-sriang}
@@ -22,9 +22,9 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-matrimony}
     volumes:
       - ${MYSQL_DATA_DIR:-./.data/mysql}:/var/lib/mysql
-      - ./backend/schema/schema.sql:/docker-entrypoint-initdb.d/00_schema.sql:ro
-      - ./backend/schema/dump.sql:/docker-entrypoint-initdb.d/01_dump.sql:ro
-      - ./backend/schema/device_tokens.sql:/docker-entrypoint-initdb.d/02_device_tokens.sql:ro
+      - ./backend/schema_init/schema.sql:/docker-entrypoint-initdb.d/00_schema.sql:ro
+      - ./backend/schema_init/dump.sql:/docker-entrypoint-initdb.d/01_dump.sql:ro
+      - ./backend/schema_init/device_tokens.sql:/docker-entrypoint-initdb.d/02_device_tokens.sql:ro
     networks:
       - matrimony-network
     healthcheck:

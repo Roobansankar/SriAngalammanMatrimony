@@ -3,6 +3,7 @@ import { CheckCircle, Loader2, MailCheck, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { API } from "../config/api";
+import { COUNTRY_CODES } from "../utils/countryCodesList";
 
 
 // API already includes /api prefix from centralized config
@@ -325,6 +326,7 @@ export default function Step1({ nextStep, formData = {} }) {
       return "Please enter your date of birth.";
     if (!data.maritalStatus) return "Please select your marital status.";
     if (!data.religion) return "Please select your religion.";
+    if (!data.countryCode) return "Please select a country code.";
     if (!data.mobile || data.mobile.length < 10)
       return "Please enter a valid mobile number.";
     if (errors.mobile) return errors.mobile;
@@ -687,13 +689,19 @@ export default function Step1({ nextStep, formData = {} }) {
           ))}
         </select>
         <div className="flex gap-2 md:col-span-2">
-          <input
+          <select
             name="countryCode"
             value={data.countryCode}
             onChange={handleChange}
-            className="border p-2 rounded-lg w-20 focus:ring-2 focus:ring-rose-400 outline-none"
-            readOnly
-          />
+            className="border p-2 rounded-lg w-32 focus:ring-2 focus:ring-rose-400 outline-none"
+          >
+            <option value="">Select Code</option>
+            {COUNTRY_CODES.map((item, idx) => (
+              <option key={idx} value={item.code}>
+                {item.code}
+              </option>
+            ))}
+          </select>
           <div className="flex-1 relative">
             <input
               name="mobile"

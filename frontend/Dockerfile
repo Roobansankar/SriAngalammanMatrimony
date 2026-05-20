@@ -7,7 +7,7 @@ ARG REACT_APP_API_BASE=/api
 ENV REACT_APP_API_BASE=${REACT_APP_API_BASE}
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 COPY . .
 RUN npm run build
