@@ -562,7 +562,7 @@ export default function MemberBioData() {
           }`,
           monthly_income: user.Annualincome || "",
           height: user.HeightText || "",
-          weight: user.Weight || "",
+          weight: user.Weight ? `${user.Weight} Kg` : "",
 
           complexion: convertToTamil(user.Complexion || "", complexionMap),
           family_deity: `${user.Kuladeivam || ""}`,
