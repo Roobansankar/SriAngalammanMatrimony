@@ -278,19 +278,15 @@ useEffect(() => {
           <label className="block font-medium text-gray-700 mb-1">
             Complexion
           </label>
-          <select
+          <textarea
             name="complexion"
             value={data.complexion}
             onChange={handleChange}
+            maxLength={100}
+            rows={2}
+            placeholder="Enter complexion (max 100 characters)"
             className="border rounded-xl px-4 py-3 w-full"
-          >
-            <option value="">Select Complexion</option>
-            {options.complexions.map((c) => (
-              <option key={c.id} value={c.complexion}>
-                {c.complexion}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Body Type */}
