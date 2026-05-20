@@ -821,6 +821,8 @@ export default function Step4({ nextStep, prevStep, formData }) {
         thesaiirupu: formData.thesaiirupu || prev.thesaiirupu,
         placeOfBirth: formData.placeOfBirth || prev.placeOfBirth,
         countryOfBirth: formData.countryOfBirth || prev.countryOfBirth,
+        horoscopeFile: formData.horoscopeFile || prev.horoscopeFile,
+        horoscopeFileName: formData.horoscopeFileName || prev.horoscopeFileName,
         ...Object.fromEntries(
           [...Array(12)].map((_, i) => [
             `g${i + 1}`,
@@ -954,6 +956,7 @@ const handleNext = () => {
       [...Array(12)].map((_, i) => [`a${i + 1}`, data[`a${i + 1}`]]),
     ),
 
+    horoscopeFile: data.horoscopeFile,
     horoscopeFileName: data.horoscopeFileName,
   });
 };
