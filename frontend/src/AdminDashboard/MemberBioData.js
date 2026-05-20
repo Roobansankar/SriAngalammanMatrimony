@@ -565,7 +565,7 @@ export default function MemberBioData() {
           weight: user.Weight || "",
 
           complexion: convertToTamil(user.Complexion || "", complexionMap),
-          family_deity: `${user.Kuladeivam || ""}, ${user.City || ""}`,
+          family_deity: `${user.Kuladeivam || ""}`,
 
           kulam: convertToTamil(user.Subcaste || "", kootamMap),
 
@@ -1469,7 +1469,7 @@ const downloadAsPDF = async () => {
                       {/* FAMILY DEITY */}
                       <div className="display-form-row">
                         <span>
-                          குலதெய்வம்,ஊர்:
+                          குலதெய்வம்:
                           <div
                             className="display-placeholder"
                             style={{ minWidth: "912px" }}
