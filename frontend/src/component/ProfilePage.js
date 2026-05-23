@@ -1295,7 +1295,7 @@ useEffect(() => {
               />
 
               <div className="col-span-1 sm:col-span-2 lg:col-span-3">
-                <span className="text-sm text-gray-500">About Family</span>
+                <span className="text-sm text-gray-500"> Describe your family background and assets</span>
                 <div className="font-medium">
                   {user.FamilyDetails || user.FamilyDetails_new || "-"}
                 </div>

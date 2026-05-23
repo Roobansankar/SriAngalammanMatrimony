@@ -502,7 +502,7 @@ useEffect(() => {
       {/* Family description */}
       <div className="mt-6">
         <label className="block font-medium text-gray-700 mb-1">
-          Describe your family background
+          Describe your family background and assets
         </label>
         <textarea
           name="familyDescription"

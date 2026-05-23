@@ -571,7 +571,7 @@ export default function MemberBioData() {
 
           kootam: user.Kootam || "",
           father_name: user.Fathername || "",
-          father_phone: user.Mobile || "",
+          father_phone: user.Phone || "",
           father_occupation: user.Fathersoccupation || "",
           father_native_place: user.FatherPoorvegam || "",
           mother_name: user.Mothersname || "",
@@ -579,9 +579,8 @@ export default function MemberBioData() {
           mother_occupation: user.Mothersoccupation || "",
           mother_native_place: user.MotherPoorvegam || "",
           address: user.Address || "",
-          family_income: `${user.anyotherincome || ""}, ${
-            user.FamilyDetails || ""
-          }`,
+          mobile_phone: user.Mobile || "",
+          family_income: user.FamilyDetails || "",
 
         
           siblings_details: [
@@ -683,10 +682,14 @@ export default function MemberBioData() {
         Subcaste: editData.kootam,
         Fathername: editData.father_name,
         Fathersoccupation: editData.father_occupation,
+        FatherPoorvegam: editData.father_native_place,
         Mothersname: editData.mother_name,
         Mothersoccupation: editData.mother_occupation,
+        MotherPoorvegam: editData.mother_native_place,
         Address: editData.address,
-        Mobile: editData.father_phone,
+        Phone: editData.father_phone,
+        Mobile: editData.mobile_phone,
+        Mobile2: editData.mother_phone,
         ConfirmEmail: editData.mail_id,
         Star: editData.star,
         Moonsign: editData.rasi,
@@ -1845,10 +1848,10 @@ const downloadAsPDF = async () => {
                             )}
                           </div>
                         </span>
-                      </div>
+                        </div>
 
-                      {/* FAMILY INCOME */}
-                      <div className="display-form-row">
+                        {/* FAMILY INCOME */}
+                        <div className="display-form-row">
                         <span>
                           குடும்பவருமானம்/வசதிகள்:
                           <div
@@ -1860,10 +1863,7 @@ const downloadAsPDF = async () => {
                                 type="text"
                                 value={editData.family_income || ""}
                                 onChange={(e) =>
-                                  handleEditChange(
-                                    "family_income",
-                                    e.target.value
-                                  )
+                                  handleEditChange("family_income", e.target.value)
                                 }
                                 className="display-data"
                                 style={{
@@ -1880,8 +1880,7 @@ const downloadAsPDF = async () => {
                             )}
                           </div>
                         </span>
-                      </div>
-
+                        </div>
                       {/* SIBLINGS */}
                       <div className="display-form-row">
                         <span>

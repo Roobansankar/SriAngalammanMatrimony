@@ -9,7 +9,6 @@ const API_BASE = API + "/";
 export default function Step7({ nextStep, prevStep, formData = {} }) {
   const [options, setOptions] = useState({
     bloodGroups: [],
-    complexions: [],
     bodyTypes: [],
     diets: [],
     smokeTypes: [],
@@ -84,7 +83,6 @@ useEffect(() => {
       try {
         const [
           bloodRes,
-          complexionRes,
           bodyTypeRes,
           dietRes,
           smokeRes,
@@ -94,7 +92,6 @@ useEffect(() => {
           interestsRes,
         ] = await Promise.all([
           axios.get(`${API_BASE}blood-groups`),
-          axios.get(`${API_BASE}complexions`),
           axios.get(`${API_BASE}body-types`),
           axios.get(`${API_BASE}diets`),
           axios.get(`${API_BASE}smoke`),
@@ -106,7 +103,6 @@ useEffect(() => {
 
         setOptions({
           bloodGroups: bloodRes.data,
-          complexions: complexionRes.data,
           bodyTypes: bodyTypeRes.data,
           diets: dietRes.data,
           smokeTypes: smokeRes.data,
@@ -229,19 +225,14 @@ useEffect(() => {
           <label className="block font-medium text-gray-700 mb-1">
             Complexion
           </label>
-          <select
+          <input
+            type="text"
             name="complexion"
             value={data.complexion}
             onChange={handleChange}
+            placeholder="e.g. Fair, Medium, Dark"
             className="border rounded-xl px-4 py-3 w-full"
-          >
-            <option value="">Select Complexion</option>
-            {options.complexions.map((c) => (
-              <option key={c.id} value={c.complexion}>
-                {c.complexion}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Body Type */}

@@ -541,7 +541,6 @@ export default function Step10({ nextStep, prevStep, formData = {} }) {
     castes: [],
     countries: [],
     states: [],
-    complexions: [],
     residencyStatus: [],
     educations: [],
     occupations: [],
@@ -620,7 +619,6 @@ partnerCity: formData.partnerCity || "",
       try {
         const [
           relRes,
-          compRes,
           resiRes,
           eduRes,
           occuRes,
@@ -628,7 +626,6 @@ partnerCity: formData.partnerCity || "",
           maritalRes,
         ] = await Promise.all([
           axios.get(`${API_BASE}religions`),
-          axios.get(`${API_BASE}complexions`),
           axios.get(`${API_BASE}residency-status`),
           axios.get(`${API_BASE}educations`),
           axios.get(`${API_BASE}occupations`),
@@ -639,7 +636,6 @@ partnerCity: formData.partnerCity || "",
         setOptions((prev) => ({
           ...prev,
           religions: putAnyFirst(relRes.data, "Religion"),
-          complexions: putAnyFirst(compRes.data, "complexion"),
           residencyStatus: putAnyFirst(resiRes.data, "residency_status"),
           educations: putAnyFirst(eduRes.data, "edu"),
           // occupations: putAnyFirst(occuRes.data, "occu"),
@@ -893,19 +889,13 @@ partnerCity: formData.partnerCity || "",
 
       {/* Complexion & Residency */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <select
+        <input
+          placeholder="Complexion (e.g. Fair, Medium, Dark)"
           name="complexion"
           value={data.complexion}
           onChange={handleChange}
           className="input-box"
-        >
-          <option value="">Select Complexion</option>
-          {options.complexions.map((c) => (
-            <option key={c.ID} value={c.complexion}>
-              {c.complexion}
-            </option>
-          ))}
-        </select>
+        />
 
         <select
           name="residencyStatus"

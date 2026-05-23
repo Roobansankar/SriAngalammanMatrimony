@@ -43,7 +43,7 @@ export default function EditFamily({ adminMode = false }) {
    const params = useParams();
 
 
-   const MAX_LENGTH = 42;
+   const MAX_LENGTH = 100;
 
    const RESTRICTED_WORDS = [
      "phone",
@@ -488,7 +488,7 @@ export default function EditFamily({ adminMode = false }) {
           </div> */}
 
           <div className="md:col-span-2">
-            <label className="font-semibold">About Family</label>
+            <label className="font-semibold"> Describe your family background and assets</label>
 
             <textarea
               rows="3"

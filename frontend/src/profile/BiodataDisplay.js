@@ -989,17 +989,15 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             kulam: user.Caste || "",
             kootam: user.Subcaste || "",
             father_name: user.Fathername || "",
-            father_phone: user.Mobile || "",
+            father_phone: user.Phone || "",
             father_occupation: user.Fathersoccupation || "",
-            father_native_place: user.POB || "",
+            father_native_place: user.FatherPoorvegam || "",
             mother_name: user.Mothersname || "",
-            mother_phone: user.Mobile || "",
+            mother_phone: user.Mobile2 || "",
             mother_occupation: user.Mothersoccupation || "",
-            mother_native_place: user.POB || "",
+            mother_native_place: user.MotherPoorvegam || "",
             address: user.Address || "",
-            family_income: `${user.anyotherincome || ""}, ${
-              user.family_wealth || ""
-            }`,
+            family_income: user.FamilyDetails || "",
             siblings_details: [
               user.noofbrothers > 0
                 ? `${user.noofbrothers} Brothers (${user.nbm || 0} Married)`

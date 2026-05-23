@@ -1250,9 +1250,9 @@ router.put("/biodata/:matriId", async (req, res) => {
       'Height', 'Weight', 'Complexion',
       // Family
       'Caste', 'Subcaste', 'Fathername', 'Fathersoccupation', 'Mothersname', 'Mothersoccupation',
-      'noofbrothers', 'noofsisters', 'family_wealth',
+      'noofbrothers', 'noofsisters', 'family_wealth', 'FatherPoorvegam', 'MotherPoorvegam',
       // Contact
-      'Address', 'City', 'State', 'Mobile', 'ConfirmEmail',
+      'Address', 'City', 'State', 'Mobile', 'Phone', 'Mobile2', 'ConfirmEmail',
       // Horoscope basic
       'Star', 'Moonsign', 'Lagnam', 'Suddham', 'Raghu', 'Keethu', 'Sevai', 'DasaBalance',
       // Rasi grid (g1-g12)

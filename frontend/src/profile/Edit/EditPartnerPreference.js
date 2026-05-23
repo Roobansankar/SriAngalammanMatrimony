@@ -14,7 +14,6 @@ export default function EditPartnerPreference({ adminMode = false }) {
     religions: [],
     castes: [], // { id, name }
     subcastes: [], // ["sub1","sub2"]
-    complexions: [],
     motherTongues: [],
     residencyStatus: [],
     educations: [],
@@ -152,7 +151,6 @@ export default function EditPartnerPreference({ adminMode = false }) {
       try {
         const [
           religions,
-          complexions,
           motherTongues,
           residency,
           educations,
@@ -160,7 +158,6 @@ export default function EditPartnerPreference({ adminMode = false }) {
           countries,
         ] = await Promise.all([
           axios.get(`${API_BASE}religions`),
-          axios.get(`${API_BASE}complexions`),
           axios.get(`${API_BASE}mother-tongues`),
           axios.get(`${API_BASE}residency-status`),
           axios.get(`${API_BASE}educations`),
@@ -171,7 +168,6 @@ export default function EditPartnerPreference({ adminMode = false }) {
         setOptions((p) => ({
           ...p,
           religions: religions.data,
-          complexions: complexions.data,
           motherTongues: motherTongues.data,
           residencyStatus: residency.data,
           educations: educations.data,
@@ -477,18 +473,13 @@ export default function EditPartnerPreference({ adminMode = false }) {
           {/* COMPLEXION */}
           <div>
             <label className="font-semibold">Complexion</label>
-            <select
+            <input
+              type="text"
               className="w-full border p-3 rounded-lg"
+              placeholder="e.g. Fair, Medium, Dark"
               value={form.PE_Complexion}
               onChange={(e) => updateField("PE_Complexion", e.target.value)}
-            >
-              <option value="">Select</option>
-              {options.complexions.map((c) => (
-                <option key={c.ID} value={c.complexion}>
-                  {c.complexion}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* RESIDENCY */}

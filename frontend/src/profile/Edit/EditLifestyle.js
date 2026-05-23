@@ -8,7 +8,6 @@ const API_BASE = API + "/";
 export default function EditLifestyle({ adminMode = false }) {
   const [options, setOptions] = useState({
     bloodGroups: [],
-    complexions: [],
     bodyTypes: [],
     diets: [],
     smokeTypes: [],
@@ -166,7 +165,6 @@ export default function EditLifestyle({ adminMode = false }) {
       try {
         const [
           bloodRes,
-          complexionRes,
           bodyTypeRes,
           dietRes,
           smokeRes,
@@ -176,7 +174,6 @@ export default function EditLifestyle({ adminMode = false }) {
           interestsRes,
         ] = await Promise.all([
           axios.get(`${API_BASE}blood-groups`),
-          axios.get(`${API_BASE}complexions`),
           axios.get(`${API_BASE}body-types`),
           axios.get(`${API_BASE}diets`),
           axios.get(`${API_BASE}smoke`),
@@ -188,7 +185,6 @@ export default function EditLifestyle({ adminMode = false }) {
 
         setOptions({
           bloodGroups: bloodRes.data,
-          complexions: complexionRes.data,
           bodyTypes: bodyTypeRes.data,
           diets: dietRes.data,
           smokeTypes: smokeRes.data,
@@ -327,18 +323,13 @@ export default function EditLifestyle({ adminMode = false }) {
           {/* COMPLEXION */}
           <div>
             <label className="text-sm font-semibold">Complexion</label>
-            <select
+            <input
+              type="text"
               className="w-full border p-3 rounded-lg"
+              placeholder="e.g. Fair, Medium, Dark"
               value={form.Complexion}
               onChange={(e) => updateField("Complexion", e.target.value)}
-            >
-              <option value="">Select</option>
-              {options.complexions.map((c) => (
-                <option key={c.id} value={c.complexion}>
-                  {c.complexion}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* BODYTYPE */}
