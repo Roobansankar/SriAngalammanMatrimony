@@ -37,13 +37,14 @@ export default function AdminPayments() {
     // 1. Search Filter
     if (search) {
       const s = search.toLowerCase();
-result = result.filter(
-  (p) =>
-    p.MatriID?.toLowerCase().includes(s) ||
-    p.Name?.toLowerCase().includes(s) ||
-    p.order_id?.toLowerCase().includes(s) ||
-    p.email?.toLowerCase().includes(s),
-);
+      result = result.filter(
+        (p) =>
+          p.MatriID?.toLowerCase().includes(s) ||
+          p.Name?.toLowerCase().includes(s) ||
+          p.order_id?.toLowerCase().includes(s) ||
+          p.email?.toLowerCase().includes(s) ||
+          p.Mobile?.toLowerCase().includes(s),
+      );
     }
 
     // 2. Date Range Filter
@@ -259,6 +260,9 @@ result = result.filter(
                           Email
                         </th>
                         <th className="p-4 font-semibold uppercase text-xs">
+                          Mobile Number
+                        </th>
+                        <th className="p-4 font-semibold uppercase text-xs">
                           Member Details
                         </th>
                         <th className="p-4 font-semibold uppercase text-xs">
@@ -283,7 +287,7 @@ result = result.filter(
                       {filtered.length === 0 ? (
                         <tr>
                           <td
-                            colSpan="8"
+                            colSpan="10"
                             className="p-10 text-center text-gray-500"
                           >
                             No matching records found
@@ -306,6 +310,9 @@ result = result.filter(
                               title={p.email}
                             >
                               {p.email}
+                            </td>
+                            <td className="p-4 text-xs text-gray-600">
+                              {p.Mobile || "N/A"}
                             </td>
                             <td className="p-4">
                               <div className="font-bold text-gray-800 leading-none">
@@ -377,6 +384,9 @@ result = result.filter(
                         {p.order_id}
                       </p>
                       <p className="text-xs text-gray-500">{p.email}</p>
+                      <p className="text-xs text-gray-500 font-bold">
+                        {p.Mobile || "No Mobile"}
+                      </p>
                     </div>
                     <span
                       className={`px-2 py-1 rounded-full text-[10px] font-bold border uppercase ${getStatusStyle(p.status)}`}

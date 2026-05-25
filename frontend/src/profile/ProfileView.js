@@ -991,7 +991,14 @@ const heightMatch = (minH, maxH, actual) => {
 
               {/* Thesai Details */}
               <InfoRow label="Thesai Planet" value={user.ThesaiPlanet || "-"} />
-              <InfoRow label="Thesai Years" value={user.ThesaiYears || "-"} />
+              <InfoRow
+                label="Thesai Years"
+                value={
+                  user.ThesaiYears !== undefined && user.ThesaiYears !== null
+                    ? user.ThesaiYears
+                    : "-"
+                }
+              />
               <InfoRow label="Thesai Months" value={user.ThesaiMonths || "-"} />
               <InfoRow label="Thesai Days" value={user.ThesaiDays || "-"} />
 
@@ -1092,13 +1099,6 @@ const heightMatch = (minH, maxH, actual) => {
                   {user.Annualincome
                     ? `${showDash(user.income_in) || "Rs"} ${user.Annualincome}`
                     : "-"}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-gray-500">Any Other Income</div>
-                <div className="font-medium">
-                  {showDash(user.anyotherincome)}
                 </div>
               </div>
 
@@ -1247,7 +1247,7 @@ const heightMatch = (minH, maxH, actual) => {
               />
 
               <div className="col-span-1 sm:col-span-2 lg:col-span-3">
-                <span className="text-sm text-gray-500">About Family</span>
+                <span className="text-sm text-gray-500">Describe your family background and assets</span>
                 <div className="font-medium">
                   {showDash(user.FamilyDetails || user.FamilyDetails_new)}
                 </div>

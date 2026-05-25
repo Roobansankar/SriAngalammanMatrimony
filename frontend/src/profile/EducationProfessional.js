@@ -156,7 +156,6 @@ export default function EducationProfessional() {
   const occupationDetails = user.occu_details || user.OccupationDetails || "-";
   const annualIncome = user.Annualincome || user.income || user.Income || "-";
   const incomeType = user.income_in || user.Income_in || user.IncomeType || "-";
-  const otherIncome = user.anyotherincome || user.AnyOtherIncome || "-";
   const employedIn = user.Employedin || user.EmployedIn || "-";
   const workingHours =
     user.working_hours || user.Working_hours || user.workingHours || "-";
@@ -181,7 +180,6 @@ export default function EducationProfessional() {
           <LabelValue label="Occupation Details" value={occupationDetails} />
           <LabelValue label="Annual Income" value={annualIncome} />
           <LabelValue label="Income Type" value={incomeType} />
-          <LabelValue label="Any Other Income" value={otherIncome} />
           <LabelValue label="Employed In" value={employedIn} />
           <LabelValue label="Working Hours" value={workingHours} />
           <LabelValue label="Working Location / City" value={workingLocation} />

@@ -422,19 +422,27 @@ router.get("/admin/payments", async (req, res) => {
       SELECT
         p.order_id,
         p.email,
+        p.mobile,
         p.plan,
         p.amount,
         p.status,
         p.created_at,
         r.MatriID,
-        r.Name
+        r.Name,
+        r.Mobile as register_mobile
       FROM payments p
       LEFT JOIN register r
         ON p.email = r.ConfirmEmail
       ORDER BY p.id DESC
     `);
 
-    res.json(rows);
+    // Fallback to register mobile if payment mobile is missing
+    const enrichedRows = rows.map(row => ({
+      ...row,
+      Mobile: row.mobile || row.register_mobile || "N/A"
+    }));
+
+    res.json(enrichedRows);
   } catch (err) {
     console.error(err);
     res.status(500).json([]);
@@ -445,7 +453,7 @@ router.get("/admin/payments", async (req, res) => {
 
 router.post("/ccavenue-init", async (req, res) => {
   try {
-    const { plan, email,amount } = req.body;
+    const { plan, email, amount, mobile } = req.body;
 
     if (!plan || !email) {
       return res.status(400).json({ message: "Missing plan or email" });
@@ -517,9 +525,9 @@ router.post("/ccavenue-init", async (req, res) => {
     const finalAmount = parseFloat(amount).toFixed(2);
 
   await db.promise().query(
-    `INSERT INTO payments (order_id,email,plan,amount,status)
-   VALUES (?,?,?,?,?)`,
-    [orderId, email, plan, finalAmount, "Pending"],
+    `INSERT INTO payments (order_id,email,mobile,plan,amount,status)
+   VALUES (?,?,?,?,?,?)`,
+    [orderId, email, mobile || null, plan, finalAmount, "Pending"],
   );
 
     const payload =

@@ -1035,6 +1035,7 @@ partnerCity: formData.partnerCity || "",
           name="partnerExpectations"
           value={data.partnerExpectations}
           onChange={handleChange}
+          maxLength={68}
           className="input-box h-28 resize-none"
         />
       </div>

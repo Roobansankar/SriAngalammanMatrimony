@@ -352,6 +352,7 @@ export default function EditContact({ adminMode = false }) {
               value={form.Address}
               onChange={(e) => updateField("Address", e.target.value)}
               className="border p-3 w-full rounded-lg"
+              maxlength={80}
             />
           </div>
 

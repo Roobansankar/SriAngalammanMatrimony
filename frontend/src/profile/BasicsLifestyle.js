@@ -179,6 +179,20 @@ export default function BasicsLifestyle() {
   const passport = user.passport !== undefined ? String(user.passport) : "-";
   const cardType = user.cardtype || user.CardType || "-";
 
+  const thesaiPlanet = user.ThesaiPlanet || "-";
+  const thesaiYears =
+    user.ThesaiYears !== undefined && user.ThesaiYears !== null
+      ? user.ThesaiYears
+      : "-";
+  const thesaiMonths =
+    user.ThesaiMonths !== undefined && user.ThesaiMonths !== null
+      ? user.ThesaiMonths
+      : "-";
+  const thesaiDays =
+    user.ThesaiDays !== undefined && user.ThesaiDays !== null
+      ? user.ThesaiDays
+      : "-";
+
   return (
     <div className="min-h-screen p-6 bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#a17c5b] bg-fixed bg-cover font-display">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-20">
@@ -204,6 +218,11 @@ export default function BasicsLifestyle() {
           <LabelValue label="Medical History" value={medicalHistory} />
           <LabelValue label="Passport" value={passport} />
           <LabelValue label="Card Type" value={cardType} />
+
+          <LabelValue label="Thesai Planet" value={thesaiPlanet} />
+          <LabelValue label="Thesai Years" value={thesaiYears} />
+          <LabelValue label="Thesai Months" value={thesaiMonths} />
+          <LabelValue label="Thesai Days" value={thesaiDays} />
         </div>
       </div>
     </div>

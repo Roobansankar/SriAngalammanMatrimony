@@ -998,16 +998,39 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             mother_native_place: user.MotherPoorvegam || "",
             address: user.Address || "",
             family_income: user.FamilyDetails || "",
-            siblings_details: [
-              user.noofbrothers > 0
-                ? `${user.noofbrothers} Brothers (${user.nbm || 0} Married)`
-                : null,
-              user.noofsisters > 0
-                ? `${user.noofsisters} Sisters (${user.nsm || 0} Married)`
-                : null,
-            ]
-              .filter(Boolean)
-              .join(", "),
+            siblings_details: (() => {
+              const parts = [
+                user.noofbrothers > 0
+                  ? `${user.noofbrothers} Brother${
+                      user.noofbrothers > 1 ? "s" : ""
+                    } (${
+                      (user.noyubrothers || user.nbm) > 0
+                        ? `${user.noyubrothers || user.nbm} Married`
+                        : "Unmarried"
+                    }${
+                      user.nb_unmarried > 0
+                        ? `, ${user.nb_unmarried} Unmarried`
+                        : ""
+                    })`
+                  : null,
+                user.noofsisters > 0
+                  ? `${user.noofsisters} Sister${
+                      user.noofsisters > 1 ? "s" : ""
+                    } (${
+                      (user.noyusisters || user.nsm) > 0
+                        ? `${user.noyusisters || user.nsm} Married`
+                        : "Unmarried"
+                    }${
+                      user.ns_unmarried > 0
+                        ? `, ${user.ns_unmarried} Unmarried`
+                        : ""
+                    })`
+                  : null,
+              ].filter(Boolean);
+              return parts.length > 0
+                ? parts.join(", ")
+                : "No brothers and sisters";
+            })(),
 
             star: user.Star || "",
             rasi: user.Moonsign || "",
@@ -1016,6 +1039,7 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             rahu: user.Raghu || "",
             ketu: user.Keethu || "",
             sevvai: user.Sevai || "",
+            parigarasevai: user.parigarasevai || "",
             navamsam: [
               user.a1,
               user.a2,
@@ -1482,6 +1506,15 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
                     style={{ minWidth: "65px" }}
                   >
                     <span className="display-data">{currentData.sevvai}</span>
+                  </div>
+                  , பரிகாரசெவ்வாய்:
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "65px" }}
+                  >
+                    <span className="display-data">
+                      {currentData.parigarasevai}
+                    </span>
                   </div>
                 </span>
               </div>

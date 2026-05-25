@@ -18,7 +18,6 @@ export default function EditEducation({ adminMode = false }) {
     occu_details: "",
     Employedin: "",
     Annualincome: "",
-    anyotherincome: "",
     income_in: "",
     working_hours: "",
     workinglocation: "",
@@ -85,7 +84,6 @@ export default function EditEducation({ adminMode = false }) {
         occu_details: data.OccupationDetails || "",
         Employedin: data.Employedin || "",
         Annualincome: data.Annualincome || "",
-        anyotherincome: data.anyotherincome || "",
         income_in: data.income_in || "",
         working_hours: data.working_hours || "",
         workinglocation: data.workinglocation || "",
@@ -373,19 +371,6 @@ const handleOccuDetailsChange = (value) => {
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-pink-500"
               value={form.Annualincome}
               onChange={(e) => updateField("Annualincome", e.target.value)}
-            />
-          </div>
-
-          {/* Other Income */}
-          <div>
-            <label className="text-sm font-semibold text-gray-700">
-              Other Income
-            </label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-pink-500"
-              value={form.anyotherincome}
-              onChange={(e) => updateField("anyotherincome", e.target.value)}
             />
           </div>
 

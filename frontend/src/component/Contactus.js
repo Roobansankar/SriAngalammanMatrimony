@@ -12,6 +12,7 @@ export default function ContactUs() {
     lastName: "",
     subject: "",
     email: "",
+    phone: "",
     message: "",
   });
 
@@ -46,6 +47,7 @@ export default function ContactUs() {
           lastName: "",
           subject: "",
           email: "",
+          phone: "",
           message: "",
         });
         setTimeout(() => setSuccess(false), 5000);
@@ -193,8 +195,8 @@ export default function ContactUs() {
               </div>
             </div>
 
-            {/* Subject + Email */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Subject + Email + Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="text-sm text-gray-600 font-medium">
                   Subject
@@ -203,7 +205,7 @@ export default function ContactUs() {
                   name="subject"
                   value={form.subject}
                   onChange={handleChange}
-                  placeholder="Enquiry about membership"
+                  placeholder="Enquiry"
                   className="w-full mt-2 px-4 py-3 rounded-xl border border-[#f2c7d0] bg-[#fff9fa] focus:outline-none focus:ring-2 focus:ring-[#e58da1] transition-all"
                 />
               </div>
@@ -218,6 +220,19 @@ export default function ContactUs() {
                   value={form.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-[#f2c7d0] bg-[#fff9fa] focus:outline-none focus:ring-2 focus:ring-[#e58da1] transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600 font-medium">
+                  Phone Number
+                </label>
+                <input
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="94439 46541"
                   className="w-full mt-2 px-4 py-3 rounded-xl border border-[#f2c7d0] bg-[#fff9fa] focus:outline-none focus:ring-2 focus:ring-[#e58da1] transition-all"
                 />
               </div>

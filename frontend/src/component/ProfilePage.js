@@ -941,7 +941,7 @@ useEffect(() => {
                     <span style={{ color: "red" }}>* </span>Thesai Years
                   </>
                 }
-                value={user.ThesaiYears || "-"}
+                value={user.ThesaiYears !== undefined && user.ThesaiYears !== null ? user.ThesaiYears : "-"}
               />
               <InfoRow
                 label={
@@ -1129,12 +1129,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Any Other Income */}
-              <div>
-                <div className="text-sm text-gray-500">Any Other Income</div>
-                <div className="font-medium">{user.anyotherincome || "-"}</div>
-              </div>
-
               {/* Employed In */}
               <div>
                 <div className="text-sm text-gray-500">Employed In</div>
@@ -1238,6 +1232,16 @@ useEffect(() => {
               <InfoRow
                 label="Sisters Married"
                 value={user.noyusisters || user.nsm}
+              />
+
+              <InfoRow
+                label="Brothers Unmarried"
+                value={user.nb_unmarried || "-"}
+              />
+
+              <InfoRow
+                label="Sisters Unmarried"
+                value={user.ns_unmarried || "-"}
               />
 
               <InfoRow

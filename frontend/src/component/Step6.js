@@ -385,6 +385,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           name="educationDetails"
           value={data.educationDetails}
           onChange={handleChange}
+          maxLength={28}
           rows={1}
           className="border rounded-xl px-4 py-3 w-full focus:ring-2 focus:ring-pink-400"
         />
@@ -399,6 +400,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           name="occupationDetails"
           value={data.occupationDetails}
           onChange={handleChange}
+          maxLength={24}
           rows={1}
           className="border rounded-xl px-4 py-3 w-full focus:ring-2 focus:ring-pink-400"
         />

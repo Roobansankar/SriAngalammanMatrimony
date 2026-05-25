@@ -235,6 +235,9 @@ export default function ContactMessages() {
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 truncate">{msg.email}</p>
+                      <p className="text-sm text-gray-500 truncate">
+                        {msg.phone || "No Phone"}
+                      </p>
                       {msg.subject && (
                         <p className="text-sm font-medium text-gray-700 mt-1">
                           {msg.subject}
@@ -289,6 +292,9 @@ export default function ContactMessages() {
                   {selectedMessage.first_name} {selectedMessage.last_name}
                 </p>
                 <p className="text-sm text-gray-600">{selectedMessage.email}</p>
+                {selectedMessage.phone && (
+                  <p className="text-sm text-gray-600">{selectedMessage.phone}</p>
+                )}
               </div>
 
               {selectedMessage.subject && (

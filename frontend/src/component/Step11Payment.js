@@ -102,6 +102,7 @@ useEffect(() => {
       const res = await axios.post("/api/payment/ccavenue-init", {
         plan,
         email: emailToUse,
+        mobile: formData?.mobile,
         amount: userType === "old" ? 500 : plan === "premium" ? 4500 : 2000,
       });
 

@@ -185,8 +185,11 @@ export default function FamilyDetails() {
 
   const noOfBrothers = user.noofbrothers ?? user.noyubrothers ?? "-";
   const noOfBrothersMarried = user.nbm ?? user.noofbrothersmarried ?? "-";
+  const noOfBrothersUnmarried = user.nb_unmarried || "-";
+
   const noOfSisters = user.noofsisters ?? user.noyusisters ?? "-";
   const noOfSistersMarried = user.nsm ?? user.noofsistersmarried ?? "-";
+  const noOfSistersUnmarried = user.ns_unmarried || "-";
 
   const fatherName =
     user.Fathername || user.fathername || user.fatherName || "-";
@@ -223,8 +226,13 @@ export default function FamilyDetails() {
 
           <LabelValue label="No. of Brothers" value={noOfBrothers} />
           <LabelValue label="Brothers Married" value={noOfBrothersMarried} />
+          <LabelValue
+            label="Brothers Unmarried"
+            value={noOfBrothersUnmarried}
+          />
           <LabelValue label="No. of Sisters" value={noOfSisters} />
           <LabelValue label="Sisters Married" value={noOfSistersMarried} />
+          <LabelValue label="Sisters Unmarried" value={noOfSistersUnmarried} />
 
           <LabelValue label="Father Name" value={fatherName} />
           <LabelValue label="Father Occupation" value={fatherOccupation} />

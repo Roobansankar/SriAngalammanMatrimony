@@ -1405,17 +1405,7 @@ export default function MemberManagement() {
                       onChange={handleEditChange}
                     />
                     <EditField
-                      label="Any Other Income"
-                      field="anyotherincome"
-                      value={
-                        isEditing ? editData.anyotherincome : selectedMember.anyotherincome
-                      }
-                      isEditing={isEditing}
-                      onChange={handleEditChange}
-                    />
-                    <EditField
-                      label="Reference"
-                      field="reference"
+                      label="Reference"                      field="reference"
                       value={
                         isEditing ? editData.reference : selectedMember.reference
                       }

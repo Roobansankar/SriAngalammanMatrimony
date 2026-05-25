@@ -577,6 +577,7 @@ return (
           rows={3}
           value={data.address}
           onChange={handleChange}
+          maxLength={80}
           className="border rounded-xl px-4 py-3 w-full"
         />
       </div>

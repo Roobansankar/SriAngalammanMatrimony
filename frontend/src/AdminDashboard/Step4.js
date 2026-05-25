@@ -776,9 +776,18 @@ export default function Step4({ nextStep, prevStep, formData }) {
     countryOfBirth: formData.countryOfBirth || "",
     kuladeivam: formData.kuladeivam || "",
     thesaiPlanet: formData.thesaiPlanet || "",
-    thesaiYears: formData.thesaiYears || "",
-    thesaiMonths: formData.thesaiMonths || "",
-    thesaiDays: formData.thesaiDays || "",
+    thesaiYears:
+      formData.thesaiYears !== undefined && formData.thesaiYears !== null
+        ? formData.thesaiYears
+        : "",
+    thesaiMonths:
+      formData.thesaiMonths !== undefined && formData.thesaiMonths !== null
+        ? formData.thesaiMonths
+        : "",
+    thesaiDays:
+      formData.thesaiDays !== undefined && formData.thesaiDays !== null
+        ? formData.thesaiDays
+        : "",
     kootam: formData.kootam || "",
     sutham: formData.sutham || "",
 

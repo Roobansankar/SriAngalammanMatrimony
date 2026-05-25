@@ -742,6 +742,7 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
             rows={2}
             value={data.address}
             onChange={handleChange}
+            maxLength={80}
             className="border p-2 rounded-lg w-full"
           />
         </div>

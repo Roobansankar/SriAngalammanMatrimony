@@ -226,9 +226,18 @@ useEffect(() => {
       Sutham: user.Sutham || "",
 
       ThesaiPlanet: user.ThesaiPlanet || "",
-      ThesaiYears: user.ThesaiYears || "",
-      ThesaiMonths: user.ThesaiMonths || "",
-      ThesaiDays: user.ThesaiDays || "",
+      ThesaiYears:
+        user.ThesaiYears !== undefined && user.ThesaiYears !== null
+          ? user.ThesaiYears
+          : "",
+      ThesaiMonths:
+        user.ThesaiMonths !== undefined && user.ThesaiMonths !== null
+          ? user.ThesaiMonths
+          : "",
+      ThesaiDays:
+        user.ThesaiDays !== undefined && user.ThesaiDays !== null
+          ? user.ThesaiDays
+          : "",
     }));
 
     /* -------------------------

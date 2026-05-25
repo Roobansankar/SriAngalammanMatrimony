@@ -26,8 +26,10 @@ export default function EditFamily({ adminMode = false }) {
     mother_tounge: "",
     noofbrothers: "",
     noyubrothers: "",
+    nb_unmarried: "", // ✅ ADD
     noofsisters: "",
     noyusisters: "",
+    ns_unmarried: "", // ✅ ADD
     Fathername: "",
     Fathersoccupation: "",
     FatherPoorvegam: "", // ✅ ADD
@@ -121,7 +123,7 @@ export default function EditFamily({ adminMode = false }) {
 
       if (!data) return;
 
-      setForm({
+        setForm({
         ConfirmEmail: data.ConfirmEmail || "",
         MatriID: data.MatriID || "",
 
@@ -131,8 +133,10 @@ export default function EditFamily({ adminMode = false }) {
         mother_tounge: data.mother_tounge || data.Language || "",
         noofbrothers: data.noofbrothers || "",
         noyubrothers: data.noyubrothers || data.nbm || "",
+        nb_unmarried: data.nb_unmarried || "", // ✅ ADD
         noofsisters: data.noofsisters || "",
         noyusisters: data.noyusisters || data.nsm || "",
+        ns_unmarried: data.ns_unmarried || "", // ✅ ADD
         Fathername: data.Fathername || "",
         Fathersoccupation: data.Fathersoccupation || "",
         FatherPoorvegam: data.FatherPoorvegam || "",
@@ -151,7 +155,7 @@ export default function EditFamily({ adminMode = false }) {
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [v, t, s, mt, b, bm, si, sim, w] = await Promise.all([
+        const [v, t, s, mt, b, bm, si, sim, w, bu, su] = await Promise.all([
           axios.get(`${API_BASE}family-values`),
           axios.get(`${API_BASE}family-types`),
           axios.get(`${API_BASE}family-status`),
@@ -161,6 +165,8 @@ export default function EditFamily({ adminMode = false }) {
           axios.get(`${API_BASE}no-of-sisters`),
           axios.get(`${API_BASE}no-of-sisters-married`),
           axios.get(`${API_BASE}family-wealth`),
+          axios.get(`${API_BASE}no-of-brothers`), // Reuse no-of-brothers for unmarried
+          axios.get(`${API_BASE}no-of-sisters`),  // Reuse no-of-sisters for unmarried
         ]);
 
         setOptions({
@@ -170,8 +176,10 @@ export default function EditFamily({ adminMode = false }) {
           motherTongues: mt.data,
           brothers: b.data,
           brothersMarried: bm.data,
+          brothersUnmarried: bu.data,
           sisters: si.data,
           sistersMarried: sim.data,
+          sistersUnmarried: su.data,
           familyWealth: w.data,
         });
       } catch (err) {
@@ -342,6 +350,23 @@ export default function EditFamily({ adminMode = false }) {
             </select>
           </div>
 
+          {/* BROTHERS UNMARRIED */}
+          <div>
+            <label className="font-semibold">Brothers Unmarried</label>
+            <select
+              className="w-full border p-3 rounded-lg"
+              value={form.nb_unmarried}
+              onChange={(e) => updateField("nb_unmarried", e.target.value)}
+            >
+              <option value="">Select</option>
+              {options.brothersUnmarried?.map((b) => (
+                <option key={b.id} value={b.number}>
+                  {b.number}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* NO OF SISTERS */}
           <div>
             <label className="font-semibold">No. of Sisters</label>
@@ -376,6 +401,23 @@ export default function EditFamily({ adminMode = false }) {
             </select>
           </div>
 
+          {/* SISTERS UNMARRIED */}
+          <div>
+            <label className="font-semibold">Sisters Unmarried</label>
+            <select
+              className="w-full border p-3 rounded-lg"
+              value={form.ns_unmarried}
+              onChange={(e) => updateField("ns_unmarried", e.target.value)}
+            >
+              <option value="">Select</option>
+              {options.sistersUnmarried?.map((s) => (
+                <option key={s.id} value={s.number}>
+                  {s.number}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* FATHER NAME */}
           <div>
             <label className="font-semibold">Father Name</label>
@@ -395,6 +437,7 @@ export default function EditFamily({ adminMode = false }) {
               className="w-full border p-3 rounded-lg"
               value={form.Fathersoccupation}
               onChange={(e) => updateField("Fathersoccupation", e.target.value)}
+              maxLength={25}
             />
           </div>
 
@@ -427,6 +470,7 @@ export default function EditFamily({ adminMode = false }) {
               className="w-full border p-3 rounded-lg"
               value={form.Mothersoccupation}
               onChange={(e) => updateField("Mothersoccupation", e.target.value)}
+              maxLength={25}
             />
           </div>
 

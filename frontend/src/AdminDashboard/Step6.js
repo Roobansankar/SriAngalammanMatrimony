@@ -172,6 +172,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             name="educationDetails"
             value={data.educationDetails}
             onChange={handleChange}
+            maxLength={28}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
             rows={1} // 👈 reduces height like Monthly Income
           />
@@ -186,6 +187,7 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             name="occupationDetails"
             value={data.occupationDetails}
             onChange={handleChange}
+            maxLength={24}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
             rows={1} // 👈 same compact height
           />

@@ -270,7 +270,7 @@ router.get("/featured-profiles", (req, res) => {
 // POST new contact message (public - for contact form)
 router.post("/contact-message", async (req, res) => {
   try {
-    const { firstName, lastName, email, subject, message } = req.body;
+    const { firstName, lastName, email, phone, subject, message } = req.body;
     
     if (!firstName || !email || !message) {
       return res.status(400).json({ 
@@ -279,14 +279,24 @@ router.post("/contact-message", async (req, res) => {
       });
     }
 
-    const conn = db.promise();
-    await conn.query(
-      `INSERT INTO contact_messages (first_name, last_name, email, subject, message) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [firstName, lastName || '', email, subject || '', message]
-    );
+    console.log("📩 Incoming contact message:", { firstName, lastName, email, phone, subject });
 
-    console.log(`📩 New contact message from: ${email}`);
+    const conn = db.promise();
+    try {
+      await conn.query(
+        `INSERT INTO contact_messages (first_name, last_name, email, phone, subject, message) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [firstName, lastName || '', email, phone || '', subject || '', message]
+      );
+      console.log(`✅ Message saved successfully for: ${email}`);
+    } catch (sqlErr) {
+      console.error("❌ SQL Error saving contact message:", sqlErr.message);
+      if (sqlErr.code === 'ER_BAD_FIELD_ERROR') {
+        console.error("⚠️ The 'phone' column might be missing from the 'contact_messages' table.");
+      }
+      throw sqlErr;
+    }
+
     res.json({ success: true, message: "Message sent successfully" });
   } catch (err) {
     console.error("Error saving contact message:", err);

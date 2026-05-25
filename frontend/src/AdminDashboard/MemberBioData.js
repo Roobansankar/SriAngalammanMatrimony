@@ -489,7 +489,7 @@ export default function MemberBioData() {
   };
 
   const formatValue = (v) => {
-    if (v === null || v === undefined || v === "" || Number(v) === 0) {
+    if (v === null || v === undefined || v === "") {
       return "-";
     }
     const num = Number(v);
@@ -583,21 +583,39 @@ export default function MemberBioData() {
           family_income: user.FamilyDetails || "",
 
         
-          siblings_details: [
-  user.noofbrothers > 0
-    ? `${user.noofbrothers} ${user.noofbrothers == 1 ? "Brother" : "Brothers"} (${
-        user.noyubrothers > 0 ? `${user.noyubrothers} Married` : "No Married"
-      })`
-    : null,
+          siblings_details: (() => {
+            const parts = [
+              user.noofbrothers > 0
+                ? `${user.noofbrothers} ${
+                    user.noofbrothers == 1 ? "Brother" : "Brothers"
+                  } (${
+                    (user.noyubrothers || user.nbm) > 0
+                      ? `${user.noyubrothers || user.nbm} Married`
+                      : "Unmarried"
+                  }${
+                    user.nb_unmarried > 0
+                      ? `, ${user.nb_unmarried} Unmarried`
+                      : ""
+                  })`
+                : null,
 
-  user.noofsisters > 0
-    ? `${user.noofsisters} ${user.noofsisters == 1 ? "Sister" : "Sisters"} (${
-        user.noyusisters > 0 ? `${user.noyusisters} Married` : "No Married"
-      })`
-    : null,
-]
-  .filter(Boolean)
-  .join(", "),
+              user.noofsisters > 0
+                ? `${user.noofsisters} ${
+                    user.noofsisters == 1 ? "Sister" : "Sisters"
+                  } (${
+                    (user.noyusisters || user.nsm) > 0
+                      ? `${user.noyusisters || user.nsm} Married`
+                      : "Unmarried"
+                  }${
+                    user.ns_unmarried > 0
+                      ? `, ${user.ns_unmarried} Unmarried`
+                      : ""
+                  })`
+                : null,
+            ].filter(Boolean);
+
+            return parts.length > 0 ? parts.join(", ") : "No brothers and sisters";
+          })(),
 
           star: convertToTamil(user.Star || "", nakshatraPaathamMap),
           rasi: convertToTamil(user.Moonsign || "", rasiMap),
@@ -606,8 +624,8 @@ export default function MemberBioData() {
           suddham: user.Sutham || "",
           rahu: user.Raghu || "",
           ketu: user.Keethu || "",
-          // sevvai: user.Sevai || "",
-          sevvai: user.Sevai || user.parigarasevai || "",
+          sevvai: user.Sevai || "",
+          parigarasevai: user.parigarasevai || "",
 
           navamsam: [
             user.a1,
@@ -1856,7 +1874,7 @@ const downloadAsPDF = async () => {
                           குடும்பவருமானம்/வசதிகள்:
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "745px" }}
+                            style={{ minWidth: "75px" }}
                           >
                             {isEditing ? (
                               <input
@@ -2108,10 +2126,32 @@ const downloadAsPDF = async () => {
                               </span>
                             )}
                           </div>
-                          {/* ✅ INLINE FINAL TEXT */}
-                          <span className="display-text">
-                            ஆமிடம், பரிகாரசெவ்வாய்
-                          </span>
+                          ஆமிடம், பரிகாரசெவ்வாய்:
+                          <div
+                            className="display-placeholder"
+                            style={{ minWidth: "45px" }}
+                          >
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editData.parigarasevai || ""}
+                                onChange={(e) =>
+                                  handleEditChange("parigarasevai", e.target.value)
+                                }
+                                className="display-data"
+                                style={{
+                                  border: "2px solid #3b82f6",
+                                  background: "#eff6ff",
+                                  padding: "2px 8px",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <span className="display-data">
+                                {currentData.parigarasevai}
+                              </span>
+                            )}
+                          </div>
                         </span>
                       </div>
 
