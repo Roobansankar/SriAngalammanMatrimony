@@ -1038,6 +1038,9 @@ partnerCity: formData.partnerCity || "",
           maxLength={68}
           className="input-box h-28 resize-none"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.partnerExpectations?.length || 0} / 68
+        </div>
       </div>
 
       {/* Buttons */}

@@ -623,8 +623,12 @@ export default function Step4({ nextStep, prevStep, formData }) {
           name="placeOfBirth"
           value={data.placeOfBirth}
           onChange={handleChange}
+          maxLength={15}
           className="border p-2 rounded-lg w-full"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.placeOfBirth?.length || 0} / 15
+        </div>
       </div>
 
       {/* Country */}

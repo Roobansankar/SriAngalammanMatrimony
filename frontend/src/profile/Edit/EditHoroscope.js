@@ -881,6 +881,7 @@ useEffect(() => {
             field="POB"
             form={form}
             setForm={setForm}
+            maxLength={15}
           />
           <Input
             label="Country of Birth"
@@ -1042,7 +1043,8 @@ function Drop({ label, field, options, form, setForm }) {
   );
 }
 
-function Input({ label, field, form, setForm, placeholder }) {
+function Input({ label, field, form, setForm, placeholder, maxLength }) {
+  const currentLength = form[field]?.length || 0;
   return (
     <div className="w-full flex flex-col">
       <label className="text-sm font-medium mb-1 text-black">{label}</label>
@@ -1050,9 +1052,15 @@ function Input({ label, field, form, setForm, placeholder }) {
       <input
         value={form[field] || ""}
         placeholder={placeholder}
+        maxLength={maxLength}
         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
         className="border p-3 rounded w-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
       />
+      {maxLength && (
+        <span className="text-[10px] text-gray-500 mt-0.5 text-right">
+          {currentLength} / {maxLength}
+        </span>
+      )}
     </div>
   );
 }

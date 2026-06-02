@@ -1453,7 +1453,7 @@ router.put("/update/education", async (req, res) => {
       income_in,
       working_hours,
       workinglocation,
-      workin,
+      company_name,
     } = req.body;
 
     if (!ConfirmEmail && !matriId) {
@@ -1489,7 +1489,7 @@ router.put("/update/education", async (req, res) => {
         income_in = ?, 
         working_hours = ?, 
         workinglocation = ?, 
-        workin = ?
+        company_name = ?
       WHERE ${whereQuery}
       `,
       [
@@ -1503,7 +1503,7 @@ router.put("/update/education", async (req, res) => {
         income_in || "",
         working_hours || "",
         workinglocation || "",
-        workin || "",
+        company_name || "",
         identifier,
       ],
     );

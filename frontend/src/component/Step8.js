@@ -394,8 +394,12 @@ useEffect(() => {
               name="fatherOccupation"
               value={data.fatherOccupation}
               onChange={handleChange}
+              maxLength={24}
               className="border rounded-xl px-4 py-3 w-full"
             />
+            <div className="text-[10px] text-gray-500 mt-1 text-right">
+              {data.fatherOccupation?.length || 0} / 24
+            </div>
           </div>
 
           {/* Mother name */}
@@ -422,8 +426,12 @@ useEffect(() => {
               name="motherOccupation"
               value={data.motherOccupation}
               onChange={handleChange}
+              maxLength={24}
               className="border rounded-xl px-4 py-3 w-full"
             />
+            <div className="text-[10px] text-gray-500 mt-1 text-right">
+              {data.motherOccupation?.length || 0} / 24
+            </div>
           </div>
 
           {/* Father Poorvegam */}
@@ -507,9 +515,12 @@ useEffect(() => {
           rows={3}
           value={data.familyDescription}
           onChange={handleChange}
-          className="border rounded-xl px-4 py-3 w-full"
           maxLength={53}
+          className="border rounded-xl px-4 py-3 w-full"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.familyDescription?.length || 0} / 53
+        </div>
       </div>
 
       {/* Family Medical History */}

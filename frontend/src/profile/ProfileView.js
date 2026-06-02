@@ -1122,6 +1122,11 @@ const heightMatch = (minH, maxH, actual) => {
                   {showDash(user.workinglocation)}
                 </div>
               </div>
+
+              <div>
+                <div className="text-sm text-gray-500">Company Name</div>
+                <div className="font-medium">{showDash(user.company_name)}</div>
+              </div>
             </div>
           </div>
         </section>

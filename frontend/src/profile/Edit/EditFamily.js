@@ -437,8 +437,11 @@ export default function EditFamily({ adminMode = false }) {
               className="w-full border p-3 rounded-lg"
               value={form.Fathersoccupation}
               onChange={(e) => updateField("Fathersoccupation", e.target.value)}
-              maxLength={25}
+              maxLength={24}
             />
+            <div className="text-[10px] text-gray-500 mt-1 text-right">
+              {form.Fathersoccupation?.length || 0} / 24
+            </div>
           </div>
 
           <div>
@@ -470,8 +473,11 @@ export default function EditFamily({ adminMode = false }) {
               className="w-full border p-3 rounded-lg"
               value={form.Mothersoccupation}
               onChange={(e) => updateField("Mothersoccupation", e.target.value)}
-              maxLength={25}
+              maxLength={24}
             />
+            <div className="text-[10px] text-gray-500 mt-1 text-right">
+              {form.Mothersoccupation?.length || 0} / 24
+            </div>
           </div>
 
           <div>

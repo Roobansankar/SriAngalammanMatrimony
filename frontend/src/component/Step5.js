@@ -574,12 +574,15 @@ return (
         </label>
         <textarea
           name="address"
-          rows={3}
+          rows={2}
           value={data.address}
           onChange={handleChange}
           maxLength={80}
-          className="border rounded-xl px-4 py-3 w-full"
+          className="border p-2 rounded-lg w-full"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.address?.length || 0} / 80
+        </div>
       </div>
 
       {/* Father Phone */}

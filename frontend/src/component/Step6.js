@@ -389,6 +389,9 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           rows={1}
           className="border rounded-xl px-4 py-3 w-full focus:ring-2 focus:ring-pink-400"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.educationDetails?.length || 0} / 28
+        </div>
       </div>
 
       {/* Occupation Details */}
@@ -404,6 +407,9 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           rows={1}
           className="border rounded-xl px-4 py-3 w-full focus:ring-2 focus:ring-pink-400"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.occupationDetails?.length || 0} / 24
+        </div>
       </div>
 
       {/* Monthly Income */}
@@ -495,8 +501,12 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           name="company_name"
           value={data.company_name}
           onChange={handleChange}
+          maxLength={38}
           className="border rounded-xl px-4 py-3 w-full focus:ring-2 focus:ring-pink-400"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.company_name?.length || 0} / 38
+        </div>
       </div>
 
       {/* Working Location – FULL WIDTH */}
@@ -509,8 +519,12 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
           name="workingLocation"
           value={data.workingLocation}
           onChange={handleChange}
+          maxLength={16}
           className="border rounded-xl px-4 py-3 w-full focus:ring-2 focus:ring-pink-400"
         />
+        <div className="text-[10px] text-gray-500 mt-1 text-right">
+          {data.workingLocation?.length || 0} / 16
+        </div>
       </div>
     </div>
 

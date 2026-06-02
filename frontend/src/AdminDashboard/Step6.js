@@ -176,6 +176,9 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
             rows={1} // 👈 reduces height like Monthly Income
           />
+          <div className="text-[10px] text-gray-500 mt-1 text-right">
+            {data.educationDetails?.length || 0} / 28
+          </div>
         </div>
 
         {/* Occupation Details */}
@@ -191,6 +194,9 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
             rows={1} // 👈 same compact height
           />
+          <div className="text-[10px] text-gray-500 mt-1 text-right">
+            {data.occupationDetails?.length || 0} / 24
+          </div>
         </div>
 
         {/* Annual Income */}
@@ -303,9 +309,13 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             type="text"
             name="company_name"
             value={data.company_name}
+            maxLength={38}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
             onChange={handleChange}
           />
+          <div className="text-[10px] text-gray-500 mt-1 text-right">
+            {data.company_name?.length || 0} / 38
+          </div>
         </div>
 
         {/* Working Location */}
@@ -318,8 +328,12 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             name="workingLocation"
             value={data.workingLocation}
             onChange={handleChange}
+            maxLength={16}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
+          <div className="text-[10px] text-gray-500 mt-1 text-right">
+            {data.workingLocation?.length || 0} / 16
+          </div>
         </div>
       </div>
 

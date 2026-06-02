@@ -21,7 +21,7 @@ export default function EditEducation({ adminMode = false }) {
     income_in: "",
     working_hours: "",
     workinglocation: "",
-    workin: "",
+    company_name: "",
   });
 
   const [educationList, setEducationList] = useState([]);
@@ -87,7 +87,7 @@ export default function EditEducation({ adminMode = false }) {
         income_in: data.income_in || "",
         working_hours: data.working_hours || "",
         workinglocation: data.workinglocation || "",
-        workin: data.workin || "",
+        company_name: data.company_name || "",
       });
     };
 
@@ -419,22 +419,30 @@ const handleOccuDetailsChange = (value) => {
               type="text"
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-pink-500"
               value={form.workinglocation}
+              maxLength={16}
               onChange={(e) => updateField("workinglocation", e.target.value)}
             />
+            <div className="text-[10px] text-gray-500 mt-1 text-right">
+              {form.workinglocation?.length || 0} / 16
+            </div>
           </div>
 
-          {/* Work In */}
+          {/* Company Name */}
           <div className="md:col-span-2">
             <label className="text-sm font-semibold text-gray-700">
-              Work In
+              Company Name
             </label>
             <input
               type="text"
               placeholder="Company / Field"
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-pink-500"
-              value={form.workin}
-              onChange={(e) => updateField("workin", e.target.value)}
+              value={form.company_name}
+              maxLength={38}
+              onChange={(e) => updateField("company_name", e.target.value)}
             />
+            <div className="text-[10px] text-gray-500 mt-1 text-right">
+              {form.company_name?.length || 0} / 38
+            </div>
           </div>
 
           {/* Save */}

@@ -1255,23 +1255,29 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "220px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.birth_place || ""}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "birth_place",
-                                    e.target.value
-                                  )
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.birth_place || ""}
+                                  maxLength={15}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "birth_place",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.birth_place?.length || 0} / 15
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.birth_place}
@@ -1290,20 +1296,26 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "400px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.education || ""}
-                                onChange={(e) =>
-                                  handleEditChange("education", e.target.value)
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.education || ""}
+                                  maxLength={28}
+                                  onChange={(e) =>
+                                    handleEditChange("education", e.target.value)
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.education?.length || 0} / 28
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.education}
@@ -1316,20 +1328,26 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "420px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.occupation || ""}
-                                onChange={(e) =>
-                                  handleEditChange("occupation", e.target.value)
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.occupation || ""}
+                                  maxLength={24}
+                                  onChange={(e) =>
+                                    handleEditChange("occupation", e.target.value)
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.occupation?.length || 0} / 24
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.occupation}
@@ -1348,23 +1366,29 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "810px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.company_details || ""}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "company_details",
-                                    e.target.value
-                                  )
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.company_details || ""}
+                                  maxLength={54}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "company_details",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.company_details?.length || 0} / 54
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.company_details}
@@ -1653,23 +1677,29 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "425px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.father_occupation || ""}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "father_occupation",
-                                    e.target.value
-                                  )
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.father_occupation || ""}
+                                  maxLength={24}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "father_occupation",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.father_occupation?.length || 0} / 24
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.father_occupation}
@@ -1781,23 +1811,29 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "435px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.mother_occupation || ""}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "mother_occupation",
-                                    e.target.value
-                                  )
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.mother_occupation || ""}
+                                  maxLength={24}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "mother_occupation",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.mother_occupation?.length || 0} / 24
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.mother_occupation}
@@ -1874,23 +1910,29 @@ const downloadAsPDF = async () => {
                           குடும்பவருமானம்/வசதிகள்:  
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "720px" }}
+                            style={{ minWidth: "745px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.family_income || ""}
-                                onChange={(e) =>
-                                  handleEditChange("family_income", e.target.value)
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.family_income || ""}
+                                  maxLength={53}
+                                  onChange={(e) =>
+                                    handleEditChange("family_income", e.target.value)
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.family_income?.length || 0} / 53
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.family_income}
@@ -2346,23 +2388,29 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "900px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.other_notes || ""}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "other_notes",
-                                    e.target.value
-                                  )
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.other_notes || ""}
+                                  maxLength={68}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "other_notes",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.other_notes?.length || 0} / 68
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.other_notes}
@@ -2567,6 +2615,7 @@ const downloadAsPDF = async () => {
         <input
           type="text"
           value={editData.education || ""}
+          maxLength={28}
           onChange={(e) =>
             handleEditChange("education", e.target.value)
           }
@@ -2597,6 +2646,7 @@ const downloadAsPDF = async () => {
         <input
           type="text"
           value={editData.occupation || ""}
+          maxLength={24}
           onChange={(e) =>
             handleEditChange("occupation", e.target.value)
           }
@@ -2814,7 +2864,7 @@ const downloadAsPDF = async () => {
                   குடும்பவருமானம்/வசதிகள்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "720px" }}
+                    style={{ minWidth: "745px" }}
                   >
                     <span className="display-data">
                       {currentData.family_income}

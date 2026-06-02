@@ -640,7 +640,9 @@ export default function NewMembers() {
   );
 }
 
-function EditField({ label, field, value, type = "text", options = [], isEditing, onChange }) {
+function EditField({ label, field, value, type = "text", options = [], isEditing, onChange, maxLength }) {
+  const currentLength = value?.length || 0;
+
   if (type === "select") {
     return (
       <div>
@@ -670,12 +672,20 @@ function EditField({ label, field, value, type = "text", options = [], isEditing
       <div>
         <label className="block text-xs text-gray-500 mb-1">{label}</label>
         {isEditing ? (
-          <textarea
-            value={value || ""}
-            onChange={(e) => onChange(field, e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500"
-          />
+          <>
+            <textarea
+              value={value || ""}
+              onChange={(e) => onChange(field, e.target.value)}
+              rows={3}
+              maxLength={maxLength}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500"
+            />
+            {maxLength && (
+              <span className="text-[10px] text-gray-500 block text-right">
+                {currentLength} / {maxLength}
+              </span>
+            )}
+          </>
         ) : (
           <p className="text-sm text-gray-800">{value || "-"}</p>
         )}
@@ -687,12 +697,20 @@ function EditField({ label, field, value, type = "text", options = [], isEditing
     <div>
       <label className="block text-xs text-gray-500 mb-1">{label}</label>
       {isEditing ? (
-        <input
-          type={type}
-          value={value || ""}
-          onChange={(e) => onChange(field, e.target.value)}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500"
-        />
+        <>
+          <input
+            type={type}
+            value={value || ""}
+            onChange={(e) => onChange(field, e.target.value)}
+            maxLength={maxLength}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500"
+          />
+          {maxLength && (
+            <span className="text-[10px] text-gray-500 block text-right">
+              {currentLength} / {maxLength}
+            </span>
+          )}
+        </>
       ) : (
         <p className="text-sm text-gray-800">{value || "-"}</p>
       )}

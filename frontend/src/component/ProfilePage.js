@@ -1148,6 +1148,12 @@ useEffect(() => {
                 </div>
                 <div className="font-medium">{user.workinglocation || "-"}</div>
               </div>
+
+              {/* Company Name */}
+              <div>
+                <div className="text-sm text-gray-500">Company Name</div>
+                <div className="font-medium">{user.company_name || "-"}</div>
+              </div>
             </div>
           </div>
         </section>
