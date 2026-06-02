@@ -1,64 +1,67 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const ChildSafetyPolicy = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10 mt-12">
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-6 md:p-10">
-        
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">
-          Child Safety Standards Policy
-        </h1>
+    <div className="min-h-screen bg-gray-50 px-4 py-10 mt-12 md:mt-20">
+      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div className="bg-[#7b1113] py-8 px-6 text-center">
+          <h1 className="text-2xl md:text-4xl font-bold text-white uppercase tracking-wide">
+            Child Safety Standards
+          </h1>
+        </div>
 
-        <p className="text-gray-600 mb-4">
-          <strong>Sri Angalamman Matrimony</strong> is committed to ensuring a safe
-          and secure platform for all users. Our app is strictly intended for
-          individuals aged <strong>18 years and above</strong>.
-        </p>
+        <div className="p-6 md:p-12 space-y-8">
+          <section>
+            <p className="text-gray-700 text-lg leading-relaxed">
+              Sri Angalamman Matrimony is committed to providing a safe platform for all users. We have zero tolerance for child sexual abuse and exploitation (CSAE), child sexual abuse material (CSAM), grooming, trafficking, or any activity that endangers minors.
+            </p>
+          </section>
 
-        <p className="text-gray-600 mb-4">
-          We have a <strong>zero-tolerance policy</strong> against child sexual abuse
-          and exploitation (CSAE). Any content or behavior that violates these
-          standards will result in immediate action, including account suspension
-          and reporting to relevant authorities.
-        </p>
+          <section>
+            <h2 className="text-xl md:text-2xl font-bold text-[#7b1113] mb-4 border-b pb-2">
+              Our Policies Include:
+            </h2>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                "Users must be 18 years of age or older.",
+                "Any content involving minors in a sexual context is strictly prohibited.",
+                "Users can report inappropriate profiles, messages, photos, or behaviour.",
+                "Reported content is reviewed and appropriate action is taken, including account suspension or removal.",
+                "We cooperate with relevant law enforcement authorities where required by law.",
+                "We comply with applicable child safety and online protection regulations.",
+              ].map((policy, index) => (
+                <li key={index} className="flex items-start gap-3 bg-gray-50 p-4 rounded-lg shadow-sm border-l-4 border-[#7b1113]">
+                  <span className="text-[#7b1113] font-bold mt-0.5">•</span>
+                  <span className="text-gray-700 font-medium">{policy}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        <h2 className="text-lg font-semibold text-gray-800 mt-6 mb-3">
-          Safety Measures
-        </h2>
-
-        <ul className="list-disc pl-6 text-gray-600 space-y-2">
-          <li>User reporting and blocking features</li>
-          <li>Profile monitoring and moderation</li>
-          <li>Strict age restriction (18+ only)</li>
-          <li>Immediate removal of inappropriate content</li>
-        </ul>
-
-        <h2 className="text-lg font-semibold text-gray-800 mt-6 mb-3">
-          Reporting & Action
-        </h2>
-
-        <p className="text-gray-600 mb-4">
-          Users can report any suspicious activity directly within the app. Our
-          team reviews all reports and takes appropriate action promptly.
-        </p>
-
-        <h2 className="text-lg font-semibold text-gray-800 mt-6 mb-3">
-          Contact
-        </h2>
-
-        <p className="text-gray-600">
-          For any concerns related to child safety, please contact us at:
-        </p>
-
-        <p className="text-blue-600 font-medium mt-2">
-          infronex@gmail.com
-        </p>
-
-        <p className="text-gray-600 mt-6">
-          We comply with all applicable child safety laws and cooperate with law
-          enforcement agencies where necessary.
-        </p>
-
+          <section className="bg-gray-100 p-6 rounded-xl border-t-2 border-[#7b1113]">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              For child safety concerns, please contact:
+            </h2>
+            <div className="space-y-3">
+              <p className="flex items-center gap-3 text-gray-700">
+                <span className="font-bold text-[#7b1113]">Email:</span>
+                <a href="mailto:sriangalammanspsk2020@gmail.com" className="text-blue-600 hover:underline font-medium">
+                  sriangalammanspsk2020@gmail.com
+                </a>
+              </p>
+              <p className="flex items-center gap-3 text-gray-700">
+                <span className="font-bold text-[#7b1113]">Website:</span>
+                <a href="https://www.sriangalammanmatrimony.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                  https://www.sriangalammanmatrimony.com
+                </a>
+              </p>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ export default function EditFamily({ adminMode = false }) {
    const params = useParams();
 
 
-   const MAX_LENGTH = 53;
+   const MAX_LENGTH = 50;
 
    const RESTRICTED_WORDS = [
      "phone",

@@ -79,6 +79,14 @@ export default function Footer() {
                   Disclaimer
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/child-safety"
+                  className="hover:underline text-white/90"
+                >
+                  Child Safety Standards
+                </Link>
+              </li>
             </ul>
           </div>
 

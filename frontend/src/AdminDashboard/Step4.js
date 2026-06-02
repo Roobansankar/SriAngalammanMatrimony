@@ -1512,11 +1512,11 @@ const handleNext = () => {
             name="placeOfBirth"
             value={data.placeOfBirth}
             onChange={handleChange}
-            maxLength={15}
+            maxLength={13}
             className="border p-2 rounded-lg w-full"
           />
           <div className="text-[10px] text-gray-500 mt-1 text-right">
-            {data.placeOfBirth?.length || 0} / 15
+            {data.placeOfBirth?.length || 0} / 13
           </div>
         </div>
 
@@ -1569,14 +1569,14 @@ const handleNext = () => {
           onClick={prevStep}
           className="border px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50"
         >
-          ← Back
+          &larr; Back
         </button>
 
         <button
           onClick={handleNext}
           className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700"
         >
-          Next →
+          Next &rarr;
         </button>
       </div>
     </div>

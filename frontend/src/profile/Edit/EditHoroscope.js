@@ -881,7 +881,7 @@ useEffect(() => {
             field="POB"
             form={form}
             setForm={setForm}
-            maxLength={15}
+            maxLength={13}
           />
           <Input
             label="Country of Birth"

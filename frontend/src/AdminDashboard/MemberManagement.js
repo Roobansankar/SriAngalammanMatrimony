@@ -685,7 +685,7 @@ export default function MemberManagement() {
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
-                      maxLength={38}
+                      maxLength={36}
                     />
                     <EditField
                       label="Annual Income"
@@ -935,7 +935,7 @@ export default function MemberManagement() {
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
-                      maxLength={53}
+                      maxLength={50}
                     />
                     <EditField
                       label="Unmarried Brothers"
@@ -999,7 +999,7 @@ export default function MemberManagement() {
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
-                      maxLength={16}
+                      maxLength={13}
                     />
                     <EditField
                       label="Occupation Details"
@@ -1033,7 +1033,7 @@ export default function MemberManagement() {
                       value={isEditing ? editData.POB : selectedMember.POB}
                       isEditing={isEditing}
                       onChange={handleEditChange}
-                      maxLength={15}
+                      maxLength={13}
                     />
                     {/* Horoscope Details */}
                     <div className="pt-3 border-t border-gray-200">
@@ -1371,7 +1371,7 @@ export default function MemberManagement() {
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
-                      maxLength={68}
+                      maxLength={66}
                     />
                     <EditField
                       label="Partner Expectations"
@@ -1384,7 +1384,7 @@ export default function MemberManagement() {
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
-                      maxLength={68}
+                      maxLength={66}
                     />
                     <EditField
                       label="About Us"

@@ -419,11 +419,11 @@ const handleOccuDetailsChange = (value) => {
               type="text"
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-pink-500"
               value={form.workinglocation}
-              maxLength={16}
+              maxLength={13}
               onChange={(e) => updateField("workinglocation", e.target.value)}
             />
             <div className="text-[10px] text-gray-500 mt-1 text-right">
-              {form.workinglocation?.length || 0} / 16
+              {form.workinglocation?.length || 0} / 13
             </div>
           </div>
 
@@ -437,11 +437,11 @@ const handleOccuDetailsChange = (value) => {
               placeholder="Company / Field"
               className="w-full border border-gray-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-pink-500"
               value={form.company_name}
-              maxLength={38}
+              maxLength={36}
               onChange={(e) => updateField("company_name", e.target.value)}
             />
             <div className="text-[10px] text-gray-500 mt-1 text-right">
-              {form.company_name?.length || 0} / 38
+              {form.company_name?.length || 0} / 36
             </div>
           </div>
 

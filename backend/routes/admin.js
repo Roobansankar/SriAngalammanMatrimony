@@ -1,6 +1,7 @@
 
 import bcrypt from "bcryptjs";
 import express from "express";
+import fs from "fs";
 import jwt from "jsonwebtoken";
 import db from "../config/db.js";
 import config from "../config/env.js";
@@ -1027,7 +1028,8 @@ router.get("/profile/:matriId", (req, res) => {
   const { matriId } = req.params;
 
   const sql = `
-    SELECT *
+    SELECT *,
+      TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
     FROM register
     WHERE MatriID = ?
     LIMIT 1
@@ -1040,11 +1042,31 @@ router.get("/profile/:matriId", (req, res) => {
 
     const user = rows[0];
 
-    // Relative path
+    // ✅ BUILD PHOTO URL (Consistency with auth/user)
     user.PhotoURL =
-      user.Photo1 && user.Photo1Approve === "Yes"
-        ? `/gallery/${user.Photo1}`
-        : `/gallery/nophoto.jpg`;
+      user.Photo1 && user.Photo1Approve?.toLowerCase() === "yes"
+        ? `${BASE_URL}/gallery/${encodeURIComponent(user.Photo1)}`
+        : null;
+
+    // ✅ BUILD HOROSCOPE URL (Consistency with auth/user)
+    let HoroscopeURL = null;
+    const hField = user.horosother || user.Horosother; // Check both casings
+
+    if (hField) {
+      let fileName = hField;
+      // Auto-detect extension if missing
+      if (!fileName.includes(".")) {
+        if (fs.existsSync(`kundli/${fileName}.jpg`)) {
+          fileName = fileName + ".jpg";
+        } else if (fs.existsSync(`kundli/${fileName}.png`)) {
+          fileName = fileName + ".png";
+        } else if (fs.existsSync(`kundli/${fileName}.pdf`)) {
+          fileName = fileName + ".pdf";
+        }
+      }
+      HoroscopeURL = `${BASE_URL}/kundli/${encodeURIComponent(fileName)}`;
+    }
+    user.HoroscopeURL = HoroscopeURL;
 
     return res.json({ success: true, user });
   });

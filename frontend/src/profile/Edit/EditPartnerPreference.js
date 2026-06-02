@@ -270,7 +270,7 @@ export default function EditPartnerPreference({ adminMode = false }) {
   /* -----------------------------
    TEXT RESTRICTIONS CONFIG
 ------------------------------*/
-  const MAX_EXPECT_LENGTH = 68;
+  const MAX_EXPECT_LENGTH = 66;
 
   const RESTRICTED_WORDS = [
     "phone",
@@ -545,45 +545,87 @@ export default function EditPartnerPreference({ adminMode = false }) {
           </div>
 
           {/* EDUCATION */}
-          {/* EDUCATION */}
-          <div>
-            <label className="font-semibold">Education</label>
-            <select
-              className="w-full border p-3 rounded-lg"
-              value={form.PE_Education}
-              onChange={(e) => updateField("PE_Education", e.target.value)}
-            >
-              {/* ✅ Any option */}
-              <option value="Any">Any</option>
-
-              {options.educations
-                .filter((e) => e.status === "enabled") // ✅ only enabled
-                .map((e) => (
-                  <option key={e.id} value={e.edu}>
-                    {e.edu}
-                  </option>
-                ))}
-            </select>
+          <div className="md:col-span-2">
+            <label className="font-semibold block mb-2">Education</label>
+            <div className="border rounded-lg p-3 max-h-40 overflow-y-auto bg-gray-50">
+              <label className="flex items-center gap-2 mb-2 pb-2 border-b font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.PE_Education === "Any" || !form.PE_Education}
+                  onChange={(e) => {
+                    if (e.target.checked) updateField("PE_Education", "Any");
+                  }}
+                  className="w-4 h-4 accent-pink-600"
+                />
+                Any
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {options.educations
+                  .filter((e) => e.status === "enabled")
+                  .map((e) => (
+                    <label key={e.id} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        value={e.edu}
+                        checked={form.PE_Education.split(",").includes(e.edu)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          let current = form.PE_Education === "Any" ? [] : form.PE_Education.split(",").filter(Boolean);
+                          if (e.target.checked) {
+                            current = [...current, val];
+                          } else {
+                            current = current.filter((item) => item !== val);
+                          }
+                          updateField("PE_Education", current.length > 0 ? current.join(",") : "Any");
+                        }}
+                        className="w-4 h-4 accent-pink-600"
+                      />
+                      {e.edu}
+                    </label>
+                  ))}
+              </div>
+            </div>
           </div>
 
           {/* OCCUPATION */}
-          {/* OCCUPATION */}
-          <div>
-            <label className="font-semibold">Occupation</label>
-            <select
-              className="w-full border p-3 rounded-lg"
-              value={form.PE_Occupation}
-              onChange={(e) => updateField("PE_Occupation", e.target.value)}
-            >
-              {/* ✅ Any option */}
-              <option value="Any">Any</option>
-
-              {options.occupations.map((o) => (
-                <option key={o.id} value={o.occu}>
-                  {o.occu}
-                </option>
-              ))}
-            </select>
+          <div className="md:col-span-2">
+            <label className="font-semibold block mb-2">Occupation</label>
+            <div className="border rounded-lg p-3 max-h-40 overflow-y-auto bg-gray-50">
+              <label className="flex items-center gap-2 mb-2 pb-2 border-b font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.PE_Occupation === "Any" || !form.PE_Occupation}
+                  onChange={(e) => {
+                    if (e.target.checked) updateField("PE_Occupation", "Any");
+                  }}
+                  className="w-4 h-4 accent-pink-600"
+                />
+                Any
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {options.occupations.map((o) => (
+                  <label key={o.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      value={o.occu}
+                      checked={form.PE_Occupation.split(",").includes(o.occu)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        let current = form.PE_Occupation === "Any" ? [] : form.PE_Occupation.split(",").filter(Boolean);
+                        if (e.target.checked) {
+                          current = [...current, val];
+                        } else {
+                          current = current.filter((item) => item !== val);
+                        }
+                        updateField("PE_Occupation", current.length > 0 ? current.join(",") : "Any");
+                      }}
+                      className="w-4 h-4 accent-pink-600"
+                    />
+                    {o.occu}
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* SUBCASTE */}

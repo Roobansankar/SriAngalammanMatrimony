@@ -742,11 +742,11 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
             rows={2}
             value={data.address}
             onChange={handleChange}
-            maxLength={80}
+            maxLength={60}
             className="border p-2 rounded-lg w-full"
           />
           <div className="text-[10px] text-gray-500 mt-1 text-right">
-            {data.address?.length || 0} / 80
+            {data.address?.length || 0} / 60
           </div>
         </div>
 

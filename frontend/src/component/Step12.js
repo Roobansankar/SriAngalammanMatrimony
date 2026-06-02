@@ -256,8 +256,8 @@ export default function Step12({ prevStep, formData, setFormData, setUser }) {
       add("partner_countryLivingIn", f.country);
       add("partner_state", f.state);
       add("partner_city", f.city);
-      add("partner_education", f.education);
-      add("partner_occupation", f.occupation);
+      add("partner_education", f.partnerEducation || "Any");
+      add("partner_occupation", f.partnerOccupation || "Any");
       add("partner_motherTongue", f.motherTongue);
       add("partnerExpectations", f.partnerExpectations);
 

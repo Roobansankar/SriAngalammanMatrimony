@@ -19,7 +19,9 @@ import femaleDoctorHeader from "../profile/Assets/FemaleDoctor.png";
 import maleHeader from "../profile/Assets/Male.png";
 import maleDoctorHeader from "../profile/Assets/MaleDoctor.png";
 import premiumFemaleHeader from "../profile/Assets/PremiumFemale.png";
+import premiumFemaleDoctorHeader from "../profile/Assets/PremiumFemaleDoctor.jpeg";
 import premiumMaleHeader from "../profile/Assets/PremiumMale.png";
+import premiumMaleDoctorHeader from "../profile/Assets/PremiumMaleDoctor.jpeg";
 import remarriageHeader from "../profile/Assets/Remarriage.png";
 import "./AdminBioDisplay.css";
 
@@ -418,20 +420,28 @@ function getHeaderColor(matriId, gender, plan) {
 // }
 
 
-function getHeaderLabel(matriId, gender) {
+function getHeaderLabel(matriId, gender, plan) {
   if (!matriId) {
     return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
   }
 
   const prefix5 = matriId.substring(0, 5).toUpperCase();
   const prefix4 = matriId.substring(0, 4).toUpperCase();
+  const isPremium = plan === "premium" || prefix5 === "SAMPM" || prefix5 === "SAMPF";
+
+  // ✅ PREMIUM DOCTOR
+  if (prefix4 === "SAMD" && isPremium) {
+    return gender === "Male"
+      ? "பிரீமியம் ஆண் வரன் ஜாதகம் (மருத்துவர்)"
+      : "பிரீமியம் பெண் வரன் ஜாதகம் (மருத்துவர்)";
+  }
 
   // ✅ PREMIUM
-  if (prefix5 === "SAMPM") {
+  if (prefix5 === "SAMPM" || (gender === "Male" && plan === "premium")) {
     return " பிரீமியம் ஆண் வரன் ஜாதகம் ";
   }
 
-  if (prefix5 === "SAMPF") {
+  if (prefix5 === "SAMPF" || (gender === "Female" && plan === "premium")) {
     return "பிரீமியம் பெண் வரன் ஜாதகம் ";
   }
 
@@ -451,19 +461,27 @@ function getHeaderLabel(matriId, gender) {
   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
 }
 
-function getHeaderImage(matriId, gender) {
+function getHeaderImage(matriId, gender, plan) {
   if (!matriId) {
     return gender === "Male" ? maleHeader : femaleHeader;
   }
 
   const prefix5 = matriId.substring(0, 5).toUpperCase();
   const prefix4 = matriId.substring(0, 4).toUpperCase();
+  const isPremium = plan === "premium" || prefix5 === "SAMPM" || prefix5 === "SAMPF";
+
+  // ✅ PREMIUM DOCTOR
+  if (prefix4 === "SAMD" && isPremium) {
+    return gender === "Male"
+      ? premiumMaleDoctorHeader
+      : premiumFemaleDoctorHeader;
+  }
 
   // ✅ PREMIUM
-  if (prefix5 === "SAMPM") {
+  if (prefix5 === "SAMPM" || (gender === "Male" && plan === "premium")) {
     return premiumMaleHeader;
   }
-  if (prefix5 === "SAMPF") {
+  if (prefix5 === "SAMPF" || (gender === "Female" && plan === "premium")) {
     return premiumFemaleHeader;
   }
 
@@ -696,6 +714,7 @@ export default function MemberBioData() {
           other_notes: user.PartnerExpectations || "",
           mail_id: user.ConfirmEmail || "",
           blood_group: user.BloodGroup || "",
+          plan: user.Plan?.toLowerCase() || "",
         };
         setSelectedMember(mapped);
         setEditData(mapped);
@@ -1148,7 +1167,7 @@ const downloadAsPDF = async () => {
                     {/* HEADER */}
                     <div className="relative">
                       <img 
-                        src={getHeaderImage(currentData.matriId, currentData.gender)} 
+                        src={getHeaderImage(currentData.matriId, currentData.gender, currentData.plan)} 
                         alt="header" 
                         className="w-full" 
                       />
@@ -1284,7 +1303,7 @@ const downloadAsPDF = async () => {
                                 <input
                                   type="text"
                                   value={editData.birth_place || ""}
-                                  maxLength={15}
+                                  maxLength={13}
                                   onChange={(e) =>
                                     handleEditChange(
                                       "birth_place",
@@ -1300,7 +1319,7 @@ const downloadAsPDF = async () => {
                                   }}
                                 />
                                 <div className="text-[9px] text-gray-500 text-right">
-                                  {editData.birth_place?.length || 0} / 15
+                                  {editData.birth_place?.length || 0} / 13
                                 </div>
                               </>
                             ) : (
@@ -1906,20 +1925,26 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "1075px" }}
                           >
                             {isEditing ? (
-                              <input
-                                type="text"
-                                value={editData.address || ""}
-                                onChange={(e) =>
-                                  handleEditChange("address", e.target.value)
-                                }
-                                className="display-data"
-                                style={{
-                                  border: "2px solid #3b82f6",
-                                  background: "#eff6ff",
-                                  padding: "2px 8px",
-                                  width: "100%",
-                                }}
-                              />
+                              <>
+                                <input
+                                  type="text"
+                                  value={editData.address || ""}
+                                  maxLength={60}
+                                  onChange={(e) =>
+                                    handleEditChange("address", e.target.value)
+                                  }
+                                  className="display-data"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100%",
+                                  }}
+                                />
+                                <div className="text-[9px] text-gray-500 text-right">
+                                  {editData.address?.length || 0} / 60
+                                </div>
+                              </>
                             ) : (
                               <span className="display-data">
                                 {currentData.address}
@@ -1942,7 +1967,7 @@ const downloadAsPDF = async () => {
                                 <input
                                   type="text"
                                   value={editData.family_income || ""}
-                                  maxLength={53}
+                                  maxLength={50}
                                   onChange={(e) =>
                                     handleEditChange("family_income", e.target.value)
                                   }
@@ -1955,7 +1980,7 @@ const downloadAsPDF = async () => {
                                   }}
                                 />
                                 <div className="text-[9px] text-gray-500 text-right">
-                                  {editData.family_income?.length || 0} / 53
+                                  {editData.family_income?.length || 0} / 50
                                 </div>
                               </>
                             ) : (
@@ -2417,7 +2442,7 @@ const downloadAsPDF = async () => {
                                 <input
                                   type="text"
                                   value={editData.other_notes || ""}
-                                  maxLength={68}
+                                  maxLength={66}
                                   onChange={(e) =>
                                     handleEditChange(
                                       "other_notes",
@@ -2433,7 +2458,7 @@ const downloadAsPDF = async () => {
                                   }}
                                 />
                                 <div className="text-[9px] text-gray-500 text-right">
-                                  {editData.other_notes?.length || 0} / 68
+                                  {editData.other_notes?.length || 0} / 66
                                 </div>
                               </>
                             ) : (
@@ -2538,7 +2563,7 @@ const downloadAsPDF = async () => {
             {/* HEADER */}
             <div className="relative">
               <img 
-                src={getHeaderImage(currentData.matriId, currentData.gender)} 
+                src={getHeaderImage(currentData.matriId, currentData.gender, currentData.plan)} 
                 alt="header" 
                 className="w-full" 
               />

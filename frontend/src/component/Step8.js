@@ -515,11 +515,11 @@ useEffect(() => {
           rows={3}
           value={data.familyDescription}
           onChange={handleChange}
-          maxLength={53}
+          maxLength={50}
           className="border rounded-xl px-4 py-3 w-full"
         />
         <div className="text-[10px] text-gray-500 mt-1 text-right">
-          {data.familyDescription?.length || 0} / 53
+          {data.familyDescription?.length || 0} / 50
         </div>
       </div>
 

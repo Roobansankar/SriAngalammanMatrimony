@@ -309,12 +309,12 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             type="text"
             name="company_name"
             value={data.company_name}
-            maxLength={38}
+            maxLength={36}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
             onChange={handleChange}
           />
           <div className="text-[10px] text-gray-500 mt-1 text-right">
-            {data.company_name?.length || 0} / 38
+            {data.company_name?.length || 0} / 36
           </div>
         </div>
 
@@ -328,11 +328,11 @@ export default function Step6({ nextStep, prevStep, formData = {} }) {
             name="workingLocation"
             value={data.workingLocation}
             onChange={handleChange}
-            maxLength={16}
+            maxLength={13}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
           <div className="text-[10px] text-gray-500 mt-1 text-right">
-            {data.workingLocation?.length || 0} / 16
+            {data.workingLocation?.length || 0} / 13
           </div>
         </div>
       </div>
