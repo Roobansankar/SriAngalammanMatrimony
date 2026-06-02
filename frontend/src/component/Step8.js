@@ -508,7 +508,7 @@ useEffect(() => {
           value={data.familyDescription}
           onChange={handleChange}
           className="border rounded-xl px-4 py-3 w-full"
-          maxLength={100}
+          maxLength={53}
         />
       </div>
 

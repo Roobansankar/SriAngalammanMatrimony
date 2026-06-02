@@ -912,6 +912,17 @@ export default function MemberManagement() {
                       onChange={handleEditChange}
                     />
                     <EditField
+                      label="Family Background & Assets"
+                      field="FamilyDetails"
+                      type="textarea"
+                      value={
+                        isEditing ? editData.FamilyDetails : selectedMember.FamilyDetails
+                      }
+                      isEditing={isEditing}
+                      onChange={handleEditChange}
+                      maxLength={53}
+                    />
+                    <EditField
                       label="Unmarried Brothers"
                       field="nb_unmarried"
                       value={
@@ -1364,6 +1375,7 @@ export default function MemberManagement() {
                       }
                       isEditing={isEditing}
                       onChange={handleEditChange}
+                      maxLength={53}
                     />
                     <EditField
                       label="Passport"
@@ -1695,7 +1707,7 @@ export default function MemberManagement() {
 }
 
 // Reusable Edit Field Component
-function EditField({ label, field, value, type = "text", options = [], isEditing, onChange }) {
+function EditField({ label, field, value, type = "text", options = [], isEditing, onChange, maxLength }) {
   if (type === "select") {
     return (
       <div>
@@ -1729,6 +1741,7 @@ function EditField({ label, field, value, type = "text", options = [], isEditing
             value={value || ""}
             onChange={(e) => onChange(field, e.target.value)}
             rows={3}
+            maxLength={maxLength}
             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500"
           />
         ) : (
@@ -1746,6 +1759,7 @@ function EditField({ label, field, value, type = "text", options = [], isEditing
           type={type}
           value={value || ""}
           onChange={(e) => onChange(field, e.target.value)}
+          maxLength={maxLength}
           className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500"
         />
       ) : (

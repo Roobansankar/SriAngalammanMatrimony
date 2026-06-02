@@ -1165,7 +1165,7 @@ router.put("/member/:matriId", async (req, res) => {
       'Caste','Subcaste','sub_caste','Fathername','fathermiddle','fatherLast',
       'Fathersoccupation','Mothersname','mothermiddle','motherlast','Mothersoccupation',
       'noofbrothers','noofsisters','noyubrothers','noyusisters','nb_unmarried','ns_unmarried',
-      'family_wealth','parents_stay','village','relatives',
+      'family_wealth','parents_stay','village','relatives','FamilyDetails',
       'Address','City','State','Mobile','ConfirmEmail','countrycode',
       'Star','Moonsign','Lagnam','Suddham','Raghu','Keethu','Sevai','DasaBalance',
       'Kuladeivam','ThesaiIrupu','thosam','charan','Gan','nadi','parigarasevai',

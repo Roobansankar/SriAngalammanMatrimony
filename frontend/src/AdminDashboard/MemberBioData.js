@@ -1871,10 +1871,10 @@ const downloadAsPDF = async () => {
                         {/* FAMILY INCOME */}
                         <div className="display-form-row">
                         <span>
-                          குடும்பவருமானம்/வசதிகள்:
+                          குடும்பவருமானம்/வசதிகள்:  
                           <div
                             className="display-placeholder"
-                            style={{ minWidth: "75px" }}
+                            style={{ minWidth: "720px" }}
                           >
                             {isEditing ? (
                               <input
@@ -2814,7 +2814,7 @@ const downloadAsPDF = async () => {
                   குடும்பவருமானம்/வசதிகள்:
                   <div
                     className="display-placeholder"
-                    style={{ minWidth: "745px" }}
+                    style={{ minWidth: "720px" }}
                   >
                     <span className="display-data">
                       {currentData.family_income}
@@ -2893,8 +2893,13 @@ const downloadAsPDF = async () => {
                   >
                     <span className="display-data">{currentData.sevvai}</span>
                   </div>
-                  {/* ✅ THIS IS THE FIX */}
-                  <span className="display-text">ஆமிடம், பரிகாரசெவ்வாய்</span>
+                  ஆமிடம், பரிகாரசெவ்வாய்:
+                  <div
+                    className="display-placeholder"
+                    style={{ minWidth: "45px" }}
+                  >
+                    <span className="display-data">{currentData.parigarasevai}</span>
+                  </div>
                 </span>
               </div>
 
