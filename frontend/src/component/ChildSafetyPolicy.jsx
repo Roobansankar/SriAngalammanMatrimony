@@ -49,8 +49,8 @@ const ChildSafetyPolicy = () => {
             <div className="space-y-3">
               <p className="flex items-center gap-3 text-gray-700">
                 <span className="font-bold text-[#7b1113]">Email:</span>
-                <a href="mailto:sriangalammanspsk2020@gmail.com" className="text-blue-600 hover:underline font-medium">
-                  sriangalammanspsk2020@gmail.com
+                <a href="mailto:ichan.solution@gmail.com" className="text-blue-600 hover:underline font-medium">
+                  ichan.solution@gmail.com
                 </a>
               </p>
               <p className="flex items-center gap-3 text-gray-700">
