@@ -14,7 +14,13 @@ import {
     X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import headerpic from "../profile/Assets/header.png";
+import femaleHeader from "../profile/Assets/Female.png";
+import femaleDoctorHeader from "../profile/Assets/FemaleDoctor.png";
+import maleHeader from "../profile/Assets/Male.png";
+import maleDoctorHeader from "../profile/Assets/MaleDoctor.png";
+import premiumFemaleHeader from "../profile/Assets/PremiumFemale.png";
+import premiumMaleHeader from "../profile/Assets/PremiumMale.png";
+import remarriageHeader from "../profile/Assets/Remarriage.png";
 import "./AdminBioDisplay.css";
 
 const API = process.env.REACT_APP_API_BASE || "";
@@ -443,6 +449,35 @@ function getHeaderLabel(matriId, gender) {
   }
 
   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
+}
+
+function getHeaderImage(matriId, gender) {
+  if (!matriId) {
+    return gender === "Male" ? maleHeader : femaleHeader;
+  }
+
+  const prefix5 = matriId.substring(0, 5).toUpperCase();
+  const prefix4 = matriId.substring(0, 4).toUpperCase();
+
+  // ✅ PREMIUM
+  if (prefix5 === "SAMPM") {
+    return premiumMaleHeader;
+  }
+  if (prefix5 === "SAMPF") {
+    return premiumFemaleHeader;
+  }
+
+  // ✅ DOCTOR
+  if (prefix4 === "SAMD") {
+    return gender === "Male" ? maleDoctorHeader : femaleDoctorHeader;
+  }
+
+  // ✅ REMARRIAGE
+  if (prefix4 === "SAMR") {
+    return remarriageHeader;
+  }
+
+  return gender === "Male" ? maleHeader : femaleHeader;
 }
 
 
@@ -1111,25 +1146,15 @@ const downloadAsPDF = async () => {
                     }}
                   >
                     {/* HEADER */}
-
-                    <div
-                      className="relative"
-                      style={{ backgroundColor: headerColor }}
-                    >
-                      <img src={headerpic} alt="header" className="w-full" />
-
-                      <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-1 rounded-md text-lg font-bold">
-                        MATRIID: {currentData.matriId}
+                    <div className="relative">
+                      <img 
+                        src={getHeaderImage(currentData.matriId, currentData.gender)} 
+                        alt="header" 
+                        className="w-full" 
+                      />
+                      <div className="absolute bottom-10 right-14 text-black font-bold text-xl">
+                        {currentData.matriId}
                       </div>
-                    </div>
-
-                    <div className="display-div">
-                      <h2>
-                        {getHeaderLabel(
-                          currentData.matriId,
-                          currentData.gender
-                        )}
-                      </h2>
                     </div>
 
                     {/* CONTENT */}
@@ -2511,17 +2536,15 @@ const downloadAsPDF = async () => {
             }}
           >
             {/* HEADER */}
-
-            <div className="relative" style={{ backgroundColor: headerColor }}>
-              <img src={headerpic} alt="header" className="w-full" />
-
-              <div className="absolute top-2 right-4 bg-black/60 text-white px-3 py-1 rounded-md text-l font-semibold">
-                ID: {currentData.matriId}
+            <div className="relative">
+              <img 
+                src={getHeaderImage(currentData.matriId, currentData.gender)} 
+                alt="header" 
+                className="w-full" 
+              />
+              <div className="absolute bottom-14 right-14 text-black font-bold text-xl">
+                {currentData.matriId}
               </div>
-            </div>
-
-            <div className="display-div mb-5">
-              <h2>{getHeaderLabel(currentData.matriId, currentData.gender)}</h2>
             </div>
 
             {/* CONTENT */}
