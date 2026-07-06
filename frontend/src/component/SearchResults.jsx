@@ -65,7 +65,12 @@ export default function SearchResults() {
       const res = await fetch(`${process.env.REACT_APP_API_BASE || ""}/api/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...state.filters, page }),
+        body: JSON.stringify({
+          ...state.filters,
+          page,
+          viewerPlan: state.viewerPlan,
+          viewerId: state.viewerId,
+        }),
       });
 
       const data = await res.json();

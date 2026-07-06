@@ -7,6 +7,9 @@ const API_BASE = API + "/";
 export default function RegularSearch() {
   const navigate = useNavigate();
 
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const viewerPlan = userData.Plan || "basic";
+
   const [form, setForm] = useState({
     gender: "",
     txtSAge: "22",
@@ -141,7 +144,7 @@ export default function RegularSearch() {
   ------------------------------ */
   function submitSearch(e) {
     e.preventDefault();
-    navigate("/results/1", { state: { filters: form, apiBase: API_BASE } });
+    navigate("/results/1", { state: { filters: form, viewerPlan, viewerId: userData.MatriID || userData.matid, apiBase: API_BASE } });
   }
 
   const selectClass =

@@ -113,7 +113,7 @@ const heightMatch = (minH, maxH, actual) => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await axios.get(`${API}/api/auth/allProfiles`);
+        const res = await axios.get(`${API}/api/auth/allProfiles`, { params: { loggedPlan: logged.Plan || "basic" } });
         const list = res.data?.users || [];
 
         const oppositeGender =
@@ -127,11 +127,11 @@ const heightMatch = (minH, maxH, actual) => {
 
   // ⭐ PLAN BASED VISIBILITY ⭐
   .filter((p) => {
-    if (logged.plan === "basic") {
-      return p.plan === "basic"; // ❌ hide premium
+    if ((logged.Plan || "basic").toLowerCase() === "basic") {
+      return (p.Plan || "basic").toLowerCase() === "basic";
     }
-    if (logged.plan === "premium") {
-      return p.plan === "basic" || p.plan === "premium"; // ✅ show all
+    if ((logged.Plan || "").toLowerCase() === "premium") {
+      return true;
     }
     return true;
   })

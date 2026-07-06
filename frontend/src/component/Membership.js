@@ -181,7 +181,7 @@ export default function MembershipPage() {
 
                 <div className="my-6">
                   <span className="font-display text-4xl font-bold text-gray-900">
-                    ₹1,500
+                    ₹2,000
                   </span>
                   <span className="text-gray-500 text-sm"> (One-time fee)</span>
                 </div>
@@ -232,7 +232,7 @@ export default function MembershipPage() {
 
                 <div className="my-6">
                   <span className="font-display text-4xl font-bold">
-                    ₹4,000
+                    ₹5,000
                   </span>
                 </div>
 

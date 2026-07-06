@@ -188,7 +188,9 @@ export default function ProfileView() {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(FETCH_API, { params: { matriid } });
+        const loggedUser = JSON.parse(localStorage.getItem("userData") || "{}");
+        const loggedPlan = loggedUser.Plan || "basic";
+        const res = await axios.get(FETCH_API, { params: { matriid, loggedPlan } });
         if (res.data?.success && res.data.user) setUser(res.data.user);
         else setError("Profile not found");
       } catch (err) {

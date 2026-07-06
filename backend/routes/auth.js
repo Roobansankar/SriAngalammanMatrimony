@@ -296,6 +296,14 @@ router.get("/user", async (req, res) => {
 router.get("/allProfiles", async (req, res) => {
   try {
     const conn = db.promise();
+    const loggedPlan = req.query.loggedPlan || "";
+
+    let planFilter = "";
+    if (loggedPlan.toLowerCase() === "basic") {
+      planFilter = "AND TRIM(LOWER(Plan)) = 'basic'";
+    } else if (loggedPlan.toLowerCase() === "premium") {
+      planFilter = "AND TRIM(LOWER(Plan)) IN ('basic','premium')";
+    }
 
     const [rows] = await conn.query(
       `
@@ -303,6 +311,7 @@ router.get("/allProfiles", async (req, res) => {
         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
       FROM register
       WHERE Status = 'Active' AND visibility NOT LIKE 'hidden'
+      ${planFilter}
       ORDER BY id DESC
       `
     );

@@ -103,7 +103,7 @@ useEffect(() => {
         plan,
         email: emailToUse,
         mobile: formData?.mobile,
-        amount: userType === "old" ? 500 : plan === "premium" ? 4500 : 2000,
+        amount: userType === "old" ? 500 : plan === "premium" ? 5000 : 2000,
       });
 
       /* Redirect to CCAvenue */
@@ -189,7 +189,7 @@ return (
             }`}
           >
             <h3 className="font-semibold">Premium</h3>
-            <p className="text-lg mt-2">₹4500</p>
+            <p className="text-lg mt-2">₹5000</p>
           </div>
         </div>
       </div>

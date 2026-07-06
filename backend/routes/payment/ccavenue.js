@@ -512,7 +512,7 @@ router.post("/ccavenue-init", async (req, res) => {
 
     let validAmount = "0.00";
 
-    if (plan === "premium") validAmount = "4500.00";
+    if (plan === "premium") validAmount = "5000.00";
     else if (plan === "basic") {
       if (amount == 500) validAmount = "500.00";
       else validAmount = "2000.00";

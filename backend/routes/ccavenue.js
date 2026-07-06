@@ -38,7 +38,7 @@ console.log(
 router.post("/initiate", (req, res) => {
   const { plan, email } = req.body;
 
-  const amount = plan === "premium" ? "4000" : "1500";
+  const amount = plan === "premium" ? "4000" : "2000";
   const orderId = "ORD_" + Date.now();
 
   const data = `merchant_id=${merchantId}&order_id=${orderId}&currency=INR&amount=${amount}&redirect_url=${process.env.BASE_URL}/api/ccavenue/response&cancel_url=${process.env.BASE_URL}/api/ccavenue/response&billing_email=${email}`;

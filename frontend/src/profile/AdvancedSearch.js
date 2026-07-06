@@ -271,7 +271,7 @@ export default function AdvancedSearch() {
   function submitSearch(e) {
     e.preventDefault();
     navigate("/advancedsearch-results/1", {
-      state: { filters: form, viewerPlan, apiBase: API_BASE },
+      state: { filters: form, viewerPlan, viewerId: userData.MatriID || userData.matid, apiBase: API_BASE },
     });
   }
 

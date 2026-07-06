@@ -48,6 +48,7 @@ const {
   Keethu,
   page = 1,
   viewerId,
+  viewerPlan,
 } = req.body;
 
 
@@ -203,6 +204,15 @@ if (with_photo === true) {
       whereClauses.push(`MatriID NOT IN (SELECT blocked_matriid FROM blocked_profiles WHERE blocker_matriid = ?)`);
       whereClauses.push(`MatriID NOT IN (SELECT blocker_matriid FROM blocked_profiles WHERE blocked_matriid = ?)`);
       params.push(viewerId, viewerId);
+    }
+
+    // Plan-based filtering
+    if (viewerPlan) {
+      if (viewerPlan.toLowerCase() === 'basic') {
+        whereClauses.push("TRIM(LOWER(Plan)) = 'basic'");
+      } else if (viewerPlan.toLowerCase() === 'premium') {
+        whereClauses.push("TRIM(LOWER(Plan)) IN ('basic','premium')");
+      }
     }
 
     const whereSql = whereClauses.length > 0 ? " WHERE " + whereClauses.join(" AND ") : "";

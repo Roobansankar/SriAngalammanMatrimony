@@ -19,9 +19,9 @@ import femaleDoctorHeader from "../profile/Assets/FemaleDoctor.png";
 import maleHeader from "../profile/Assets/Male.png";
 import maleDoctorHeader from "../profile/Assets/MaleDoctor.png";
 import premiumFemaleHeader from "../profile/Assets/PremiumFemale.png";
-import premiumFemaleDoctorHeader from "../profile/Assets/PremiumFemaleDoctor.jpeg";
+import premiumFemaleDoctorHeader from "../profile/Assets/PremiumFemaleDoctor.png";
 import premiumMaleHeader from "../profile/Assets/PremiumMale.png";
-import premiumMaleDoctorHeader from "../profile/Assets/PremiumMaleDoctor.jpeg";
+import premiumMaleDoctorHeader from "../profile/Assets/PremiumMaleDoctor.png";
 import remarriageHeader from "../profile/Assets/Remarriage.png";
 import "./AdminBioDisplay.css";
 

@@ -150,6 +150,25 @@ router.post("/interest/send", async (req, res) => {
 
     const conn = db.promise();
 
+    // 0. Plan-based gating: basic users cannot send interest to premium users
+    const [planSenderRows] = await conn.query(
+      "SELECT Plan FROM register WHERE MatriID = ? LIMIT 1",
+      [fromMatriID]
+    );
+    const [planReceiverRows] = await conn.query(
+      "SELECT Plan FROM register WHERE MatriID = ? LIMIT 1",
+      [toMatriID]
+    );
+    const senderPlan = planSenderRows.length ? (planSenderRows[0].Plan || "basic").toLowerCase() : "basic";
+    const receiverPlan = planReceiverRows.length ? (planReceiverRows[0].Plan || "basic").toLowerCase() : "basic";
+
+    if (senderPlan === "basic" && receiverPlan === "premium") {
+      return res.json({
+        success: false,
+        message: "Upgrade to premium to send interest to this profile."
+      });
+    }
+
     // 1. Check if blocked (by either party)
     const [blocks] = await conn.query(
       `SELECT * FROM blocked_profiles 
