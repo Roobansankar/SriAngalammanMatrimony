@@ -62,9 +62,11 @@ router.get("/searchByMatriID", async (req, res) => {
     const params = [matriid.trim(), matriid.trim()];
 
     /* PLAN FILTER */
-    if ((loggedPlan || "").toLowerCase() === "basic") {
+    const plan = (loggedPlan || "").toString().trim().toLowerCase();
+    console.log(`🔎 searchByMatriID plan filter: received="${loggedPlan}", normalized="${plan}"`);
+    if (plan === "basic") {
       sql += " AND TRIM(LOWER(Plan)) = 'basic' ";
-    } else if ((loggedPlan || "").toLowerCase() === "premium") {
+    } else if (plan === "premium") {
       sql += " AND TRIM(LOWER(Plan)) IN ('basic','premium') ";
     }
 

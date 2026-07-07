@@ -207,12 +207,12 @@ if (with_photo === true) {
     }
 
     // Plan-based filtering
-    if (viewerPlan) {
-      if (viewerPlan.toLowerCase() === 'basic') {
-        whereClauses.push("TRIM(LOWER(Plan)) = 'basic'");
-      } else if (viewerPlan.toLowerCase() === 'premium') {
-        whereClauses.push("TRIM(LOWER(Plan)) IN ('basic','premium')");
-      }
+    const plan = (viewerPlan || "").toString().trim().toLowerCase();
+    console.log(`🔍 Plan filter: viewerPlan="${viewerPlan}", normalized="${plan}"`);
+    if (plan === 'basic') {
+      whereClauses.push("TRIM(LOWER(Plan)) = 'basic'");
+    } else if (plan === 'premium') {
+      whereClauses.push("TRIM(LOWER(Plan)) IN ('basic','premium')");
     }
 
     const whereSql = whereClauses.length > 0 ? " WHERE " + whereClauses.join(" AND ") : "";

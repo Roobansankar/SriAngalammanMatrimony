@@ -298,10 +298,12 @@ router.get("/allProfiles", async (req, res) => {
     const conn = db.promise();
     const loggedPlan = req.query.loggedPlan || "";
 
+    const plan = loggedPlan.toString().trim().toLowerCase();
+    console.log(`📋 allProfiles plan filter: received="${loggedPlan}", normalized="${plan}"`);
     let planFilter = "";
-    if (loggedPlan.toLowerCase() === "basic") {
+    if (plan === "basic") {
       planFilter = "AND TRIM(LOWER(Plan)) = 'basic'";
-    } else if (loggedPlan.toLowerCase() === "premium") {
+    } else if (plan === "premium") {
       planFilter = "AND TRIM(LOWER(Plan)) IN ('basic','premium')";
     }
 

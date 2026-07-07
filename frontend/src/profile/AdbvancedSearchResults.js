@@ -39,7 +39,7 @@ export default function AdvancedSearchResults() {
 
   const goToPage = (num) => {
     if (num >= 1 && num <= totalPages) {
-      navigate(`/regularsearch-results/${num}`, {
+      navigate(`/advancedsearch-results/${num}`, {
         state, // ⬅️ SEND BACK THE SAME FILTERS
       });
       window.scrollTo({ top: 0, behavior: "smooth" });

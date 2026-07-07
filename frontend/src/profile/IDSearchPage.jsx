@@ -340,7 +340,7 @@ export default function IDSearchPage() {
         return setError("No results found");
 
       /* ⭐ PLAN BASED VISIBILITY ⭐ */
-      const loggedPlan = (logged.plan || "").toLowerCase();
+      const loggedPlan = (logged.Plan || "").toLowerCase();
       const targetPlan = (found.Plan || "").toLowerCase();
 
       if (loggedPlan === "basic" && targetPlan === "premium") {
