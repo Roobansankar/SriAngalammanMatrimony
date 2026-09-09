@@ -417,6 +417,7 @@ export default function Header({ user, setUser }) {
                   src={profileImage}
                   className="w-full h-full object-cover"
                   alt="profile"
+                  onError={(e) => { e.currentTarget.src = noPhoto; }}
                 />
               </button>
 

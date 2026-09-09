@@ -104,7 +104,7 @@ export default function ProfileView() {
       });
       if (res.data?.success) {
         setInterest(res.data.interest);
-        showToast("Interest sent.", "success");
+        showToast(res.data?.message === "Interest re-sent" ? "Interest re-sent." : "Interest sent.", "success");
       } else if (res.data?.isBlocked) {
         showToast("You cannot connect with this profile.", "error");
       }
@@ -795,7 +795,7 @@ const heightMatch = (minH, maxH, actual) => {
                       }
                       className="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 text-white text-sm font-bold flex-1"
                       style={{
-                        backgroundColor: primary,
+                        backgroundColor: interest?.status === "rejected" ? "#f59e0b" : primary,
                         opacity:
                           interest?.status === "pending" ||
                           interest?.status === "accepted"
@@ -807,7 +807,9 @@ const heightMatch = (minH, maxH, actual) => {
                         ? "Interest Accepted"
                         : interest?.status === "pending"
                           ? "Interest Sent"
-                          : "Send Interest"}
+                          : interest?.status === "rejected"
+                            ? "Resend Interest"
+                            : "Send Interest"}
                     </button>
 
                     {blockedByMe ? (

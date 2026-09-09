@@ -193,11 +193,45 @@ router.post("/interest/send", async (req, res) => {
     );
 
     if (existsRows.length) {
-      // If already exists, return existing record (caller can decide to show "Interest Sent")
+      const existing = existsRows[0];
+      // If previously rejected, allow re-sending by resetting to pending
+      if (existing.status === 'rejected') {
+        await conn.query(
+          "UPDATE interests SET status='pending', updated_at = CURRENT_TIMESTAMP WHERE id=?",
+          [existing.id]
+        );
+        const [updated] = await conn.query("SELECT * FROM interests WHERE id=?", [existing.id]);
+        const reactivatedInterest = updated[0];
+
+        // Fetch sender's name
+        const [senderRows2] = await conn.query(
+          "SELECT Name FROM register WHERE MatriID = ? LIMIT 1",
+          [fromMatriID]
+        );
+        const senderName2 = senderRows2.length ? senderRows2[0].Name : fromMatriID;
+
+        // Emit real-time event to recipient
+        try {
+          const recipientSocket2 = onlineMap.get(String(toMatriID).toLowerCase());
+          if (recipientSocket2 && io) {
+            io.to(recipientSocket2).emit("interest_received", {
+              interest: reactivatedInterest,
+              fromMatriID,
+              toMatriID,
+              fromName: senderName2,
+            });
+          }
+        } catch (e) {
+          console.warn("socket emit (interest_received) failed", e);
+        }
+
+        return res.json({ success: true, interest: reactivatedInterest, fromName: senderName2, message: "Interest re-sent" });
+      }
+      // If already pending or accepted, return existing record
       return res.json({
         success: true,
         message: "Interest already sent",
-        interest: existsRows[0],
+        interest: existing,
       });
     }
 
@@ -375,7 +409,11 @@ router.get("/interest/incoming", async (req, res) => {
 
     const conn = db.promise();
     const [rows] = await conn.query(
-      "SELECT * FROM interests WHERE to_matriid=? ORDER BY created_at DESC LIMIT 200",
+      `SELECT i.*, r.Name as senderName, r.Photo1 as senderPhoto, r.Photo1Approve as senderPhotoApprove, r.City as senderCity
+       FROM interests i
+       LEFT JOIN register r ON r.MatriID = i.from_matriid
+       WHERE i.to_matriid=?
+       ORDER BY i.created_at DESC LIMIT 200`,
       [to]
     );
 
@@ -389,7 +427,39 @@ router.get("/interest/incoming", async (req, res) => {
     console.error("interest/incoming error", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
-});/**
+});
+
+/**
+ * GET /api/auth/interest/outgoing?from=<matriid>
+ * Returns outgoing interests sent BY a user (their sent requests)
+ */
+router.get("/interest/outgoing", async (req, res) => {
+  try {
+    const from = req.query?.from ? String(req.query.from).trim() : "";
+    if (!from) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing 'from' param" });
+    }
+
+    const conn = db.promise();
+    const [rows] = await conn.query(
+      `SELECT i.*, r.Name as recipientName, r.Photo1 as recipientPhoto, r.Photo1Approve as recipientPhotoApprove, r.City as recipientCity
+       FROM interests i
+       LEFT JOIN register r ON r.MatriID = i.to_matriid
+       WHERE i.from_matriid=?
+       ORDER BY i.created_at DESC LIMIT 200`,
+      [from]
+    );
+
+    return res.json({ success: true, outgoing: rows || [] });
+  } catch (err) {
+    console.error("interest/outgoing error", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+/**
  * POST /api/auth/interest/block
  * Body: { blockerMatriID, blockedMatriID }
  */
