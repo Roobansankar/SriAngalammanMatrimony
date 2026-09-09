@@ -160,24 +160,38 @@ if (Keethu && Keethu !== "Any") {
 
 
 
-    if (country && Array.isArray(country) && !country.includes("Any") && country.length > 0) {
-  const placeholders = country.map(() => "LOWER(?)").join(",");
-  whereClauses.push(`LOWER(Country) IN (${placeholders})`);
-  params.push(...country.map(c => c.toLowerCase()));
-}
+    // Normalise a filter value that may arrive as an array OR a single string.
+    const toList = (v) =>
+      (Array.isArray(v) ? v : v != null && v !== "" ? [v] : [])
+        .map((x) => String(x).trim())
+        .filter((x) => x && x.toLowerCase() !== "any");
 
-if (country && Array.isArray(country) && !country.includes("Any") && country.length > 0) {
-  const placeholders = country.map(() => "LOWER(?)").join(",");
-  whereClauses.push(`LOWER(Country) IN (${placeholders})`);
-  params.push(...country.map(c => c.toLowerCase()));
-}
+    // Country
+    const countryList = toList(country);
+    if (countryList.length > 0) {
+      whereClauses.push(
+        `TRIM(LOWER(Country)) IN (${countryList.map(() => "TRIM(LOWER(?))").join(",")})`
+      );
+      params.push(...countryList);
+    }
 
+    // State (register column: `State`)
+    const stateList = toList(state);
+    if (stateList.length > 0) {
+      whereClauses.push(
+        `TRIM(LOWER(State)) IN (${stateList.map(() => "TRIM(LOWER(?))").join(",")})`
+      );
+      params.push(...stateList);
+    }
 
-if (district && Array.isArray(district) && !district.includes("Any") && district.length > 0) {
-  const placeholders = district.map(() => "LOWER(?)").join(",");
-  whereClauses.push(`LOWER(District) IN (${placeholders})`);
-  params.push(...district.map(d => d.toLowerCase()));
-}
+    // District (register column is `Dist`, not `District`)
+    const districtList = toList(district);
+    if (districtList.length > 0) {
+      whereClauses.push(
+        `TRIM(LOWER(Dist)) IN (${districtList.map(() => "TRIM(LOWER(?))").join(",")})`
+      );
+      params.push(...districtList);
+    }
 
 
     // With Photo
@@ -186,17 +200,13 @@ if (district && Array.isArray(district) && !district.includes("Any") && district
     // }
 
     // With Photo logic
-if (with_photo === true) {
-  // ✅ Show ONLY profiles WITH approved photo
-  whereClauses.push(
-    "Photo1 IS NOT NULL AND Photo1 <> '' AND Photo1 <> 'no-photo.jpg' AND Photo1Approve = 'Yes'"
-  );
-} else {
-  // ❌ Show ONLY profiles WITHOUT photo
-  whereClauses.push(
-    "(Photo1 IS NULL OR Photo1 = '' OR Photo1 = 'no-photo.jpg' OR Photo1Approve <> 'Yes')"
-  );
-}
+    // Checkbox TICKED  -> only profiles that have an approved photo.
+    // Checkbox UNTICKED -> no photo filter at all (show everyone).
+    if (with_photo === true || with_photo === "true") {
+      whereClauses.push(
+        "Photo1 IS NOT NULL AND Photo1 <> '' AND Photo1 <> 'no-photo.jpg' AND Photo1Approve = 'Yes'"
+      );
+    }
 
 
     // Blocking check (if viewerId is provided)
