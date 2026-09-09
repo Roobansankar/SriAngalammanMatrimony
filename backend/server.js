@@ -20,6 +20,7 @@ import paymentRoutes from "./routes/payment/index.js";
 import registerRoutes from "./routes/register.js";
 import searchRoutes from "./routes/search.js";
 import idSearchRoutes from "./routes/searchByMatriID.js";
+import validityRoutes from "./routes/validity.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -150,6 +151,7 @@ app.use("/api/auth", interestRoutes);
 app.use("/api/auth/forgot-password", forgotPasswordRoutes);
 
 app.use("/api", searchRoutes);
+app.use("/api/admin/validity", validityRoutes);
 app.use("/api/admin", adminRoutes);
 
 

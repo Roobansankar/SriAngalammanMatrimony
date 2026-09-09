@@ -582,7 +582,22 @@ router.post(
       console.log("BODY RECEIVED:", b);
 
 
-      await conn.query(sql, values);
+      const [insertResult] = await conn.query(sql, values);
+
+      // Seed the 1-year membership validity row (non-fatal — never block a
+      // registration because of this). See migrate_member_validity.js.
+      try {
+        const validUntil = new Date();
+        validUntil.setFullYear(validUntil.getFullYear() + 1);
+        await conn.query(
+          `INSERT INTO member_validity (matri_id, register_id, starts_at, expires_at)
+           VALUES (?, ?, NOW(), ?)
+           ON DUPLICATE KEY UPDATE matri_id = matri_id`,
+          [matriId, insertResult?.insertId || null, validUntil]
+        );
+      } catch (e) {
+        console.error("member_validity row create failed (non-fatal):", e.message);
+      }
 
       res.json({
         success: true,

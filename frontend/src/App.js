@@ -76,6 +76,7 @@ import AddUsers from "./AdminDashboard/AddUsers";
 import AdminFeaturedProfiles from "./AdminDashboard/AdminFeaturedProfiles";
 import ContactMessages from "./AdminDashboard/ContactMessages";
 import ManageStaff from "./AdminDashboard/ManageStaff";
+import MembershipValidity from "./AdminDashboard/MembershipValidity";
 import NewUsers from "./AdminDashboard/NewUsers";
 import PlanManagement from "./AdminDashboard/PlanManagement";
 import PremiumMembers from "./AdminDashboard/PremiumMembers";
@@ -144,6 +145,7 @@ function AppContent({ user, setUser }) {
             />
             <Route path="premium-members" element={<PremiumMembers />} />
             <Route path="user-passwords" element={<UserPasswords />} />
+            <Route path="membership-validity" element={<MembershipValidity />} />
             <Route path="manage-staff" element={<ManageStaff />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile/:matriId" element={<AdminProfile />} />

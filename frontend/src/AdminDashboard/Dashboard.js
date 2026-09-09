@@ -326,6 +326,7 @@
 import {
     Bell,
     BookOpen,
+    CalendarClock,
     ChevronDown,
     CreditCard,
     Crown,
@@ -371,6 +372,12 @@ const navLinks = [
     name: "User Passwords",
     path: "/admin/user-passwords",
     icon: KeyRound,
+    adminOnly: true,
+  },
+  {
+    name: "Membership Validity",
+    path: "/admin/membership-validity",
+    icon: CalendarClock,
     adminOnly: true,
   },
   {

@@ -79,6 +79,76 @@ router.post("/login", async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
+    // ---------------------------------------------------------------
+    // 1-YEAR MEMBERSHIP VALIDITY CHECK
+    // Data lives in member_validity (see migrate_member_validity.js).
+    // Expired -> LOGIN ONLY is blocked. The profile STAYS visible on the
+    // site (search / matches / profile page). register.Status is never
+    // touched here.
+    // Fail-open: any infra error here (e.g. table not migrated yet) must
+    // never lock members out — it just skips the check and logs.
+    // ---------------------------------------------------------------
+    let validityExpiredMsg = null;
+    if (user.MatriID) {
+      try {
+        const [vRows] = await conn.query(
+          "SELECT * FROM member_validity WHERE matri_id = ? LIMIT 1",
+          [user.MatriID]
+        );
+        let validity = vRows[0];
+
+        if (!validity) {
+          // Lazily create a row for members that predate this feature or were
+          // created through a path that does not seed one.
+          let startsAt = user.Regdate ? new Date(user.Regdate) : new Date();
+          if (Number.isNaN(startsAt.getTime()) || startsAt.getFullYear() < 1972) {
+            startsAt = new Date();
+          }
+          const expiresAt = new Date(startsAt);
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+          await conn.query(
+            `INSERT INTO member_validity (matri_id, register_id, starts_at, expires_at)
+             VALUES (?, ?, ?, ?)`,
+            [user.MatriID, user.ID, startsAt, expiresAt]
+          );
+          validity = { unlimited: 0, is_blocked: 0, expires_at: expiresAt };
+        }
+
+        if (!validity.unlimited) {
+          const expiresAt = new Date(validity.expires_at);
+          const expired = expiresAt.getTime() <= Date.now();
+
+          if (validity.is_blocked || expired) {
+            if (expired && !validity.is_blocked) {
+              // Mark blocked in member_validity only — do NOT touch register.Status.
+              await conn.query(
+                `UPDATE member_validity
+                    SET is_blocked = 1, blocked_at = NOW(), block_reason = 'expired'
+                  WHERE matri_id = ?`,
+                [user.MatriID]
+              );
+            }
+
+            const d = expiresAt;
+            const dmy = `${String(d.getDate()).padStart(2, "0")}-${String(
+              d.getMonth() + 1
+            ).padStart(2, "0")}-${d.getFullYear()}`;
+            validityExpiredMsg = `Your 1-year membership validity expired on ${dmy}. Please contact the office to renew your account.`;
+          }
+        }
+      } catch (e) {
+        console.error("membership validity check skipped:", e.message);
+      }
+    }
+
+    if (validityExpiredMsg) {
+      return res.status(403).json({
+        success: false,
+        code: "VALIDITY_EXPIRED",
+        message: validityExpiredMsg,
+      });
+    }
+
     // Remove sensitive fields before sending
     const { ConfirmPassword, ParentPassword, ...safeUser } = user;
 
