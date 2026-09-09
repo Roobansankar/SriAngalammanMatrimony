@@ -5,6 +5,7 @@ import { AlertTriangle, Check } from "lucide-react"; // Import for Toast/Modal
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { connectSocket, getSocket } from "../socket";
+import noPhoto from "./Assets/nophoto.jpg";
 
 export default function ProfileView() {
   const { matriid } = useParams();
@@ -243,7 +244,7 @@ export default function ProfileView() {
     [tob.hh, tob.mm, tob.ss].filter(Boolean).join(":") +
     (tob.ap ? ` ${tob.ap}` : "");
 
-  const photoSrc = (u) => u?.PhotoURL || `${API}/gallery/nophoto.jpg`;
+  const photoSrc = (u) => u?.PhotoURL || noPhoto;
 
   const InfoRow = ({ label, value }) => (
     <div className="flex flex-col">
@@ -698,11 +699,7 @@ const heightMatch = (minH, maxH, actual) => {
                   style={{
                     width: 128,
                     height: 128,
-                    backgroundImage: `url(${
-                      photoSrc(user) && photoSrc(user) !== ""
-                        ? photoSrc(user)
-                        : "/nophoto.jpg"
-                    })`,
+                    backgroundImage: `url(${photoSrc(user)})`,
                     backgroundPosition: "top center",
                   }}
                 />
@@ -746,6 +743,7 @@ const heightMatch = (minH, maxH, actual) => {
                     <img
                       src={img}
                       alt={`Gallery ${index + 1}`}
+                      onError={(e) => { e.currentTarget.src = noPhoto; }}
                       className="w-full aspect-[3/4] object-cover object-top transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
@@ -1273,7 +1271,8 @@ const heightMatch = (minH, maxH, actual) => {
               {/* Logged-in User */}
               <div className="flex flex-col items-center">
                 <img
-                  src={viewer?.PhotoURL || `${API}/gallery/nophoto.jpg`}
+                  src={viewer?.PhotoURL || noPhoto}
+                  onError={(e) => { e.currentTarget.src = noPhoto; }}
                   className="w-20 h-20 rounded-full border"
                   alt="You"
                 />
@@ -1291,7 +1290,8 @@ const heightMatch = (minH, maxH, actual) => {
               {/* Partner */}
               <div className="flex flex-col items-center">
                 <img
-                  src={profile?.PhotoURL || `${API}/gallery/nophoto.jpg`}
+                  src={profile?.PhotoURL || noPhoto}
+                  onError={(e) => { e.currentTarget.src = noPhoto; }}
                   className="w-20 h-20 rounded-full border"
                   alt="Partner"
                 />
@@ -1369,9 +1369,10 @@ const heightMatch = (minH, maxH, actual) => {
                         src={
                           photoSrc(user) && photoSrc(user) !== ""
                             ? photoSrc(user)
-                            : "/nophoto.jpg"
+                            : noPhoto
                         }
                         alt="Profile"
+                        onError={(e) => { e.currentTarget.src = noPhoto; }}
                         className="w-full max-h-[80vh] object-contain bg-black"
                       />
 

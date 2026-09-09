@@ -497,6 +497,7 @@ useEffect(() => {
                   src={getSafeProfilePhoto(user)}
                   onClick={() => setPreviewOpen(true)}
                   alt="Profile"
+                  onError={(e) => { e.currentTarget.src = noPhoto; }}
                   className="w-32 h-32 rounded-full border-4 border-white object-cover cursor-pointer hover:scale-105 transition"
                 />
 
@@ -1407,6 +1408,7 @@ useEffect(() => {
               <img
                 src={getSafeProfilePhoto(user)}
                 alt="Profile Preview"
+                onError={(e) => { e.currentTarget.src = noPhoto; }}
                 className="w-full max-h-[80vh] object-contain bg-black"
               />
 
