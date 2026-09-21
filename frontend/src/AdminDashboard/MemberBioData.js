@@ -22,6 +22,7 @@ import premiumFemaleHeader from "../profile/Assets/PremiumFemale.png";
 import premiumFemaleDoctorHeader from "../profile/Assets/PremiumFemaleDoctor.png";
 import premiumMaleHeader from "../profile/Assets/PremiumMale.png";
 import premiumMaleDoctorHeader from "../profile/Assets/PremiumMaleDoctor.png";
+import premiumRemarriageHeader from "../profile/Assets/PremiumRemarriage.png";
 import remarriageHeader from "../profile/Assets/Remarriage.png";
 import "./AdminBioDisplay.css";
 
@@ -436,6 +437,11 @@ function getHeaderLabel(matriId, gender, plan) {
       : "பிரீமியம் பெண் வரன் ஜாதகம் (மருத்துவர்)";
   }
 
+  // ✅ PREMIUM REMARRIAGE
+  if (prefix4 === "SAMR" && isPremium) {
+    return "பிரீமியம் மறுமணம் ஜாதகம்";
+  }
+
   // ✅ PREMIUM
   if (prefix5 === "SAMPM" || (gender === "Male" && plan === "premium")) {
     return " பிரீமியம் ஆண் வரன் ஜாதகம் ";
@@ -475,6 +481,11 @@ function getHeaderImage(matriId, gender, plan) {
     return gender === "Male"
       ? premiumMaleDoctorHeader
       : premiumFemaleDoctorHeader;
+  }
+
+  // ✅ PREMIUM REMARRIAGE
+  if (prefix4 === "SAMR" && isPremium) {
+    return premiumRemarriageHeader;
   }
 
   // ✅ PREMIUM
@@ -1198,7 +1209,7 @@ const downloadAsPDF = async () => {
                         alt="header" 
                         className="w-full" 
                       />
-                      <div className="absolute bottom-10 right-14 text-black font-bold text-xl">
+                      <div style={{ position: "absolute", bottom: "40px", right: "56px", color: "black", fontWeight: "bold", fontSize: "22px" }}>
                         {currentData.matriId}
                       </div>
                     </div>
@@ -2609,7 +2620,7 @@ const downloadAsPDF = async () => {
                 alt="header" 
                 className="w-full" 
               />
-              <div className="absolute bottom-14 right-14 text-black font-bold text-xl">
+              <div style={{ position: "absolute", bottom: "56px", right: "56px", color: "black", fontWeight: "bold", fontSize: "22px" }}>
                 {currentData.matriId}
               </div>
             </div>
