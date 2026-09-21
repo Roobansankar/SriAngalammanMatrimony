@@ -14,10 +14,10 @@ import {
     X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import basicFemaleDoctorHeader from "../profile/Assets/BasicFemaleDoctor.png";
+import basicMaleDoctorHeader from "../profile/Assets/BasicMaleDoctor.png";
 import femaleHeader from "../profile/Assets/Female.png";
-import femaleDoctorHeader from "../profile/Assets/FemaleDoctor.png";
 import maleHeader from "../profile/Assets/Male.png";
-import maleDoctorHeader from "../profile/Assets/MaleDoctor.png";
 import premiumFemaleHeader from "../profile/Assets/PremiumFemale.png";
 import premiumFemaleDoctorHeader from "../profile/Assets/PremiumFemaleDoctor.png";
 import premiumMaleHeader from "../profile/Assets/PremiumMale.png";
@@ -485,9 +485,11 @@ function getHeaderImage(matriId, gender, plan) {
     return premiumFemaleHeader;
   }
 
-  // ✅ DOCTOR
+  // ✅ BASIC DOCTOR (premium doctors were already returned above)
   if (prefix4 === "SAMD") {
-    return gender === "Male" ? maleDoctorHeader : femaleDoctorHeader;
+    return gender === "Male"
+      ? basicMaleDoctorHeader
+      : basicFemaleDoctorHeader;
   }
 
   // ✅ REMARRIAGE
