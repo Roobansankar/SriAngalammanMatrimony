@@ -173,17 +173,28 @@ const onlineMap = new Map();
 io.on("connection", (socket) => {
   console.log("socket connected", socket.id);
 
-  socket.on("register", ({ matriid, email }) => {
+  socket.on("register", ({ matriid, email } = {}) => {
     const key = (matriid || email)?.toLowerCase();
-    if (key) {
-      onlineMap.set(key, socket.id);
-      socket.data.userKey = key;
+    if (!key) return;
+
+    // This socket switched user (logout -> login as someone else): stop
+    // routing the previous user's events to it.
+    const prev = socket.data.userKey;
+    if (prev && prev !== key && onlineMap.get(prev) === socket.id) {
+      onlineMap.delete(prev);
     }
+
+    onlineMap.set(key, socket.id);
+    socket.data.userKey = key;
   });
 
   socket.on("disconnect", () => {
-    if (socket.data.userKey) {
-      onlineMap.delete(socket.data.userKey);
+    const key = socket.data.userKey;
+    // Only forget the user if THIS socket is still their registered one. A newer
+    // socket (page reload / second tab) may already have replaced it, and its
+    // late disconnect must not wipe that newer registration.
+    if (key && onlineMap.get(key) === socket.id) {
+      onlineMap.delete(key);
     }
     console.log("socket disconnected", socket.id);
   });

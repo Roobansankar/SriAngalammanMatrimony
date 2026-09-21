@@ -1,14 +1,23 @@
 
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+// Support numbers shown at the bottom of step 6 (always).
+const SUPPORT_NUMBERS = [
+  { label: "9443946541", tel: "9443946541" },
+  { label: "70104 59106", tel: "7010459106" },
+];
 
 export default function Step11Payment({ formData, setFormData }) {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [userType, setUserType] = useState("");
-  
+  const [searchParams] = useSearchParams();
+  // PaymentResult sends the user back here with ?payment=failed
+  const paymentFailed = searchParams.get("payment") === "failed";
+
 
 useEffect(() => {
   const blockBack = () => {
@@ -104,6 +113,9 @@ useEffect(() => {
         email: emailToUse,
         mobile: formData?.mobile,
         amount: userType === "old" ? 500 : plan === "premium" ? 5000 : 2000,
+        // The registration draft lives in THIS host's localStorage (www and
+        // non-www are separate), so tell the server where to send us back.
+        returnHost: window.location.hostname,
       });
 
       /* Redirect to CCAvenue */
@@ -128,6 +140,19 @@ useEffect(() => {
 
 return (
   <div className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-xl shadow text-center">
+    {paymentFailed && (
+      <div
+        role="alert"
+        className="mb-8 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-left text-red-700"
+      >
+        <p className="font-semibold">Payment was not completed.</p>
+        <p className="text-sm mt-1">
+          Your registration details are saved. Please choose a plan and try
+          again.
+        </p>
+      </div>
+    )}
+
     <h2 className="text-xl font-bold mb-8">Choose Your Plan</h2>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -202,6 +227,25 @@ return (
     >
       {loading ? "Redirecting..." : "Pay Now"}
     </button>
+
+    {/* Always visible; only the wording changes after a failed payment. */}
+    <div className="mt-8 rounded-lg border border-gray-200 bg-gray-50 px-4 py-4 text-sm text-gray-700">
+      <p className="font-semibold mb-1">
+        {paymentFailed
+          ? "Payment problem? Money debited but payment failed? Contact us:"
+          : "Any doubt? Need help with the payment? Contact us:"}
+      </p>
+      <p className="text-base font-semibold text-rose-700">
+        {SUPPORT_NUMBERS.map((n, i) => (
+          <span key={n.tel}>
+            {i > 0 && ", "}
+            <a href={`tel:${n.tel}`} className="hover:underline">
+              {n.label}
+            </a>
+          </span>
+        ))}
+      </p>
+    </div>
   </div>
 );
 }

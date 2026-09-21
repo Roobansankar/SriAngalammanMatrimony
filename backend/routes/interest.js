@@ -150,6 +150,14 @@ router.post("/interest/send", async (req, res) => {
 
     const conn = db.promise();
 
+    // Realtime handles — declared up here because BOTH the "re-send after
+    // rejection" branch and the normal branch below emit events. (They used to
+    // be declared further down, so the re-send branch hit a use-before-declare
+    // error that was swallowed by its try/catch and the receiver never got the
+    // realtime notification.)
+    const io = req.app.get("io");
+    const onlineMap = req.app.get("onlineMap");
+
     // 0. Plan-based gating: basic users cannot send interest to premium users
     const [planSenderRows] = await conn.query(
       "SELECT Plan FROM register WHERE MatriID = ? LIMIT 1",
@@ -254,8 +262,6 @@ router.post("/interest/send", async (req, res) => {
     const senderName = senderRows.length ? senderRows[0].Name : fromMatriID;
 
     // Emit real-time event to recipient if online
-    const io = req.app.get("io");
-    const onlineMap = req.app.get("onlineMap");
     try {
       const recipientSocket = onlineMap.get(String(toMatriID).toLowerCase());
       if (recipientSocket && io) {
@@ -455,6 +461,78 @@ router.get("/interest/outgoing", async (req, res) => {
     return res.json({ success: true, outgoing: rows || [] });
   } catch (err) {
     console.error("interest/outgoing error", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+/**
+ * GET /api/auth/interest/notifications?matriid=<me>
+ *
+ * Durable notification feed, built from the `interests` table, so a user sees
+ * what happened while they were offline / on another device. (Realtime socket
+ * events alone are lost if the user is not connected at that moment.)
+ *
+ *  - type "response": someone ACCEPTED / REJECTED an interest I sent
+ *  - type "received": someone sent me an interest I have not answered yet
+ *
+ * Each item carries the same `interest` shape the socket events use, so the
+ * frontend can merge both sources and de-duplicate them.
+ */
+router.get("/interest/notifications", async (req, res) => {
+  try {
+    const me = req.query?.matriid ? String(req.query.matriid).trim() : "";
+    if (!me) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing 'matriid' param" });
+    }
+
+    const conn = db.promise();
+
+    const [responses] = await conn.query(
+      `SELECT i.*, r.Name AS otherName
+         FROM interests i
+         LEFT JOIN register r ON r.MatriID = i.to_matriid
+        WHERE i.from_matriid = ? AND i.status IN ('accepted', 'rejected')
+        ORDER BY i.updated_at DESC
+        LIMIT 100`,
+      [me]
+    );
+
+    const [received] = await conn.query(
+      `SELECT i.*, r.Name AS otherName
+         FROM interests i
+         LEFT JOIN register r ON r.MatriID = i.from_matriid
+        WHERE i.to_matriid = ? AND i.status = 'pending'
+        ORDER BY i.updated_at DESC
+        LIMIT 100`,
+      [me]
+    );
+
+    const iso = (d) => (d ? new Date(d).toISOString() : null);
+    const shape = (row, type) => ({
+      type,
+      interest: {
+        id: row.id,
+        from_matriid: row.from_matriid,
+        to_matriid: row.to_matriid,
+        status: row.status,
+        created_at: iso(row.created_at),
+        updated_at: iso(row.updated_at),
+      },
+      otherName:
+        row.otherName || (type === "response" ? row.to_matriid : row.from_matriid),
+      createdAt: iso(row.updated_at || row.created_at),
+    });
+
+    const notifications = [
+      ...responses.map((r) => shape(r, "response")),
+      ...received.map((r) => shape(r, "received")),
+    ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return res.json({ success: true, notifications });
+  } catch (err) {
+    console.error("interest/notifications error", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });

@@ -376,6 +376,36 @@ const WORKING_KEY = "8D5201FF07BB00FF435BE2C64E38CF32";
 
 const BASE_URL = "https://sriangalammanmatrimony.com";
 
+/* =========================================================
+   🌐 RETURN HOST (where the browser lands after payment)
+
+   The registration draft is kept in the browser's localStorage, which is
+   per-origin: https://www.sriangalammanmatrimony.com and
+   https://sriangalammanmatrimony.com do NOT share it. The CCAvenue callback
+   itself must stay on BASE_URL (registered domain), but the final redirect
+   to /payment-result must go back to the host the user STARTED on —
+   otherwise the draft is "missing" and the user is sent back to restart.
+
+   The frontend sends its own hostname at init; we carry it through the
+   gateway in merchant_param1 (echoed back in the response) and only trust
+   it if it is in this allow-list (no open redirect).
+========================================================= */
+
+const ALLOWED_RETURN_HOSTS = new Set([
+  "sriangalammanmatrimony.com",
+  "www.sriangalammanmatrimony.com",
+]);
+
+function cleanReturnHost(host) {
+  const h = String(host || "").trim().toLowerCase();
+  return ALLOWED_RETURN_HOSTS.has(h) ? h : "";
+}
+
+function returnBaseFor(host) {
+  const h = cleanReturnHost(host);
+  return h ? `https://${h}` : BASE_URL;
+}
+
 const CCAVENUE_URL =
   "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
@@ -453,11 +483,17 @@ router.get("/admin/payments", async (req, res) => {
 
 router.post("/ccavenue-init", async (req, res) => {
   try {
-    const { plan, email, amount, mobile } = req.body;
+    const { plan, email, amount, mobile, returnHost } = req.body;
 
     if (!plan || !email) {
       return res.status(400).json({ message: "Missing plan or email" });
     }
+
+    /* Host the user started on — echoed back by CCAvenue as merchant_param1 */
+    const safeReturnHost = cleanReturnHost(returnHost);
+    const merchantParam = safeReturnHost
+      ? `&merchant_param1=${safeReturnHost}`
+      : "";
 
     /* 🔒 Prevent duplicate success */
     const [success] = await db.promise().query(
@@ -495,7 +531,8 @@ router.post("/ccavenue-init", async (req, res) => {
         `&redirect_url=${BASE_URL}/api/payment/ccavenue-success` +
         `&cancel_url=${BASE_URL}/api/payment/ccavenue-cancel` +
         `&language=EN` +
-        `&billing_email=${email}`;
+        `&billing_email=${email}` +
+        merchantParam;
 
       return res.json({
         ccUrl: CCAVENUE_URL,
@@ -538,7 +575,8 @@ router.post("/ccavenue-init", async (req, res) => {
       `&redirect_url=${BASE_URL}/api/payment/ccavenue-success` +
       `&cancel_url=${BASE_URL}/api/payment/ccavenue-cancel` +
       `&language=EN` +
-      `&billing_email=${email}`;
+      `&billing_email=${email}` +
+      merchantParam;
 
     res.json({
       ccUrl: CCAVENUE_URL,
@@ -562,6 +600,10 @@ router.post(
   "/ccavenue-success",
   express.urlencoded({ extended: false }),
   async (req, res) => {
+    /* Default to BASE_URL; switched to the user's own host once we can read
+       merchant_param1 from the gateway response (see returnBaseFor). */
+    let returnBase = BASE_URL;
+
     try {
       res.set({
         "Cache-Control": "no-store, no-cache, must-revalidate, private",
@@ -573,7 +615,7 @@ router.post(
 
       if (!encResp) {
         console.log("❌ No encResp received");
-        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+        return res.redirect(`${returnBase}/payment-result?status=failed`);
       }
 
       const decrypted = decrypt(encResp);
@@ -581,17 +623,19 @@ router.post(
 
       console.log("🔐 CCAvenue Response:", data);
 
+      returnBase = returnBaseFor(data.merchant_param1);
+
       const orderId = data.order_id;
       const orderStatus = data.order_status;
       const trackingId = data.tracking_id;
 
       if (!orderId) {
-        return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+        return res.redirect(`${returnBase}/payment-result?status=failed`);
       }
 
       if (orderStatus === "Success") {
         await db.promise().query(
-          `UPDATE payments 
+          `UPDATE payments
            SET status='Success'
            WHERE order_id=?`,
           [orderId]
@@ -599,20 +643,20 @@ router.post(
 
         console.log("✅ Payment marked SUCCESS:", orderId);
 
-        return res.redirect(`${BASE_URL}/payment-result?status=success`);
+        return res.redirect(`${returnBase}/payment-result?status=success`);
       }
 
       await db.promise().query(
-        `UPDATE payments 
+        `UPDATE payments
          SET status='Failed'
          WHERE order_id=?`,
         [orderId]
       );
 
-      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+      return res.redirect(`${returnBase}/payment-result?status=failed`);
     } catch (err) {
       console.error("❌ Callback Error:", err);
-      return res.redirect(`${BASE_URL}/payment-result?status=failed`);
+      return res.redirect(`${returnBase}/payment-result?status=failed`);
     }
   }
 );
@@ -635,9 +679,38 @@ router.post(
 //   `);
 // });
 
-router.all("/ccavenue-cancel", (req, res) => {
-  return res.redirect(`${BASE_URL}/payment-result?status=failed`);
-});
+router.all(
+  "/ccavenue-cancel",
+  express.urlencoded({ extended: false }),
+  async (req, res) => {
+    let returnBase = BASE_URL;
+
+    try {
+      /* On cancel CCAvenue also posts an encrypted response: use it to send
+         the user back to the host they started on, and to close the order so
+         a retry gets a fresh order id instead of reusing the aborted one. */
+      const encResp = req.body?.encResp;
+
+      if (encResp) {
+        const data = qs.parse(decrypt(encResp));
+        returnBase = returnBaseFor(data.merchant_param1);
+
+        if (data.order_id && data.order_status !== "Success") {
+          await db.promise().query(
+            `UPDATE payments
+             SET status='Failed'
+             WHERE order_id=? AND status='Pending'`,
+            [data.order_id]
+          );
+        }
+      }
+    } catch (err) {
+      console.error("❌ Cancel Callback Error:", err.message);
+    }
+
+    return res.redirect(`${returnBase}/payment-result?status=failed`);
+  }
+);
 /* =========================================================
    🔎 VERIFY PAYMENT
 ========================================================= */

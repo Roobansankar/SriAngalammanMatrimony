@@ -57,10 +57,12 @@ const {
     const perPage = 10;
     const offset = (page - 1) * perPage;
 
-    // Start with a permissive base query
-    // We only exclude 'Banned' users by default. 
-    // We handle visibility as well but allow NULLs (which is the default for new users)
-    let whereClauses = ["(Status IS NULL OR Status <> 'Banned')", "(visibility IS NULL OR visibility <> 'hidden')"];
+    // Start with a permissive base query.
+    // Banned members are NOT hidden from search (their Status stays as it is —
+    // e.g. members whose 1-year validity expired still show on the website).
+    // Only profiles explicitly hidden (visibility = 'hidden') are excluded;
+    // NULL visibility (the default for new users) is allowed.
+    let whereClauses = ["(visibility IS NULL OR visibility <> 'hidden')"];
     let params = [];
 
     // Gender - Important to match exact case or use LOWER
@@ -90,10 +92,23 @@ const {
     }
 
     // Caste
+    // The dropdown offers "Mudaliar", but the same caste is stored in `register`
+    // under other spellings too (Muthaliyar ~800 rows, Mudhaliar) — include them
+    // so a Mudaliar search does not silently drop a third of its members.
+    const CASTE_VARIANTS = {
+      mudaliar: ["mudaliar", "muthaliyar", "mudhaliar"],
+    };
     if (caste && Array.isArray(caste) && !caste.includes("Any") && caste.length > 0) {
-      const placeholders = caste.map(() => "LOWER(?)").join(",");
-      whereClauses.push(`LOWER(Caste) IN (${placeholders})`);
-      params.push(...caste.map(v => v.toLowerCase()));
+      const values = [
+        ...new Set(
+          caste.flatMap((v) => {
+            const key = String(v).trim().toLowerCase();
+            return CASTE_VARIANTS[key] || [key];
+          })
+        ),
+      ];
+      whereClauses.push(`TRIM(LOWER(Caste)) IN (${values.map(() => "?").join(",")})`);
+      params.push(...values);
     }
 
     // Education
@@ -119,9 +134,20 @@ const {
 
     // Nakshatra (Star)
 // Moon Sign (Rasi)
+// `register.Moonsign` holds the same rasi in several forms: the long label the
+// dropdown offers ("Kadagam (Cancer)"), a short name ("kadagam"), and a few
+// spelling variants ("Meesham", "viruchigam"). Match all of them; matching only
+// the long label used to miss ~760 members.
+const RASI_VARIANTS = {
+  mesham: ["mesham", "meesham", "meeesham (aries)"],
+  virichigam: ["virichigam", "viruchigam"],
+};
 if (moonSign && moonSign !== "Any") {
-  whereClauses.push("LOWER(Moonsign) = LOWER(?)");
-  params.push(moonSign);
+  const full = String(moonSign).trim().toLowerCase();
+  const short = full.split(" (")[0].trim();
+  const rasiValues = [...new Set([full, short, ...(RASI_VARIANTS[short] || [])])];
+  whereClauses.push(`TRIM(LOWER(Moonsign)) IN (${rasiValues.map(() => "?").join(",")})`);
+  params.push(...rasiValues);
 }
 
 
@@ -240,8 +266,8 @@ if (Keethu && Keethu !== "Any") {
     const selectSql = `
       SELECT *, TIMESTAMPDIFF(YEAR, DOB, CURDATE()) AS Age 
       FROM register 
-      ${whereSql} 
-      ORDER BY Regdate DESC 
+      ${whereSql}
+      ORDER BY Regdate DESC, ID DESC
       LIMIT ? OFFSET ?
     `;
     const [rows] = await conn.query(selectSql, [...params, perPage, offset]);

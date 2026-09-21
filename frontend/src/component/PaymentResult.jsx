@@ -213,62 +213,92 @@
 // }
 
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+const STORAGE_KEY = "multiStepRegistration_form_v1";
+const MAX_ATTEMPTS = 8;
+const RETRY_MS = 1500;
 
 export default function PaymentResult() {
   const navigate = useNavigate();
-
+  const [params] = useSearchParams();
+  const status = (params.get("status") || "").toLowerCase();
 
   useEffect(() => {
     window.history.replaceState(null, "", window.location.href);
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    let timer;
     let attempts = 0;
 
-    async function checkPayment() {
-      attempts++;
+    // Every exit uses `replace`, so /payment-result never stays in the
+    // history stack (Back would re-run this page and bounce the user around).
+    const backToPayment = () =>
+      navigate("/register/step/6?payment=failed", { replace: true });
 
-      const raw = localStorage.getItem("multiStepRegistration_form_v1");
+    // Gateway said failed / cancelled: no need to poll — straight back to
+    // step 6 with the failure notice (+ contact numbers).
+    if (status !== "success") {
+      backToPayment();
+      return undefined;
+    }
 
-      if (!raw) {
-        navigate("/register/step/6");
+    async function confirmPayment() {
+      if (cancelled) return;
+      attempts += 1;
+
+      let email = "";
+      try {
+        email = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}").email || "";
+      } catch {
+        email = "";
+      }
+
+      // Registration draft is not in this browser origin, so we cannot
+      // continue to step 7 from here — stay on step 6.
+      if (!email) {
+        navigate("/register/step/6", { replace: true });
         return;
       }
 
-      const parsed = JSON.parse(raw);
-
       try {
         const res = await axios.get(
-          // `${process.env.REACT_APP_API_BASE}/api/payment/verify`,
           `${process.env.REACT_APP_API_BASE || ""}/api/payment/verify`,
-          { params: { email: parsed.email } },
+          { params: { email } },
         );
+        if (cancelled) return;
 
         if (res.data.valid) {
           navigate("/register/step/7", { replace: true });
           return;
         }
-
-        if (attempts < 15) {
-          setTimeout(checkPayment, 2000);
-        } else {
-          navigate("/register/step/6");
-        }
       } catch {
-        if (attempts < 15) {
-          setTimeout(checkPayment, 2000);
-        }
+        // network hiccup — retry below
+      }
+
+      if (attempts < MAX_ATTEMPTS) {
+        timer = setTimeout(confirmPayment, RETRY_MS);
+      } else {
+        backToPayment();
       }
     }
 
-    checkPayment();
-  }, [navigate]);
+    confirmPayment();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [navigate, status]);
 
   return (
     <div className="text-center mt-20 text-lg">
-      Verifying Payment... Please wait.
+      {status === "success"
+        ? "Verifying Payment... Please wait."
+        : "Returning to the payment page..."}
     </div>
   );
 }

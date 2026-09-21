@@ -382,7 +382,7 @@ router.get("/allProfiles", async (req, res) => {
       SELECT *,
         TIMESTAMPDIFF(YEAR, DATE(DOB), CURDATE()) AS Age
       FROM register
-      WHERE Status = 'Active' AND visibility NOT LIKE 'hidden'
+      WHERE Status IN ('Active', 'Banned') AND visibility NOT LIKE 'hidden'
       ${planFilter}
       ORDER BY id DESC
       `

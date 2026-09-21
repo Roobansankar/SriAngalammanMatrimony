@@ -2,6 +2,7 @@ import { Bell, ChevronDown, Heart, Menu, Search, UserCircle, Users, X } from "lu
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "./logo.png";
+import { disconnectSocket, getNotificationsKey } from "../socket";
 import noPhoto from "./nophoto.jpg";
 
 
@@ -78,13 +79,14 @@ export default function Header({ user, setUser }) {
 
 
   const handleLogout = () => {
+    // Stop this browser receiving the logged-out user's live events.
+    disconnectSocket();
     localStorage.removeItem("loggedInEmail");
     localStorage.removeItem("userData");
     setUser(null);
     navigate("/login", { replace: true });
   };
 
-  const NOTIF_KEY = "app_notifications_v1";
   const [unread, setUnread] = useState(0);
   const [incomingCount, setIncomingCount] = useState(0);
   const [chatRequestCount, setChatRequestCount] = useState(0);
@@ -96,7 +98,8 @@ export default function Header({ user, setUser }) {
 
   const refreshUnread = useCallback(() => {
     try {
-      const raw = localStorage.getItem(NOTIF_KEY);
+      // notifications are stored per logged-in user
+      const raw = localStorage.getItem(getNotificationsKey());
       const arr = raw ? JSON.parse(raw) : [];
       const cnt = Array.isArray(arr)
         ? arr.filter((n) => n && !n.read).length
@@ -139,7 +142,7 @@ export default function Header({ user, setUser }) {
     fetchIncomingCount();
     fetchChatRequestCount();
     const onStorage = (e) => {
-      if (e.key === NOTIF_KEY) refreshUnread();
+      if (e.key && e.key.startsWith("app_notifications_v1")) refreshUnread();
     };
     const onFocus = () => {
       refreshUnread();
@@ -153,10 +156,14 @@ export default function Header({ user, setUser }) {
     window.addEventListener("storage", onStorage);
     window.addEventListener("focus", onFocus);
     window.addEventListener("incoming_interest_update", onIncomingUpdate);
+    // fired by socket.js whenever a notification is added / read / cleared, so the
+    // bell updates immediately in this tab (not only on focus)
+    window.addEventListener("app_notifications_updated", refreshUnread);
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("focus", onFocus);
       window.removeEventListener("incoming_interest_update", onIncomingUpdate);
+      window.removeEventListener("app_notifications_updated", refreshUnread);
     };
   }, [refreshUnread, fetchIncomingCount, fetchChatRequestCount]);
 

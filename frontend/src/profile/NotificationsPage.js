@@ -194,10 +194,14 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { connectSocket, getSocket } from "../socket";
+import {
+  connectSocket,
+  markNotificationsCleared,
+  readNotifications,
+  writeNotifications,
+} from "../socket";
 
 const API = process.env.REACT_APP_API_BASE || "";
-const STORAGE_KEY = "app_notifications_v1";
 
 function humanTime(ts) {
   try {
@@ -210,13 +214,9 @@ function humanTime(ts) {
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    } catch {
-      return [];
-    }
-  });
+  // The list lives in localStorage (per user) and is kept up to date by socket.js
+  // (live events + the server feed). This page just mirrors it.
+  const [notifications, setNotifications] = useState(() => readNotifications());
   const [nameCache, setNameCache] = useState({});
   const fetchedRef = useRef(new Set());
 
@@ -332,137 +332,23 @@ export default function NotificationsPage() {
   };
 
   useEffect(() => {
+    // Makes sure the shared socket is up and THIS user is registered, and pulls
+    // anything we missed while offline (accepted / rejected / new interests).
     connectSocket();
-    const socket = getSocket();
 
-    const addNotification = (n) => {
-      setNotifications((prev) => {
-        const out = [n, ...prev].slice(0, 200);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
-        try {
-          window.dispatchEvent(
-            new CustomEvent("app_notifications_updated", { detail: out })
-          );
-        } catch {}
-        return out;
-      });
-    };
-
-    const onInterestReceived = (payload) => {
-      const interest = payload?.interest;
-      if (!interest) return;
-      const fromName = payload?.fromName || interest.from_matriid || interest.fromMatriID;
-      addNotification({
-        id: `received_${interest.id}_${Date.now()}`,
-        type: "received",
-        interest,
-        fromName,
-        message: `New interest from ${fromName}`,
-        createdAt: interest.created_at || new Date().toISOString(),
-        read: false,
-      });
-    };
-
-    const onInterestResponse = (payload) => {
-      const interest = payload?.interest;
-      const action = payload?.action || interest?.status;
-      if (!interest) return;
-      const fromName = payload?.fromName || interest.to_matriid || interest.toMatriID;
-      addNotification({
-        id: `response_${interest.id}_${Date.now()}`,
-        type: "response",
-        interest,
-        fromName,
-        message: `Your interest to ${fromName} was ${action}`,
-        createdAt: interest.updated_at || new Date().toISOString(),
-        read: false,
-      });
-    };
-
-    const onInterestUpdate = (payload) => {
-      const interest = payload?.interest;
-      if (!interest) return;
-      addNotification({
-        id: `update_${interest.id}_${Date.now()}`,
-        type: "update",
-        interest,
-        message: `Interest status updated: ${interest.status}`,
-        createdAt: interest.updated_at || new Date().toISOString(),
-        read: false,
-      });
-    };
-
-    // Chat request received
-    const onChatRequestReceived = (payload) => {
-      const chatInterest = payload?.chatInterest;
-      if (!chatInterest) return;
-      const fromName = payload?.fromName || chatInterest.from_matriid;
-      addNotification({
-        id: `chat_request_${chatInterest.id}_${Date.now()}`,
-        type: "chat_request",
-        chatInterest,
-        from_matriid: chatInterest.from_matriid,
-        fromName,
-        message: `${fromName} wants to chat with you`,
-        createdAt: chatInterest.created_at || new Date().toISOString(),
-        read: false,
-      });
-    };
-
-    // Chat request response (my request was accepted/rejected)
-    const onChatRequestResponse = (payload) => {
-      const chatInterest = payload?.chatInterest;
-      if (!chatInterest) return;
-      const fromName = payload?.fromName || chatInterest.to_matriid;
-      const status = payload?.status || chatInterest.status;
-      addNotification({
-        id: `chat_response_${chatInterest.id}_${Date.now()}`,
-        type: "chat_response",
-        chatInterest,
-        from_matriid: chatInterest.to_matriid,
-        fromName,
-        message: `${fromName} ${status} your chat request`,
-        createdAt: chatInterest.updated_at || new Date().toISOString(),
-        read: false,
-      });
-    };
-
-    socket?.on("interest_received", onInterestReceived);
-    socket?.on("interest_response", onInterestResponse);
-    socket?.on("interest_update", onInterestUpdate);
-    socket?.on("chat_request_received", onChatRequestReceived);
-    socket?.on("chat_request_response", onChatRequestResponse);
-
-    return () => {
-      socket?.off("interest_received", onInterestReceived);
-      socket?.off("interest_response", onInterestResponse);
-      socket?.off("interest_update", onInterestUpdate);
-      socket?.off("chat_request_received", onChatRequestReceived);
-      socket?.off("chat_request_response", onChatRequestResponse);
-    };
+    // socket.js stores every live event + the server feed and fires this event.
+    const refresh = () => setNotifications(readNotifications());
+    window.addEventListener("app_notifications_updated", refresh);
+    refresh();
+    return () => window.removeEventListener("app_notifications_updated", refresh);
   }, []);
 
   const markAllRead = () => {
-    setNotifications((prev) => {
-      const out = prev.map((n) => ({ ...n, read: true }));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
-      try {
-        window.dispatchEvent(
-          new CustomEvent("app_notifications_updated", { detail: out })
-        );
-      } catch {}
-      return out;
-    });
+    writeNotifications(readNotifications().map((n) => ({ ...n, read: true })));
   };
 
   const clearAll = () => {
-    setNotifications([]);
-    localStorage.removeItem(STORAGE_KEY);
-    try {
-      window.dispatchEvent(
-        new CustomEvent("app_notifications_updated", { detail: [] })
-      );
-    } catch {}
+    markNotificationsCleared();
   };
 
   const computeTargetMatriId = (notification) => {
@@ -518,16 +404,11 @@ export default function NotificationsPage() {
   };
 
   const handleChat = (matriId, notificationId) => {
-    setNotifications((prev) => {
-      const out = prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
-      try {
-        window.dispatchEvent(
-          new CustomEvent("app_notifications_updated", { detail: out })
-        );
-      } catch {}
-      return out;
-    });
+    writeNotifications(
+      readNotifications().map((n) =>
+        n.id === notificationId ? { ...n, read: true } : n
+      )
+    );
     if (matriId) {
       navigate(`/chat/${encodeURIComponent(matriId)}`);
     }

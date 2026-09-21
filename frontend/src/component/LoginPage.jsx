@@ -4,6 +4,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { connectSocket } from "../socket";
 
 export default function LoginPage({ setUser }) {
   const [form, setForm] = useState({
@@ -37,6 +38,10 @@ export default function LoginPage({ setUser }) {
         localStorage.setItem("loggedInEmail", payload.email);
         localStorage.setItem("userData", JSON.stringify(res.data.user || {}));
         setUser(res.data.user);
+        // The shared socket may already be connected from before the login:
+        // this registers the NEW user with the server so live interest /
+        // notification events reach them without a page reload.
+        connectSocket();
         navigate("/profile");
       } else {
         setError(res.data?.message || "Login failed");

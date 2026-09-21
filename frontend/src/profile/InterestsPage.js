@@ -193,6 +193,39 @@ export default function InterestsPage() {
     };
   }, [loggedId]);
 
+  // Keep the Received / Sent lists fresh without a page reload: when the tab
+  // regains focus, and when the shared socket reports an interest event
+  // (socket.js fires "incoming_interest_update"). This is what makes an
+  // accept / reject show up on the "Sent" tab even if the live socket message
+  // was missed (e.g. right after logging in, or after a reconnect).
+  useEffect(() => {
+    if (!loggedId) return undefined;
+
+    const refresh = async () => {
+      try {
+        const [inc, out] = await Promise.all([
+          axios.get(`${API}/auth/interest/incoming`, { params: { to: loggedId } }),
+          axios.get(`${API}/auth/interest/outgoing`, { params: { from: loggedId } }),
+        ]);
+        if (inc.data?.success) {
+          setIncoming(Array.isArray(inc.data.incoming) ? inc.data.incoming : []);
+        }
+        if (out.data?.success) {
+          setOutgoing(Array.isArray(out.data.outgoing) ? out.data.outgoing : []);
+        }
+      } catch (e) {
+        console.warn("Failed to refresh interests:", e);
+      }
+    };
+
+    window.addEventListener("focus", refresh);
+    window.addEventListener("incoming_interest_update", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("incoming_interest_update", refresh);
+    };
+  }, [loggedId]);
+
   // Respond to incoming interest
   const respond = async (interestId, action) => {
     if (!interestId || !["accepted", "rejected"].includes(action)) return;
