@@ -632,6 +632,9 @@ export default function MemberBioData() {
           mother_occupation: user.Mothersoccupation || "",
           mother_native_place: user.MotherPoorvegam || "",
           address: user.Address || "",
+          pincode: user.Pincode || "",
+          city: user.City || "",
+          state: user.State || "",
           mobile_phone: user.Mobile || "",
           family_income: user.FamilyDetails || "",
 
@@ -733,6 +736,25 @@ export default function MemberBioData() {
     }));
   };
 
+  const fetchPincodeDetails = async (pincode) => {
+    if (!pincode || pincode.length !== 6) return;
+    try {
+      const res = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+      if (res.data && res.data[0] && res.data[0].Status === "Success" && res.data[0].PostOffice && res.data[0].PostOffice.length > 0) {
+        const po = res.data[0].PostOffice[0];
+        const district = po.District || "";
+        const state = po.State || "";
+        setEditData((prev) => ({
+          ...prev,
+          city: district,
+          state: state,
+        }));
+      }
+    } catch (err) {
+      console.error("Pincode fetch error:", err);
+    }
+  };
+
   const handleSaveChanges = async () => {
     if (!editData || !editData.matriId) return;
     setSaving(true);
@@ -759,6 +781,9 @@ export default function MemberBioData() {
         Mothersoccupation: editData.mother_occupation,
         MotherPoorvegam: editData.mother_native_place,
         Address: editData.address,
+        Pincode: editData.pincode,
+        City: editData.city,
+        State: editData.state,
         Phone: editData.father_phone,
         Mobile: editData.mobile_phone,
         Mobile2: editData.mother_phone,
@@ -1916,7 +1941,7 @@ const downloadAsPDF = async () => {
                         </span>
                       </div>
 
-                      {/* ADDRESS */}
+                      {/* ADDRESS + PINCODE */}
                       <div className="display-form-row">
                         <span>
                           முகவரி:
@@ -1925,7 +1950,7 @@ const downloadAsPDF = async () => {
                             style={{ minWidth: "1075px" }}
                           >
                             {isEditing ? (
-                              <>
+                              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                                 <input
                                   type="text"
                                   value={editData.address || ""}
@@ -1938,21 +1963,36 @@ const downloadAsPDF = async () => {
                                     border: "2px solid #3b82f6",
                                     background: "#eff6ff",
                                     padding: "2px 8px",
-                                    width: "100%",
+                                    flex: 1,
                                   }}
                                 />
-                                <div className="text-[9px] text-gray-500 text-right">
-                                  {editData.address?.length || 0} / 60
-                                </div>
-                              </>
+                                <input
+                                  type="text"
+                                  value={editData.pincode || ""}
+                                  maxLength={6}
+                                  onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                                    handleEditChange("pincode", val);
+                                    if (val.length === 6) fetchPincodeDetails(val);
+                                  }}
+                                  className="display-data"
+                                  placeholder="Pincode"
+                                  style={{
+                                    border: "2px solid #3b82f6",
+                                    background: "#eff6ff",
+                                    padding: "2px 8px",
+                                    width: "100px",
+                                  }}
+                                />
+                              </div>
                             ) : (
                               <span className="display-data">
-                                {currentData.address}
+                                {currentData.address}{currentData.pincode ? `, ${currentData.pincode}` : ""}
                               </span>
                             )}
                           </div>
                         </span>
-                        </div>
+                      </div>
 
                         {/* FAMILY INCOME */}
                         <div className="display-form-row">
@@ -2894,7 +2934,7 @@ const downloadAsPDF = async () => {
                   </div>
                 </span>
               </div>
-              {/* ADDRESS */}
+              {/* ADDRESS + PINCODE */}
               <div className="display-form-row">
                 <span>
                   முகவரி:
@@ -2902,7 +2942,9 @@ const downloadAsPDF = async () => {
                     className="display-placeholder address-placeholder"
                     style={{ minWidth: "1075px" }}
                   >
-                    <span className="display-data">{currentData.address}</span>
+                    <span className="display-data">
+                      {currentData.address}{currentData.pincode ? `, ${currentData.pincode}` : ""}
+                    </span>
                   </div>
                 </span>
               </div>
