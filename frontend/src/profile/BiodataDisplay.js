@@ -891,6 +891,25 @@ function getHeaderLabel(matriId, gender) {
   return gender === "Male" ? "ஆண் வரன் ஜாதகம்" : "பெண் வரன் ஜாதகம்";
 }
 
+// Builds "2 Brothers (1 Married, 1 Unmarried)" style text for one sibling
+// group. Only mentions Married/Unmarried when that count was actually
+// entered — it never assumes "Unmarried" just because Married wasn't given,
+// which used to produce contradictions like "(Unmarried, 1 Unmarried)".
+function formatSiblingGroup(count, married, unmarried, singular, plural) {
+  const total = Number(count) || 0;
+  if (total <= 0) return null;
+
+  const label = `${total} ${total === 1 ? singular : plural}`;
+  const marriedNum = Number(married);
+  const unmarriedNum = Number(unmarried);
+
+  const bits = [];
+  if (marriedNum > 0) bits.push(`${marriedNum} Married`);
+  if (unmarriedNum > 0) bits.push(`${unmarriedNum} Unmarried`);
+
+  return bits.length > 0 ? `${label} (${bits.join(", ")})` : label;
+}
+
 export default function BiodataDisplay({ setUser: setAppUser }) {
   // eslint-disable-next-line no-unused-vars
   const [biodataList, setBiodataList] = useState([]);
@@ -1000,32 +1019,20 @@ export default function BiodataDisplay({ setUser: setAppUser }) {
             family_income: user.FamilyDetails || "",
             siblings_details: (() => {
               const parts = [
-                user.noofbrothers > 0
-                  ? `${user.noofbrothers} Brother${
-                      user.noofbrothers > 1 ? "s" : ""
-                    } (${
-                      (user.noyubrothers || user.nbm) > 0
-                        ? `${user.noyubrothers || user.nbm} Married`
-                        : "Unmarried"
-                    }${
-                      user.nb_unmarried > 0
-                        ? `, ${user.nb_unmarried} Unmarried`
-                        : ""
-                    })`
-                  : null,
-                user.noofsisters > 0
-                  ? `${user.noofsisters} Sister${
-                      user.noofsisters > 1 ? "s" : ""
-                    } (${
-                      (user.noyusisters || user.nsm) > 0
-                        ? `${user.noyusisters || user.nsm} Married`
-                        : "Unmarried"
-                    }${
-                      user.ns_unmarried > 0
-                        ? `, ${user.ns_unmarried} Unmarried`
-                        : ""
-                    })`
-                  : null,
+                formatSiblingGroup(
+                  user.noofbrothers,
+                  user.noyubrothers || user.nbm,
+                  user.nb_unmarried,
+                  "Brother",
+                  "Brothers"
+                ),
+                formatSiblingGroup(
+                  user.noofsisters,
+                  user.noyusisters || user.nsm,
+                  user.ns_unmarried,
+                  "Sister",
+                  "Sisters"
+                ),
               ].filter(Boolean);
               return parts.length > 0
                 ? parts.join(", ")
