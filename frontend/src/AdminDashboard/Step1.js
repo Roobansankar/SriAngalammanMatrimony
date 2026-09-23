@@ -341,7 +341,7 @@ export default function Step1({ nextStep, formData = {} }) {
 
   if (optionsLoading) {
     return (
-      <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 border border-rose-100 mt-7">
+      <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl p-6 border border-rose-100 mt-7">
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="animate-spin w-8 h-8 text-rose-600 mb-4" />
           <p className="text-gray-600">Loading form...</p>
@@ -351,7 +351,7 @@ export default function Step1({ nextStep, formData = {} }) {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 border border-rose-100 mt-7">
+    <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl p-6 border border-rose-100 mt-7">
       <h3 className="text-2xl font-bold text-center text-rose-700 mb-4">
         Create Your Matrimony Profile
       </h3>

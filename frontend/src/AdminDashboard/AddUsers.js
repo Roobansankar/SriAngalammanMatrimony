@@ -102,7 +102,7 @@ export default function AddUsers() {
   return (
     <div className="min-h-screen flex flex-col p-6 items-center font-display">
       {/* TOP PROGRESS BAR */}
-      <div className="w-full max-w-2xl mb-6 mt-0">
+      <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mb-6 mt-0">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-semibold text-rose-700">
             Step {currentStep} of {TOTAL_STEPS}
@@ -119,7 +119,7 @@ export default function AddUsers() {
       </div>
       {/* END PROGRESS BAR */}
 
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl">
         <Routes>
           <Route path="" element={<Navigate to="step/1" replace />} />
 
