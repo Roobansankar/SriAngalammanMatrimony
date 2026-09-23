@@ -328,6 +328,8 @@ import {
     BookOpen,
     CalendarClock,
     ChevronDown,
+    ChevronLeft,
+    ChevronRight,
     CreditCard,
     Crown,
     FileText,
@@ -400,6 +402,25 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  // Desktop-only sidebar collapse (mobile always uses the slide-in drawer
+  // above). Remembered across reloads so the admin's choice sticks.
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem("adminSidebarCollapsed") === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("adminSidebarCollapsed", next ? "1" : "0");
+      } catch {}
+      return next;
+    });
+  };
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const isAdmin = currentUser?.role === "admin";
@@ -424,38 +445,58 @@ export default function DashboardLayout() {
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64
         bg-slate-900
-        transform transition-transform duration-300
+        transform transition-all duration-300
         lg:translate-x-0 lg:static lg:z-auto
+        ${collapsed ? "lg:w-20" : "lg:w-64"}
         flex flex-col
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Logo / Sidebar Navbar */}
         <div
-          className="h-16 flex items-center justify-between px-4
+          className={`h-16 flex items-center justify-between ${
+            collapsed ? "lg:justify-center" : ""
+          } px-4
           bg-slate-900
           border-b border-white/10
-          sticky top-0 z-40"
+          sticky top-0 z-40`}
         >
           <img
             src="https://sriangalammanmatrimony.com/images/logo.png"
             alt="SriAngalamman"
-            className="h-10"
+            className={`h-10 ${collapsed ? "lg:hidden" : ""}`}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = "/logo.png";
             }}
           />
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-white/70 hover:text-white"
-          >
-            <X size={20} />
-          </button>
+
+          <div className="flex items-center gap-1">
+            {/* Desktop: collapse / expand the sidebar */}
+            <button
+              onClick={toggleCollapsed}
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className="hidden lg:inline-flex p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition"
+            >
+              {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
+
+            {/* Mobile: close the drawer */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden text-white/70 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Menu */}
         <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          <p className="px-3 py-2 mb-3 text-xs font-medium text-white/40 uppercase tracking-wider">
+          <p
+            className={`px-3 py-2 mb-3 text-xs font-medium text-white/40 uppercase tracking-wider ${
+              collapsed ? "lg:hidden" : ""
+            }`}
+          >
             Main Menu
           </p>
 
@@ -466,8 +507,10 @@ export default function DashboardLayout() {
               key={item.name}
               to={item.path}
               onClick={() => setSidebarOpen(false)}
+              title={collapsed ? item.name : undefined}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                ${collapsed ? "lg:justify-center lg:px-2" : ""}
                 ${
                   isActive
                     ? "bg-rose-500/20 text-rose-400 border-l-2 border-rose-500"
@@ -475,8 +518,8 @@ export default function DashboardLayout() {
                 }`
               }
             >
-              <item.icon size={18} />
-              {item.name}
+              <item.icon size={18} className="shrink-0" />
+              <span className={collapsed ? "lg:hidden" : ""}>{item.name}</span>
             </NavLink>
           ))}
         </nav>
@@ -485,11 +528,13 @@ export default function DashboardLayout() {
         <div className="border-t border-white/10 p-4">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg
-            text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all"
+            title={collapsed ? "Logout" : undefined}
+            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg
+            text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all
+            ${collapsed ? "lg:justify-center lg:px-2" : ""}`}
           >
-            <LogOut size={18} />
-            Logout
+            <LogOut size={18} className="shrink-0" />
+            <span className={collapsed ? "lg:hidden" : ""}>Logout</span>
           </button>
         </div>
       </aside>
