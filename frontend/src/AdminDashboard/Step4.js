@@ -982,7 +982,7 @@ const handleNext = () => {
       .find((b) => b.box.includes("லக்"))?.key || null;
 
   return (
-    <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 mx-auto border border-yellow-200 mt-12">
+    <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl p-6 mx-auto border border-yellow-200 mt-12">
       <div className="flex items-center justify-center gap-2 mb-6">
         <Stars className="w-8 h-8 text-yellow-600" />
         <h3 className="text-2xl font-bold text-yellow-700">

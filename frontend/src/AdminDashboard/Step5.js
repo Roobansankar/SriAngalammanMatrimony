@@ -638,7 +638,7 @@ export default function Step5({ nextStep, prevStep, formData = {} }) {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 mx-auto border border-rose-100 mt-12">
+    <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl p-6 mx-auto border border-rose-100 mt-12">
       <div className="flex items-center justify-center gap-2 mb-6">
         {/* <MapPin className="w-7 h-7 text-rose-600" /> */}
         <h3 className="text-2xl font-bold text-rose-700">
